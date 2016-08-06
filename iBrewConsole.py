@@ -60,7 +60,7 @@ class iBrewConsole:
         print
 
     def joke(self):
-        teajokes = [["What do you call a talkative drink?","Chai tea."],
+        teaJokes = [["What do you call a talkative drink?","Chai tea."],
                       ["How long does it take to brew Chinese tea?","Oolong time."],
                       ["When shouldn't you drink a hot beverage?","If it's not your cup of tea."],
                       ["How does Moses make his tea?","Hebrews it."],
@@ -88,7 +88,7 @@ class iBrewConsole:
                       ["It really is a serious problem","If tea can’t fix it."],
                       ]
                 
-        coffeejokes =  [["Why are men are like coffee?"," The best ones are rich, hot, and can keep you up all night!"],
+        coffeeJokes =  [["Why are men are like coffee?"," The best ones are rich, hot, and can keep you up all night!"],
                         ["Why is a bad cup of coffee the end of a marriage?","Because it's GROUNDS for divorce!"],
                         ["What do you call sad coffee?","Despresso"],
                         ["Did you know it's a sin for a woman to make coffee?","In the bible it says He-brews"],
@@ -98,7 +98,7 @@ class iBrewConsole:
                         ["So I've Been thinking about you a latte","Your coffee grinder"],
                         ["How do you look so good before coffee?","Your coffee machine"],
                        ]
-        joke = random.choice(teajokes+coffeejokes)
+        joke = random.choice(teaJokes+coffeeJokes)
         print "\n      \'" + joke[0] + "\'\n                  -- " + joke[1] + "\n"
 
     def __init__(self,host):

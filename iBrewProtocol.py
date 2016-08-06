@@ -4,7 +4,6 @@
 # iBrew PROTOCOL
 #
 # Protocol information to iKettle 2.0 or Smarter Coffee
-# Devices (500 lines of ugly code)
 #------------------------------------------------------
 #
 #    References:
@@ -19,6 +18,116 @@
 #    https://github.com/nanab/smartercoffee/blob/master/sendcommand.py
 #
 #
+#
+
+iBrewVersion = "White Tea Edition v0.07 © 2016 TRiXWooD"
+
+# protocol information
+
+iBrewMessageDevice = [[0,"Unknown"],
+                      [1,"iKettle 2.0 only"],
+                      [2,"SmarterCoffee only"],
+                      [3,"iKettle 2.0 & Smarter Coffee"],
+                      [4,"iKettle 2.0 (Smarter Cofee unknown)"],
+                      [5,"Smarter Cofee unknown (iKettle unknown)"],
+                     ]
+
+iBrewMessageType = [[False,"Command"],
+                    [True, "Response"],
+                   ]
+
+#                 code type status description
+iBrewMessages = [[0x02,False,4,"Set device time"],
+                 [0x03,True ,3,"Command status"],
+                 [0x05,False,4,"Set WiFi network SSID"],
+                 [0x07,False,4,"Set WiFi network password"],
+                 [0x0c,False,4,"Connect to WiFi network"],
+                 [0x0d,False,4,"Scan for WiFi networks"],
+                 [0x0e,True ,4,"List of WiFi networks"],
+                 [0x0f,False,4,"Reset Wifi networks"],
+                 [0x10,False,4,"Working unknown command (reset?)"],
+                 [0x14,True ,3,"Device status"],
+                 [0x15,False,4,"Turn on kettle"],
+                 [0x16,False,4,"Turn off kettle"],
+                 [0x19,False,4,"Working unknown command"],
+                 [0x20,False,4,"Working unknown command (turn on?)"],
+                 [0x21,False,4,"Working unknown command (turn on?)"],
+                 [0x22,False,4,"Working unknown command (turn on?)"],
+                 [0x23,False,4,"Working unknown command (turn on?)"],
+                 [0x28,False,4,"Working unknown command"],
+                 [0x29,True ,4,"working unknown reply"],
+                 [0x2a,False,4,"Working unknown command"],
+                 [0x2b,False,4,"Get watersensor base value"],
+                 [0x2c,False,4,"Calibrate watersensor"],
+                 [0x2d,True ,4,"Watersensor base value"],
+                 [0x30,False,4,"Working unknown command"],
+                 [0x32,False,0,"Working unknown command"],
+                 [0x33,False,0,"Working unknown command"],
+                 [0x35,False,2,"Set strength of the coffee to brew"],
+                 [0x36,False,2,"Set number of cups to brew"],
+                 [0x37,False,2,"Working unknown command"],
+                 [0x3c,False,2,"Toggle grinder"],
+                 [0x3e,False,2,"Turn on hotplate"],
+                 [0x40,False,2,"Working unknown command"],
+                 [0x41,False,2,"Working unknown command"],
+                 [0x43,False,2,"Working unknown command"],
+                 [0x4a,False,2,"Turn off hotplate"],
+                 [0x64,False,3,"Get Identify of device"],
+                 [0x65,True ,3,"Identify of device"],
+                 [0x69,False,4,"Working unknown command"],
+                 [0x6a,False,4,"Get WiFi firmware info"],
+                 [0x6b,True ,4,"Wifi firmware Info"],
+                 [0x6d,False,4,"Firmware upgrade"],
+                ]
+
+
+iBrewPort = 2081
+
+iBrewCommandOff  = '\x16'
+iBrewCommandOn   = '\x21'
+iBrewCommandInfo = '\x64'
+    
+# Coffee Commands (not tested)
+iBrewCommandGrinder      = '\x3c'
+iBrewCommandHotplateOff  = '\x4a'
+iBrewCommandHotplateOn   = '\x3e'
+iBrewCommandNumberOfCups = '\x36'
+iBrewCommandStrength     = '\x35'
+    
+# iKettle Commands
+iBrewCommandCalibrate     = '\x2c'
+iBrewCommandCalibrateBase = '\x2b'
+    
+# Response messages
+iBrewResponeStatus           = '\x03'
+iBrewResponeWifiList         = '\x0e'
+iBrewResponeUnknown          = '\x29'
+iBrewResponeCalibrationBase  = '\x2d'
+iBrewResponeStatusDevice     = '\x14'
+iBrewResponeDeviceInfo       = '\x65'
+iBrewResponeWifiFirmware     = '\x6b'
+    
+iBrewTail    = '\x7e'
+iBrewOffBase = '\x7f'
+    
+iBrewStatusKettle = {
+    0x00 : "Ready",
+    0x01 : "Boiling",
+    0x02 : "Keep Warm",
+    0x03 : "Cycle Finished",
+    0x04 : "Baby Cooling",
+}
+    
+iBrewStatusCommand = {
+    0x00 : "Success",
+    0x01 : "Busy",
+ #  0x0? : "Low Water",
+    0x04 : "Failed",
+    0x05 : "No Carafe",
+    0x06 : "No Water",
+    0x69 : "Invalid Command",
+    0xff : "Unknown"
+}
 
 class iBrewProtocol:
     def base(self):
@@ -122,7 +231,7 @@ class iBrewProtocol:
 
         print "This "
 
-    def coffeebrewing(self):
+    def coffeeBrewing(self):
         print
         print "Coffee Brewing:"
         print
@@ -319,7 +428,7 @@ class iBrewProtocol:
             print "Note: numberOfCups must be between 1 and 12"
             print
             print "Example code: 36 03 7e"
-            self.coffeebrewing()
+            self.coffeeBrewing()
         elif id == '37':
             print "Message 37: ???"
             print "  ☕ Smarter Coffee Only"
