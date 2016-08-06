@@ -22,12 +22,22 @@ iBrewVersion = "White Tea Edition v0.07 © 2016 TRiXWooD"
 # protocol information
 
 iBrewMessageWorking = [[0,"Unknown"],
-                      [1,"iKettle 2.0 only"],
-                      [2,"SmarterCoffee only"],
-                      [3,"iKettle 2.0 & Smarter Coffee"],
-                      [4,"iKettle 2.0 (Smarter Cofee unknown)"],
-                      [5,"Smarter Cofee (iKettle unknown)"],
-                     ]
+                       [1,"iKettle 2.0 only"],
+                       [2,"SmarterCoffee only"],
+                       [3,"iKettle 2.0 & SmarterCoffee"],
+                       [4,"iKettle 2.0 (SmarterCoffee unknown)"],
+                       [5,"SmarterCoffee (iKettle unknown)"],
+                       [6,"None"],
+                      ]
+
+iBrewMessageWorkingIcon = [[0,"? ?"],
+                           [1,"✓ ✕"],
+                           [2,"✕ ✓"],
+                           [3,"✓ ✓"],
+                           [4,"✓ ?"],
+                           [5,"? ✓"],
+                           [6,"✕ ✕"],
+                          ]
 
 iBrewMessageType = [[False,"Command"],
                     [True, "Response"],
@@ -43,15 +53,15 @@ iBrewMessages = [[0x02,0x00,False,4,"Set device time"],
                  [0x0f,0x00,False,4,"Reset Wifi networks"],
                  [0x10,0x00,False,4,"Working unknown command (reset?)"],
                  [0x14,0xff,True ,3,"Device status"],
-                 [0x15,0x00,False,4,"Turn on kettle"],
-                 [0x16,0x00,False,4,"Turn off kettle"],
+                 [0x15,0x00,False,4,"Turn on"],
+                 [0x16,0x00,False,4,"Turn off"],
                  [0x19,0x00,False,4,"Working unknown command"],
                  [0x20,0x00,False,4,"Working unknown command (turn on?)"],
                  [0x21,0x00,False,4,"Working unknown command (turn on?)"],
                  [0x22,0x00,False,4,"Working unknown command (turn on?)"],
                  [0x23,0x00,False,4,"Working unknown command (turn on?)"],
                  [0x28,0x29,False,4,"Working unknown command"],
-                 [0x29,0xff,True ,4,"working unknown reply 28"],
+                 [0x29,0xff,True ,4,"Working unknown reply"],
                  [0x2a,0x00,False,4,"Working unknown command"],
                  [0x2b,0x2d,False,4,"Get watersensor base value"],
                  [0x2c,0x2d,False,4,"Calibrate watersensor"],
@@ -68,7 +78,7 @@ iBrewMessages = [[0x02,0x00,False,4,"Set device time"],
                  [0x41,0x00,False,2,"Working unknown command"],
                  [0x43,0x00,False,2,"Working unknown command"],
                  [0x4a,0x00,False,2,"Turn off hotplate"],
-                 [0x64,0x65,False,3,"Get Identify of device"],
+                 [0x64,0x65,False,3,"Get identify of device"],
                  [0x65,0xff,True ,3,"Identify of device"],
                  [0x69,0x00,False,4,"Working unknown command"],
                  [0x6a,0x6b,False,4,"Get WiFi firmware info"],
@@ -139,8 +149,14 @@ iBrewStatusCommand = {
     0xff : "Unknown"
 }
 
+def raw_to_hex(data):
+    h = hex(data)[2:4]
+    if data < 0x10:
+        return '0' + h
+    return h
+
 class iBrewProtocol:
-    def base(self):
+    def structure(self):
         print
         print "Smarter iKettle 2.0 & Smarter Coffee Protocol"
         print "_____________________________________________"
@@ -166,62 +182,25 @@ class iBrewProtocol:
         print "Is connected locally it will send a command response message"
         print "before any other response message"
         print
+    
+    def messages_short(self,messageType):
+        for i in range(0,len(iBrewMessages)):
+            if messageType == iBrewMessages[i][2]:
+                print "  " + iBrewMessageWorkingIcon[iBrewMessages[i][3]][1] + " " + self.raw_to_hex(iBrewMessages[i][0]) + " " + iBrewMessages[i][4]
 
     def messages(self):
         print
-        print "♨ ☕ ID Command Message Description"
-        print "____________________________________"
-        
-        
-        print "♨   02 Set the machine time"
-        print "♨   05 Set network SSID"
-        print "♨   07 Set WiFi password"
-        print "✕   07 Start brewing Coffee???)"
-        print "♨   0c Hangs (Connect to Wifi)"
-        print "♨   0d Scan for WiFi networks"
-        print "♨   0f Reset Wifi networks"
-        print "    10 Reset ???"
-        print "♨   15 Turn on"
-        print "♨   16 Turn off"
-        print "♨   19 ????"
-        print "♨   20 Boiling Turn on"
-        print "♨   21 Boiling Turn on"
-        print "♨   22 Boiling Turn on"
-        print "♨   23 Boiling Turn on ???"
-        print "♨   28 ???"
-        print "♨   2a ???"
-        print "♨   2b Calibrate Base Value"
-        print "♨   2c Calibrate Water Sensor"
-        print "♨   30 ???"
-        print "    32 ???"
-        print "✕ ☕ 35 Set strength of the coffee to brew"
-        print "✕ ☕ 36 Set number of cups to brew"
-        print "✕ ☕ 37 ???"
-        print "✕ ☕ 3c Toggle the Grinder on/off"
-        print "✕ ☕ 3e Turn on the hotplate"
-        print "✕ ☕ 40 Updating schedules ???"
-        print "✕ ☕ 41 Requesting schedules ???"
-        print "✕ ☕ 43 Schedules ???"
-        print "✕ ☕ 4a Turn off the hot plate"
-        print "♨ ☕ 64 Get Identify of device"
-        print "♨   69 ???"
-        print "♨   6a Get Firmware Info WiFi module"
-        print "    6d Firmware Update"
+        print "  k c ID Command Message Description"
+        print "  ____________________________________"
+        self.messages_short(False)
         print
-        print "♨ ☕ ID Response Message Description"
-        print "___________________________________"
-        print "♨ ☕ 03 Status"
-        print "♨   0e List of WiFi networks"
-        print "♨   29 ???"
-        print "♨   14 Device status"
-        print "♨   2d Calibrate base value"
-        print "♨ ☕ 65 Identify of device"
-        print "♨ ☕ 6b Firmware Indo WiFi module"
-        
+        print "  k c ID Response Message Description"
+        print "  ___________________________________"
+        self.messages_short(True)
         print
         print "Legend:"
-        print "  ♨ iKettle 2"
-        print "  ☕ Smarter Coffee"
+        print "  k iKettle 2"
+        print "  c Smarter Coffee"
         print
 
     def calibration(self):
@@ -538,46 +517,7 @@ class iBrewProtocol:
         print
 
     def all(self):
-        self.base()
+        self.structure()
         self.messages()
-        self.message("02")
-        self.message("03")
-        self.message("05")
-        self.message("07")
-        self.message("0c")
-        self.message("0d")
-        self.message("0e")
-        self.message("0f")
-        self.message("10")
-        self.message("13")
-        self.message("14")
-        self.message("15")
-        self.message("16")
-        self.message("19")
-        self.message("21")
-        self.message("20")
-        self.message("22")
-        self.message("23")
-        self.message("28")
-        self.message("29")
-        self.message("2a")
-        self.message("2b")
-        self.message("2c")
-        self.message("2d")
-        self.message("30")
-        self.message("32")
-        self.message("35")
-        self.message("36")
-        self.message("37")
-        self.message("3c")
-        self.message("3e")
-        self.message("40")
-        self.message("41")
-        self.message("43")
-        self.message("4a")
-        self.message("64")
-        self.message("65")
-        self.message("69")
-        self.message("6a")
-        self.message("6b")
-        self.message("6d")
+        for i in range(0,len(iBrewMessages)):
+            self.message(iBrewMessages[i][0])

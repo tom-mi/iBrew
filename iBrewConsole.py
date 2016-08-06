@@ -150,7 +150,7 @@ class iBrewConsole:
                 elif input == "examples":
                     self.examples()
                 elif input == "protocol":
-                    iBrewProtocol().base()
+                    iBrewProtocol().structure()
                 elif input == "messages":
                     iBrewProtocol().messages()
                 elif input[0:8] == "message ":

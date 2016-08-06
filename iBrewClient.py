@@ -224,28 +224,7 @@ class iBrewClient:
 
     def print_message_send(self,message):
         print "iBrew: Message Send " + self.message_to_string(message)
-        if message[0] == iBrewCommandGrinder:
-            print "       Toggle Grinder"
-        elif message[0] == iBrewCommandhotplate_off:
-            print "       Turn Hotplate On"
-        elif message[0] == iBrewCommandhotplate_on:
             print "       Turn Hotplate Off"
-        elif message[0] == iBrewCommandNumberOfCups:
-            print "       Set Number of Cups to Brew"
-        elif message[0] == iBrewCommandStrenght:
-            print "       Set Strength"
-        elif message[0] == iBrewCommandOn:
-            print "       Turn On"
-        elif message[0] == iBrewCommandOff:
-            print "       Turn Off"
-        elif message[0] == iBrewCommandInfo:
-            print "       Get Device Info"
-        elif message[0] == iBrewCommandCalibrate:
-            print "       Calibrate Waterlevel"
-        elif message[0] == iBrewCommandCalibrateBase:
-            print "       Het Calibrate Waterlevel Base Value"
-        else:
-            print "       Unknown Command"
 
     def print_message_received(self,message):
         if message[0] != iBrewResponeStatusDevice:
