@@ -72,6 +72,7 @@ class iBrewCommandLine:
                     iBrew(host).calibrate_base()
                 elif arguments == 1:
                     iBrew(host).calibrate()
+                    # FiX Print
             elif arg1 == "off":
                 iBrewClient(host).off()
             elif arg1 == "status":

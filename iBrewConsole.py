@@ -118,6 +118,7 @@ class iBrewConsole:
                 elif input == "off":
                     client.off()
                 elif input == "hotplate on":
+                    # FIX THIS
                     client.hotplate_on()
                 elif input == "hotplate off":
                     client.hotplate_off()
@@ -147,6 +148,7 @@ class iBrewConsole:
                     client.calibrate()
                 elif input == "calibrate base":
                     client.calibrate_base()
+                    # fix print
                 elif input == "examples":
                     self.examples()
                 elif input == "protocol":
