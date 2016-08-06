@@ -156,10 +156,11 @@ def raw_to_hex(data):
     return h
 
 class iBrewProtocol:
+
     def structure(self):
         print
-        print "Smarter iKettle 2.0 & Smarter Coffee Protocol"
-        print "_____________________________________________"
+        print "Smarter iKettle 2.0 & Smarter Coffee Protocol Structure"
+        print "_______________________________________________________"
         print
         print "Smarter uses a binary message protocol,"
         print "either via UDP or TCP on port 2081"
@@ -180,13 +181,13 @@ class iBrewProtocol:
         print "Everything else, including spurious } characters, are ASCII literals"
         print
         print "Is connected locally it will send a command response message"
-        print "before any other response message"
+        print "as reply to a command before any other response message"
         print
     
     def messages_short(self,messageType):
         for i in range(0,len(iBrewMessages)):
             if messageType == iBrewMessages[i][2]:
-                print "  " + iBrewMessageWorkingIcon[iBrewMessages[i][3]][1] + " " + self.raw_to_hex(iBrewMessages[i][0]) + " " + iBrewMessages[i][4]
+                print "  " + iBrewMessageWorkingIcon[iBrewMessages[i][3]][1] + " " + raw_to_hex(iBrewMessages[i][0]) + " " + iBrewMessages[i][4]
 
     def messages(self):
         print
@@ -233,27 +234,22 @@ class iBrewProtocol:
 
     def message(self,id):
         print "________________________________________________"
+        print "Message " + id + ": "
+        print
+        
+        #if iBrewMessages,has_key[id]
+        return
         if id == '02':
-            print "Message 02: Set Time"
-            print "  ?"
-            print
             print "Arguments: <Seconds><Minutes><Hours><Unknown><Day><Month><Century><Year>"
             print "Note: Unknown is Day of week index?"
-        
         elif id == '03':
             #Fix
             print "d"
         elif id == '05':
-            print "Message 05: Set network SSID"
-            print "  ?"
-            print
             print "Argument: <SSID>{0,32}"
             print "Note: SSID is between 0 and 32 characters"
             self.wifi()
         elif id == '07':
-            print "Message 07: Set WiFi password"
-            print "  ?"
-            print
             print "Argument: <password>{0,32}"
             print "Note: password is between 0 and 32 characters"
             print
@@ -261,23 +257,12 @@ class iBrewProtocol:
             print " ?"
             self.wifi()
         elif id == '0c':
-            print "Message 0c: WiFi setup finished"
-            print "  ?"
-            print
             print "No information available on message"
             self.wifi()
         elif id == '0d':
-            print "Message 0d: Scan for WiFi networks"
-            print "  ?"
-            print
-            print "Returns: Message 0e"
-            print
             print "Example raw code: 0d 7e"
             self.wifi()
         elif id == '0e':
-            print "Message 0e: List of WiFi network"
-            print "  ?"
-            print
             print "Arguments: <SSID>{0,32},-<db>{2}}"
             print "Note: SSID is between 0 and 32 characters"
             print "      Sending message 0c without previous SSID/password messages will reset WiFi to factory settings"
@@ -287,21 +272,12 @@ class iBrewProtocol:
             print "          MyWifi,-56}OtherWifi,-82}"
             self.wifi()
         elif id == '0f':
-            print "Message 0d: Reset WiFi networks"
-            print "  ?"
-            print
             print "Returns: Message 0f"
             print
             print "Example raw code: 0f 7e"
         elif id == '10':
-            print "Message 10: Reset ???"
-            print "  ?"
-            print
             print "No information available on message"
         elif id == '14':
-            print "Message 14: Device status"
-            print " ?"
-            print
             print "Arguments: <status><temperature><waterHighbits><waterLowbits><unknown>"
             self.calibration()
             
@@ -314,31 +290,16 @@ class iBrewProtocol:
         #    5	0x00	Unknown, possibly reserved. Only seen 0x00 on the iKettle 2.0
         
         elif id == '15':
-            print "Message 15: Turn On"
-            print "  ?"
-            print
             print "Argument: <temperature>"
             print
             print "Example raw code: 15 ?? 7e"
         elif id == '16':
-            print "Message 16: Turn Off"
-            print "  ♨ iKettle 2.0"
-            print
             print "Example raw code: 16 7e"
         elif id == '19':
-            print "Message 19: ???"
-            print "  ♨ iKettle 2.0"
-            print
             print "Example raw code: 19 7e"
         elif id == '20':
-            print "Message 20: Turn On"
-            print "  ♨ iKettle 2.0"
-            print
             print "Example raw code: 20 7e"
         elif id == '21':
-            print "Message 21: Turn On"
-            print "  ♨ iKettle 2.0"
-            print
             print "Arguments: <[<temperature><[time]>]>"
             print
             print "Keep Warm between 5 and 20 minutes, 0 for normal on"
@@ -348,61 +309,32 @@ class iBrewProtocol:
             print "                  21 30 05 7e"
             print "                  21 44 7e"
         elif id == '22':
-            print "Message 22: Turn On"
-            print "  ♨ iKettle 2.0"
-            print
             print "Example raw code: 22 7e"
         elif id == '23':
-            print "Message 23: Turn On"
-            print "  ♨ iKettle 2.0"
-            print
             print "Example raw code: 23 7e"
         elif id == '28':
-            print "Message 28: ???"
-            print "  ♨ iKettle 2.0"
-            print
             print "No information available on message"
         elif id == '29':
-            print "Message 29: Reply on 28???"
-            print "  ♨ iKettle 2.0"
-            print
             print "29 00 7e"
             print "29 08 01 5f .. .. xx 7e"
             print "29 01 01 5f 00 00 10 00 19 00 01 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7d 7e"
             print
             print "No information available on message"
         elif id == '2a':
-            print "Message 2a: ???"
-            print "  ♨ iKettle 2.0"
-            print
             print "No information available on message"
         elif id == '2c':
-            print "Message 2c: Calibrate Water Sensor"
-            print "  ♨ iKettle 2 Only"
-            print
             print "Example raw code: 2c 7e"
             self.calibration()
         elif id == '2d':
-            print "Message 2c: Calibrate finished"
-            print "  ♨ iKettle 2 Only"
-            print
             print "Arguments: <unkownArgument><unkownArgument>"
             print
             print "Example raw code: 2c ?? ?? 7e"
             self.calibration()
         elif id == '3c':
-            print "Message 3c: Toggle the Grinder on/off"
-            print "  ☕ Smarter Coffee Only"
-            print
             print "Example raw code: 3c 7e"
         elif id == '30':
-            print "Message 30: ???"
-            print "  ?"
             print
         elif id == '35':
-            print "Message 35: Set strength of the coffee to brew"
-            print "  ☕ Smarter Coffee Only"
-            print
             print "Argument: <strength>"
             print
             print "strength:"
@@ -413,28 +345,16 @@ class iBrewProtocol:
             print "Example code: 35 01 7e"
             self.coffeebrewing()
         elif id == '36':
-            print "Message 36: Set number of cups to brew"
-            print "  ☕ Smarter Coffee Only"
-            print
             print "Argument: <numberOfCups>"
             print "Note: numberOfCups must be between 1 and 12"
             print
             print "Example code: 36 03 7e"
             self.coffeeBrewing()
         elif id == '37':
-            print "Message 37: ???"
-            print "  ☕ Smarter Coffee Only"
-            print
             print "No information available on message"
         elif id == '3c':
-            print "Message 3c: Toggle the Grinder on/off"
-            print "  ☕ Smarter Coffee Only"
-            print
             print "Example raw code: 3c 7e"
         elif id == '3e':
-            print "Message 3e: Turn on the hotplate"
-            print "  ☕ Smarter Coffee Only"
-            print
             print "Argument: <numberOfMinutes>"
             print "Note: valid values are 5 to 30 (30 not sure)"
             print
@@ -444,36 +364,21 @@ class iBrewProtocol:
             print "Example raw code: 3e 05 7e"
         elif id == '40':
             print "Message 40: Updating schedules ???"
-            print "  ☕ Smarter Coffee Only"
-            print
             print "No information available on message"
         elif id == '41':
             print "Message 41: Requesting schedules ???"
-            print "  ☕ Smarter Coffee Only"
-            print
             print "No information available on message"
         elif id == '43':
             print "Message 43: schedules ???"
-            print "  ☕ Smarter Coffee Only"
-            print
             print "No information available on message"
         elif id == '4a':
-            print "Message 4a: Turn off the hotplate"
-            print "  ☕ Smarter Coffee Only"
-            print
             print "Example raw code: 4a 7e"
         elif id == '64':
-            print "Message 64: Identify Device"
-            print "  ♨ iKettle 2.0 & ☕ Smarter Coffee"
-            print
             print "Note: Is used for auto discovery over UDP broadcast (after device setup is complete)"
             print "      This fails on some/most routers, which don't propagate UDP broadcasts"
             print
             print "Example raw code: 64 7e"
         elif id == '65':
-            print "Message 65: Response Identify Device"
-            print "  ♨ iKettle 2.0 & ☕ Smarter Coffee"
-            print
             print "Arguments: <deviceType> <sdkVersion>"
             print
             print "deviceType:"
@@ -485,28 +390,16 @@ class iBrewProtocol:
             print
             print "Example raw code: 65 01 13 7e"
         elif id == 69:
-            print "Message 69: ???"
-            print "  ♨ iKettle 2.0"
-            print
             print "returns with 0 arguments 03 04 7e"
             print "returns with 1 argument 03 00 7e"
         elif id == '6a':
-            print "Message 6a: Get firmware version of WiFi module"
-            print "  ♨ iKettle 2.0"
-            print
             print "Example raw code: 6a 7e"
             self.wifi()
         elif id == '6b':
-            print "Message 6b: Firmware version of WiFi module"
-            print "  ♨ iKettle 2.0"
-            print
             print "Note: iKettle 2.0 returns:"
             print "      AT+GMRAT version:0.40.0.0(Aug  8 2015 14:45:58)SDK version:1.3.0compile time:Aug  8 2015 17:19:38OK"
             self.wifi()
         elif id == '6d':
-            print "Message 6d: Firmware Update"
-            print "  ?"
-            print
             print "Note: Disables wifi and creates a 'iKettle Update' network"
             print "      a hard device reset (hold power button for 10 seconds) required to fix"
             print " opens up a port at 6000"

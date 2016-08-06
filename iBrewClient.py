@@ -224,7 +224,7 @@ class iBrewClient:
 
     def print_message_send(self,message):
         print "iBrew: Message Send " + self.message_to_string(message)
-            print "       Turn Hotplate Off"
+        # FIX print from protocol here...
 
     def print_message_received(self,message):
         if message[0] != iBrewResponeStatusDevice:
