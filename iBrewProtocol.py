@@ -14,7 +14,6 @@
 #    https://github.com/AdenForshaw/smarter-coffee-api/blob/master/smarter-coffee-api.py
 #    https://www.pentestpartners.com/blog/hacking-a-wi-fi-coffee-machine-part-1/
 #    https://www.hackster.io/lahorde/from-a-14-kettle-to-an-ikettle-d2b3f7
-#
 #    https://github.com/nanab/smartercoffee/blob/master/sendcommand.py
 #
 #
@@ -24,80 +23,92 @@ iBrewVersion = "White Tea Edition v0.07 © 2016 TRiXWooD"
 
 # protocol information
 
-iBrewMessageDevice = [[0,"Unknown"],
+iBrewMessageWorking = [[0,"Unknown"],
                       [1,"iKettle 2.0 only"],
                       [2,"SmarterCoffee only"],
                       [3,"iKettle 2.0 & Smarter Coffee"],
                       [4,"iKettle 2.0 (Smarter Cofee unknown)"],
-                      [5,"Smarter Cofee unknown (iKettle unknown)"],
+                      [5,"Smarter Cofee (iKettle unknown)"],
                      ]
 
 iBrewMessageType = [[False,"Command"],
                     [True, "Response"],
                    ]
 
-#                 code type status description
-iBrewMessages = [[0x02,False,4,"Set device time"],
-                 [0x03,True ,3,"Command status"],
-                 [0x05,False,4,"Set WiFi network SSID"],
-                 [0x07,False,4,"Set WiFi network password"],
-                 [0x0c,False,4,"Connect to WiFi network"],
-                 [0x0d,False,4,"Scan for WiFi networks"],
-                 [0x0e,True ,4,"List of WiFi networks"],
-                 [0x0f,False,4,"Reset Wifi networks"],
-                 [0x10,False,4,"Working unknown command (reset?)"],
-                 [0x14,True ,3,"Device status"],
-                 [0x15,False,4,"Turn on kettle"],
-                 [0x16,False,4,"Turn off kettle"],
-                 [0x19,False,4,"Working unknown command"],
-                 [0x20,False,4,"Working unknown command (turn on?)"],
-                 [0x21,False,4,"Working unknown command (turn on?)"],
-                 [0x22,False,4,"Working unknown command (turn on?)"],
-                 [0x23,False,4,"Working unknown command (turn on?)"],
-                 [0x28,False,4,"Working unknown command"],
-                 [0x29,True ,4,"working unknown reply"],
-                 [0x2a,False,4,"Working unknown command"],
-                 [0x2b,False,4,"Get watersensor base value"],
-                 [0x2c,False,4,"Calibrate watersensor"],
-                 [0x2d,True ,4,"Watersensor base value"],
-                 [0x30,False,4,"Working unknown command"],
-                 [0x32,False,0,"Working unknown command"],
-                 [0x33,False,0,"Working unknown command"],
-                 [0x35,False,2,"Set strength of the coffee to brew"],
-                 [0x36,False,2,"Set number of cups to brew"],
-                 [0x37,False,2,"Working unknown command"],
-                 [0x3c,False,2,"Toggle grinder"],
-                 [0x3e,False,2,"Turn on hotplate"],
-                 [0x40,False,2,"Working unknown command"],
-                 [0x41,False,2,"Working unknown command"],
-                 [0x43,False,2,"Working unknown command"],
-                 [0x4a,False,2,"Turn off hotplate"],
-                 [0x64,False,3,"Get Identify of device"],
-                 [0x65,True ,3,"Identify of device"],
-                 [0x69,False,4,"Working unknown command"],
-                 [0x6a,False,4,"Get WiFi firmware info"],
-                 [0x6b,True ,4,"Wifi firmware Info"],
-                 [0x6d,False,4,"Firmware upgrade"],
+iBrewMessages = [[0x02,0x00,False,4,"Set device time"],
+                 [0x03,0xff,True ,3,"Command status"],
+                 [0x05,0x00,False,4,"Set WiFi network SSID"],
+                 [0x07,0x00,False,4,"Set WiFi network password"],
+                 [0x0c,0x00,False,4,"Connect to WiFi network"],
+                 [0x0d,0x0e,False,4,"Scan for WiFi networks"],
+                 [0x0e,0xff,True ,4,"List of WiFi networks"],
+                 [0x0f,0x00,False,4,"Reset Wifi networks"],
+                 [0x10,0x00,False,4,"Working unknown command (reset?)"],
+                 [0x14,0xff,True ,3,"Device status"],
+                 [0x15,0x00,False,4,"Turn on kettle"],
+                 [0x16,0x00,False,4,"Turn off kettle"],
+                 [0x19,0x00,False,4,"Working unknown command"],
+                 [0x20,0x00,False,4,"Working unknown command (turn on?)"],
+                 [0x21,0x00,False,4,"Working unknown command (turn on?)"],
+                 [0x22,0x00,False,4,"Working unknown command (turn on?)"],
+                 [0x23,0x00,False,4,"Working unknown command (turn on?)"],
+                 [0x28,0x29,False,4,"Working unknown command"],
+                 [0x29,0xff,True ,4,"working unknown reply 28"],
+                 [0x2a,0x00,False,4,"Working unknown command"],
+                 [0x2b,0x2d,False,4,"Get watersensor base value"],
+                 [0x2c,0x2d,False,4,"Calibrate watersensor"],
+                 [0x2d,0xff,True ,4,"Watersensor base value"],
+                 [0x30,0x00,False,4,"Working unknown command"],
+                 [0x32,0x00,False,0,"Working unknown command"],
+                 [0x33,0x00,False,0,"Working unknown command"],
+                 [0x35,0x00,False,2,"Set strength of the coffee to brew"],
+                 [0x36,0x00,False,2,"Set number of cups to brew"],
+                 [0x37,0x00,False,2,"Working unknown command"],
+                 [0x3c,0x00,False,2,"Toggle grinder"],
+                 [0x3e,0x00,False,2,"Turn on hotplate"],
+                 [0x40,0x00,False,2,"Working unknown command"],
+                 [0x41,0x00,False,2,"Working unknown command"],
+                 [0x43,0x00,False,2,"Working unknown command"],
+                 [0x4a,0x00,False,2,"Turn off hotplate"],
+                 [0x64,0x65,False,3,"Get Identify of device"],
+                 [0x65,0xff,True ,3,"Identify of device"],
+                 [0x69,0x00,False,4,"Working unknown command"],
+                 [0x6a,0x6b,False,4,"Get WiFi firmware info"],
+                 [0x6b,0xff,True ,4,"Wifi firmware Info"],
+                 [0x6d,0x00,False,4,"Firmware upgrade"],
                 ]
+
+                #  /|\  /|\  /|\ /|\  /|\
+                #   |    |    |   |    |
+                #   |    |    |   |
+                #   |    |    |   |   Message Description
+                #   |    |    |
+                #   |    |    |  Message Working
+                #   |    |
+                #   |    |   Message Type
+                #   |
+                #   |   Message Response ID ( 0xff no reply or response message, 0x00 unknown)
+                #
+                #  Message ID
 
 
 iBrewPort = 2081
 
-iBrewCommandOff  = '\x16'
-iBrewCommandOn   = '\x21'
-iBrewCommandInfo = '\x64'
+iBrewCommandInfo             = '\x64'
     
 # Coffee Commands (not tested)
-iBrewCommandGrinder      = '\x3c'
-iBrewCommandHotplateOff  = '\x4a'
-iBrewCommandHotplateOn   = '\x3e'
-iBrewCommandNumberOfCups = '\x36'
-iBrewCommandStrength     = '\x35'
+iBrewCommandGrinder          = '\x3c'
+iBrewCommandHotplateOff      = '\x4a'
+iBrewCommandHotplateOn       = '\x3e'
+iBrewCommandNumberOfCups     = '\x36'
+iBrewCommandStrength         = '\x35'
     
 # iKettle Commands
-iBrewCommandCalibrate     = '\x2c'
-iBrewCommandCalibrateBase = '\x2b'
-    
+iBrewCommandCalibrate        = '\x2c'
+iBrewCommandCalibrateBase    = '\x2b'
+iBrewCommandOff              = '\x16'
+iBrewCommandOn               = '\x21'
+
 # Response messages
 iBrewResponeStatus           = '\x03'
 iBrewResponeWifiList         = '\x0e'
@@ -121,10 +132,11 @@ iBrewStatusKettle = {
 iBrewStatusCommand = {
     0x00 : "Success",
     0x01 : "Busy",
- #  0x0? : "Low Water",
+    0x02 : "No Carafe",
+    0x03 : "No Water",
     0x04 : "Failed",
-    0x05 : "No Carafe",
-    0x06 : "No Water",
+    0x05 : "No Carafe",  # which one?
+    0x06 : "No Water",   # which one?
     0x69 : "Invalid Command",
     0xff : "Unknown"
 }
