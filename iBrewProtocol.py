@@ -59,11 +59,11 @@ iBrewMessages = [[0x02,0x00,False,4,"Set device time"],
                  [0x2c,0x2d,False,4,"Calibrate watersensor"],
                  [0x2d,0xff,True ,4,"Watersensor base value"],
                  [0x30,0x00,False,4,"Working unknown command"],
-                 [0x32,0x00,False,0,"Working unknown command"],
-                 [0x33,0x00,False,0,"Working unknown command"],
+                 [0x32,0x00,False,2,"Working unknown command"],
+                 [0x33,0x00,False,2,"Start coffee brewing"],
                  [0x35,0x00,False,2,"Set strength of the coffee to brew"],
                  [0x36,0x00,False,2,"Set number of cups to brew"],
-                 [0x37,0x00,False,2,"Working unknown command"],
+                 [0x37,0x00,False,2,"Start coffee brewing using default"],
                  [0x3c,0x00,False,2,"Toggle grinder"],
                  [0x3e,0x00,False,2,"Turn on hotplate"],
                  [0x40,0x00,False,2,"Working unknown command"],
@@ -165,13 +165,16 @@ class iBrewProtocol:
         print
         print "Everything else, including spurious } characters, are ASCII literals"
         print
-        print "Use messages command to list all messages"
+        print "Is connected locally it will send a command response message"
+        print "before any other response message"
         print
 
     def messages(self):
         print
         print "♨ ☕ ID Command Message Description"
         print "____________________________________"
+        
+        
         print "♨   02 Set the machine time"
         print "♨   05 Set network SSID"
         print "♨   07 Set WiFi password"
@@ -456,8 +459,7 @@ class iBrewProtocol:
             print "  ☕ Smarter Coffee Only"
             print
             print "Argument: <numberOfMinutes>"
-            print "Note: It is hardcoded in app with 5"
-            print "      valid values are 0 to 30???"
+            print "Note: valid values are 5 to 30 (30 not sure)"
             print
             print "unknownArgument:"
             print "05 Default"
