@@ -21,13 +21,15 @@ iBrewVersion = "White Tea Edition v0.07 © 2016 TRiXWooD"
 
 # protocol information
 
-iBrewMessageWorking = [[0,"Unknown"],
-                       [1,"iKettle 2.0 only"],
-                       [2,"SmarterCoffee only"],
-                       [3,"iKettle 2.0 & SmarterCoffee"],
-                       [4,"iKettle 2.0 (SmarterCoffee unknown)"],
-                       [5,"SmarterCoffee (iKettle unknown)"],
-                       [6,"None"],
+iBrewMessageWorking = [[0,"? iKettle 2.0  ? SmarterCoffee"],
+                       [1,"✓ iKettle 2.0  ✕ SmarterCoffee"],
+                       [2,"✕ iKettle 2.0  ✓ SmarterCoffee"],
+                       [3,"✓ iKettle 2.0  ✓ SmarterCoffee"],
+                       [4,"✓ iKettle 2.0  ? SmarterCoffee"],
+                       [5,"? iKettle 2.0  ✓ SmarterCoffee"],
+                       [6,"✕ iKettle 2.0  ✕ SmarterCoffee"],
+                       [7,"✕ iKettle 2.0  ? SmarterCoffee"],
+                       [8,"? iKettle 2.0  ✕ SmarterCoffee"],
                       ]
 
 iBrewMessageWorkingIcon = [[0,"? ?"],
@@ -37,6 +39,8 @@ iBrewMessageWorkingIcon = [[0,"? ?"],
                            [4,"✓ ?"],
                            [5,"? ✓"],
                            [6,"✕ ✕"],
+                           [7,"✕ ?"],
+                           [8,"? ✕"],
                           ]
 
 iBrewMessageType = [[False,"Command"],
