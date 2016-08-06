@@ -16,8 +16,6 @@
 #    https://www.hackster.io/lahorde/from-a-14-kettle-to-an-ikettle-d2b3f7
 #    https://github.com/nanab/smartercoffee/blob/master/sendcommand.py
 #
-#
-#
 
 iBrewVersion = "White Tea Edition v0.07 © 2016 TRiXWooD"
 
@@ -240,11 +238,11 @@ class iBrewProtocol:
         print
         print "WiFi:"
         print
-        print "      If the device is configured to access an WiFi access point which is bot available"
-        print "      It will try to connect to it every so minutes, if it fails it sets up its default"
-        print "      open unencrypted WiFi access point."
-
-        print "This "
+        print "      If the device is configured to access an WiFi access point which is not available"
+        print "      It will try to connect to it every so minutes. If it tries to connect it beeps three"
+        print "      times the WiFi access point of the device will remain active but unreachable,"
+        print "      if it fails to access the access point it beeps once, and it opens up its own default"
+        print "      open unencrypted WiFi access point"
 
     def coffeeBrewing(self):
         print

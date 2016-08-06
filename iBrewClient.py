@@ -80,7 +80,7 @@ class iBrewClient:
                 statusCommand = 0xff
     
         # Calibration
-        if message[0] == iBrewResponeCalibrationBase:
+        elif message[0] == iBrewResponeCalibrationBase:
             self.waterlevelBase = struct.unpack('B',message[2])[0] + 256 * struct.unpack('B',message[1])[0]
         
         # Device Info
@@ -94,6 +94,7 @@ class iBrewClient:
                 self.isSmarterCoffee = True
                 self.device = "SmarterCoffee"
             self.version = struct.unpack('B',message[2])[0]
+        
         # Device Status
         elif message[0] == iBrewResponeStatusDevice:
             #self.unknown      = struct.unpack('B',message[5])[0]
@@ -104,10 +105,10 @@ class iBrewClient:
                 self.onbase = False
             else:
                 self.onbase = True
-
+                
         if self.log:
             self.print_message_received(message)
-
+     
         return message
 
     # send a protocol message and wait's for response...
@@ -123,6 +124,7 @@ class iBrewClient:
                     self.print_message_send(message+iBrewTail)
             else:
                 return
+    
 
         except socket.error, msg:
             print 'iBrew: Failed to send message. Error code: ' + str(msg[0]) + ' , Error message : ' + msg[1]
@@ -138,7 +140,6 @@ class iBrewClient:
          #       w = False
         #    elif x[0] == BrewResponeStatus:
           #      w = False
-            print "s"
             self.print_message_received(x)
         return x
 
@@ -249,7 +250,7 @@ class iBrewClient:
     def print_message_received(self,message):
         if message[0] != iBrewResponeStatusDevice:
             print "iBrew: Message Received: " + self.message_to_string(message)
-        if message[0] == iBrewResponeStatus:
+        elif message[0] == iBrewResponeStatus:
             print "       Action Status: " + iBrewStatusCommand[messages[1]]
         elif message[0] == iBrewResponeWifiList:
             print '       Wifi Not Implemented'
