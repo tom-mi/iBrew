@@ -68,10 +68,10 @@ class iBrewCommandLine:
             if arg1 == "on":
                 iBrewClient(host).on()
             elif arg1 == "calibrate":
-                if arguments == 2 and arg2 == "base":
-                    iBrew(host).calibrate_base()
-                elif arguments == 1:
-                    iBrew(host).calibrate()
+                if arguments >= 2 and arg2 == "base":
+                    iBrewClient(host).calibrate_base()
+                else:
+                    iBrewClient(host).calibrate()
                     # FiX Print
             elif arg1 == "off":
                 iBrewClient(host).off()

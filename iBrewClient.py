@@ -37,7 +37,6 @@ class iBrewClient:
         self.info()
         self.calibrate_base()
         self.host = host
-        
         return True
 
     def __init__(self,host, auto_connect = "True"):
@@ -75,13 +74,13 @@ class iBrewClient:
      
         # Command Status
         if message[0] == iBrewResponeStatus:
-            statusCommand = struct.unpack('B',message[1])[0]
-            if not iBrewStatusCommand.has_key(statusCommand):
-                statusCommand = 0xff
+            self.statusCommand = struct.unpack('B',message[1])[0]
+            if not iBrewStatusCommand.has_key(self.statusCommand):
+                self.statusCommand = 0xff
     
         # Calibration
         elif message[0] == iBrewResponeCalibrationBase:
-            self.waterlevelBase = struct.unpack('B',message[2])[0] + 256 * struct.unpack('B',message[1])[0]
+            self.waterSensorlBase = struct.unpack('B',message[2])[0] + 256 * struct.unpack('B',message[1])[0]
         
         # Device Info
         elif message[0] == iBrewResponeDeviceInfo:
@@ -134,7 +133,7 @@ class iBrewClient:
         x = self.read()
         while x[0] == iBrewResponeStatusDevice:
             x = self.read()
- 
+ #??? local delete? test with calibrate command
         self.local = False
         
         # keep reading until we got the device status message
@@ -225,28 +224,32 @@ class iBrewClient:
 
     def print_message_send(self,message):
         print "iBrew: Message Send " + self.message_to_string(message)
-        # FIX print from protocol here...
+        s = iBrew_message_description(iBrew_raw_to_hex(struct.unpack('B',message[0])[0]))
+        if s != "":
+            print "       " + s
 
     def print_message_received(self,message):
-      #  if message[0] != iBrewResponeStatusDevice:
-        print "iBrew: Message Received: " + self.message_to_string(message)
-        """
+        if message[0] != iBrewResponeStatusDevice:
+            print "iBrew: Message Received: " + self.message_to_string(message)
+            s = iBrew_message_description(iBrew_raw_to_hex(struct.unpack('B',message[0])[0]))
         if message[0] == iBrewResponeStatus:
-            print
-            #print "       Action Status: " + iBrewStatusCommand[message[1]]
+            print "       " + s + " " + iBrewStatusCommand[self.statusCommand]
         elif message[0] == iBrewResponeWifiList:
-            print '       Wifi Not Implemented'
+            print "       " + s + " Not Implemented"
         elif message[0] == iBrewResponeWifiFirmware:
-            print '       Wifi Firmware Not Implemented'
+            print "       " + s + " Not Implemented"
         elif message[0] == iBrewResponeUnknown:
-            print '       Unknown Message Not Implemented'
+            print "       " + s + " Not Implemented"
         elif message[0] == iBrewResponeDeviceInfo:
-            print "       Device Info: " + self.device + " Firmware v" + str(self.version)
+            print "       " + s + " " + self.device + " Firmware v" + str(self.version)
         elif message[0] == iBrewResponeCalibrationBase:
-            print "       Calibration Base Value: " +  str(self.calibration)
+            print "       " + s + " " +  str(self.waterSensorlBase)
         elif message[0] != iBrewResponeStatusDevice:
-            print "       Unknown Reply Message"
-        """
+            if s != "":
+                print "       " + s
+            else:
+                print "       Unknown Reply Message"
+
 
     def print_status(self):
         print
@@ -255,7 +258,7 @@ class iBrewClient:
                 print "Status       " + iBrewStatusKettle[self.status]
                 print "Kettle       On Base"
                 print "Temperature  " + str(self.temperature) +  "ºC"
-                print "Water level  " + self.cups_string() + " left " + str(self.waterlevel-self.waterlevelBase) + "ml (" + str(self.waterlevel) + ":" + str(self.waterlevelBase) + ")"
+                print "Water level  " + self.cups_string() + " left " + str(self.waterlevel-self.waterSensorlBase) + "ml (" + str(self.waterlevel) + ":" + str(self.waterSensorlBase) + ")"
             else:
                 print "Status       " + iBrewStatusKettle[self.status]
                 print "Kettle       Not On Base"

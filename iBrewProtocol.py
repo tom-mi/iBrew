@@ -88,7 +88,7 @@ iBrewMessages = [[0x02,0x00,False,4,"Set device time"],
                  [0x65,0xff,True ,3,"Identify of device"],
                  [0x69,0x00,False,4,"Working unknown command"],
                  [0x6a,0x6b,False,4,"Get WiFi firmware info"],
-                 [0x6b,0xff,True ,4,"WiFi firmware Info"],
+                 [0x6b,0xff,True ,4,"WiFi firmware info"],
                  [0x6d,0x00,False,4,"Firmware upgrade"],
                 ]
 
@@ -174,7 +174,7 @@ iBrewResponeDeviceInfo       = '\x65'
 iBrewResponeWifiFirmware     = '\x6b'
     
 iBrewTail    = '\x7e'
-iBrewOffBase = '\x7f'
+iBrewOffBase = 0x7f
     
 iBrewStatusKettle = {
     0x00 : "Ready",
@@ -445,7 +445,7 @@ class iBrewProtocol:
             print "  Example raw code: 65 01 13 7e"
         elif id == '69':
             print "  returns with 0 arguments 03 04 7e"
-            print "  returns with 1 argument 03 00 7e"
+            print "  returns with 1+ argument 03 00 7e"
         elif id == '6a':
             print "  Example raw code: 6a 7e"
             self.wifi()
