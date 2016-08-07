@@ -251,7 +251,7 @@ class iBrewClient:
 
     def print_message_send(self,message):
         if self.log:
-            print "iBrew: Message Send " + self.message_to_string(message)
+            print "iBrew: Message Send: " + self.message_to_string(message)
             s = iBrew_message_description(iBrew_raw_to_hex(struct.unpack('B',message[0])[0]))
             if s != "":
                 print "       " + s
@@ -322,7 +322,13 @@ class iBrewClient:
     def print_info(self):
         print "iBrew: " + self.device + " v" + str(self.version)
 
+    def print_watersensor_base(self):
+        print "iBrew: Watersensor base value " + str(self.waterSensorBase)
+    
     def print_status(self):
+        if self.log:
+            x = self.read()
+            print "iBrew: Message Received: " + self.message_to_string(x)
         print
         if self.isKettle2 == True:
             if self.onbase:
@@ -338,6 +344,9 @@ class iBrewClient:
         print
 
     def print_short_status(self):
+        if self.log:
+            x = self.read()
+            print "iBrew: Message Received: " + self.message_to_string(x)
         if self.isKettle2 == True:
             if self.onbase:
                 print "iBrew: " + iBrewStatusKettle[self.status] + " On Base (" + str(self.temperature) + "ºC, " + "%.1f" % self.water_level() + "l)"
