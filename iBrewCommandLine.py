@@ -100,7 +100,7 @@ class iBrewCommandLine:
                 elif arg1 == "cups":
                     print "iBrew: Not Implemented"
                     # FIX WRONG IP{UT
-                    #iBrewClient(host).number_of_cups(arg2)
+                    #iBrewClient(host).coffee_cups(arg2)
                 else:
                     self.help()
                     print 'iBrew: Invalid option: ',arg1

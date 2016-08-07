@@ -8,10 +8,6 @@ from iBrewClient import *
 # iBrew CONSOLE
 #
 # Console for iKettle 2.0 or Smarter Coffee Devices
-#
-# Note that raw status device messages is the only one not
-# printed in raw format...
-# Check client code to enable, search for "raw status"
 #------------------------------------------------------
 
 class iBrewConsole:
@@ -193,12 +189,16 @@ class iBrewConsole:
 
                 # Cups
                 elif input[0:5] == "cups ":
-                    # FIX THIS
-                    print "iBrew: Not Implemented"
+                    try:
+                        x = int(input[5:len(input)])
+                        if x < 0 or x > 12:
+                            raise ValueError('Conversion Error')
+                    except:
+                        print "iBrew: Use 1..12 as range in argument cups"
+                    client.coffee_cups(x)
                 elif input[0:4] == "cups":
                     print "iBrew: Use 1..12 as range in argument cups"
-                      #client.cups(3)
-
+        
                 # Console Commands
                 elif input == "exit" or input == "quit":
                     sys.exit()

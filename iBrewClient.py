@@ -257,7 +257,6 @@ class iBrewClient:
                 print "       " + s
 
     def print_message_received(self,message):
-        #remove this "if" if you want to see raw status device messages
         if self.log and message[0] != iBrewResponseStatusDevice:
             print "iBrew: Message Received: " + self.message_to_string(message)
         s = iBrew_message_description(iBrew_raw_to_hex(struct.unpack('B',message[0])[0]))
@@ -431,7 +430,7 @@ class iBrewClient:
         else:
             print 'iBrew: The device does not have a grinder'
 
-    def number_of_cups(self,number=1):
+    def coffee_cups(self,number=1):
         if self.isSmarterCoffee == True:
             if number < 1 or number > 12:
                 print "iBrew: Invalid number of cups, range is between 1 and 12 cups, not  " + str(number) + " cups"
