@@ -32,7 +32,7 @@ class iBrewClient:
         except socket.error, msg:
             print 'iBrew: Failed to connect to host (' + host + ') Error code: ' + str(msg[0]) + ' , Error message : ' + msg[1]
             return False
-        self.log = False
+        self.log = True
         self.read()
         self.info()
         self.calibrate_base()
@@ -131,11 +131,12 @@ class iBrewClient:
         # keep reading until we got the response message
         # if a message does not generate a response... we're in deep shit... FIX!
         x = self.read()
+
         while x[0] == iBrewResponeStatusDevice:
             x = self.read()
  #??? local delete? test with calibrate command
         self.local = False
-        
+
         # keep reading until we got the device status message
         y = self.read()
         while y[0] != iBrewResponeStatusDevice:

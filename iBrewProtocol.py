@@ -61,7 +61,8 @@ iBrewMessages = [[0x02,0x00,False,4,"Set device time"],
                  [0x14,0xff,True ,3,"Device status"],
                  [0x15,0x00,False,4,"Turn on"],
                  [0x16,0x00,False,4,"Turn off"],
-                 [0x19,0x00,False,4,"Working unknown command"],
+                 [0x19,0x00,False,4,"Formula Mode"],
+                 [0x1f,0x00,False,4,"Set Default Values"],
                  [0x20,0x00,False,4,"Working unknown command (turn on?)"],
                  [0x21,0x00,False,4,"Working unknown command (turn on?)"],
                  [0x22,0x00,False,4,"Working unknown command (turn on?)"],
@@ -347,16 +348,29 @@ class iBrewProtocol:
         elif id == '15':
             print "  Argument: <temperature><keepwarm>"
             print "  15 32 00 7e start boiling"
-            print "  15 32 1f 7e crash kettle"
             print "  15 32"
             print "  temperature 00..64"
-            print "  keepwar not 00, minutes: 05..1e"
+            print "  keepwarm not 00, minutes: 05..1e"
             print "  Example raw code: 15 ?? 7e"
             print "  if it's warming you have to send an off command to boil again"
+            print "  if it's not on temp it boils first before warming..."
+        
         elif id == '16':
             print "  Example raw code: 16 7e"
         elif id == '19':
-            print "  Example raw code: 19 7e"
+            print "  Arguments: <formulatemperature><keepwarmtime>"
+            print
+            print "  Example raw code: 19 32 19 7e"
+            print "  Boil water to (default user temperature)"
+            print  " and cool until 50'C (32) with keep warm time of 25 minutes (19)"
+        elif id == '1f':
+            print "  Arguments <keep warm time><defaulttemp><formula><formulatemp>"
+            print
+            print "  Example raw code: 1f 19 64 01 22 7e"
+            print "  sets 25 keep warm, 100 default temperature, formula mode = true"
+            print "  34 formula temperature"
+            print
+            print "  default user defaults are 1f 00 64 00 4b 7e "
         elif id == '20':
             print "  Example raw code: 20 7e"
         elif id == '21':
