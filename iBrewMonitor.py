@@ -11,6 +11,7 @@ from iBrewClient import *
 class iBrewMonitor:
 
     def __init__(self,host):
+        iBrewPrintHeader()
         client = iBrewClient(host)
         client.print_connect_status()
         print "iBrew: Press ctrl-c to quit"

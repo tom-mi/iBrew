@@ -19,7 +19,16 @@ import struct
 #    https://github.com/nanab/smartercoffee/blob/master/sendcommand.py
 #
 
-iBrewVersion = "White Tea Edition v0.07 © 2016 TRiXWooD"
+iBrewApp     = "iBrew - iKettle 2.0 & Smarter Coffee Interface"
+iBrewVersion = "White Tea Leaf Edition v0.08 © 2016 Tristan"
+iBrewDonate  = "Please donate (for) a (working) Smarter Coffee (interface)"
+
+def iBrewPrintHeader():
+    print iBrewApp
+    print iBrewVersion
+    print
+    print iBrewDonate
+    print
 
 # protocol information
 

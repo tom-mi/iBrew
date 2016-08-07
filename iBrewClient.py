@@ -33,7 +33,7 @@ class iBrewClient:
         except socket.error, msg:
             print 'iBrew: Failed to connect to host (' + host + ') Error code: ' + str(msg[0]) + ' , Error message : ' + msg[1]
             return False
-        self.log = True
+        self.log = False
         self.read()
         self.info()
         if self.isKettle2:
@@ -230,6 +230,7 @@ class iBrewClient:
             print "       " + s
 
     def print_message_received(self,message):
+        #remove this "if" if you want to see raw status device messages
         if message[0] != iBrewResponseStatusDevice:
             print "iBrew: Message Received: " + self.message_to_string(message)
             s = iBrew_message_description(iBrew_raw_to_hex(struct.unpack('B',message[0])[0]))

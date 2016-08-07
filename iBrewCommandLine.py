@@ -17,27 +17,34 @@ from iBrewConsole import *
 class iBrewCommandLine:
 
     def help(self):
-        print "iBrew ☕ Smarter Coffee & ♨ iKettle 2.0 Control"
-        print iBrewVersion
-        print
+        iBrewPrintHeader()
         print 'Usage:'
         print '  iBrew.py [option] (host)'
         print
-        print '[options]'
-        print '  console'
-        print '  cups [number]'
-        print '  grinder'
-        print '  hotplate off'
-        print '  hotplate on'
-        print '  monitor'
-        print '  off'
-        print '  on'
-        print '  protocol'
-        print '  raw [data]'
-        print '  status'
-        print '  strength [weak, medium or strong]'
+        print "[options]"
+        print "  console             start console¹"
+        print "  monitor             start monitor"
         print
-        print 'Use console for more advanced options'
+        print "  iKettle 2.0 & Smarter Coffee Commands"
+        print "  info                Device info"
+        print "  status              Show status"
+        print "  raw [data]          Send raw data to device"
+        print
+        print "  iKettle 2.0 Commands"
+        print "  off                 Turn off"
+        print "  on                  Turn on"
+        print
+        print "  Smarter Coffee Commands"
+        print "  cups [nr]           Set number of cups"
+        print "  grinder             Toggle grinder"
+        print "  hotplate off        Turn hotplate off"
+        print "  hotplate on         Turn hotplate on"
+        print "  strength [s]        Set strength coffee (weak, medium or strong)"
+        print
+        print "  Help Commands"
+        print "  protocol            Show protocol"
+        print
+        print "  ¹console grants access to advanced options"
         print
 
     def __init__(self,host):
@@ -69,6 +76,8 @@ class iBrewCommandLine:
                 iBrewClient(host).off()
             elif arg1 == "status":
                 iBrewClient(host).print_status()
+            elif arg1 == "info":
+                print "iBrew: Not Implemented"
             elif arg1 == "grinder":
                 iBrewClient(host).grinder()
             elif arg1 == "protocol":
@@ -87,8 +96,9 @@ class iBrewCommandLine:
                 elif arg1 == "strength":
                     iBrewClient(host).coffee_strength(arg2)
                 elif arg1 == "cups":
+                    print "iBrew: Not Implemented"
                     # FIX WRONG IP{UT
-                    iBrewClient(host).number_of_cups(arg2)
+                    #iBrewClient(host).number_of_cups(arg2)
                 else:
                     self.help()
                     print 'iBrew: Invalid option: ',arg1
