@@ -26,9 +26,6 @@ class iBrewCommandLine:
         print '[options]'
         print '  console'
         print '  cups [number]'
-        print '  calibrate'
-        print '  calibrate base'
-        print '  emulate [kettle, coffee]'
         print '  grinder'
         print '  hotplate off'
         print '  hotplate on'
@@ -37,9 +34,10 @@ class iBrewCommandLine:
         print '  on'
         print '  protocol'
         print '  raw [data]'
-        print '  relay'
         print '  status'
         print '  strength [weak, medium or strong]'
+        print
+        print 'Use console for more advanced options'
         print
 
     def __init__(self,host):
@@ -67,12 +65,6 @@ class iBrewCommandLine:
         if arguments >= 1:
             if arg1 == "on":
                 iBrewClient(host).on()
-            elif arg1 == "calibrate":
-                if arguments >= 2 and arg2 == "base":
-                    iBrewClient(host).calibrate_base()
-                else:
-                    iBrewClient(host).calibrate()
-                    # FiX Print
             elif arg1 == "off":
                 iBrewClient(host).off()
             elif arg1 == "status":
@@ -85,11 +77,7 @@ class iBrewCommandLine:
                 iBrewMonitor(host)
             elif arg1 == "console":
                 iBrewConsole(host)
-            elif arg1 == "relay":
-                iBrewRelay()
-            elif arg1 == "domoticz":
-                iBrewDomoticzBridge(host)
-            elif arguments >= 2 and not arg1 == "calibrate":
+            elif arguments >= 2:
                 if arg1 == "raw":
                     iBrewClient(host).raw(arg2)
                 elif arg1 == "hotplate" and arg2 == "on":
@@ -101,10 +89,6 @@ class iBrewCommandLine:
                 elif arg1 == "cups":
                     # FIX WRONG IP{UT
                     iBrewClient(host).number_of_cups(arg2)
-                elif arg1 == "emulate" and arg2 == "kettle":
-                    iBrewServer() #.emulate("kettle")
-                elif arg1 == "emulate" and arg2== "coffee":
-                    iBrewServer() #.emulate("coffee")
                 else:
                     self.help()
                     print 'iBrew: Invalid option: ',arg1

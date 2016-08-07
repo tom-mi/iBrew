@@ -9,8 +9,9 @@ from iBrewClient import *
 #
 # Console for iKettle 2.0 or Smarter Coffee Devices
 #
-# Note that the device status is the only message not
+# Note that raw status device messages is the only one not
 # printed in raw format...
+# Check client code to enable, search for "raw status"
 #------------------------------------------------------
 
 class iBrewConsole:
@@ -23,30 +24,45 @@ class iBrewConsole:
     
     def help(self):
         print
-        print "  [data]           Send raw data to device"
-        print "  cups [nr]        ☕ Set number of cups"
-        print "  calibrate        ♨ Calibrates waterSensor"
-        print "  calibrate base   ♨ Show calibrates waterSensor base value"
-        print "  examples         Show examples of commands"
-        print "  grinder          ☕ Toggle grinder"
-        print "  help             This help"
-        print "  hotplate off     ☕ Turn hotplate off"
-        print "  hotplate on      ☕ Turn hotplate on"
-        print "  info             Device info"
-        print "  joke             Show joke"
-        print "  messages         List all protocol messages"
-        print "  message [id]     List protocol messages detail"
-        print "  off              Turn off"
-        print "  on               Turn on"
-        print "  protocol         Print protocol structure"
-        print "  quit             Quit console"
-        print "  status           Show status"
-        print "  strength [s]     ☕ Set strength coffee (weak, medium or strong)"
+        print "  iKettle 2.0 & Smarter Coffee Commands"
+        print "  info               Device info"
+        print "  status             Show status"
+        print "  [data]             Send raw data to device"
         print
-        print "  ☕ Smarter Coffee Only"
-        print "  ♨ iKettle 2.0 Only"
+        print "  iKettle 2.0 Commands"
+        print "  calibrate          Calibrates watersensor"
+        print "  off                Turn off"
+        print "  on                 Turn on"
+        print "  watersensor base   Show watersensor base value"
         print
-    
+        print "  Smarter Coffee Commands"
+        print "  cups [nr]          Set number of cups"
+        print "  grinder            Toggle grinder"
+        print "  hotplate off       Turn hotplate off"
+        print "  hotplate on        Turn hotplate on"
+        print "  strength [s]       Set strength coffee (weak, medium or strong)"
+        print
+        print "  WiFi Commands"
+        print "  wifi connect       Connect to wireless network"
+        print "  wifi firmware      Show firmware WiFi"
+        print "  wifi name* [name]   Set wireless network name"
+        print "  wifi password* [pw] Set password of wireless network"
+        print "  wifi reset         Reset WiFi"
+        print "  wifi scan*          Scan wireless networks"
+        print "  wifi select*        Select and connect wireless network"
+        print
+        print "  Help Commands"
+        print "  examples           Show examples of commands"
+        print "  help               This help"
+        print "  messages           Show all known protocol messages"
+        print "  message [id]       Show protocol messages detail"
+        print "  protocol           Show protocol structure"
+        print
+        print "  Console Commands"
+        print "  joke               Show joke"
+        print "  quit               Quit console"
+        print
+
     def examples(self):
         print
         print "Example:"
@@ -117,6 +133,14 @@ class iBrewConsole:
                     client.on()
                 elif input == "off":
                     client.off()
+                elif input == "wifi firmware":
+                    client.wifi_firmware()
+                elif input == "wifi reset":
+                    client.wifi_reset()
+                elif input == "wifi connect":
+                    client.wifi_connect()
+                elif input == "wifi scan":
+                    client.wifi_scan()
                 elif input == "hotplate on":
                     # FIX THIS
                     client.hotplate_on()
@@ -129,24 +153,29 @@ class iBrewConsole:
                         client.coffee_strength("weak")
                     if input[9:16] == "strong":
                         client.coffee_strength("strong")
-                    if input[9:16] == "medium":
+                    if input[9:16] == "medium" or input[9:16] == "normal":
                         client.coffee_strength("medium")
                 elif input[0:5] == "cups ":
                     # FIX THIS
                     client.cups(3)
-                elif input == "exit" or input =="quit":
+                elif input == "exit" or input == "quit":
                     sys.exit()
-                elif input == "joke":
+                elif input == "joke" or input == "quote":
                     print
                     self.joke()
                     print
-                elif input == "help":
+                elif input == "help" or input == "?":
                     self.help()
+                elif input == "log":
+                    if client.log:
+                        client.log = False
+                    else:
+                        client.log = True
                 elif input == "info":
                     client.info()
                 elif input == "calibrate":
                     client.calibrate()
-                elif input == "calibrate base":
+                elif input == "watersensor base":
                     client.calibrate_base()
                     # fix print
                 elif input == "examples":

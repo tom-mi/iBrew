@@ -166,14 +166,22 @@ iBrewCommandCalibrateBase    = '\x2b'
 iBrewCommandOff              = '\x16'
 iBrewCommandOn               = '\x21'
 
+#WiFi Commands
+iBrewCommandWiFiFirmware     = '\x6a'
+iBrewCommandWiFiScan         = '\x0d'
+iBrewCommandWiFiConnect      = '\x0c'
+iBrewCommandWiFiReset        = '\x0f'
+iBrewCommandWiFiPassword     = '\x07'
+iBrewCommandWiFiName         = '\x05'
+
 # Response messages
-iBrewResponeStatus           = '\x03'
-iBrewResponeWifiList         = '\x0e'
-iBrewResponeUnknown          = '\x29'
-iBrewResponeCalibrationBase  = '\x2d'
-iBrewResponeStatusDevice     = '\x14'
-iBrewResponeDeviceInfo       = '\x65'
-iBrewResponeWifiFirmware     = '\x6b'
+iBrewResponseStatus           = '\x03'
+iBrewResponseWifiList         = '\x0e'
+iBrewResponseUnknown          = '\x29'
+iBrewResponseCalibrationBase  = '\x2d'
+iBrewResponseStatusDevice     = '\x14'
+iBrewResponseDeviceInfo       = '\x65'
+iBrewResponseWifiFirmware     = '\x6b'
     
 iBrewTail    = '\x7e'
 iBrewOffBase = 0x7f

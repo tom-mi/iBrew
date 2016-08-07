@@ -4,6 +4,7 @@
 import socket
 import sys
 import struct
+import string
 import random
 import select
 
@@ -35,7 +36,8 @@ class iBrewClient:
         self.log = True
         self.read()
         self.info()
-        self.calibrate_base()
+        if self.isKettle2:
+            self.calibrate_base()
         self.host = host
         return True
 
@@ -73,17 +75,17 @@ class iBrewClient:
         message = self.read_message()
      
         # Command Status
-        if message[0] == iBrewResponeStatus:
+        if message[0] == iBrewResponseStatus:
             self.statusCommand = struct.unpack('B',message[1])[0]
             if not iBrewStatusCommand.has_key(self.statusCommand):
                 self.statusCommand = 0xff
     
         # Calibration
-        elif message[0] == iBrewResponeCalibrationBase:
+        elif message[0] == iBrewResponseCalibrationBase:
             self.waterSensorBase = struct.unpack('B',message[2])[0] + 256 * struct.unpack('B',message[1])[0]
         
         # Device Info
-        elif message[0] == iBrewResponeDeviceInfo:
+        elif message[0] == iBrewResponseDeviceInfo:
             self.isSmarterCoffee = False
             self.isKettle2 = False
             if struct.unpack('B',message[1])[0] == 1:
@@ -93,9 +95,17 @@ class iBrewClient:
                 self.isSmarterCoffee = True
                 self.device = "SmarterCoffee"
             self.version = struct.unpack('B',message[2])[0]
+
+        elif message[0] == iBrewResponseWifiFirmware:
+            s = ""
+            for i in range(1,len(message)-1):
+                x = str(message[i])
+                if x in string.printable:
+                    s += x
+            self.WiFiFirmware = s
         
         # Device Status
-        elif message[0] == iBrewResponeStatusDevice:
+        elif message[0] == iBrewResponseStatusDevice:
             #self.unknown      = struct.unpack('B',message[5])[0]
             self.status      = struct.unpack('B',message[1])[0]
             self.temperature = struct.unpack('B',message[2])[0]
@@ -132,14 +142,13 @@ class iBrewClient:
         # if a message does not generate a response... we're in deep shit... FIX!
         x = self.read()
 
-        while x[0] == iBrewResponeStatusDevice:
+        while x[0] == iBrewResponseStatusDevice:
             x = self.read()
- #??? local delete? test with calibrate command
         self.local = False
 
         # keep reading until we got the device status message
         y = self.read()
-        while y[0] != iBrewResponeStatusDevice:
+        while y[0] != iBrewResponseStatusDevice:
             y = self.read()
             self.local = True
         return x
@@ -191,10 +200,12 @@ class iBrewClient:
     #------------------------------------------------------
 
     # Fix Check value's
-    
-#   calibrate nobase:    1120 off: 2010 empty: 2070 full: 2140  div 890 950 1020
-#   calibrate emptybase: 1070 off: 1975 empty: 2020 full: 2085  div 905 950 1015
-#   calibrate fullbase:  1010 off: 1875 empty: 1950 full: 2015  div 865 940 1005
+
+#   calibrate nokettlebase:       1120     measure: kettle off: 2010 kettle empty: 2070 kettle full: 2140  (div 890 950 1020)
+#   calibrate emptykettlebase: 1070     measure: kettle off: 1975 kettle empty: 2020 kettle full: 2085  (div 905 950 1015)
+#   calibrate fullkettlebase:      1010    measure: kettle off: 1875 kettle empty: 1950 kettle full: 2015  (div 865 940 1005)
+# div = measure - base
+# need temperature in calclation...
 #   1.8l
     def water_level(self):
         # is this accurate??? nope...
@@ -219,22 +230,25 @@ class iBrewClient:
             print "       " + s
 
     def print_message_received(self,message):
-        if message[0] != iBrewResponeStatusDevice:
+        if message[0] != iBrewResponseStatusDevice:
             print "iBrew: Message Received: " + self.message_to_string(message)
             s = iBrew_message_description(iBrew_raw_to_hex(struct.unpack('B',message[0])[0]))
-        if message[0] == iBrewResponeStatus:
+        if message[0] == iBrewResponseStatus:
             print "       " + s + " " + iBrewStatusCommand[self.statusCommand]
-        elif message[0] == iBrewResponeWifiList:
+        elif message[0] == iBrewResponseWifiList:
             print "       " + s + " Not Implemented"
-        elif message[0] == iBrewResponeWifiFirmware:
+        elif message[0] == iBrewResponseWifiFirmware:
+            print "       " + s
+            print
+            print self.WiFiFirmware
+            print 
+        elif message[0] == iBrewResponseUnknown:
             print "       " + s + " Not Implemented"
-        elif message[0] == iBrewResponeUnknown:
-            print "       " + s + " Not Implemented"
-        elif message[0] == iBrewResponeDeviceInfo:
+        elif message[0] == iBrewResponseDeviceInfo:
             print "       " + s + " " + self.device + " Firmware v" + str(self.version)
-        elif message[0] == iBrewResponeCalibrationBase:
+        elif message[0] == iBrewResponseCalibrationBase:
             print "       " + s + " " +  str(self.waterSensorBase)
-        elif message[0] != iBrewResponeStatusDevice:
+        elif message[0] != iBrewResponseStatusDevice:
             if s != "":
                 print "       " + s
             else:
@@ -274,7 +288,29 @@ class iBrewClient:
 
     def info(self):
         self.send(iBrewCommandInfo)
-  
+
+    def raw(self,code):
+        self.send(self.string_to_message(code))
+
+    #------------------------------------------------------
+    # COMMANDS: WiFi
+    #------------------------------------------------------
+
+    def wifi_firmware(self):
+        self.send(iBrewCommandWiFiFirmware)
+    
+
+    def wifi_scan(self):
+        self.send(iBrewCommandWiFiScan)
+    
+
+    def wifi_reset(self):
+        self.send(iBrewCommandWiFiReset)
+    
+
+    def wifi_connect(self):
+        self.send(iBrewCommandWiFiConnect)
+    
     #------------------------------------------------------
     # COMMANDS: iKettle 2.0
     #------------------------------------------------------
@@ -337,6 +373,3 @@ class iBrewClient:
                 self.send(iBrewCommandStrenght+str(number))
         else:
             print 'iBrew: The device does not let you choose the coffee strength'
-
-    def raw(self,code):
-        self.send(self.string_to_message(code))
