@@ -161,6 +161,7 @@ iBrewCommandStrength         = '\x35'
 # iKettle Commands
 iBrewCommandCalibrate        = '\x2c'
 iBrewCommandCalibrateBase    = '\x2b'
+
 iBrewCommandOff              = '\x16'
 iBrewCommandOn               = '\x21'
 
@@ -344,9 +345,14 @@ class iBrewProtocol:
         #    5	0x00	Unknown, possibly reserved. Only seen 0x00 on the iKettle 2.0
         
         elif id == '15':
-            print "  Argument: <temperature>"
-            print
+            print "  Argument: <temperature><keepwarm>"
+            print "  15 32 00 7e start boiling"
+            print "  15 32 1f 7e crash kettle"
+            print "  15 32"
+            print "  temperature 00..64"
+            print "  keepwar not 00, minutes: 05..1e"
             print "  Example raw code: 15 ?? 7e"
+            print "  if it's warming you have to send an off command to boil again"
         elif id == '16':
             print "  Example raw code: 16 7e"
         elif id == '19':

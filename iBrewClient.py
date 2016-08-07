@@ -80,7 +80,7 @@ class iBrewClient:
     
         # Calibration
         elif message[0] == iBrewResponeCalibrationBase:
-            self.waterSensorlBase = struct.unpack('B',message[2])[0] + 256 * struct.unpack('B',message[1])[0]
+            self.waterSensorBase = struct.unpack('B',message[2])[0] + 256 * struct.unpack('B',message[1])[0]
         
         # Device Info
         elif message[0] == iBrewResponeDeviceInfo:
@@ -99,7 +99,7 @@ class iBrewClient:
             #self.unknown      = struct.unpack('B',message[5])[0]
             self.status      = struct.unpack('B',message[1])[0]
             self.temperature = struct.unpack('B',message[2])[0]
-            self.waterlevel  = struct.unpack('B',message[4])[0] + 256 * struct.unpack('B',message[3])[0]
+            self.waterSensor  = struct.unpack('B',message[4])[0] + 256 * struct.unpack('B',message[3])[0]
             if self.temperature == iBrewOffBase:
                 self.onbase = False
             else:
@@ -189,34 +189,23 @@ class iBrewClient:
     # CONVERTERS: iKettle 2.0
     #------------------------------------------------------
 
-    def cups(self):
-        s = cups_string()
-        if s == "Empty" or s == "Not enough water":
-            return 0
-        if s == "Full":
-            return 7
-        return s[1]
-
     # Fix Check value's
-    def cups_string(self):
-        if self.waterlevel < 850:
-            return "Empty"
-        elif self.waterlevel >=  850 and self.waterlevel < 1050:
-            return "Not enough water"
-        elif self.waterlevel >= 1050 and self.waterlevel < 1380:
-            return "1 Cup"
-        elif self.waterlevel >= 1400 and self.waterlevel < 1600:
-            return "2 Cups"
-        elif self.waterlevel >= 1600 and self.waterlevel < 1800:
-            return "3 Cups"
-        elif self.waterlevel >= 1800 and self.waterlevel < 2000:
-            return "4 Cups"
-        elif self.waterlevel >= 2000 and self.waterlevel < 2200:
-            return "5 Cups"
-        elif self.waterlevel >= 2200 and self.waterlevel < 2500:
-            return "6 Cups"
-        elif self.waterlevel >= 2500:
-            return "Full"
+    
+#   calibrate nobase:    1120 off: 2010 empty: 2070 full: 2140  div 890 950 1020
+#   calibrate emptybase: 1070 off: 1975 empty: 2020 full: 2085  div 905 950 1015
+#   calibrate fullbase:  1010 off: 1875 empty: 1950 full: 2015  div 865 940 1005
+#   1.8l
+    def water_level(self):
+        # is this accurate??? nope...
+        # sometimes if placed on base it gives wrong levels
+
+        x = (1.800/72) * (self.waterSensor - self.waterSensorBase - 1000)
+        if x < 0:
+            return 0.0
+        if x > 2:
+            return 2.0
+        else:
+            return x
 
     #------------------------------------------------------
     # PRINT: iKettle 2.0 & Smarter Coffee
@@ -243,7 +232,7 @@ class iBrewClient:
         elif message[0] == iBrewResponeDeviceInfo:
             print "       " + s + " " + self.device + " Firmware v" + str(self.version)
         elif message[0] == iBrewResponeCalibrationBase:
-            print "       " + s + " " +  str(self.waterSensorlBase)
+            print "       " + s + " " +  str(self.waterSensorBase)
         elif message[0] != iBrewResponeStatusDevice:
             if s != "":
                 print "       " + s
@@ -258,7 +247,7 @@ class iBrewClient:
                 print "Status       " + iBrewStatusKettle[self.status]
                 print "Kettle       On Base"
                 print "Temperature  " + str(self.temperature) +  "ºC"
-                print "Water level  " + self.cups_string() + " left " + str(self.waterlevel-self.waterSensorlBase) + "ml (" + str(self.waterlevel) + ":" + str(self.waterSensorlBase) + ")"
+                print "Water level  " + "%.1f" % self.water_level() + "l (raw: " + str(self.waterSensor) + ":" + str(self.waterSensorBase) + ")"
             else:
                 print "Status       " + iBrewStatusKettle[self.status]
                 print "Kettle       Not On Base"
@@ -269,7 +258,7 @@ class iBrewClient:
     def print_short_status(self):
         if self.isKettle2 == True:
             if self.onbase:
-                print "iBrew: " + iBrewStatusKettle[self.status] + " On Base (" + str(self.temperature) + "ºC, " + str(self.waterlevel) + " ["+ self.cups_string() + "])"
+                print "iBrew: " + iBrewStatusKettle[self.status] + " On Base (" + str(self.temperature) + "ºC, " + "%.1f" % self.water_level() + "l)"
             else:
                 print "iBrew: " + iBrewStatusKettle[self.status] + " Not On Base"
         if self.isSmarterCoffee == True:
@@ -313,7 +302,10 @@ class iBrewClient:
 
     def hotplate_on(self, timer=5):
         if self.isSmarterCoffee == True:
-            self.send(iBrewCommandHotplateOn)
+            if timer >= 5 and timer <= 30:
+                self.send(iBrewCommandHotplateOn)
+            else:
+                print "iBrew: Invalid hotplate timer, range is between 5 and 30 minutes, not " +str(timer) + " minutes"
             print 'iBrew: The device does not have a hotplate'
 
     def grinder(self):
@@ -325,21 +317,21 @@ class iBrewClient:
     def number_of_cups(self,number=1):
         if self.isSmarterCoffee == True:
             if number < 1 or number > 12:
-                print 'iBrew: Invalid Number of Cups: ',number
+                print "iBrew: Invalid number of cups, range is between 1 and 12 cups, not  " + str(number) + " cups"
             self.send(iBrewCommandGrinder+str(number))
         else:
             print 'iBrew: The device does not let you choose the number of cups to brew'
 
-    def coffee_strength(self,strength=1):
+    def coffee_strength(self,strength="medium"):
         if self.isSmarterCoffee == True:
-            if strength == "weak":
+            if strength.lower == "weak":
                 number = 0
-            elif strength == "medium":
+            elif strength.lower == "medium":
                 number = 1
-            elif strength == "strong":
+            elif strength.lower == "strong":
                 number = 2
             else:
-                print 'iBrew: Invalid Strength: ',strength
+                print "iBrew: Invalid coffee strength, options are weak, medium, strong, not " + strength
             if number:
                 self.send(iBrewCommandStrenght+str(number))
         else:

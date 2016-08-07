@@ -25,8 +25,8 @@ class iBrewConsole:
         print
         print "  [data]           Send raw data to device"
         print "  cups [nr]        ☕ Set number of cups"
-        print "  calibrate        ♨ Calibrates waterlevel"
-        print "  calibrate base   ♨ Show calibrates waterlevel base value"
+        print "  calibrate        ♨ Calibrates waterSensor"
+        print "  calibrate base   ♨ Show calibrates waterSensor base value"
         print "  examples         Show examples of commands"
         print "  grinder          ☕ Toggle grinder"
         print "  help             This help"
