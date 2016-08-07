@@ -385,10 +385,10 @@ class iBrewClient:
         self.send(iBrewCommandWiFiConnect)
 
     def wifi_password(self,password=""):
-        self.send(iBrewCommandWiFiPassword)
+        self.send(iBrewCommandWiFiPassword+password)
 
-    def wifi_name(self,password=""):
-        self.send(iBrewCommandWiFiName)
+    def wifi_name(self,name=""):
+        self.send(iBrewCommandWiFiName+name)
     
     #------------------------------------------------------
     # COMMANDS: iKettle 2.0

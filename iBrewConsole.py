@@ -32,8 +32,8 @@ class iBrewConsole:
         print "  iKettle 2.0 Commands"
         print "  off                    Turn off"
         print "  on                     Turn on"
-        print "  watersensor base       Show watersensor base value"
-        print "  watersensor calibrate  Calibrates watersensor"
+        print "  base                   Show watersensor base value"
+        print "  calibrate              Calibrates watersensor"
         print
         print "  Smarter Coffee Commands"
         print "  cups [nr]              Set number of cups [1..12]"
@@ -43,13 +43,13 @@ class iBrewConsole:
         print "  strength [s]           Set strength coffee [weak, medium or strong]"
         print
         print "  WiFi Commands"
-        print "  wifi connect           Connect to wireless network"
-        print "  wifi firmware          Show firmware WiFi"
-        print "  wifi name [name]       Set wireless network [name] to access"
-        print "  wifi password [pw]     Set [password] of wireless network to access"
-        print "  wifi reset             Reset WiFi"
-        print "  wifi scan              Scan wireless networks"
-        print "  wifi setup             Select and connect wireless network"
+        print "  connect                Connect to wireless network"
+        print "  firmware               Show firmware WiFi"
+        print "  name [name]            Set wireless network [name] to access"
+        print "  password [pw]          Set [password] of wireless network to access"
+        print "  reset                  Reset WiFi"
+        print "  scan                   Scan wireless networks"
+        print "  setup                  Select and connect wireless network"
         print
         print "  Help Commands"
         print "  examples               Show examples of commands"
@@ -153,16 +153,16 @@ class iBrewConsole:
                 elif input == "wifi scan" or input == "scan wifi" or input == "scan":
                     client.wifi_scan()
                 elif input[0:13] == "wifi password":
-                    print "iBrew: xyNot Implemented"
+                    client.wifi_password(str(input[13:len(input)]))
                 elif input[0:9] == "password ":
-                    x = input[9:len(input-9)]
-                    print x
-                    print "iBrew: xNot Implemented"
-                elif input[0:9] == "wifi name":
-                    print "iBrew: Not Implemented"
-                elif input[0:9] == "wifi setup":
-                    print "iBrew: Not Implemented"
-             
+                    client.wifi_password(str(input[9:len(input)]))
+                elif input[0:10] == "wifi name ":
+                    client.wifi_name(str(input[10:len(input)]))
+                elif input[0:5] == "name ":
+                    client.wifi_name(str(input[5:len(input)]))
+                elif input == "wifi setup" or input == "setup":
+                    client.wifi_setup()
+                
                 # Smarter Commands
                 # Hotplate
                 elif input[0:11] == "hotplate on":
@@ -208,7 +208,7 @@ class iBrewConsole:
                     print
                 elif input == "help" or input == "?":
                     self.help()
-                elif input == "dump":
+                elif input == "dump" or input == "dump messages"  :
                     if client.log:
                         client.log = False
                         print "iBrew: Dump raw messages disabled"
