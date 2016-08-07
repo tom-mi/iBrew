@@ -22,7 +22,7 @@ class iBrewMonitor:
                     pass
                 else:
                     lastreply = reply
-                client.print_short_status()
+                    client.print_short_status()
             except:
                 print
                 break;

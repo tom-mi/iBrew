@@ -36,8 +36,8 @@ class iBrewClient:
         self.read()
         self.info()
         self.calibrate_base()
-        self.log = True
         self.host = host
+        
         return True
 
     def __init__(self,host, auto_connect = "True"):
@@ -132,15 +132,16 @@ class iBrewClient:
         # keep reading until we got the response message
         # if a message does not generate a response... we're in deep shit... FIX!
         x = self.read()
-
-        w = True
-        while x[0] == iBrewResponeStatusDevice: # or w == True:
+        while x[0] == iBrewResponeStatusDevice:
             x = self.read()
-         #   if ((message[0] != iBrewCommandCalibrateBase or message[0] != iBrewCommandCalibrate) and x[0] == iBrewResponeCalibrationBase) or (message[0] == self.command_info and x[0] == BrewResponeDeviceInfo):
-         #       w = False
-        #    elif x[0] == BrewResponeStatus:
-          #      w = False
-            self.print_message_received(x)
+ 
+        self.local = False
+        
+        # keep reading until we got the device status message
+        y = self.read()
+        while y[0] != iBrewResponeStatusDevice:
+            y = self.read()
+            self.local = True
         return x
 
     #------------------------------------------------------
@@ -227,10 +228,12 @@ class iBrewClient:
         # FIX print from protocol here...
 
     def print_message_received(self,message):
-        if message[0] != iBrewResponeStatusDevice:
-            print "iBrew: Message Received: " + self.message_to_string(message)
-        elif message[0] == iBrewResponeStatus:
-            print "       Action Status: " + iBrewStatusCommand[messages[1]]
+      #  if message[0] != iBrewResponeStatusDevice:
+        print "iBrew: Message Received: " + self.message_to_string(message)
+        """
+        if message[0] == iBrewResponeStatus:
+            print
+            #print "       Action Status: " + iBrewStatusCommand[message[1]]
         elif message[0] == iBrewResponeWifiList:
             print '       Wifi Not Implemented'
         elif message[0] == iBrewResponeWifiFirmware:
@@ -243,6 +246,7 @@ class iBrewClient:
             print "       Calibration Base Value: " +  str(self.calibration)
         elif message[0] != iBrewResponeStatusDevice:
             print "       Unknown Reply Message"
+        """
 
     def print_status(self):
         print
