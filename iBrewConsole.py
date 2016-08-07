@@ -133,13 +133,13 @@ class iBrewConsole:
                     client.on()
                 elif input == "off":
                     client.off()
-                elif input == "wifi firmware":
+                elif input == "wifi firmware" or input == "firmware":
                     client.wifi_firmware()
-                elif input == "wifi reset":
+                elif input == "wifi reset" or input == "reset":
                     client.wifi_reset()
-                elif input == "wifi connect":
+                elif input == "wifi connect" or input == "connect":
                     client.wifi_connect()
-                elif input == "wifi scan":
+                elif input == "wifi scan" or input == "scan wifi" or input == "scan":
                     client.wifi_scan()
                 elif input[0:13] == "wifi password":
                     print "iBrew: Not Implemented"

@@ -96,6 +96,7 @@ class iBrewClient:
                 self.device = "SmarterCoffee"
             self.version = struct.unpack('B',message[2])[0]
 
+        # WiFi Firmware
         elif message[0] == iBrewResponseWifiFirmware:
             s = ""
             for i in range(1,len(message)-1):
@@ -103,7 +104,34 @@ class iBrewClient:
                 if x in string.printable:
                     s += x
             self.WiFiFirmware = s
-        
+ 
+        # WiFi List
+        elif message[0] == iBrewResponseWifiList:
+            a = ""
+            w = []
+            db = False
+            for i in range(1,len(message)-1):
+                x = str(message[i])
+                if x == ',':
+                   db = True
+                   d = ""
+                   continue
+                elif x == '}':
+                   db = False
+                   w += [(a,d)]
+                   a = ""
+                   continue
+                elif not db and x in string.printable:
+                    a += x
+                elif db and x in string.printable:
+                    d += x
+            from operator import itemgetter
+            
+            # most powerfull wifi on top
+            self.WiFiPower = sorted(w,key=itemgetter(1))
+            # alphabetically
+            self.WiFiSorted = sorted(w,key=itemgetter(0))
+
         # Device Status
         elif message[0] == iBrewResponseStatusDevice:
             #self.unknown      = struct.unpack('B',message[5])[0]
@@ -235,9 +263,35 @@ class iBrewClient:
             print "iBrew: Message Received: " + self.message_to_string(message)
             s = iBrew_message_description(iBrew_raw_to_hex(struct.unpack('B',message[0])[0]))
         if message[0] == iBrewResponseStatus:
-            print "       " + s + " " + iBrewStatusCommand[self.statusCommand]
+            print "       " + s + "  " + iBrewStatusCommand[self.statusCommand]
         elif message[0] == iBrewResponseWifiList:
-            print "       " + s + " Not Implemented"
+            print "       " + s
+            print
+            print "           Signal   Wireless Network"
+            for i in range(0,len(self.WiFiSorted)):
+                
+                dBm = int(self.WiFiSorted[i][1])
+                
+                # quality = 2 * (dBm + 100)  where dBm: [-100 to -50]
+                # dBm = (quality / 2) - 100  where quality: [0 to 100]
+                
+                if dBm <= -100:
+                    quality = 0;
+                elif dBm >= -50:
+                    quality = 100;
+                else:
+                    quality = 2 * (dBm + 100);
+        
+                s = ""
+                for x in range(quality / 10,10):
+                    s += " "
+                for x in range(0,quality / 10):
+                    s += "█"
+
+                print "       " + s + "   " + self.WiFiSorted[i][0]
+            print
+
+                    
         elif message[0] == iBrewResponseWifiFirmware:
             print "       " + s
             print

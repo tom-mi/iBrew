@@ -20,7 +20,7 @@ import struct
 #
 
 iBrewApp     = "iBrew - iKettle 2.0 & Smarter Coffee Interface"
-iBrewVersion = "White Tea Leaf Edition v0.08 © 2016 Tristan"
+iBrewVersion = "White Tea Leaf Edition v0.08 © 2016 Tristan (tristan@monkeycat.nl)"
 iBrewDonate  = "Please donate (for) a (working) Smarter Coffee (interface)"
 
 def iBrewPrintHeader():
@@ -318,6 +318,9 @@ class iBrewProtocol:
         elif id == '03':
             #Fix
             print "d"
+            # 03 00 7E
+            
+            # 00 = Success ...
         elif id == '05':
             print "  Argument: <SSID>{0,32}"
             print "  Note: SSID is between 0 and 32 characters"

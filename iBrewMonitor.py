@@ -15,14 +15,14 @@ class iBrewMonitor:
         client = iBrewClient(host)
         client.print_connect_status()
         print "iBrew: Press ctrl-c to quit"
-        lastreply = ""
+        lastResponse = ""
         while True:
             try:
-                reply = client.read()
-                if lastreply == reply:
+                response = client.read()
+                if lastResponse == response:
                     pass
                 else:
-                    lastreply = reply
+                    lastResponse = response
                     client.print_short_status()
             except:
                 print
