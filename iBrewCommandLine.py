@@ -48,6 +48,7 @@ class iBrewCommandLine:
         print
 
     def __init__(self,host):
+        
         # Lower Case Arguments
         arguments = len(sys.argv) - 1
         if arguments >= 1:
@@ -77,7 +78,8 @@ class iBrewCommandLine:
             elif arg1 == "status":
                 iBrewClient(host).print_status()
             elif arg1 == "info":
-                print "iBrew: Not Implemented"
+                # FIXMEiBrewClient(host).info()
+                pass
             elif arg1 == "grinder":
                 iBrewClient(host).grinder()
             elif arg1 == "protocol":

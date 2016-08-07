@@ -40,13 +40,13 @@ class iBrewConsole:
         print "  grinder             Toggle grinder"
         print "  hotplate off        Turn hotplate off"
         print "  hotplate on         Turn hotplate on"
-        print "  strength [s]        Set strength coffee (weak, medium or strong)"
+        print "  strength [s]        Set strength coffee [weak, medium or strong]"
         print
         print "  WiFi Commands"
         print "  wifi connect        Connect to wireless network"
         print "  wifi firmware       Show firmware WiFi"
-        print "  wifi name [name]    Set wireless network name"
-        print "  wifi password [pw]  Set password of wireless network"
+        print "  wifi name [name]    Set wireless network [name] to access"
+        print "  wifi password [pw]  Set [password] of wireless network to access"
         print "  wifi reset          Reset WiFi"
         print "  wifi scan           Scan wireless networks"
         print "  wifi setup          Select and connect wireless network"
@@ -59,6 +59,7 @@ class iBrewConsole:
         print
         print "  Console Commands"
         print "  joke                Show joke"
+        print "  log                 Toggle logging of raw messages"
         print "  quit                Quit console"
         print
 
@@ -122,7 +123,6 @@ class iBrewConsole:
         client.print_connect_status()
         client.print_status()
         self.joke()
-        client.log = True
         self.introduction()
         cursor = client.host + ":" + client.device + "$"
         lastreply = ""
@@ -142,7 +142,11 @@ class iBrewConsole:
                 elif input == "wifi scan" or input == "scan wifi" or input == "scan":
                     client.wifi_scan()
                 elif input[0:13] == "wifi password":
-                    print "iBrew: Not Implemented"
+                    print "iBrew: xyNot Implemented"
+                elif input[0:9] == "password ":
+                    x = input[9:len(input-9)]
+                    print x
+                    print "iBrew: xNot Implemented"
                 elif input[0:9] == "wifi name":
                     print "iBrew: Not Implemented"
                 elif input[0:9] == "wifi setup":
@@ -153,15 +157,21 @@ class iBrewConsole:
                     client.hotplate_on()
                 elif input == "hotplate off":
                     client.hotplate_off()
+                elif input[0:8] == "hotplate":
+                    print "iBrew: Use on or off as argument"
                 elif input == "grinder":
                     client.grinder()
                 elif input[0:9] == "strength ":
                     if input[9:14] == "weak":
                         client.coffee_strength("weak")
-                    if input[9:16] == "strong":
+                    elif input[9:16] == "strong":
                         client.coffee_strength("strong")
-                    if input[9:16] == "medium" or input[9:16] == "normal":
+                    elif input[9:16] == "medium" or input[9:16] == "normal":
                         client.coffee_strength("medium")
+                    else:
+                        print "iBrew: Use weak, medium or strong as argument"
+                elif input[0:9] == "strength":
+                    print "iBrew: Use weak, medium or strong as argument"
                 elif input[0:5] == "cups ":
                     # FIX THIS
                     print "iBrew: Not Implemented"
@@ -177,10 +187,13 @@ class iBrewConsole:
                 elif input == "log":
                     if client.log:
                         client.log = False
+                        print "iBrew: log disabled"
                     else:
                         client.log = True
+                        print "iBrew: log enabled"
                 elif input == "info":
                     client.info()
+                    client.print_info()
                 elif input == "calibrate":
                     client.calibrate()
                 elif input == "watersensor base":

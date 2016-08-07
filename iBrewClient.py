@@ -130,7 +130,7 @@ class iBrewClient:
             # most powerfull wifi on top
             self.WiFiPower = sorted(w,key=itemgetter(1))
             # alphabetically
-            self.WiFiSorted = sorted(w,key=itemgetter(0))
+            #self.WiFiSorted = sorted(w,key=itemgetter(0))
 
         # Device Status
         elif message[0] == iBrewResponseStatusDevice:
@@ -143,8 +143,8 @@ class iBrewClient:
             else:
                 self.onbase = True
                 
-        if self.log:
-            self.print_message_received(message)
+        
+        self.print_message_received(message)
      
         return message
 
@@ -153,12 +153,10 @@ class iBrewClient:
         try:
             if len(message) > 0 and message[len(message)-1] == iBrewTail:
                 self.socket.send(message)
-                if self.log:
-                    self.print_message_send(message)
+                self.print_message_send(message)
             elif len(message) > 0:
                 self.socket.send(message+iBrewTail)
-                if self.log:
-                    self.print_message_send(message+iBrewTail)
+                self.print_message_send(message+iBrewTail)
             else:
                 return
     
@@ -252,20 +250,29 @@ class iBrewClient:
     #------------------------------------------------------
 
     def print_message_send(self,message):
-        print "iBrew: Message Send " + self.message_to_string(message)
-        s = iBrew_message_description(iBrew_raw_to_hex(struct.unpack('B',message[0])[0]))
-        if s != "":
-            print "       " + s
+        if self.log:
+            print "iBrew: Message Send " + self.message_to_string(message)
+            s = iBrew_message_description(iBrew_raw_to_hex(struct.unpack('B',message[0])[0]))
+            if s != "":
+                print "       " + s
 
     def print_message_received(self,message):
         #remove this "if" if you want to see raw status device messages
-        if message[0] != iBrewResponseStatusDevice:
+        if self.log and message[0] != iBrewResponseStatusDevice:
             print "iBrew: Message Received: " + self.message_to_string(message)
-            s = iBrew_message_description(iBrew_raw_to_hex(struct.unpack('B',message[0])[0]))
+        s = iBrew_message_description(iBrew_raw_to_hex(struct.unpack('B',message[0])[0]))
+        l = "       "
+        
         if message[0] == iBrewResponseStatus:
-            print "       " + s + "  " + iBrewStatusCommand[self.statusCommand]
+            if self.log:
+                print l + s + ": " + iBrewStatusCommand[self.statusCommand]
+            if not self.log and self.statusCommand != 0:
+                print "iBrew: " + s + ": " + iBrewStatusCommand[self.statusCommand]
+                
+   
         elif message[0] == iBrewResponseWifiList:
-            print "       " + s
+            if self.log:
+                print l + s
             print
             print "           Signal   Wireless Network"
             for i in range(0,len(self.WiFiPower)):
@@ -281,7 +288,7 @@ class iBrewClient:
                     quality = 100;
                 else:
                     quality = 2 * (dBm + 100);
-        
+    
                 s = ""
                 for x in range(quality / 10,10):
                     s += " "
@@ -291,24 +298,29 @@ class iBrewClient:
                 print "       " + s + "   " + self.WiFiPower[i][0]
             print
 
-                    
         elif message[0] == iBrewResponseWifiFirmware:
-            print "       " + s
+            if self.log:
+                print l + s
             print
             print self.WiFiFirmware
             print 
         elif message[0] == iBrewResponseUnknown:
-            print "       " + s + " Not Implemented"
+            print l + s + " Not Implemented"
         elif message[0] == iBrewResponseDeviceInfo:
-            print "       " + s + " " + self.device + " Firmware v" + str(self.version)
+            if self.log:
+                print l + s + " " + self.device + " Firmware v" + str(self.version)
         elif message[0] == iBrewResponseCalibrationBase:
-            print "       " + s + " " +  str(self.waterSensorBase)
+            if self.log:
+                print l + s + " " +  str(self.waterSensorBase)
         elif message[0] != iBrewResponseStatusDevice:
-            if s != "":
-                print "       " + s
-            else:
-                print "       Unknown Reply Message"
+            if self.log:
+                if s != "":
+                    print l + s
+                else:
+                    print "       Unknown Reply Message"
 
+    def print_info(self):
+        print "iBrew: " + self.device + " v" + str(self.version)
 
     def print_status(self):
         print
@@ -343,7 +355,7 @@ class iBrewClient:
 
     def info(self):
         self.send(iBrewCommandInfo)
-
+   
     def raw(self,code):
         self.send(self.string_to_message(code))
 
@@ -353,18 +365,21 @@ class iBrewClient:
 
     def wifi_firmware(self):
         self.send(iBrewCommandWiFiFirmware)
-    
 
     def wifi_scan(self):
         self.send(iBrewCommandWiFiScan)
-    
 
     def wifi_reset(self):
         self.send(iBrewCommandWiFiReset)
     
-
     def wifi_connect(self):
         self.send(iBrewCommandWiFiConnect)
+
+    def wifi_password(self,password=""):
+        self.send(iBrewCommandWiFiPassword)
+
+    def wifi_name(self,password=""):
+        self.send(iBrewCommandWiFiName)
     
     #------------------------------------------------------
     # COMMANDS: iKettle 2.0
@@ -398,6 +413,7 @@ class iBrewClient:
                 self.send(iBrewCommandHotplateOn)
             else:
                 print "iBrew: Invalid hotplate timer, range is between 5 and 30 minutes, not " +str(timer) + " minutes"
+        else:
             print 'iBrew: The device does not have a hotplate'
 
     def grinder(self):

@@ -20,7 +20,7 @@ import struct
 #
 
 iBrewApp     = "iBrew - iKettle 2.0 & Smarter Coffee Interface"
-iBrewVersion = "White Tea Leaf Edition v0.08 © 2016 Tristan (tristan@monkeycat.nl)"
+iBrewVersion = "White Tea Leaf Edition v0.09 © 2016 Tristan (tristan@monkeycat.nl)"
 iBrewDonate  = "Please donate (for) a (working) Smarter Coffee (interface)"
 
 def iBrewPrintHeader():
@@ -125,7 +125,7 @@ def iBrew_message(id):
     for i in range(0,len(iBrewMessages)):
         if iBrewMessages[i][0] == int(id,16):
             return iBrewMessages[i]
-    return [0x00,0x00,False,6,""]
+    return [0x00,0x00,False,0,""]
 
 def iBrew_message_description(id):
     return iBrew_message(id)[4]
