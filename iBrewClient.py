@@ -268,9 +268,9 @@ class iBrewClient:
             print "       " + s
             print
             print "           Signal   Wireless Network"
-            for i in range(0,len(self.WiFiSorted)):
+            for i in range(0,len(self.WiFiPower)):
                 
-                dBm = int(self.WiFiSorted[i][1])
+                dBm = int(self.WiFiPower[i][1])
                 
                 # quality = 2 * (dBm + 100)  where dBm: [-100 to -50]
                 # dBm = (quality / 2) - 100  where quality: [0 to 100]
@@ -288,7 +288,7 @@ class iBrewClient:
                 for x in range(0,quality / 10):
                     s += "█"
 
-                print "       " + s + "   " + self.WiFiSorted[i][0]
+                print "       " + s + "   " + self.WiFiPower[i][0]
             print
 
                     
