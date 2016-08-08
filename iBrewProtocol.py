@@ -7,30 +7,6 @@ import struct
 #
 # Protocol information to iKettle 2.0 or Smarter Coffee
 #------------------------------------------------------
-#
-#    References:
-#    https://github.com/Jamstah/libsmarteram2/wiki/Protocol-documentation
-#    https://github.com/ian-kent/ikettle2/tree/master/protocol
-#    https://github.com/athombv/am.smarter/blob/master/node_modules/ikettle2.0/ikettle2.0.js
-#    https://github.com/athombv/am.smarter/blob/master/node_modules/coffee/index.js
-#    https://github.com/AdenForshaw/smarter-coffee-api/blob/master/smarter-coffee-api.py
-#    https://www.pentestpartners.com/blog/hacking-a-wi-fi-coffee-machine-part-1/
-#    https://www.hackster.io/lahorde/from-a-14-kettle-to-an-ikettle-d2b3f7
-#    https://github.com/nanab/smartercoffee/blob/master/sendcommand.py
-#
-
-iBrewApp     = "iBrew - iKettle 2.0 & Smarter Coffee Interface"
-iBrewVersion = "White Tea Leaf Edition v0.10 © 2016 Tristan (@monkeycat.nl)"
-iBrewDonate  = "Please donate (for) a (working) Smarter Coffee (interface)"
-
-def iBrewPrintHeader():
-    print iBrewApp
-    print iBrewVersion
-    print
-    print iBrewDonate
-    print
-
-# protocol information
 
 iBrewMessageWorking = [[0,"? iKettle 2.0  ? SmarterCoffee"],
                        [1,"✓ iKettle 2.0  ✕ SmarterCoffee"],

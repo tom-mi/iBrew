@@ -1,7 +1,9 @@
 # -*- coding: utf8 -*
 
 import sys
+
 from iBrewProtocol import *
+from iBrewVersion import *
 from iBrewClient import *
 
 #------------------------------------------------------
@@ -32,17 +34,17 @@ class iBrewConsole:
         print "  calibrate              Calibrates watersensor"
         print
         print "  Smarter Coffee Commands"
-        print "  cups [nr]              Set number of cups [1..12]"
+        print "  cups [number]          Set number of cups [1..12]"
         print "  grinder                Toggle grinder"
         print "  hotplate off           Turn hotplate off"
         print "  hotplate on            Turn hotplate on"
-        print "  strength [s]           Set strength coffee [weak, medium or strong]"
+        print "  strength [strength]    Set strength coffee [weak, medium or strong]"
         print
         print "  WiFi Commands"
         print "  connect                Connect to wireless network"
         print "  firmware               Show firmware WiFi"
-        print "  name [name]            Set wireless network [name] to access"
-        print "  password [pw]          Set [password] of wireless network to access"
+        print "  name [name]            Set wireless network name to access"
+        print "  password [passwprd]    Set password of wireless network to access"
         print "  reset                  Reset WiFi"
         print "  scan                   Scan wireless networks"
         print "  setup                  Select and connect wireless network"
@@ -115,7 +117,7 @@ class iBrewConsole:
 
     def __init__(self,host):
     
-        iBrewPrintHeader()
+        iBrewPrintAppVersion()
         client = iBrewClient(host)
         client.print_connect_status()
         client.print_status()

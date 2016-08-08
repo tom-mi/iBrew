@@ -2,6 +2,7 @@
 
 import sys
 from iBrewProtocol import *
+from iBrewVersion import *
 from iBrewClient import *
 from iBrewCommandLine import *
 from iBrewMonitor import *
@@ -17,7 +18,7 @@ from iBrewConsole import *
 class iBrewCommandLine:
 
     def help(self):
-        iBrewPrintHeader()
+        iBrewPrintAppVersion()
         print 'Usage:'
         print '  iBrew.py [option] (host)'
         print
