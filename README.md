@@ -22,43 +22,7 @@ Download [source](https://github.com/Tristan79/iBrew/archive/master.zip) unpack 
 
 #### Run
 
-tba.
-
-### Versions
-
- * v0.0 Bean Grinder Edition
- * v0.1 White Tealeaf Edition
-
-### Donate
-
-Please donate (for) a (working) Smarter Coffee (interface), can not test without one!
-
-### Contact
-
-[Bugs, issues](https://github.com/Tristan79/iBrew/issues)
-
-Donations & other questions <tristan@monkeycat.nl>
-
-### Links
-
-  *    http://smarter.am/
-  *    https://www.hackster.io/lahorde/from-a-14-kettle-to-an-ikettle-d2b3f7
-
-## iKettle 2.0 & Smarter Protocol
-
-This interface was built using this [protocol](https://github.com/Tristan79/iBrew/blob/master/protocol.txt) description
-
-### References
-
-  *    https://github.com/Jamstah/libsmarteram2/
-  *    https://github.com/ian-kent/ikettle2/
-  *    https://github.com/athombv/am.smarter/
-  *    https://github.com/nanab/smartercoffee/
-  *    https://github.com/AdenForshaw/smarter-coffee-api
-  *    https://domoticz.com/forum/viewtopic.php?f=23&t=12837
-  *    https://www.pentestpartners.com/blog/hacking-a-wi-fi-coffee-machine-part-1/
-
-## Console
+##### Console
 
 Console options of v0.1
 ```
@@ -101,3 +65,38 @@ Console options of v0.1
   joke                   Show joke
   quit                   Quit console
 ```
+
+
+### Versions
+
+ * v0.0 Bean Grinder Edition
+ * v0.1 White Tealeaf Edition
+
+### Donate
+
+Please donate (for) a (working) Smarter Coffee (interface), can not test without one!
+
+### Contact
+
+[Bugs, issues](https://github.com/Tristan79/iBrew/issues)
+
+Donations & other questions <tristan@monkeycat.nl>
+
+### Links
+
+  *    http://smarter.am/
+  *    https://www.hackster.io/lahorde/from-a-14-kettle-to-an-ikettle-d2b3f7
+
+## iKettle 2.0 & Smarter Protocol
+
+This interface was built using this [protocol](https://github.com/Tristan79/iBrew/blob/master/protocol.txt) description
+
+### References
+
+  *    https://github.com/Jamstah/libsmarteram2/
+  *    https://github.com/ian-kent/ikettle2/
+  *    https://github.com/athombv/am.smarter/
+  *    https://github.com/nanab/smartercoffee/
+  *    https://github.com/AdenForshaw/smarter-coffee-api
+  *    https://domoticz.com/forum/viewtopic.php?f=23&t=12837
+  *    https://www.pentestpartners.com/blog/hacking-a-wi-fi-coffee-machine-part-1/
