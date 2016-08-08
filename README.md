@@ -1,4 +1,4 @@
-# iBrew White Tea Leave Edition
+# iBrew White Tealeaf Edition
 
 [iKettle 2.0](http://smarter.am/ikettle) and [Smarter Coffee](http://smarter.am/coffee) Interface
 
@@ -12,11 +12,16 @@ iBrew is a (python) interface to iKettle 2.0 and Smarter Coffee devices. It incl
 
 ### Installation
 
-Use:
-`git clone https://github.com/Tristan79/iBrew.git`
+```
+cgit clone https://github.com/Tristan79/iBrew.git
+```
 
 Download [source](https://github.com/Tristan79/iBrew/archive/master.zip) unpack and run iBrew
 
+### Versions
+
+ [x] * v0.1 White Tealeaf Edition
+ 
 ### Donate
 
 Please donate (for) a (working) Smarter Coffee (interface), can not test without one!
