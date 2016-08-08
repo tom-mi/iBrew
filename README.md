@@ -17,6 +17,13 @@ Please donate (for) a (working) Smarter Coffee (interface), can not test without
 #### iKettle 2.0 & Smarter Protocol
 This interface was built using this [protocol](https://github.com/Tristan79/iBrew/blob/master/protocol.txt) description.
 
+#### Index
+* Installation
+* Usage
+  * Command line
+  * Console
+* Links
+
 ## Installation
 
 #### Software Requirements 
