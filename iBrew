@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf8 -*
 
-from iBrewUserSettings import *
+from iBrewSettings import *
 from iBrewCommandLine import *
 from iBrewMonitor import *
 from iBrewConsole import *
@@ -15,7 +15,7 @@ from iBrewConsole import *
 #------------------------------------------------------
 
 # Uncomment the one which you want
-iBrewCommandLine(host)
+iBrewCommandLine(iBrewHost)
 #iBrewServer("")
-#iBrewMonitor(host)
-#iBrewConsole(host)
+#iBrewMonitor(iBrewHost)
+#iBrewConsole(iBrewHost)

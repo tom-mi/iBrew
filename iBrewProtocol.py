@@ -44,9 +44,9 @@ iBrewMessages = [[0x02,0x00,False,4,"Set device time"],
                  [0x0f,0x00,False,4,"Reset Wifi networks"],
                  [0x10,0x00,False,4,"Working unknown command (reset?)"],
                  [0x14,0xff,True ,3,"Device status"],
-                 [0x15,0x00,False,4,"Turn on"],
-                 [0x16,0x00,False,4,"Turn off"],
-                 [0x19,0x00,False,4,"Formula Mode"],
+                 [0x15,0x00,False,4,"Heat kettle"],
+                 [0x16,0x00,False,4,"Stop heating kettle"],
+                 [0x19,0x00,False,4,"Heat kettle using formula mode"],
                  [0x1f,0x00,False,4,"Set Default Values"],
                  [0x20,0x00,False,4,"Working unknown command (turn on?)"],
                  [0x21,0x00,False,4,"Working unknown command (turn on?)"],
@@ -54,10 +54,10 @@ iBrewMessages = [[0x02,0x00,False,4,"Set device time"],
                  [0x23,0x00,False,4,"Working unknown command (turn on?)"],
                  [0x28,0x29,False,4,"Working unknown command"],
                  [0x29,0xff,True ,4,"Working unknown reply"],
-                 [0x2a,0x00,False,4,"Working unknown command"],
-                 [0x2b,0x2d,False,4,"Get watersensor base value"],
-                 [0x2c,0x2d,False,4,"Calibrate watersensor"],
-                 [0x2d,0xff,True ,4,"Watersensor base value"],
+                 [0x2a,0x00,False,4,"Set water sensor base value"],
+                 [0x2b,0x2d,False,4,"Get water sensor base value"],
+                 [0x2c,0x2d,False,4,"Calibrate water sensor"],
+                 [0x2d,0xff,True ,4,"Water sensor base value"],
                  [0x30,0x00,False,4,"Working unknown command"],
                  [0x32,0x00,False,2,"Working unknown command"],
                  [0x33,0x00,False,2,"Start coffee brewing"],
@@ -66,9 +66,9 @@ iBrewMessages = [[0x02,0x00,False,4,"Set device time"],
                  [0x37,0x00,False,2,"Start coffee brewing using default"],
                  [0x3c,0x00,False,2,"Toggle grinder"],
                  [0x3e,0x00,False,2,"Turn on hotplate"],
-                 [0x40,0x00,False,2,"Working unknown command"],
-                 [0x41,0x00,False,2,"Working unknown command"],
-                 [0x43,0x00,False,2,"Working unknown command"],
+                 [0x40,0x00,False,2,"Working unknown command (schedule?)"],
+                 [0x41,0x00,False,2,"Working unknown command (schedule?)"],
+                 [0x43,0x00,False,2,"Working unknown command (schedule?)"],
                  [0x4a,0x00,False,2,"Turn off hotplate"],
                  [0x64,0x65,False,3,"Get identify of device"],
                  [0x65,0xff,True ,3,"Identify of device"],
@@ -133,25 +133,27 @@ def iBrew_message_command_code(id):
 def iBrew_message_device(id):
     return iBrewMessageWorking[iBrew_message(id)[3]][1]
 
-iBrewPort = 2081
-
+# Commands
 iBrewCommandInfo             = '\x64'
-    
+
 # Coffee Commands (not tested)
 iBrewCommandGrinder          = '\x3c'
 iBrewCommandHotplateOff      = '\x4a'
 iBrewCommandHotplateOn       = '\x3e'
-iBrewCommandNumberOfCups     = '\x36'
+iBrewCommandCups             = '\x36'
 iBrewCommandStrength         = '\x35'
-    
+iBrewCommandBrew             = '\x37'
+
 # iKettle Commands
-iBrewCommandCalibrate        = '\x2c'
-iBrewCommandCalibrateBase    = '\x2b'
+iBrewCommandCalibrate          = '\x2c'
+iBrewCommandWaterSensorBase    = '\x2b'
+iBrewCommandSetWaterSensorBase = '\x2b'
+iBrewCommandStop               = '\x16'
+iBrewCommandHeat               = '\x21'
+iBrewCommandStoreSettings      = '\x1f'
+iBrewCommandHeatFormula        = '\x19'
 
-iBrewCommandOff              = '\x16'
-iBrewCommandOn               = '\x21'
-
-#WiFi Commands
+# WiFi Commands
 iBrewCommandWiFiFirmware     = '\x6a'
 iBrewCommandWiFiScan         = '\x0d'
 iBrewCommandWiFiConnect      = '\x0c'
@@ -191,11 +193,11 @@ iBrewStatusCommand = {
     0xff : "Unknown"
 }
 
-statusMessageType = {
-	'0x4' : "Filter, ?",
-	'0x5' : "Filter, OK to start",
-	'0x6' : "Filter, OK to start",
-	'0x7' : "Beans, OK to start",
+iBrewStatusCoffee = {
+	'0x04' : "Filter, ?",
+	'0x05' : "Filter, OK to start",
+	'0x06' : "Filter, OK to start",
+	'0x07' : "Beans, OK to start",
 	'0x20' : "Filter, No carafe",
 	'0x22' : "Beans, No carafe",
 	'0x45' : "Filter, Done",
@@ -209,17 +211,20 @@ statusMessageType = {
 	
 }
 iBrewWaterLevelStatus = {
-	'0x0' : "Not enough water",
-	'0x1' : "Low",
-	'0x2' : "Half",
+	'0x00' : "Not enough water",
+	'0x01' : "Low",
+	'0x02' : "Half",
 	'0x12' : "Half",
 	'0x13' : "Full",		
 }
-strengthMessageType = {
-	'0x0' : "weak",
-	'0x1' : "medium",
-	'0x2' : "strong",		
-} 
+
+iBrewStrength = {
+	'0x00' : "weak",
+	'0x01' : "medium",
+	'0x02' : "strong",
+}
+
+# from other git
 cupsMessageType = { #TODO investigate what the first number does?
 	'0x61' : "1",
 	'0x62' : "2",
@@ -299,6 +304,7 @@ class iBrewProtocol:
         print "  Is connected locally it will send a command response message"
         print "  as reply to a command before any other response message"
         print
+        print "192.168.4.1"
     
     def messages_short(self,messageType):
         for i in range(0,len(iBrewMessages)):
@@ -340,6 +346,23 @@ class iBrewProtocol:
         print "      if it fails to access the access point it beeps once, and it opens up its own default"
         print "      open unencrypted WiFi access point"
 
+    def security(self):
+        print
+        print "  Security:"
+        print
+        print "  iKettle 2.0:"
+        print "      1. It will boil empty, making the lights bulbs to flikker."
+        print "      2. You can easily knock out it's connection to the wireless network,"
+        print "         if it fails to connect it creates an default open unencrypted WiFi access point."
+        print
+        print "         Attack Vectors"
+        print "         1. Repeat sending heat to 100ºC temperature commands, if we're lucky"
+        print "            there is no water and it will boil empty, if not it will take a while."
+        print "            plus the kettle will get warmer and warmer. If you do not expect that."
+        print "         2. Alternating heat and stop commands."
+        print "         3. (Check) Wait until the owner of the kettle log in on the kettle, since its an"
+        print "            open access point and the password are send in the open you can read it."
+    
     def coffeeBrewing(self):
         print
         print "  Coffee Brewing:"
@@ -385,9 +408,6 @@ class iBrewProtocol:
         elif id == '07':
             print "  Argument: <password>{0,32}"
             print "  Note: password is between 0 and 32 characters"
-            print
-            print "  Message 07: Start brewing Coffee???"
-            print " ?"
             self.wifi()
         elif id == '0c':
             print "  No information available on message"
@@ -472,6 +492,7 @@ class iBrewProtocol:
             print
             print "  No information available on message"
         elif id == '2a':
+            print "  Arguments: <unkownArgument><unkownArgument>"
             print "  No information available on message"
         elif id == '2c':
             print "  Example raw code: 2c 7e"
@@ -502,7 +523,7 @@ class iBrewProtocol:
             print "  Example code: 36 03 7e"
             self.coffeeBrewing()
         elif id == '37':
-            print "  No information available on message"
+            print "  Example 37 7e start brewing"
         elif id == '3c':
             print "  Example raw code: 3c 7e"
         elif id == '3e':

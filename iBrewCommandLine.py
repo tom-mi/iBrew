@@ -4,7 +4,6 @@ import sys
 from iBrewProtocol import *
 from iBrewVersion import *
 from iBrewClient import *
-from iBrewCommandLine import *
 from iBrewMonitor import *
 from iBrewConsole import *
 
@@ -17,6 +16,27 @@ from iBrewConsole import *
 
 class iBrewCommandLine:
 
+    def is_valid_ipv4_address(self,address):
+        try:
+            socket.inet_pton(socket.AF_INET, address)
+        except AttributeError:  # no inet_pton here, sorry
+            try:
+                socket.inet_aton(address)
+            except socket.error:
+                return False
+            return address.count('.') == 3
+        except socket.error:  # not a valid address
+            return False
+
+        return True
+
+    def is_valid_ipv6_address(self,address):
+        try:
+            socket.inet_pton(socket.AF_INET6, address)
+        except socket.error:  # not a valid address
+            return False
+        return True
+    
     def help(self):
         iBrewPrintAppVersion()
         print 'Usage:'
@@ -32,10 +52,12 @@ class iBrewCommandLine:
         print "  raw [data]          Send raw data to device"
         print
         print "  iKettle 2.0 Commands"
-        print "  off                 Turn off"
-        print "  on                  Turn on"
+        print "  formula             Heat kettle formula mode"
+        print "  heat                Heat kettle"
+        print "  stop                Stop heating kettle"
         print
         print "  Smarter Coffee Commands"
+        print "  brew                Brew coffee"
         print "  cups [number]       Set number of cups [1..12]"
         print "  grinder             Toggle grinder"
         print "  hotplate off        Turn hotplate off"
@@ -46,6 +68,8 @@ class iBrewCommandLine:
         print "  protocol            Show protocol"
         print
         print "  ¹console grants access to advanced options"
+        print
+        print "(host) : ip4 format, ip6 format or host name"
         print
 
     def __init__(self,host):
@@ -64,25 +88,29 @@ class iBrewCommandLine:
             self.help()
             sys.exit()
 
-        # FIX THIS SHIT Set the device host if in arguments
-        if arguments == 3:
-            host = arg3
-        elif arguments == 2:
-            host = arg2
-
+        if arguments > 0:
+            if self.is_valid_ipv4_address(sys.argv[arguments]) or self.is_valid_ipv6_address(sys.argv[arguments]):
+                host = sys.argv[arguments]
+      
         # Preform action!
         if arguments >= 1:
-            if arg1 == "on":
-                iBrewClient(host).on()
-            elif arg1 == "off":
-                iBrewClient(host).off()
+            if arg1 == "heat":
+                iBrewClient(host).heat()
+            elif arg1 == "stop":
+                iBrewClient(host).stop()
+            elif arg1 == "formula":
+                iBrewClient(host).formula()
             elif arg1 == "status":
                 iBrewClient(host).print_status()
             elif arg1 == "info":
-                # FIXMEiBrewClient(host).info()
+                client = iBrewClient(host)
+                client.info()
+                client.print_info()
                 pass
             elif arg1 == "grinder":
                 iBrewClient(host).grinder()
+            elif arg1 == "brew":
+                iBrewClient(host).brew()
             elif arg1 == "protocol":
                 iBrewProtocol().all()
             elif arg1 == "monitor":

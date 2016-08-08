@@ -28,12 +28,15 @@ class iBrewConsole:
         print "  [data]                 Send raw data to device"
         print
         print "  iKettle 2.0 Commands"
-        print "  off                    Turn off"
-        print "  on                     Turn on"
+        print "  default [][][][]       Store default values"
+        print "  formula                Heat kettle formula mode"
+        print "  heat                   Heat kettle"
+        print "  store base [base]      Store watersensor base value"
         print "  base                   Show watersensor base value"
         print "  calibrate              Calibrates watersensor"
         print
         print "  Smarter Coffee Commands"
+        print "  brew                   Brew coffee"
         print "  cups [number]          Set number of cups [1..12]"
         print "  grinder                Toggle grinder"
         print "  hotplate off           Turn hotplate off"
@@ -131,15 +134,22 @@ class iBrewConsole:
                 input = raw_input(cursor).lower()
                 
                 # iKettle 2.0 Commands
-                if input == "on":
-                    client.on()
-                elif input == "off":
-                    client.off()
+                if input == "heat":
+                    client.heat()
+                elif input == "stop":
+                    client.stop()
+                elif input == "formula":
+                    client.formula()
                 elif input == "calibrate" or input == "watersensor calibrate":
                     client.calibrate()
                 elif input == "watersensor base" or input == "base" :
                     client.calibrate_base()
                     client.print_watersensor_base()
+                elif input[0:11] == "store base " or input[0:23] == "watersensor store base ":
+                    print "iBrew: Not Fully Implemented"
+                elif input[0:8] == "default ":
+                    print "iBrew: Not Fully Implemented"
+                
  
                 # WiFi Commands
                 elif input == "wifi firmware" or input == "firmware":
@@ -159,7 +169,7 @@ class iBrewConsole:
                 elif input[0:5] == "name ":
                     client.wifi_name(str(input[5:len(input)]))
                 elif input == "wifi setup" or input == "setup":
-                    client.wifi_setup()
+                    print "iBrew: Not Fully Implemented"
                 
                 # Smarter Commands
                 # Hotplate
@@ -175,6 +185,10 @@ class iBrewConsole:
                 # Grinder
                 elif input == "grinder":
                     client.grinder()
+
+                # Grinder
+                elif input == "brew":
+                    client.brew()
                 
                 # Strength
                 elif input[0:9] == "strength ":
@@ -210,12 +224,12 @@ class iBrewConsole:
                     print
                 elif input == "help" or input == "?":
                     self.help()
-                elif input == "dump" or input == "dump messages"  :
-                    if client.log:
-                        client.log = False
+                elif input == "dump" or input == "raw" or input == "messages dump" or input == "messages raw":
+                    if client.dump:
+                        client.dump = False
                         print "iBrew: Dump raw messages disabled"
                     else:
-                        client.log = True
+                        client.dump = True
                         print "iBrew: Dump raw messages enabled"
                 elif input == "examples" or input ==  "help examples":
                     self.examples()
