@@ -12,7 +12,10 @@ Please donate (for) a (working) Smarter Coffee (interface), can not test without
 
 ## Contact
 
-Bugs, donations or questions <tristan@monkeycat.nl>
+[Bugs, issues](https://github.com/Tristan79/iBrew/issues)
+
+Donations & other questions <tristan@monkeycat.nl>
+
 
 ### Requirements 
 
