@@ -1,6 +1,6 @@
 # iBrew
 
-#### Introduction
+## Introduction
 
 iBrew: iKettle 2.0 and Smarter Coffee Interface
 iBrew: Python interface to iKettle 2.0 and Smarter Coffee
@@ -12,16 +12,17 @@ iKettle 2.0 tested only
 Alpha
 
 
-#### Requirements 
+### Requirements 
 
 * python 2.7
 
-#### Installation
+### Installation
 
 Download and unpack and run iBrew
 
-#### Console
+## Console
 
+```
 Console options v0.1
 
   iKettle 2.0 & Smarter Coffee Commands
@@ -61,4 +62,4 @@ Console options v0.1
   dump                   Toggle 'dump raw messages'
   joke                   Show joke
   quit                   Quit console
-
+```
