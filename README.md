@@ -6,17 +6,6 @@
 
 iBrew is a (python) interface to iKettle 2.0 and Smarter Coffee devices. It includes a console, monitor, and command line interface. iKettle 2.0 tested only
 
-## Donate
-
-Please donate (for) a (working) Smarter Coffee (interface), can not test without one!
-
-## Contact
-
-[Bugs, issues](https://github.com/Tristan79/iBrew/issues)
-
-Donations & other questions <tristan@monkeycat.nl>
-
-
 ### Requirements 
 
 * python 2.7
@@ -27,6 +16,21 @@ Use:
 `git clone https://github.com/Tristan79/iBrew.git`
 
 Download [source](https://github.com/Tristan79/iBrew/archive/master.zip) unpack and run iBrew
+
+### Donate
+
+Please donate (for) a (working) Smarter Coffee (interface), can not test without one!
+
+### Contact
+
+[Bugs, issues](https://github.com/Tristan79/iBrew/issues)
+
+Donations & other questions <tristan@monkeycat.nl>
+
+### Links
+
+  *    http://smarter.am/
+  *    https://www.hackster.io/lahorde/from-a-14-kettle-to-an-ikettle-d2b3f7
 
 ## iKettle 2.0 & Smarter Protocol
 
@@ -85,8 +89,3 @@ Console options of v0.1
   joke                   Show joke
   quit                   Quit console
 ```
-
-## Links
-
-  *    http://smarter.am/
-  *    https://www.hackster.io/lahorde/from-a-14-kettle-to-an-ikettle-d2b3f7
