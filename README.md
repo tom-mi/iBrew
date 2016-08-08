@@ -28,9 +28,8 @@ This interface was built using this [protocol](https://github.com/Tristan79/iBre
   *    https://github.com/athombv/am.smarter/
   *    https://github.com/nanab/smartercoffee/
   *    https://github.com/AdenForshaw/smarter-coffee-api
+  *    https://domoticz.com/forum/viewtopic.php?f=23&t=12837
   *    https://www.pentestpartners.com/blog/hacking-a-wi-fi-coffee-machine-part-1/
-  *    https://www.hackster.io/lahorde/from-a-14-kettle-to-an-ikettle-d2b3f7
-
 
 ## Console
 
@@ -76,3 +75,7 @@ Console options of v0.1
   joke                   Show joke
   quit                   Quit console
 ```
+## Links
+
+  *    http://smarter.am/
+  *    https://www.hackster.io/lahorde/from-a-14-kettle-to-an-ikettle-d2b3f7
