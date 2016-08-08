@@ -1,34 +1,27 @@
 # iBrew White Tealeaf Edition
-
 [iKettle 2.0](http://smarter.am/ikettle) and [Smarter Coffee](http://smarter.am/coffee) Interface
 
 ## Introduction
-
 iBrew is a (python) interface to iKettle 2.0 and Smarter Coffee devices. It includes a console, monitor, and command line interface. You can also use it in your own code. iKettle 2.0 tested only.  Please share you Smarter Coffee codes or any other discoveries you made.
 
 #### Versions
-
  * v0.0 Bean Grinder Pack
  * v0.1 White Tealeaf Edition
 
 #### Donate
-
 Please donate (for) a (working) Smarter Coffee (interface), can not test without one or without help!
 
 #### Contact
+[Bugs or issues](https://github.com/Tristan79/iBrew/issues). Donations & other questions <tristan@monkeycat.nl>
 
-[Bugs, issues](https://github.com/Tristan79/iBrew/issues)
-
-Donations & other questions <tristan@monkeycat.nl>
+#### iKettle 2.0 & Smarter Protocol
+This interface was built using this [protocol](https://github.com/Tristan79/iBrew/blob/master/protocol.txt) description.
 
 ## Installation
-
 #### Software Requirements 
-
 * python 2.7
 
 #### Download
-
 You can download and unpack the [source](https://github.com/Tristan79/iBrew/archive/master.zip) or
  download it from github using
 ```
@@ -36,11 +29,12 @@ git clone https://github.com/Tristan79/iBrew.git
 ```
 
 #### Setup
-
 The file iBrewSettings.py contains the default settings. You can edit it with your favorite editor
 
-## Command Line Options
-
+## Usage
+### Command Line Options
+ The following commands are available at the command line:
+ 
 ```
 Usage:
   iBrew [option] (host)
@@ -75,12 +69,10 @@ Usage:
 (host) ip4 format, ip6 format or host name
 ```
 
-## Console
-
+### Console
 Start the console with the command `iBrew console`. The following commands are available within the console:
 
 ```
-
   iKettle 2.0 & Smarter Coffee Commands
   info                   Device info
   status                 Show status
@@ -121,21 +113,13 @@ Start the console with the command `iBrew console`. The following commands are a
   dump                   Toggle 'dump raw messages'
   joke                   Show joke
   quit                   Quit console
-  
 ```
 
-
-
 ## Links
+#### Smart Kettles & Coffee Machines
   *    http://smarter.am/
-
-#### iKettle 2.0 & Smarter Protocol
-This interface was built using this [protocol](https://github.com/Tristan79/iBrew/blob/master/protocol.txt) description
-
-#### Smart Kettles
   *    http://www.appkettle.co.uk
   *    https://www.hackster.io/lahorde/from-a-14-kettle-to-an-ikettle-d2b3f7
-
 #### References
   *    https://github.com/Jamstah/libsmarteram2/
   *    https://github.com/ian-kent/ikettle2/
