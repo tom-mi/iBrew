@@ -18,7 +18,9 @@ Alpha
 
 ### Installation
 
-Download[source](https://github.com/Tristan79/iBrew/master/) unpack and run iBrew
+`git clone https://github.com/Tristan79/iBrew.git`
+
+Download[source](https://github.com/Tristan79/iBrew/archive/master.zip) unpack and run iBrew
 
 
 ## iKettle 2.0 & Smarter Protocol
