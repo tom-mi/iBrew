@@ -20,7 +20,7 @@ import struct
 #
 
 iBrewApp     = "iBrew - iKettle 2.0 & Smarter Coffee Interface"
-iBrewVersion = "White Tea Leaf Edition v0.09 © 2016 Tristan (tristan@monkeycat.nl)"
+iBrewVersion = "White Tea Leaf Edition v0.10 © 2016 Tristan (@monkeycat.nl)"
 iBrewDonate  = "Please donate (for) a (working) Smarter Coffee (interface)"
 
 def iBrewPrintHeader():
