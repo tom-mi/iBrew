@@ -91,6 +91,8 @@ class iBrewClient:
             message = ""
             i = 0
             # let the buffer of the os handle this
+            
+            # error check here...
             data = self.socket.recv(1)
             while data != iBrewTail:
                 message += data

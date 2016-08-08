@@ -23,6 +23,7 @@ Download [source](https://github.com/Tristan79/iBrew/archive/master.zip) unpack 
 ### Command Line Options
 
 ```
+
 iBrew - iKettle 2.0 & Smarter Coffee Interface
 White Tea Leaf Edition v0.10 © 2016 Tristan (@monkeycat.nl)
 
@@ -41,10 +42,12 @@ Usage:
   raw [data]          Send raw data to device
 
   iKettle 2.0 Commands
-  off                 Turn off
-  on                  Turn on
+  formula             Heat kettle formula mode
+  heat                Heat kettle
+  stop                Stop heating kettle
 
   Smarter Coffee Commands
+  brew                Brew coffee
   cups [number]       Set number of cups [1..12]
   grinder             Toggle grinder
   hotplate off        Turn hotplate off
@@ -55,25 +58,34 @@ Usage:
   protocol            Show protocol
 
   ¹console grants access to advanced options
+
+(host) : ip4 format, ip6 format or host name
+
 ```
 
 ### Console Commands
 
 Start the console with the command `iBrew console`.
 
+The following commands are available within the console:
+
 ```
+
   iKettle 2.0 & Smarter Coffee Commands
   info                   Device info
   status                 Show status
   [data]                 Send raw data to device
 
   iKettle 2.0 Commands
-  off                    Turn off
-  on                     Turn on
+  default [][][][]       Store default values
+  formula                Heat kettle in formula mode
+  heat                   Heat kettle
+  store base [base]      Store watersensor base value
   base                   Show watersensor base value
   calibrate              Calibrates watersensor
 
   Smarter Coffee Commands
+  brew                   Brew coffee
   cups [number]          Set number of cups [1..12]
   grinder                Toggle grinder
   hotplate off           Turn hotplate off
@@ -84,7 +96,7 @@ Start the console with the command `iBrew console`.
   connect                Connect to wireless network
   firmware               Show firmware WiFi
   name [name]            Set wireless network name to access
-  password [password]    Set password of wireless network to access
+  password [passwprd]    Set password of wireless network to access
   reset                  Reset WiFi
   scan                   Scan wireless networks
   setup                  Select and connect wireless network
@@ -99,11 +111,12 @@ Start the console with the command `iBrew console`.
   dump                   Toggle 'dump raw messages'
   joke                   Show joke
   quit                   Quit console
+  
 ```
 
 ### Versions
 
- * v0.0 Bean Grinder Edition
+ * v0.0 Bean Grinder Pack
  * v0.1 White Tealeaf Edition
 
 ### Donate

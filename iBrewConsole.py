@@ -29,7 +29,7 @@ class iBrewConsole:
         print
         print "  iKettle 2.0 Commands"
         print "  default [][][][]       Store default values"
-        print "  formula                Heat kettle formula mode"
+        print "  formula                Heat kettle in formula mode"
         print "  heat                   Heat kettle"
         print "  store base [base]      Store watersensor base value"
         print "  base                   Show watersensor base value"
