@@ -12,7 +12,7 @@ Please donate (for) a (working) Smarter Coffee (interface), can not test without
 
 ## Contact
 
-[Bugs, donations or questions](emailto:tristan@monkeycat.nl)
+[Bugs, donations or questions](tristan@monkeycat.nl)
 
 ### Requirements 
 
