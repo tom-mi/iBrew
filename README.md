@@ -20,8 +20,9 @@ Download [source](https://github.com/Tristan79/iBrew/archive/master.zip) unpack 
 
 ### Versions
 
- [x] * v0.1 White Tealeaf Edition
- 
+ * v0.0 Bean Grinder Edition
+ * v0.1 White Tealeaf Edition
+
 ### Donate
 
 Please donate (for) a (working) Smarter Coffee (interface), can not test without one!
