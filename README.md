@@ -6,6 +6,21 @@
 
 iBrew is a (python) interface to iKettle 2.0 and Smarter Coffee devices. It includes a console, monitor, and command line interface. You can also use it in your own code. iKettle 2.0 tested only.  Please share you Smarter Coffee codes or any other discoveries you made.
 
+#### Versions
+
+ * v0.0 Bean Grinder Pack
+ * v0.1 White Tealeaf Edition
+
+#### Donate
+
+Please donate (for) a (working) Smarter Coffee (interface), can not test without one or without help!
+
+#### Contact
+
+[Bugs, issues](https://github.com/Tristan79/iBrew/issues)
+
+Donations & other questions <tristan@monkeycat.nl>
+
 ## Installation
 
 #### Software Requirements 
@@ -109,32 +124,19 @@ Start the console with the command `iBrew console`. The following commands are a
   
 ```
 
-### Versions
 
- * v0.0 Bean Grinder Pack
- * v0.1 White Tealeaf Edition
-
-### Donate
-
-Please donate (for) a (working) Smarter Coffee (interface), can not test without one or without help!
-
-## Contact
-
-[Bugs, issues](https://github.com/Tristan79/iBrew/issues)
-
-Donations & other questions <tristan@monkeycat.nl>(kkk)
 
 ## Links
-
   *    http://smarter.am/
-  *    https://www.hackster.io/lahorde/from-a-14-kettle-to-an-ikettle-d2b3f7
 
 #### iKettle 2.0 & Smarter Protocol
-
 This interface was built using this [protocol](https://github.com/Tristan79/iBrew/blob/master/protocol.txt) description
 
-#### References
+#### Smart Kettles
+  *    http://www.appkettle.co.uk
+  *    https://www.hackster.io/lahorde/from-a-14-kettle-to-an-ikettle-d2b3f7
 
+#### References
   *    https://github.com/Jamstah/libsmarteram2/
   *    https://github.com/ian-kent/ikettle2/
   *    https://github.com/athombv/am.smarter/
