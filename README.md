@@ -1,6 +1,6 @@
 # iBrew
 
-[iKettle 2.0 and Smarter Coffee](http://smarter.am/) Interface
+[iKettle 2.0](http://smarter.am/ikettle) and [Smarter Coffee](http://smarter.am/coffee) Interface
 
 ## Introduction
 
