@@ -4,12 +4,14 @@
 
 ## Introduction
 
-iBrew is a (python) interface to iKettle 2.0 and Smarter Coffee devices. It includes a console, monitor, and command line interface. iKettle 2.0 tested only.  Please share you Smarter Coffee codes or any other discoveries you made.
+iBrew is a (python) interface to iKettle 2.0 and Smarter Coffee devices. It includes a console, monitor, and command line interface. You can also use it in your own code. iKettle 2.0 tested only.  Please share you Smarter Coffee codes or any other discoveries you made.
 
-### Requirements 
+## Installation
+
+#### Software Requirements 
+
 * python 2.7
 
-### Installation
 #### Download
 
 You can download and unpack the [source](https://github.com/Tristan79/iBrew/archive/master.zip) or
@@ -20,13 +22,11 @@ git clone https://github.com/Tristan79/iBrew.git
 
 #### Setup
 
-iBrewSettings.py contains the settings.
-You can edit it with your favorite editor
+The file iBrewSettings.py contains the default settings. You can edit it with your favorite editor
 
-### Command Line Options
+## Command Line Options
 
 ```
-
 Usage:
   iBrew [option] (host)
 
@@ -58,14 +58,11 @@ Usage:
   ¹console grants access to advanced options
 
 (host) ip4 format, ip6 format or host name
-
 ```
 
-### Console Commands
+## Console
 
-Start the console with the command `iBrew console`.
-
-The following commands are available within the console:
+Start the console with the command `iBrew console`. The following commands are available within the console:
 
 ```
 
@@ -121,22 +118,22 @@ The following commands are available within the console:
 
 Please donate (for) a (working) Smarter Coffee (interface), can not test without one or without help!
 
-### Contact
+## Contact
 
 [Bugs, issues](https://github.com/Tristan79/iBrew/issues)
 
 Donations & other questions <tristan@monkeycat.nl>(kkk)
 
-### Links
+## Links
 
   *    http://smarter.am/
   *    https://www.hackster.io/lahorde/from-a-14-kettle-to-an-ikettle-d2b3f7
 
-## iKettle 2.0 & Smarter Protocol
+#### iKettle 2.0 & Smarter Protocol
 
 This interface was built using this [protocol](https://github.com/Tristan79/iBrew/blob/master/protocol.txt) description
 
-### References
+#### References
 
   *    https://github.com/Jamstah/libsmarteram2/
   *    https://github.com/ian-kent/ikettle2/
