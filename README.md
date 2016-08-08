@@ -18,19 +18,24 @@ Alpha
 
 ### Installation
 
-Download and unpack and run iBrew
+Download[source](https://github.com/Tristan79/iBrew/master/) unpack and run iBrew
+
+
+## iKettle 2.0 & Smarter Protocol
+
+This interface was built using [Protocol](https://github.com/Tristan79/iBrew/master/protocols.txt)
 
 ## Console
 
 ```
 Console options v0.1
 
-  iKettle 2.0 & Smarter Coffee Commands
+  *iKettle 2.0 & Smarter Coffee Commands*
   info                   Device info
   status                 Show status
   [data]                 Send raw data to device
 
-  iKettle 2.0 Commands
+  *iKettle 2.0 Commands*
   off                    Turn off
   on                     Turn on
   base                   Show watersensor base value
