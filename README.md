@@ -22,12 +22,13 @@ Download and unpack and run iBrew
 
 ## Console
 
->Console options v0.1
->
->  iKettle 2.0 & Smarter Coffee Commands
->  info                   Device info
->  status                 Show status
->  [data]                 Send raw data to device
+'''
+Console options v0.1
+
+  iKettle 2.0 & Smarter Coffee Commands
+  info                   Device info
+  status                 Show status
+  [data]                 Send raw data to device
 
   iKettle 2.0 Commands
   off                    Turn off
@@ -61,4 +62,4 @@ Download and unpack and run iBrew
   dump                   Toggle 'dump raw messages'
   joke                   Show joke
   quit                   Quit console
-
+'''
