@@ -20,7 +20,7 @@ class iBrewCommandLine:
     def help(self):
         iBrewPrintAppVersion()
         print 'Usage:'
-        print '  iBrew.py [option] (host)'
+        print '  iBrew [option] (host)'
         print
         print "[options]"
         print "  console             start console¹"
@@ -36,11 +36,11 @@ class iBrewCommandLine:
         print "  on                  Turn on"
         print
         print "  Smarter Coffee Commands"
-        print "  cups [nr]           Set number of cups"
+        print "  cups [number]       Set number of cups [1..12]"
         print "  grinder             Toggle grinder"
         print "  hotplate off        Turn hotplate off"
         print "  hotplate on         Turn hotplate on"
-        print "  strength [s]        Set strength coffee (weak, medium or strong)"
+        print "  strength [strength] Set strength coffee [weak, medium or strong]"
         print
         print "  Help Commands"
         print "  protocol            Show protocol"
