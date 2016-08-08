@@ -1,6 +1,6 @@
 # iBrew
 
-iKettle 2.0 and Smarter Coffee Interface
+[http://smarter.am/](iKettle 2.0 and Smarter Coffee) Interface
 
 ## Introduction
 
@@ -36,7 +36,6 @@ This interface was built using this [protocol](https://github.com/Tristan79/iBre
 Console options of v0.1
 ```
 
-
   iKettle 2.0 & Smarter Coffee Commands
   info                   Device info
   status                 Show status
@@ -49,17 +48,17 @@ Console options of v0.1
   calibrate              Calibrates watersensor
 
   Smarter Coffee Commands
-  cups [nr]              Set number of cups [1..12]
+  cups [number]          Set number of cups [1..12]
   grinder                Toggle grinder
   hotplate off           Turn hotplate off
   hotplate on            Turn hotplate on
-  strength [s]           Set strength coffee [weak, medium or strong]
+  strength [strength]    Set strength coffee [weak, medium or strong]
 
   WiFi Commands
   connect                Connect to wireless network
   firmware               Show firmware WiFi
-  name [name]            Set wireless network [name] to access
-  password [pw]          Set [password] of wireless network to access
+  name [name]            Set wireless network name to access
+  password [password]    Set password of wireless network to access
   reset                  Reset WiFi
   scan                   Scan wireless networks
   setup                  Select and connect wireless network
@@ -75,6 +74,7 @@ Console options of v0.1
   joke                   Show joke
   quit                   Quit console
 ```
+
 ## Links
 
   *    http://smarter.am/
