@@ -143,6 +143,23 @@ class iBrewClient:
             else:
                 self.onbase = True
                 
+        """
+        		incommingCommandSecond = reply		
+		a = array("B", reply)		
+		b = map(hex, a)
+		deviceMessage = b[0]
+		statusMessage = b[1]
+		waterLevelMessage = b[2]
+		wifiStrenghtMessage = b[3]
+		strengthMessage = b[4]
+		cupsMessage = b[5]
+		print
+		print 'Status:', statusMessageType[statusMessage]
+		print 'WaterLevel:', waterLevelMessageType[waterLevelMessage]
+		print 'Strength:', strengthMessageType[strengthMessage]
+		print 'Cups:', cupsMessageType[cupsMessage]
+        """
+                
         
         self.print_message_received(message)
      
