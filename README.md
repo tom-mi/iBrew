@@ -24,11 +24,6 @@ Download [source](https://github.com/Tristan79/iBrew/archive/master.zip) unpack 
 
 ```
 
-iBrew - iKettle 2.0 & Smarter Coffee Interface
-White Tea Leaf Edition v0.10 © 2016 Tristan (@monkeycat.nl)
-
-Please donate (for) a (working) Smarter Coffee (interface)
-
 Usage:
   iBrew [option] (host)
 
@@ -59,7 +54,7 @@ Usage:
 
   ¹console grants access to advanced options
 
-(host) : ip4 format, ip6 format or host name
+(host) ip4 format, ip6 format or host name
 
 ```
 
@@ -121,13 +116,13 @@ The following commands are available within the console:
 
 ### Donate
 
-Please donate (for) a (working) Smarter Coffee (interface), can not test without one!
+Please donate (for) a (working) Smarter Coffee (interface), can not test without one or without help!
 
 ### Contact
 
 [Bugs, issues](https://github.com/Tristan79/iBrew/issues)
 
-Donations & other questions <tristan@monkeycat.nl>
+Donations & other questions <tristan@monkeycat.nl>(kkk)
 
 ### Links
 

@@ -69,7 +69,7 @@ class iBrewCommandLine:
         print
         print "  ¹console grants access to advanced options"
         print
-        print "(host) : ip4 format, ip6 format or host name"
+        print "(host) ip4 format, ip6 format or host name"
         print
 
     def __init__(self,host):
