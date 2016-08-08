@@ -12,11 +12,17 @@ iBrew is a (python) interface to iKettle 2.0 and Smarter Coffee devices. It incl
 
 ### Installation
 
+#### Download
+
 ```
-cgit clone https://github.com/Tristan79/iBrew.git
+git clone https://github.com/Tristan79/iBrew.git
 ```
 
 Download [source](https://github.com/Tristan79/iBrew/archive/master.zip) unpack and run iBrew
+
+#### Run
+
+tba.
 
 ### Versions
 
