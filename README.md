@@ -1,4 +1,4 @@
-# iBrew
+# iBrew White Tea Leave Edition
 
 [iKettle 2.0](http://smarter.am/ikettle) and [Smarter Coffee](http://smarter.am/coffee) Interface
 
