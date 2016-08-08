@@ -22,7 +22,7 @@ Download and unpack and run iBrew
 
 ## Console
 
-'''
+```
 Console options v0.1
 
   iKettle 2.0 & Smarter Coffee Commands
@@ -62,4 +62,4 @@ Console options v0.1
   dump                   Toggle 'dump raw messages'
   joke                   Show joke
   quit                   Quit console
-'''
+```
