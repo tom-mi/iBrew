@@ -20,13 +20,48 @@ git clone https://github.com/Tristan79/iBrew.git
 
 Download [source](https://github.com/Tristan79/iBrew/archive/master.zip) unpack and run iBrew
 
-#### Run
+### Command Line Options
 
-##### Console
+```
+iBrew - iKettle 2.0 & Smarter Coffee Interface
+White Tea Leaf Edition v0.10 © 2016 Tristan (@monkeycat.nl)
 
-Console options of v0.1
+Please donate (for) a (working) Smarter Coffee (interface)
+
+Usage:
+  iBrew [option] (host)
+
+[options]
+  console             start console¹
+  monitor             start monitor
+
+  iKettle 2.0 & Smarter Coffee Commands
+  info                Device info
+  status              Show status
+  raw [data]          Send raw data to device
+
+  iKettle 2.0 Commands
+  off                 Turn off
+  on                  Turn on
+
+  Smarter Coffee Commands
+  cups [number]       Set number of cups [1..12]
+  grinder             Toggle grinder
+  hotplate off        Turn hotplate off
+  hotplate on         Turn hotplate on
+  strength [strength] Set strength coffee [weak, medium or strong]
+
+  Help Commands
+  protocol            Show protocol
+
+  ¹console grants access to advanced options
 ```
 
+### Console Commands
+
+Start the console with the command `iBrew console`.
+
+```
   iKettle 2.0 & Smarter Coffee Commands
   info                   Device info
   status                 Show status
@@ -65,7 +100,6 @@ Console options of v0.1
   joke                   Show joke
   quit                   Quit console
 ```
-
 
 ### Versions
 
