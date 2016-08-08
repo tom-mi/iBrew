@@ -17,10 +17,9 @@ Use:
 
 Download [source](https://github.com/Tristan79/iBrew/archive/master.zip) unpack and run iBrew
 
-
 ## iKettle 2.0 & Smarter Protocol
 
-This interface was built using [Protocol](https://github.com/Tristan79/iBrew/blob/master/protocol.txt)
+This interface was built using this [protocol](https://github.com/Tristan79/iBrew/blob/master/protocol.txt) description
 
 ### References
 
@@ -35,8 +34,9 @@ This interface was built using [Protocol](https://github.com/Tristan79/iBrew/blo
 
 ## Console
 
+Console options of v0.1
 ```
-Console options v0.1
+
 
   iKettle 2.0 & Smarter Coffee Commands
   info                   Device info
