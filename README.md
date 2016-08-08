@@ -18,6 +18,7 @@ Please donate (for) a (working) Smarter Coffee (interface), can not test without
 This interface was built using this [protocol](https://github.com/Tristan79/iBrew/blob/master/protocol.txt) description.
 
 ## Installation
+
 #### Software Requirements 
 * python 2.7
 
@@ -32,6 +33,7 @@ git clone https://github.com/Tristan79/iBrew.git
 The file iBrewSettings.py contains the default settings. You can edit it with your favorite editor
 
 ## Usage
+
 ### Command Line Options
  The following commands are available at the command line:
  
@@ -49,7 +51,7 @@ Usage:
   raw [data]          Send raw data to device
 
   iKettle 2.0 Commands
-  formula             Heat kettle formula mode
+  formula             Heat kettle in formula mode
   heat                Heat kettle
   stop                Stop heating kettle
 
@@ -116,10 +118,12 @@ Start the console with the command `iBrew console`. The following commands are a
 ```
 
 ## Links
+
 #### Smart Kettles & Coffee Machines
   *    http://smarter.am/
   *    http://www.appkettle.co.uk
   *    https://www.hackster.io/lahorde/from-a-14-kettle-to-an-ikettle-d2b3f7
+      
 #### References
   *    https://github.com/Jamstah/libsmarteram2/
   *    https://github.com/ian-kent/ikettle2/
