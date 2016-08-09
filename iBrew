@@ -1,21 +1,65 @@
 #!/usr/bin/python
 # -*- coding: utf8 -*
 
-from iBrewSettings import *
-from iBrewCommandLine import *
-from iBrewMonitor import *
+import sys
+
 from iBrewConsole import *
-#from iBrewServer import *
+
+#------------------------------------------------------
+# iBrew COMMAND LINE
+#
+# Command line access for iKettle 2.0 or Smarter Coffee
+# Device
+#
+# Redirect command line arguments to console
+#------------------------------------------------------
+
+class iBrewCommandLine:
+
+    def is_valid_ipv4_address(self,address):
+        try:
+            socket.inet_pton(socket.AF_INET, address)
+        except AttributeError:  # no inet_pton here, sorry
+            try:
+                socket.inet_aton(address)
+            except socket.error:
+                return False
+            return address.count('.') == 3
+        except socket.error:  # not a valid address
+            return False
+
+        return True
+
+    def is_valid_ipv6_address(self,address):
+        try:
+            socket.inet_pton(socket.AF_INET6, address)
+        except socket.error:  # not a valid address
+            return False
+        return True
+    
+    def __init__(self,host):
+        
+        arguments = len(sys.argv) - 1
+       
+        # Check last argument is host
+        isHost = False
+        if arguments > 0:
+            if self.is_valid_ipv4_address(sys.argv[arguments]) or self.is_valid_ipv6_address(sys.argv[arguments]):
+                host = sys.argv[arguments]
+                isHost = True
+    
+        # No arguments display help
+        if arguments == 0:
+            command = "help"
+        else:
+            command = ""
+            if sys.argv[1].lower() != "console":
+                for i in range(1,len(sys.argv)-int(isHost)):
+                    command += sys.argv[i] + " "
+        iBrewConsole(host,command)
 
 #------------------------------------------------------
 # MAIN
-#
-# Start any program you like, default is command line
-# Which has all other options available.
 #------------------------------------------------------
 
-# Uncomment the one which you want
 iBrewCommandLine(iBrewHost)
-#iBrewServer("")
-#iBrewMonitor(iBrewHost)
-#iBrewConsole(iBrewHost)

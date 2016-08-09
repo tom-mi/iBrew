@@ -25,7 +25,7 @@ class iBrewClient:
     version = 0
     statusCommand = 0
     
-    isSmartCoffee = False
+    isSmarterCoffee = False
     statusCoffee = 0
     cups = 0
     strength = 0
@@ -93,10 +93,14 @@ class iBrewClient:
             # let the buffer of the os handle this
             
             # error check here...
+            
+            
             data = self.socket.recv(1)
+            #if not data: return
             while data != iBrewTail:
                 message += data
                 data = self.socket.recv(1)
+                #if not data: break
                 i += 1
             message += data
             return message
@@ -186,7 +190,7 @@ class iBrewClient:
                 self.cups                = struct.unpack('B',message[5])[0]
         self.print_message_received(message)
      
-        readMessage = message
+        self.readMessage = message
         return message
 
     # send a protocol message and wait's for response...
@@ -194,11 +198,11 @@ class iBrewClient:
         try:
             if len(message) > 0 and message[len(message)-1] == iBrewTail:
                 self.socket.send(message)
-                sendMessage = message
+                self.sendMessage = message
                 self.print_message_send(message)
             elif len(message) > 0:
                 self.socket.send(message+iBrewTail)
-                sendMessage = message
+                self.sendMessage = message
                 self.print_message_send(message+iBrewTail)
             else:
                 return
@@ -212,7 +216,6 @@ class iBrewClient:
         while m[0] == iBrewResponseStatusDevice:
             m = self.read()
             # FIX TIMEOUT 10 tries???
-        self.local = False
 
         # store reply message
         r = m
@@ -221,8 +224,6 @@ class iBrewClient:
         m = self.read()
         while m[0] != iBrewResponseStatusDevice:
             m = self.read()
-            self.local = True
-
         return r
 
     #------------------------------------------------------
@@ -303,7 +304,7 @@ class iBrewClient:
                 print "       " + s
 
     def print_message_received(self,message):
-        if self.dump and message[0] != iBrewResponseStatusDevice:
+        if self.dump: # and message[0] != iBrewResponseStatusDevice:
             print "iBrew: Message Received: " + self.message_to_string(message)
         s = iBrew_message_description(iBrew_raw_to_hex(struct.unpack('B',message[0])[0]))
         l = "       "
@@ -348,16 +349,31 @@ class iBrewClient:
                 print l + s
             print
             print self.WiFiFirmware
-            print 
+            print
+            
         elif message[0] == iBrewResponseUnknown:
             print l + s + " Not Implemented"
+
+        elif message[0] == iBrewResponseZero:
+            print l + s + " Not Implemented"
+
+        elif message[0] == iBrewResponseSettings:
+            print l + s + " Not Implemented"
+
         elif message[0] == iBrewResponseDeviceInfo:
             if self.dump:
                 print l + s + " " + self.device + " Firmware v" + str(self.version)
+
         elif message[0] == iBrewResponseCalibrationBase:
             if self.dump:
                 print l + s + " " +  str(self.waterSensorBase)
-        elif message[0] != iBrewResponseStatusDevice:
+
+        elif message[0] == iBrewResponseStatusDevice:
+            if self.dump:
+                #FIX HERE
+                pass
+        
+        else:
             if self.dump:
                 if s != "":
                     print l + s
@@ -471,19 +487,18 @@ class iBrewClient:
 
     def store_calibrate_base(self,base = 0):
         if self.isKettle2 == True:
-            #decode high and low
             high = base / 256
             low =  base % 256
-            # pack it...
-            # FIX THIS
-            self.send(iBrewCommandWaterSensorBase+high+low)
+            print high
+            print low
+            self.send(iBrewCommandWaterSensorBase+struct.pack('B',high)+struct.pack('B',low))
         else:
             print 'iBrew: You need a kettle to store its water sensor base value'
 
     def store_settings(self,temperature = 100, keepwarmtime = 0, formulaOn = False, formulaTemperature = 75):
         if self.isKettle2 == True:
-            # FIX THIS
-            self.send(iBrewCommandStoreSettings+str(temperature)+str(keepwarmtime)+str(formulaOn)+str(formulaTemperature))
+            # FIX THIS timer
+            self.send(iBrewCommandStoreSettings+struct.pack('B',temperature)+struct.pack('B',keepwarmtime)+struct.pack('B',formulaOn)+struct.pack('B',formulaTemperature))
         else:
             print 'iBrew: You need a kettle to store its user settings'
 
@@ -522,8 +537,7 @@ class iBrewClient:
     def hotplate_on(self, timer=5):
         if self.isSmarterCoffee == True:
             if timer >= 5 and timer <= 30:
-                # fixme! (pack)
-                self.send(iBrewCommandHotplateOn)
+                self.send(iBrewCommandHotplateOn+struct.pack('B',number))
             else:
                 print "iBrew: Invalid hotplate timer, range is between 5 and 30 minutes, not " +str(timer) + " minutes"
         else:
@@ -539,8 +553,7 @@ class iBrewClient:
         if self.isSmarterCoffee == True:
             if number < 1 or number > 12:
                 print "iBrew: Invalid number of cups, range is between 1 and 12 cups, not  " + str(number) + " cups"
-                # fixme! (pack)
-            self.send(iBrewCommandCups+str(number))
+            self.send(iBrewCommandCups+struct.pack('B',number))
         else:
             print 'iBrew: The device does not let you choose the number of cups to brew'
 
@@ -555,7 +568,6 @@ class iBrewClient:
             else:
                 print "iBrew: Invalid coffee strength, options are weak, medium, strong, not " + strength
             if number:
-                # fixme! (pack)
-                self.send(iBrewCommandStrenght+str(number))
+                self.send(iBrewCommandStrenght+struct.pack('B',number))
         else:
             print 'iBrew: The device does not let you choose the coffee strength'

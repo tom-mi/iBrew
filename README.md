@@ -15,7 +15,7 @@ Please donate (for) a (working) Smarter Coffee (interface), can not test without
 [Bugs or issues](https://github.com/Tristan79/iBrew/issues). Donations & other questions <tristan@monkeycat.nl>
 
 #### iKettle 2.0 & Smarter Protocol
-This interface was built using this [protocol](https://github.com/Tristan79/iBrew/blob/master/protocol.txt) description.
+This interface was built using this [protocol](https://github.com/Tristan79/iBrew/blob/master/smarter.txt) description.
 
 ## Installation
 
@@ -39,54 +39,31 @@ The file iBrewSettings.py contains the default settings. You can edit it with yo
  
 ```
 Usage:
-  iBrew [option] (host)
+  iBrew [console command] (host)
 
-[options]
-  console             start console¹
-  monitor             start monitor
-
-  iKettle 2.0 & Smarter Coffee Commands
-  info                Device info
-  status              Show status
-  raw [data]          Send raw data to device
-
-  iKettle 2.0 Commands
-  formula             Heat kettle in formula mode
-  heat                Heat kettle
-  stop                Stop heating kettle
-
-  Smarter Coffee Commands
-  brew                Brew coffee
-  cups [number]       Set number of cups [1..12]
-  grinder             Toggle grinder
-  hotplate off        Turn hotplate off
-  hotplate on         Turn hotplate on
-  strength [strength] Set strength coffee [weak, medium or strong]
-
-  Help Commands
-  protocol            Show protocol
-
-  ¹console grants access to advanced options
-
-(host) ip4 format, ip6 format or host name
+  (host) ip4 format, ip6 format or host name
 ```
 
 ### Console
 Start the console with the command `iBrew console`. The following commands are available within the console:
 
 ```
+
   iKettle 2.0 & Smarter Coffee Commands
   info                   Device info
+  start                  Start the device
   status                 Show status
+  stop                   Stop the device
   [data]                 Send raw data to device
 
   iKettle 2.0 Commands
-  default [][][][]       Store default values
-  formula                Heat kettle in formula mode
-  heat                   Heat kettle
-  store base [base]      Store watersensor base value
   base                   Show watersensor base value
   calibrate              Calibrates watersensor
+  default                Set default settings
+  formula ()()           Heat kettle in formula mode
+  heat ()()              Heat kettle
+  settings               Set user settings
+  store base [base]      Store watersensor base value
 
   Smarter Coffee Commands
   brew                   Brew coffee
@@ -100,21 +77,26 @@ Start the console with the command `iBrew console`. The following commands are a
   connect                Connect to wireless network
   firmware               Show firmware WiFi
   name [name]            Set wireless network name to access
-  password [passwprd]    Set password of wireless network to access
+  password [password]    Set password of wireless network to access
   reset                  Reset WiFi
   scan                   Scan wireless networks
-  setup                  Select and connect wireless network
 
   Help Commands
   examples               Show examples of commands
   messages               Show all known protocol messages
   message [id]           Show protocol message detail
   protocol               Show protocol structure
+  smarter                Show protocol
+
+  Debug Commands
+  dump                   Toggle 'dump raw messages'
+  monitor                Monitor incomming traffic
+  sweep [startcommand]   Try (all) unknown command codes
 
   Console Commands
-  dump                   Toggle 'dump raw messages'
   joke                   Show joke
   quit                   Quit console
+
 ```
 
 ## Links

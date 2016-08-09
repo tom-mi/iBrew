@@ -34,13 +34,16 @@ iBrewMessageType = [[False,"Command"],
                     [True, "Response"],
                    ]
 
-iBrewMessages = [[0x02,0x00,False,4,"Set device time"],
+# iKettle 2.0 v19 all mapped out using sweep
+# SmarterCoffee a lot of unknown, please preform sweep
+iBrewMessages = [[0x00,0x2e,True, 4,"Working unknown reply"],
+                 [0x02,0x00,False,4,"Set device time"],
                  [0x03,0xff,True ,3,"Command status"],
                  [0x05,0x00,False,4,"Set WiFi network SSID"],
                  [0x07,0x00,False,4,"Set WiFi network password"],
                  [0x0c,0x00,False,4,"Connect to WiFi network"],
                  [0x0d,0x0e,False,4,"Scan for WiFi networks"],
-                 [0x0e,0xff,True ,4,"List of WiFi networks"],
+                 [0x0e,0x0d,True ,4,"List of WiFi networks"],
                  [0x0f,0x00,False,4,"Reset Wifi networks"],
                  [0x10,0x00,False,4,"Working unknown command (reset?)"],
                  [0x14,0xff,True ,3,"Device status"],
@@ -53,11 +56,14 @@ iBrewMessages = [[0x02,0x00,False,4,"Set device time"],
                  [0x22,0x00,False,4,"Working unknown command (turn on?)"],
                  [0x23,0x00,False,4,"Working unknown command (turn on?)"],
                  [0x28,0x29,False,4,"Working unknown command"],
-                 [0x29,0xff,True ,4,"Working unknown reply"],
+                 [0x29,0x28,True ,4,"Working unknown reply"],
                  [0x2a,0x00,False,4,"Set water sensor base value"],
                  [0x2b,0x2d,False,4,"Get water sensor base value"],
                  [0x2c,0x2d,False,4,"Calibrate water sensor"],
                  [0x2d,0xff,True ,4,"Water sensor base value"],
+                 # FIX  0x2f and 00 back
+                 [0x2e,0x2f,False,4,"Get user settings"],
+                 [0x2f,0x2e,True ,4,"User settings"],
                  [0x30,0x00,False,4,"Working unknown command"],
                  [0x32,0x00,False,2,"Working unknown command"],
                  [0x33,0x00,False,2,"Start coffee brewing"],
@@ -99,9 +105,30 @@ def iBrew_raw_to_hex(data):
 
 def iBrew_message(id):
     for i in range(0,len(iBrewMessages)):
-        if iBrewMessages[i][0] == int(id,16):
+        if iBrewMessages[i][0] == int(str(id),16):
             return iBrewMessages[i]
     return [0x00,0x00,False,0,""]
+
+
+def iBrew_message_o(id):
+    for i in range(0,len(iBrewMessages)):
+        if iBrewMessages[i][0] == int(id,16):
+            return int(iBrewMessages[i][0])
+    return 0
+
+def iBrew_message_kettle(id):
+    for i in range(0,len(iBrewMessages)):
+        if iBrewMessages[i][0] == int(id,16):
+        #3 1,3,4
+            return iBrewMessages[i][3] == 1 or iBrewMessages[i][3] == 3 or iBrewMessages[i][3] == 4
+    return 0
+
+def iBrew_message_coffee(id):
+    for i in range(0,len(iBrewMessages)):
+        if iBrewMessages[i][0] == int(id,16):
+        #3 2,3,5
+            return iBrewMessages[i][3] == 2 or iBrewMessages[i][3] == 3 or iBrewMessages[i][3] == 5
+    return 0
 
 def iBrew_message_description(id):
     return iBrew_message(id)[4]
@@ -145,6 +172,7 @@ iBrewCommandStrength         = '\x35'
 iBrewCommandBrew             = '\x37'
 
 # iKettle Commands
+
 iBrewCommandCalibrate          = '\x2c'
 iBrewCommandWaterSensorBase    = '\x2b'
 iBrewCommandSetWaterSensorBase = '\x2b'
@@ -162,6 +190,9 @@ iBrewCommandWiFiPassword     = '\x07'
 iBrewCommandWiFiName         = '\x05'
 
 # Response messages
+iBrewResponseZero             = '\x00'
+iBrewResponseSettings         = '\x2f'
+
 iBrewResponseStatus           = '\x03'
 iBrewResponseWifiList         = '\x0e'
 iBrewResponseUnknown          = '\x29'
@@ -304,7 +335,7 @@ class iBrewProtocol:
         print "  Is connected locally it will send a command response message"
         print "  as reply to a command before any other response message"
         print
-        print "192.168.4.1"
+        print "  Default 192.168.4.1:2081"
     
     def messages_short(self,messageType):
         for i in range(0,len(iBrewMessages)):
@@ -346,19 +377,34 @@ class iBrewProtocol:
         print "      if it fails to access the access point it beeps once, and it opens up its own default"
         print "      open unencrypted WiFi access point"
 
+    def wireshark(self):
+        print
+        print " Capturing the protocol using WireShark"
+        print
+        print " OS X: Step 1: Download wireshark (https://www.wireshark.org/) for mac and install it."
+        print "       Step 2: Setup your kettle or coffee machine to use your home network."
+        print "       Step 3: Connect you mac to your network NOT using the build in WiFi adapter."
+        print "               Use either a cable (ethernet recommended) or a second WiFi adapter."
+        print "       Step 4: Enable and setup internet sharing in system preferences, sharing."
+        print "       Step 5: Connect with your phone to the internet sharing wireless access point."
+        print "       Step 6: Run wiresharp it and select your build in WiFi adapter and start the capture."
+        print "       Step 7: Connect with smarter phone app."
+        print "       Step 8: Look for connection with messages ending in 7e"
+        print
+
     def security(self):
         print
         print "  Security:"
         print
         print "  iKettle 2.0:"
-        print "      1. It will boil empty, making the lights bulbs to flikker."
-        print "      2. You can easily knock out it's connection to the wireless network,"
+        print "      *  It will boil empty, making the lights bulbs to flikker."
+        print "      *  You can easily knock out it's connection to the wireless network,"
         print "         if it fails to connect it creates an default open unencrypted WiFi access point."
         print
         print "         Attack Vectors"
         print "         1. Repeat sending heat to 100ºC temperature commands, if we're lucky"
         print "            there is no water and it will boil empty, if not it will take a while."
-        print "            plus the kettle will get warmer and warmer. If you do not expect that."
+        print "            plus the kettle will get warmer and warmer. If you do not expect that. :-)"
         print "         2. Alternating heat and stop commands."
         print "         3. (Check) Wait until the owner of the kettle log in on the kettle, since its an"
         print "            open access point and the password are send in the open you can read it."
@@ -391,7 +437,8 @@ class iBrewProtocol:
                 print "                   " + m + " " + iBrew_message_description(m)
             print
 
-
+        if id == '00':
+            print "00 7e n reply to set default...  1f 05 20 01 40 7e "
         if id == '02':
             print "  Arguments: <Seconds><Minutes><Hours><Unknown><Day><Month><Century><Year>"
             print "  Note: Unknown is Day of week index?"
@@ -489,6 +536,7 @@ class iBrewProtocol:
             print "  29 00 7e"
             print "  29 08 01 5f .. .. xx 7e"
             print "  29 01 01 5f 00 00 10 00 19 00 01 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7d 7e"
+            print "  29 02 01 5f 00 00 0f 00 09 03 15 0a 19 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7d 01 5f 00 00 10 00 09 0e 15 0a 19 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7d 7e"
             print
             print "  No information available on message"
         elif id == '2a':
@@ -502,6 +550,8 @@ class iBrewProtocol:
             print
             print "  Example raw code: 2c ?? ?? 7e"
             self.calibration()
+
+            # 2f temp keepwarm togglefute ...
         elif id == '3c':
             print "  Example raw code: 3c 7e"
         elif id == '30':
@@ -524,6 +574,7 @@ class iBrewProtocol:
             self.coffeeBrewing()
         elif id == '37':
             print "  Example 37 7e start brewing"
+            self.coffeeBrewing()
         elif id == '3c':
             print "  Example raw code: 3c 7e"
         elif id == '3e':
@@ -581,9 +632,7 @@ class iBrewProtocol:
             print "  No information available on message " + id
         print
 
-    def all(self):
-        self.structure()
-        self.messages()
+    def messages_all(self):
         for i in range(0,len(iBrewMessages)):
             self.message(iBrew_raw_to_hex(iBrewMessages[i][0]))
 
