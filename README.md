@@ -4,6 +4,9 @@
 ## Introduction
 iBrew is a (python) interface to iKettle 2.0 and Smarter Coffee devices. It includes a console, monitor, and command line interface. You can also use it in your own code. iKettle 2.0 tested only.  Please share you Smarter Coffee codes or any other discoveries you made.
 
+#### Please donate you raw codes
+Someone please run ```iBrew``` sweep on there coffee machines and post the results in the issues.
+
 #### Versions
  * v0.0 Bean Grinder Pack
  * v0.1 White Tealeaf Edition
