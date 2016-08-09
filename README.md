@@ -7,9 +7,27 @@ iBrew is a (python) interface to iKettle 2.0 and Smarter Coffee devices. It incl
 #### Versions
  * v0.0 Bean Grinder Pack
  * v0.1 White Tealeaf Edition
-
+ 
+Upcoming
+ 
+ * v0.2 Tea Noir Suite
+ - [x] simplify and better renaming console
+ - [x] command scanfunction (sweep)
+ - [x] search & add new reply messages (as possible)
+ - [x] search & add new command messages (as possible)
+ - [ ] Show message parameters
+ - [x] WiFi Commands
+ - [ ] WiFi Setup
+ - [ ] Heat/Formula & Brew temperature/time controlled
+ - [ ] When heating and fast temperature rise auto-shutdown (iKettle2)
+ - [ ] Clean up code (better interface protocol...)
+ - [ ] Clean up message descriptions
+ - [ ] Fix Network code, it does not read the status messages so it get's backlogged...
+ - [ ] Figure out the waterlevel (iKettle2)
+ - [ ] Smarter codes
+ 
 #### Donate
-Please donate (for) a (working) Smarter Coffee (interface), can not test without one or without help!
+Please donate raw codes or donate (for) a (working) Smarter Coffee (interface), can not test without one or without help!
 
 #### Contact
 [Bugs or issues](https://github.com/Tristan79/iBrew/issues). Donations & other questions <tristan@monkeycat.nl>
