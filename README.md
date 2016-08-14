@@ -10,24 +10,16 @@ Someone please run ```iBrew``` sweep on there coffee machines and post the resul
 #### Versions
  * v0.0 Bean Grinder Pack
  * v0.1 White Tealeaf Edition
+ * v0.2 Tea Noir Suite
  
 Upcoming
  
- * v0.2 Tea Noir Suite
- - [x] simplify and better renaming console
- - [x] command scanfunction (sweep)
- - [x] search & add new reply messages (as possible)
- - [x] search & add new command messages (as possible)
- - [ ] Show message parameters
- - [x] WiFi Commands
+ * v0.2 Kettle Rattle
  - [ ] WiFi Setup
- - [ ] Heat/Formula & Brew temperature/time controlled
+ - [ ] Heat/Formula & Brew/Hotplate temperature/time controlled
  - [ ] When heating and fast temperature rise auto-shutdown (iKettle2)
- - [ ] Clean up code (better interface protocol...)
- - [ ] Clean up message descriptions
  - [ ] Fix Network code, it does not read the status messages so it get's backlogged...
  - [ ] Figure out the waterlevel (iKettle2)
- - [ ] Smarter codes
  
 #### Donate
 Please donate raw codes or donate (for) a (working) Smarter Coffee (interface), can not test without one or without help!
@@ -56,42 +48,47 @@ The file iBrewSettings.py contains the default settings. You can edit it with yo
 ## Usage
 
 ### Command Line Options
- The following commands are available at the command line:
  
 ```
-Usage:
-  iBrew [console command] (host)
 
-  (host) ip4 format, ip6 format or host name
+Usage: iBrew (dump) [arguments] (host)
+
+
+Where: host             ip4 format, ip6 format or host name
+       dump             dump enabled
+       arguments        see console commands
 ```
 
 ### Console
 Start the console with the command `iBrew console`. The following commands are available within the console:
 
 ```
-
+ 
   iKettle 2.0 & Smarter Coffee Commands
   info                   Device info
+  history                Action history
   start                  Start the device
   status                 Show status
+  reset                  Reset device to default
   stop                   Stop the device
   [data]                 Send raw data to device
 
   iKettle 2.0 Commands
   base                   Show watersensor base value
+  base [base]            Store watersensor base value
   calibrate              Calibrates watersensor
   default                Set default settings
   formula ()()           Heat kettle in formula mode
   heat ()()              Heat kettle
-  settings               Set user settings
-  store base [base]      Store watersensor base value
+  settings               Show user settings
+  settings [] [] [] []   Store user settings
 
   Smarter Coffee Commands
   brew                   Brew coffee
   cups [number]          Set number of cups [1..12]
   grinder                Toggle grinder
   hotplate off           Turn hotplate off
-  hotplate on            Turn hotplate on
+  hotplate on ()         Turn hotplate on
   strength [strength]    Set strength coffee [weak, medium or strong]
 
   WiFi Commands
@@ -99,18 +96,19 @@ Start the console with the command `iBrew console`. The following commands are a
   firmware               Show firmware WiFi
   name [name]            Set wireless network name to access
   password [password]    Set password of wireless network to access
-  reset                  Reset WiFi
+  clear                  Resets WiFi to default
   scan                   Scan wireless networks
 
   Help Commands
   examples               Show examples of commands
   messages               Show all known protocol messages
   message [id]           Show protocol message detail
-  protocol               Show protocol structure
-  smarter                Show protocol
+  protocol               Show protocol information
+  smarter                Print protocol
 
   Debug Commands
   dump                   Toggle 'dump raw messages'
+  console                [Command line only] start console
   monitor                Monitor incomming traffic
   sweep [startcommand]   Try (all) unknown command codes
 
