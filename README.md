@@ -1,4 +1,4 @@
-# iBrew White Tealeaf Edition
+# iBrew Tea Noire Sweet
 [iKettle 2.0](http://smarter.am/ikettle) and [Smarter Coffee](http://smarter.am/coffee) Interface
 
 ## Introduction
@@ -10,16 +10,19 @@ Someone please run ```iBrew``` sweep on there coffee machines and post the resul
 #### Versions
  * v0.0 Bean Grinder Pack
  * v0.1 White Tealeaf Edition
- * v0.2 Tea Noir Suite
+ * v0.2 Tea Noire Sweet
  
 Upcoming
  
- * v0.2 Kettle Rattle
+ * v0.3 Kettle Rattle
+ 
+ ToDo:
  - [ ] WiFi Setup
  - [ ] Heat/Formula & Brew/Hotplate temperature/time controlled
  - [ ] When heating and fast temperature rise auto-shutdown (iKettle2)
  - [ ] Fix Network code, it does not read the status messages so it get's backlogged...
  - [ ] Figure out the waterlevel (iKettle2)
+ - [ ] Server?
  
 #### Donate
 Please donate raw codes or donate (for) a (working) Smarter Coffee (interface), can not test without one or without help!
