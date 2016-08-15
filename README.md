@@ -46,9 +46,6 @@ You can download and unpack the [source](https://github.com/Tristan79/iBrew/arch
 git clone https://github.com/Tristan79/iBrew.git
 ```
 
-#### Setup
-The file iBrewSettings.py contains the default settings. You can edit it with your favorite editor
-
 ## Usage
 
 ### Command Line Options
