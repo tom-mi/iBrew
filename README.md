@@ -55,8 +55,8 @@ git clone https://github.com/Tristan79/iBrew.git
 Usage: iBrew (dump) [arguments] (host)
 
 
-Where: host             ip4 format, ip6 format or host name
-       dump             dump enabled
+       host             host address (format: ip4, ip6, fqdn)
+       dump             dump message enabled
        arguments        see console commands
 ```
 
@@ -109,13 +109,13 @@ Start the console with the command `iBrew console`. The following commands are a
 
   Debug Commands
   dump                   Toggle 'dump raw messages'
-  console                [Command line only] start console
+  console                Start console [Command line only]
   monitor                Monitor incomming traffic
   sweep [startcommand]   Try (all) unknown command codes
 
   Console Commands
   joke                   Show joke
-  quit                   Quit console
+  quit                   Quit console [Console only]
 
 ```
 

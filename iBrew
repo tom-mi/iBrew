@@ -361,6 +361,9 @@ class iBrewConsole:
         print
         print "Usage: iBrew (dump) [arguments] (host)"
         print
+        print "    host             host address (format: ip4, ip6, fqdn)"
+        print "    dump             dump message enabled"
+        print "    arguments        see console commands"
 
     def help(self):
         print
@@ -409,13 +412,13 @@ class iBrewConsole:
         print
         print "  Debug Commands"
         print "  dump                   Toggle \'dump raw messages\'"
-        print "  console                [Command line only] start console"
+        print "  console                Start console [Command line only]"
         print "  monitor                Monitor incomming traffic"
         print "  sweep [startcommand]   Try (all) unknown command codes"
         print
         print "  Console Commands"
         print "  joke                   Show joke"
-        print "  quit                   Quit console"
+        print "  quit                   Quit console [Console only]"
         print
 
     def examples(self):
