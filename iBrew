@@ -2,15 +2,15 @@
 # -*- coding: utf8 -*
 
 import sys
-
-# -*- coding: utf8 -*
-
-import sys
 import random
+
+import json
+import urllib
 
 from SmarterClient import *
 from SmarterProtocol import *
 from SmarterHelp import *
+from Domoticz import *
 
 #------------------------------------------------------
 # iBrew
@@ -46,7 +46,7 @@ class iBrewConsole:
     # receive is a response message 14 (status device),
     # if there are any other messages we print them too!
     
-    def monitor(self, bridge=None):
+    def monitor(self):
         print "iBrew: Press ctrl-c to stop"
         
         # repeat until...
@@ -67,16 +67,65 @@ class iBrewConsole:
                     previousResponse = response
                     # ...else got one! yeah! print it!
                     self.client.print_short_status()
-        
-                    # pass
-                    if bridge is not None:
-                        #v0.3 call domoticz, or other monitor function
-                        #brige(self.client)
-                        pass
-        
             except:
                 break
+
+
+
+    #------------------------------------------------------
+    # iBrew DOMOTICZ
+    #------------------------------------------------------
+    # See monitor
+    
+    def domoticz_bridge(self, server, name, sleep = 0, secure=False):
+        
+        if not client.isKettle:
+            print "iBrew: Smarter Coffee not supported"
+            return
+        
+        domoticz = Domoticz(server,secure)
+        if domoticz.use_virtual_hardware("Smarter"):
+        
+            temp_name = name + " Temperature"
+            temp_type = domoticz.SensorTemperature
+            temp_idx = domoticz.use_virtual_sensor(temp_name,temp_type)
+            
+            water_name = name + " Water"
+            water_type = domoticz.SensorCustom
+            water_idx  = domoticz.use_virtual_sensor(water_name,water_type,"u")
+            
+            if temp_idx == "None" or water_idx == "None":
+                print "iBrew: Failed to get Sensor IDX"
+                return
+            print "iBrew: Using " + domoticz.print_type(temp_type) + " sensor ["+ temp_name + "] IDX " + str(temp_idx)
+            print "iBrew: Using " + domoticz.print_type(water_type) + " sensor ["+ water_name + "] IDX " + str(water_idx)
+        else:
+            print "iBrew: Could not find hardware"
+            return
+
+        print "iBrew: Domoticz Bridge: Press ctrl-c to stop"
+
+        previousResponse = ""
+        
+        while True:
+            try:
+                response = self.client.read()
+                print "custom"
+                if previousResponse == response:
+                    continue
+                previousResponse = response
+                if domoticz.set_temperature(temp_idx,self.client.temperature):
+                    print "iBrew: Updated temperature " + str(self.client.temperature) + "ºC"
+                print "custom"
                 
+                #oldwater == client.waterSensor
+                if domoticz.set_custom(water_idx,self.client.waterSensor):
+                    print "iBrew: Updated waterlevel sensor " + str(self.client.waterSensor)
+                
+            except:
+                break
+        
+    
     #------------------------------------------------------
     # iBrew SWEEP
     #------------------------------------------------------
@@ -134,6 +183,9 @@ class iBrewConsole:
             return
         if command == "smarter":
             SmarterHelp.show()
+            return
+        if command == "domoticz":
+            self.domoticz()
             return
         if command == "messages":
             SmarterHelp.messages()
@@ -272,6 +324,10 @@ class iBrewConsole:
                 # Console Commands
                 elif input == "exit" or input == "quit":
                     break
+                elif input[0:9] == "domoticz ":
+                    self.domoticz_bridge("localhost:8080","iKettle")
+                elif input == "domoticz":
+                    self.domoticz()
                 elif input == "monitor":
                     self.monitor()
                 elif input == "sweep":
@@ -406,31 +462,56 @@ class iBrewConsole:
         print "  Help Commands"
         print "  examples               Show examples of commands"
         print "  messages               Show all known protocol messages"
-        print "  message [id]           Show protocol message detail"
-        print "  protocol               Show protocol information"
-        print "  smarter                Print protocol"
+        print "  message [id]           Show protocol message detail of message [id]"
+        print "  protocol               Show protocol structure information"
+        print "  smarter                Show whole protocol including messages"
+        print "  domoticz               Show domoticz bridge help"
+        print
+        print "  Bridge Commands"
+        print "  domoticz [host][name]  Enables domoticz bridge mode"
         print
         print "  Debug Commands"
         print "  dump                   Toggle \'dump raw messages\'"
         print "  console                Start console [Command line only]"
         print "  monitor                Monitor incomming traffic"
-        print "  sweep [startcommand]   Try (all) unknown command codes"
+        print "  sweep (id)             Try (all or start with id) unknown command codes"
         print
         print "  Console Commands"
         print "  joke                   Show joke"
         print "  quit                   Quit console [Console only]"
         print
 
+    def domoticz(self):
+        print """
+
+Domoticz Bridge
+
+Currently iKettle 2.0 Only
+
+  Domoticz Setup
+
+    *  Go to [SETUP] [HARDWARE]
+    *  Add new hardware [Dummy (Does nothing, use for virtual switches only)] with name [Smarter]
+    *  Choose your basename, for example "Kettle", but it can be any name you like.
+    *  Use [Create Virtual Sensors] the create the following virtual sensors
+         
+         Name: basename + " Temperature" Sensor Type: Temperature
+         Name: basename + " Power" Sensor Type: Switch
+
+       If you have for example basename "Kettle" then temperature sensor would be called "Kettle Temperature"
+
+              """
+
     def examples(self):
         print
-        print "Example:"
-        print "  off            iKettle 2.0 Stop boiling"
-        print "  messages       Show all protocol messages"
-        print "  message 3e     Show protocol message 3a, turn hotplate on"
-        print "  167E           Send iKettle 2.0 raw off"
-        print "  21 30 05 7e    Send iKettle 2.0 raw on"
-        print "  strength weak  Set SmarterCoffee coffee strength to weak"
-        print "  cups 3         Set SmarterCoffee number of cups to brew"
+        print "  Example:"
+        print "    off            iKettle 2.0 Stop boiling"
+        print "    messages       Show all protocol messages"
+        print "    message 3e     Show protocol message 3a, turn hotplate on"
+        print "    167E           Send iKettle 2.0 raw off"
+        print "    21 30 05 7e    Send iKettle 2.0 raw on"
+        print "    strength weak  Set SmarterCoffee coffee strength to weak"
+        print "    cups 3         Set SmarterCoffee number of cups to brew"
         print
 
     teaJokes = [["What do you call a talkative drink?","Chai tea."],

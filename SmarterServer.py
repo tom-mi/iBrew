@@ -3,7 +3,7 @@
 import socket
 import os
 import sys
-import * from SmarterProtocol
+from SmarterProtocol import *
 
 #------------------------------------------------------
 # SMARTER SERVER INTERFACE
