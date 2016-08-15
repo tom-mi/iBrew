@@ -10,7 +10,7 @@ Someone please run ```iBrew``` sweep on there coffee machines and post the resul
 #### Versions
  * v0.0 Bean Grinder Pack
  * v0.1 White Tealeaf Edition
- * v0.2 Tea Noire Sweet
+ * v0.2 Tea Noir Sweet
  
 Upcoming
  

@@ -31,7 +31,7 @@ from SmarterHelp import *
 
 
 iBrewApp          = "iBrew: iKettle 2.0 & Smarter Coffee Interface"
-iBrewInfo         = "Noire Tea Sweet v0.2a © 2016 Tristan (@monkeycat.nl)"
+iBrewInfo         = "Noir Tea Sweet v0.2a © 2016 Tristan (@monkeycat.nl)"
 iBrewDonate       = "Please donate (for) a (working) Smarter Coffee (interface)"
 
 
