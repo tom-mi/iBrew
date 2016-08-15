@@ -24,15 +24,18 @@ import urllib
 
 class Domoticz:
 
+
     def __init__(self,server,secure = False):
         self.server = server
         self.secure = secure
+
 
     def base(self):
         s = ""
         if self.secure:
             s = "s"
         return "http" + s + "://" + self.server + "/json.htm?"
+
 
     def exists_hardware(self,name):
         url = self.base() + "type=hardware"
@@ -43,6 +46,7 @@ class Domoticz:
                 if name == data["result"][i]["Name"]:
                     return data["result"][i]["idx"]
         return "None"
+
 
     def use_virtual_hardware(self,name):
         self.hardware_idx = self.exists_hardware(name)
@@ -83,19 +87,51 @@ class Domoticz:
             return "None"
 
 
+    def use_virtual_custom(self,name,ax):
+        return self.use_virtual_sensor(name,self.SensorCustom,"1;"+ax)
+
+
+    def use_virtual_temperature(self,name):
+        return self.use_virtual_sensor(name,self.SensorTemperature)
+
+
+    def use_virtual_humidy(self,name):
+        return self.use_virtual_sensor(name,self.SensorHumidity)
+
+
+    def use_virtual_motion(self,name):
+        idx = self.use_virtual_sensor(name,self.SensorSwitch)
+        self.set_switch_type(idx,name,self.SwitchTypeMotion)
+        return idx
+
+
+    SensorSwitch      = 6
     SensorTemperature = 80
     SensorHumidity    = 81
     SensorCustom      = 1004
+
 
     def print_type(self,type):
         if type == self.SensorTemperature:  return "Temperature"
         elif type == self.SensorHumidity:   return "Humidity"
         elif type == self.SensorCustom:     return "Custom"
+        elif type == self.SensorSwitch:     return "Switch"
         else:                               return "Unknown"
 
 
+    SwitchTypeMotion  = 8
+    SwitchTypeContact = 2
+    
     # no check if right sensor....
 
+
+    def set_switch_type(self,idx,name,type):
+       url = self.base() + "type=setused&idx=" + idx + "&switchtype=8&name=" + name + "&description=&strparam1=&strparam2=&protected=false&customimage=0&used=true&addjvalue=0&options="
+       response = urllib.urlopen(url)
+       data = json.loads(response.read())
+ 
+
+    # should chop of ax... just do not use ax for the moment...
     def get_custom(self,idx):
         url = self.base() + "type=devices&rid=" + idx
         response = urllib.urlopen(url)
@@ -103,6 +139,7 @@ class Domoticz:
         return data["result"][0]["Data"]
 
 
+    # should chop of ax... just do not use ax for the moment...
     def set_custom(self,idx,custom):
         if float(self.get_custom(idx)) != float(custom):
             url = self.base() + "type=command&param=udevice&idx=" + idx + "&nvalue=0&svalue="+str(custom)
@@ -116,10 +153,30 @@ class Domoticz:
         response = urllib.urlopen(url)
         data = json.loads(response.read())
         return data["result"][0]["Temp"]
+    
 
     def set_temperature(self,idx,temperature):
         if float(self.get_temperature(idx)) != float(temperature):
             url = self.base() + "type=command&param=udevice&idx=" + idx + "&nvalue=0&svalue="+str(temperature)
+            response = urllib.urlopen(url)
+            return True
+        return False
+
+
+    def get_motion(self,idx):
+        url = self.base() + "type=devices&rid=" + idx
+        response = urllib.urlopen(url)
+        data = json.loads(response.read())
+        return data["result"][0]["Status"]
+    
+
+    def set_motion(self,idx,switch):
+        if switch:
+            status = "On"
+        else:
+            status = "Off"
+        if self.get_motion(idx) != status:
+            url = self.base() + "type=command&param=switchlight&idx=" + idx + "&switchcmd="+str(status)
             response = urllib.urlopen(url)
             return True
         return False

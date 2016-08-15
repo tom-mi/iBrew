@@ -86,27 +86,34 @@ class iBrewConsole:
         domoticz = Domoticz(server,secure)
         if domoticz.use_virtual_hardware("Smarter"):
         
-            temp_name = name + " Temperature"
-            temp_type = domoticz.SensorTemperature
-            temp_idx = domoticz.use_virtual_sensor(temp_name,temp_type)
+            temp_name    = name + " Temperature"
+            temp_type    = domoticz.SensorTemperature
+            offbase_name = name + " Base"
+            offbase_type = domoticz.SensorSwitch
+            water_name   = name + " Water"
+            water_type   = domoticz.SensorCustom
             
-            water_name = name + " Water"
-            water_type = domoticz.SensorCustom
-            water_idx  = domoticz.use_virtual_sensor(water_name,water_type,"u")
-            
-            if temp_idx == "None" or water_idx == "None":
+            water_idx   = domoticz.use_virtual_custom(water_name,"")
+            temp_idx    = domoticz.use_virtual_temperature(temp_name)
+            offbase_idx = domoticz.use_virtual_motion(offbase_name)
+
+            if offbase_idx == "None" or temp_idx == "None" or water_idx == "None":
                 print "iBrew: Failed to get Sensor IDX"
                 return
+            
             print "iBrew: Using " + domoticz.print_type(temp_type) + " sensor ["+ temp_name + "] IDX " + str(temp_idx)
             print "iBrew: Using " + domoticz.print_type(water_type) + " sensor ["+ water_name + "] IDX " + str(water_idx)
+            print "iBrew: Using " + domoticz.print_type(offbase_type) + " sensor ["+ offbase_name + "] IDX " + str(offbase_idx)
         else:
             print "iBrew: Could not find hardware"
             return
 
+  
         print "iBrew: Domoticz Bridge: Press ctrl-c to stop"
 
         previousResponse = ""
         previousWaterSensor = 0
+
         while True:
             try:
                 response = self.client.read()
@@ -115,12 +122,19 @@ class iBrewConsole:
                 previousResponse = response
                 
                 if domoticz.set_temperature(temp_idx,self.client.temperature):
-                    print "iBrew: Updated temperature " + str(self.client.temperature) + "ºC"
+                    print "iBrew: Updated water temperature " + str(self.client.temperature) + "ºC"
             
                 if previousWaterSensor - 3 > self.client.waterSensor or previousWaterSensor + 3 < self.client.waterSensor:
                     if domoticz.set_custom(water_idx,self.client.waterSensor):
-                        print "iBrew: Updated waterlevel sensor " + str(self.client.waterSensor)
+                        print "iBrew: Updated water level " + str(self.client.waterSensor)
                     previousWaterSensor = self.client.waterSensor
+                if domoticz.set_motion(offbase_idx,self.client.onBase):
+                    if self.client.onBase:
+                        s = "on"
+                    else:
+                        s = "off"
+                    print "iBrew: Updated kettle " + s + " base"
+                    
             except:
                 break
         
@@ -169,12 +183,15 @@ class iBrewConsole:
 
     def __init__(self,host,arguments=""):
         command = arguments.lower().strip()
+        commandCase = arguments.strip()
+        
         self.app_info()
         
         dump = False
         if "dump" in command:
             dump = True
             command = command.replace("dump","").strip()
+            commandCase = commandCase.replace("dump","").strip()
         
         if command == "help":
             self.intro_cl()
@@ -210,6 +227,7 @@ class iBrewConsole:
             client.print_status()
         if command == "console":
             command = ""
+            commandCase = ""
             self.intro()
 
         cursor = client.host + ":" + client.device + "$"
@@ -220,9 +238,11 @@ class iBrewConsole:
             try:
                 # are we command line or console?
                 if (command==""):
-                    input = raw_input(cursor).lower().strip()
+                    inputCase = raw_input(cursor).strip()
+                    input = inputCase.lower()
                 else:
                     input = command
+                    inputCase = commandCase
                     loop = False
                 
 
@@ -324,7 +344,15 @@ class iBrewConsole:
                 elif input == "exit" or input == "quit":
                     break
                 elif input[0:9] == "domoticz ":
-                    self.domoticz_bridge("localhost:8080","iKettle")
+                    arguments = inputCase[9:len(inputCase)]
+                    try:
+                        server = arguments.split(" ")[0]
+                        name   = arguments[len(server)+1:len(arguments)]
+                        print server
+                        print name
+                    except:
+                        print "iBrew: problem with domoticz arguments " + arguments
+                    self.domoticz_bridge(server,name)
                 elif input == "domoticz":
                     self.domoticz()
                 elif input == "monitor":
