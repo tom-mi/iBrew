@@ -186,7 +186,7 @@ class iBrewConsole:
                     client.kettle_store_settings()
                 elif input == "settings":
                     client.kettle_settings()
-                    client.print_kettle_settings()
+                    if not client.dump: client.print_kettle_settings()
                 elif input[0:9] == "settings ":
                     client.kettle_store_settings()
                     print "iBrew: Not Fully Implemented"

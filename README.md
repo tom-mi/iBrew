@@ -23,6 +23,7 @@ Upcoming
  - [ ] Fix Network code, it does not read the status messages so it get's backlogged...
  - [ ] Figure out the waterlevel (iKettle2)
  - [ ] Server?
+ - [ ] History/Settings
  
 #### Donate
 Please donate raw codes or donate (for) a (working) Smarter Coffee (interface), can not test without one or without help!
