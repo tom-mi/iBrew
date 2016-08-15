@@ -135,7 +135,6 @@ class Domoticz:
 
 
     def use_virtual_humidy(self,name):
-        print "HIER BEGIN"
         return self.use_virtual_sensor(name,self.SensorHumidity)
 
 
@@ -203,7 +202,6 @@ class Domoticz:
     def set_text(self,idx,text):
         if str(self.get_text(idx)) != str(text):
             url = self.base() + "type=command&param=udevice&idx=" + idx + "&nvalue=0&svalue="+text
-            print url
             response = urllib.urlopen(url)
             return True
         return False
