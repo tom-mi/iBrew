@@ -108,7 +108,7 @@ class iBrewConsole:
             print "iBrew: Could not find hardware"
             return
 
-  
+
         print "iBrew: Domoticz Bridge: Press ctrl-c to stop"
 
         previousResponse = ""
@@ -221,7 +221,7 @@ class iBrewConsole:
             print "iBrew: Could not connect"
             return
 
-        if command == "console" or command == "sweep" or command == "monitor":
+        if command == "console" or command[0:5] == "sweep" or command == "monitor" or command[0:8] == "domoticz":
             self.joke()
             client.print_connect_status()
             client.print_status()
