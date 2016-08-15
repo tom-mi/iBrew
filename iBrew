@@ -79,9 +79,9 @@ class iBrewConsole:
     
     def domoticz_bridge(self, server, name, sleep = 0, secure=False):
         
-        if not client.isKettle:
-            print "iBrew: Smarter Coffee not supported"
-            return
+        #if not client.isKettle:
+         #   print "iBrew: Smarter Coffee not supported"
+         #   return
         
         domoticz = Domoticz(server,secure)
         if domoticz.use_virtual_hardware("Smarter"):
@@ -106,22 +106,21 @@ class iBrewConsole:
         print "iBrew: Domoticz Bridge: Press ctrl-c to stop"
 
         previousResponse = ""
-        
+        previousWaterSensor = 0
         while True:
             try:
                 response = self.client.read()
-                print "custom"
                 if previousResponse == response:
                     continue
                 previousResponse = response
+                
                 if domoticz.set_temperature(temp_idx,self.client.temperature):
                     print "iBrew: Updated temperature " + str(self.client.temperature) + "ºC"
-                print "custom"
-                
-                #oldwater == client.waterSensor
-                if domoticz.set_custom(water_idx,self.client.waterSensor):
-                    print "iBrew: Updated waterlevel sensor " + str(self.client.waterSensor)
-                
+            
+                if previousWaterSensor - 3 > self.client.waterSensor or previousWaterSensor + 3 < self.client.waterSensor:
+                    if domoticz.set_custom(water_idx,self.client.waterSensor):
+                        print "iBrew: Updated waterlevel sensor " + str(self.client.waterSensor)
+                    previousWaterSensor = self.client.waterSensor
             except:
                 break
         

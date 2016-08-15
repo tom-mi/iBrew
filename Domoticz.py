@@ -97,7 +97,6 @@ class Domoticz:
     # no check if right sensor....
 
     def get_custom(self,idx):
-        print "jiiulh"
         url = self.base() + "type=devices&rid=" + idx
         response = urllib.urlopen(url)
         data = json.loads(response.read())
@@ -105,7 +104,6 @@ class Domoticz:
 
 
     def set_custom(self,idx,custom):
-        print "ssss"
         if float(self.get_custom(idx)) != float(custom):
             url = self.base() + "type=command&param=udevice&idx=" + idx + "&nvalue=0&svalue="+str(custom)
             response = urllib.urlopen(url)
