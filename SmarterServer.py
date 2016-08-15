@@ -121,7 +121,7 @@ class SmarterServer:
     def encode_ResponseSettings(self,message):
         # ORDER BUG BUG HERE WIRESHARK AGAIN!!!!
         # isKettle?
-        message = Smarter.encode_ResponseSettings+Smarter.temperature_to_raw(self.defaultTemperature)+Smarter.timer_to_raw(self.defaultKeepWarmTime)+Smarter.temperature_to_raw(self.defaultFormulaTemperature)
+        message = Smarter.encode_ResponseSettings+Smarter.temperature_to_raw(self.defaultTemperature)+Smarter.keepwarm_to_raw(self.defaultKeepWarmTime)+Smarter.temperature_to_raw(self.defaultFormulaTemperature)
         message = message + '\x7e\x00\x03\x00'
         self.send(message)
     
@@ -285,7 +285,7 @@ class SmarterServer:
 
     def decode_CommandStoreSettings(self,message):
         try:
-            self.defaultKeepWarmTime       = Smarter.raw_to_timer(message[1])
+            self.defaultKeepWarmTime       = Smarter.raw_to_keepwarm(message[1])
             self.defaultTemperature        = Smarter.raw_to_temperature(message[2])
             self.defaultFormula            = Smarter.raw_to_bool(message[3])
             self.defaultFormulaTemperature = Smarter.raw_to_temperature(message[4])

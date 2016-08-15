@@ -50,16 +50,6 @@ class SmarterProtocol:
     #------------------------------------------------------
 
 
-    ResponseCommandStatus     = 0x03
-    ResponseWifiList          = 0x0e
-    ResponseHistory           = 0x29
-    ResponseBase              = 0x2d
-    ResponseSettings          = 0x2f
-    ResponseStatus            = 0x14
-    ResponseDeviceInfo        = 0x65
-    ResponseWifiFirmware      = 0x6b
-
-
     # device
     CommandDeviceTime         = 0x02
     CommandReset              = 0x10
@@ -109,6 +99,17 @@ class SmarterProtocol:
     Command41                 = 0x41
     Command43                 = 0x43
     Command69                 = 0x69
+
+
+    ResponseCommandStatus     = 0x03
+    ResponseWifiList          = 0x0e
+    ResponseHistory           = 0x29
+    ResponseBase              = 0x2d
+    ResponseSettings          = 0x2f
+    ResponseStatus            = 0x14
+    ResponseDeviceInfo        = 0x65
+    ResponseWifiFirmware      = 0x6b
+
 
     # format kettle? coffee? response to command, description
     CommandMessages = {
@@ -241,18 +242,6 @@ class SmarterProtocol:
     KettleCycleFinished       = 0x03
     KettleBabyCooling         = 0x04
 
-    CoffeeDescaling           = 0x51
-    CoffeeBoiling             = 0x53
-
-    StatusSucces              = 0x00
-    StatusBusy                = 0x01
-    StatusNoCarafe            = 0x02
-    StatusNoWater             = 0x03
-    StatusFailed              = 0x04
-    StatusNoCarafeUnknown     = 0x05
-    StatusNoWaterUnknown      = 0x06
-    StatusInvalid             = 0x69
-
 
     StatusKettle = {
         KettleReady             : "Ready",
@@ -263,16 +252,31 @@ class SmarterProtocol:
     }
 
 
-    StatusCommand = {
-        StatusSucces           : "Success",
-        StatusBusy             : "Busy",
-        StatusNoCarafe         : "No Carafe",
-        StatusNoWater          : "No Water",
-        StatusFailed           : "Failed",
-        StatusNoCarafeUnknown  : "No Carafe",  # which one?
-        StatusNoWaterUnknown   : "No Water",   # which one?
-        StatusInvalid          : "Invalid Command"
-    }
+    def status_kettle_description(self,status):
+        if self.StatusKettle.has_key(status):
+            return self.StatusKettle[status]
+        else:
+            return "Unknown Kettle Status " + self.number_to_code(status)
+
+
+    def string_kettle_settings(self, temperature,  formula, formulatemperature, keepwarmtime):
+        message = "Boil water to " + str(temperature) +  "ºC"
+        if formula:
+            sep = ""
+            if keepwarmtime > 0:
+                sep = ","
+            else:
+                sep = " and"
+            message = message + sep + " let it cool down to " + str(formulatemperature) +  "ºC"
+        if keepwarmtime > 0:
+            message = message + " and keep it warm for " + str(keepwarmtime) + " minutes"
+        return message
+    def is_status_command(self,status):
+        return self.StatusCommand.has_key(status)
+
+
+    CoffeeDescaling           = 0x51
+    CoffeeBoiling             = 0x53
 
 
     StatusCoffee = {
@@ -300,14 +304,26 @@ class SmarterProtocol:
             return "Unknown Coffee Status " + self.number_to_code(status)
 
 
-    def status_kettle_description(self,status):
-        if self.StatusKettle.has_key(status):
-            return self.StatusKettle[status]
-        else:
-            return "Unknown Kettle Status " + self.number_to_code(status)
+    StatusSucces              = 0x00
+    StatusBusy                = 0x01
+    StatusNoCarafe            = 0x02
+    StatusNoWater             = 0x03
+    StatusFailed              = 0x04
+    StatusNoCarafeUnknown     = 0x05
+    StatusNoWaterUnknown      = 0x06
+    StatusInvalid             = 0x69
 
-    def is_status_command(self,status):
-        return self.StatusCommand.has_key(status)
+
+    StatusCommand = {
+        StatusSucces           : "Success",
+        StatusBusy             : "Busy",
+        StatusNoCarafe         : "No Carafe",
+        StatusNoWater          : "No Water",
+        StatusFailed           : "Failed",
+        StatusNoCarafeUnknown  : "No Carafe",  # which one?
+        StatusNoWaterUnknown   : "No Water",   # which one?
+        StatusInvalid          : "Invalid Command"
+    }
 
 
     def status_command(self,status):
@@ -321,7 +337,6 @@ class SmarterProtocol:
     #------------------------------------------------------
     # RAW <-> BASIC TYPE
     #------------------------------------------------------
-
 
 
     def raw_to_number(self,raw):
@@ -514,20 +529,32 @@ class SmarterProtocol:
         return self.number_to_raw(temperature)
 
 
-    def check_timer(self,timer):
-        if self.isKettle and (timer != 0 and (timer < 5 or timer > 20)):
+    def check_keepwarm(self,timer):
+        if timer != 0 and (timer < 5 or timer > 20):
             raise SmarterError("Kettle keep warm timer out of range [0] or [5..20] minutes: " + str(timer))
-        elif self.SmarterCoffee and (timer != 0 and (timer < 5 or timer > 30)):
+        return timer
+
+
+    def check_hotplate(self,timer):
+        if timer != 0 and (timer < 5 or timer > 30):
             raise SmarterError("Hotplate timer out of range [0] or [5..30] minutes: " + str(timer))
         return timer
 
 
-    def raw_to_timer(self,raw):
-        return self.check_timer(self.raw_to_number(raw))
+    def raw_to_hotplate(self,raw):
+        return self.check_hotplate(self.raw_to_number(raw))
 
 
-    def timer_to_raw(self,timer):
-        return self.number_to_raw(self.check_timer(timer))
+    def raw_to_keepwarm(self,raw):
+        return self.check_hotplate(self.raw_to_number(raw))
+
+
+    def hotplate_to_raw(self,timer):
+        return self.number_to_raw(self.check_hotplate(timer))
+
+
+    def keepwarm_to_raw(self,timer):
+        return self.number_to_raw(self.check_keepwarm(timer))
 
 
     def raw_to_watersensor(self,raw_low,raw_high):
@@ -564,6 +591,12 @@ class SmarterProtocol:
     def cups_to_raw(self,cups):
         return self.number_to_raw(self.check_cups(cups))
     
+
+    def string_cups(self,cups):
+        if cups == 1:
+            return "1 cup"
+        else:
+            return str(self.cups) + " cups"
 
 
 
