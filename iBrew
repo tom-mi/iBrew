@@ -84,8 +84,9 @@ class iBrewConsole:
          #   return
         
         domoticz = Domoticz(server,secure)
-        if domoticz.use_virtual_hardware("Smarter"):
         
+        if domoticz.use_virtual_hardware("Smarter"):
+
             temp_name    = name + " Temperature"
             temp_type    = domoticz.SensorTemperature
             offbase_name = name + " Base"
@@ -93,17 +94,34 @@ class iBrewConsole:
             water_name   = name + " Water"
             water_type   = domoticz.SensorCustom
             
-            water_idx   = domoticz.use_virtual_custom(water_name,"")
+            #default_temp_name = name + " Default Temperature"
+            #default_temp_type = domoticz.SensorSwitch
+            #default_temp_form_name = name + " Default Formula Temperature"
+            #default_temp_form_type = domoticz.SensorSwitch
+            
+
+            status_name = name + " Status"
+            status_type = domoticz.SensorSwitch
+            
+            water_idx   = domoticz.use_virtual_custom_water(water_name,"")
             temp_idx    = domoticz.use_virtual_temperature(temp_name)
             offbase_idx = domoticz.use_virtual_motion(offbase_name)
-
-            if offbase_idx == "None" or temp_idx == "None" or water_idx == "None":
+            status_idx  = domoticz.use_virtual_text(status_name)
+            
+            #default_temp_idx = domoticz.use_virtual_heat_dimmer(default_temp_name)
+            #default_temp_form_idx = domoticz.use_virtual_heat_dimmer(default_temp_form_name)
+            
+            #if default_temp_form_idx == "None" or default_temp_idx == "None" or
+            if status_idx == "None" or offbase_idx == "None" or temp_idx == "None" or water_idx == "None":
                 print "iBrew: Failed to get Sensor IDX"
                 return
             
             print "iBrew: Using " + domoticz.print_type(temp_type) + " sensor ["+ temp_name + "] IDX " + str(temp_idx)
             print "iBrew: Using " + domoticz.print_type(water_type) + " sensor ["+ water_name + "] IDX " + str(water_idx)
             print "iBrew: Using " + domoticz.print_type(offbase_type) + " sensor ["+ offbase_name + "] IDX " + str(offbase_idx)
+            print "iBrew: Using " + domoticz.print_type(status_type) + " sensor ["+ status_name + "] IDX " + str(status_idx)
+            #print "iBrew: Using " + domoticz.print_type(default_temp_type) + " sensor ["+ default_temp_name + "] IDX " + str(default_temp_idx)
+            #print "iBrew: Using " + domoticz.print_type(default_temp_form_type) + " sensor ["+ default_temp_form_name + "] IDX " + str(default_temp_form_idx)
         else:
             print "iBrew: Could not find hardware"
             return
@@ -113,27 +131,44 @@ class iBrewConsole:
 
         previousResponse = ""
         previousWaterSensor = 0
+        previousStatus = "Unknown"
+        previousTemperature = 101
+        previousBase = False
+        previousBaseFirst = True
 
         while True:
             try:
+                print "iBrew: Reading..."
                 response = self.client.read()
                 if previousResponse == response:
                     continue
                 previousResponse = response
                 
-                if domoticz.set_temperature(temp_idx,self.client.temperature):
-                    print "iBrew: Updated water temperature " + str(self.client.temperature) + "ºC"
+                if int(previousTemperature) != self.client.temperature:
+                    if domoticz.set_temperature(temp_idx,self.client.temperature):
+                        print "iBrew: Updated water temperature " + str(self.client.temperature) + "ºC"
+                    previousTemperature = self.client.temperature
+
+                if previousStatus != self.client.kettleStatus:
+                    status = Smarter.status_kettle_description(self.client.kettleStatus)
+                    if domoticz.set_text(status_idx,status):
+                        print "iBrew: Status " + status
+                    previousStatus = self.client.kettleStatus
             
                 if previousWaterSensor - 3 > self.client.waterSensor or previousWaterSensor + 3 < self.client.waterSensor:
                     if domoticz.set_custom(water_idx,self.client.waterSensor):
                         print "iBrew: Updated water level " + str(self.client.waterSensor)
                     previousWaterSensor = self.client.waterSensor
-                if domoticz.set_motion(offbase_idx,self.client.onBase):
-                    if self.client.onBase:
-                        s = "on"
-                    else:
-                        s = "off"
-                    print "iBrew: Updated kettle " + s + " base"
+                
+                if previousBaseFirst or (previousBase != self.client.onBase):
+                    if domoticz.set_motion(offbase_idx,self.client.onBase):
+                        if self.client.onBase:
+                            s = "on"
+                        else:
+                            s = "off"
+                        print "iBrew: Updated kettle " + s + " base"
+                    previousBase = self.client.onBase
+                    previousBaseFirst = False
                     
             except:
                 break
@@ -348,8 +383,6 @@ class iBrewConsole:
                     try:
                         server = arguments.split(" ")[0]
                         name   = arguments[len(server)+1:len(arguments)]
-                        print server
-                        print name
                     except:
                         print "iBrew: problem with domoticz arguments " + arguments
                     self.domoticz_bridge(server,name)
