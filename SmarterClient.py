@@ -92,6 +92,7 @@ class SmarterClient:
     def connect(self):
         try:
             networksocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            networksocket.settimeout(10)
             networksocket.connect((self.host, self.port))
         except socket.error, msg:
             raise SmarterError("Could not connect to + " + self.host + " (" + msg[1] + ")")

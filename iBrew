@@ -638,6 +638,7 @@ class iBrewConsole:
                 ["Where there is tea","There is hope!"],
                 ["If tea is the drink of love","Then brew on!"],
                 ["It really is a serious problem","If tea can’t fix it."],
+                ["The study into soaked leafs","Teaology"],
                 ]
     
     coffeeJokes =  [["Why is a bad cup of coffee the end of a marriage?","Because it's GROUNDS for divorce!"],
