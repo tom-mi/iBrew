@@ -127,7 +127,7 @@ you can also use them on the command line as arguments:
 
 
 ### Domoticz Bridge
-Bridge between iKettle 2.0 and domoticz. Its auto-creates 4 devices in domoticz, if not yet created. Monitors the kettle and update the domoticz devices accordingly.
+Bridge between iKettle 2.0 and [Domoticz](http://domoticz.com). Its auto-creates 4 devices in domoticz, if not yet created. Monitors the kettle and update the domoticz devices accordingly.
   
   *  Water Temperature in ºC (temperature device)
   *  Water Height (custom device)      
@@ -172,8 +172,11 @@ Bridge between iKettle 2.0 and domoticz. Its auto-creates 4 devices in domoticz,
 
 #### Smart Kettles & Coffee Machines
   *    http://smarter.am/
-  *    http://www.appkettle.co.uk
+  *    http://www.appkettle.co.uk/
   *    https://www.hackster.io/lahorde/from-a-14-kettle-to-an-ikettle-d2b3f7
+
+#### Smarthome Controller
+  *    https://domoticz.com/  
       
 #### References
   *    https://github.com/Jamstah/libsmarteram2/
