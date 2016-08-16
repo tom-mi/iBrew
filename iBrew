@@ -3,9 +3,8 @@
 
 import sys
 import random
-
-import json
-import urllib
+import time
+import datetime
 
 from SmarterClient import *
 from SmarterProtocol import *
@@ -138,7 +137,8 @@ class iBrewConsole:
 
         while True:
             try:
-                print "iBrew: Reading..."
+                print "iBrew: " + datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S') + " Reading... "
+
                 response = self.client.read()
                 if previousResponse == response:
                     continue
