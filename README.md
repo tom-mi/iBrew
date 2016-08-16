@@ -2,7 +2,7 @@
 [iKettle 2.0](http://smarter.am/ikettle) and [Smarter Coffee](http://smarter.am/coffee) Interface
 
 ## Introduction
-iBrew is a (python) interface to iKettle 2.0 and Smarter Coffee devices. It includes a console, monitor, and command line interface and bridge to [Domoticz](http://domoticz.com). You can also use it in your own code. iKettle 2.0 tested only. Please share you Smarter Coffee codes or any other discoveries you made.
+iBrew is a (python) interface to iKettle 2.0 and Smarter Coffee devices. It includes a console, monitor, command line interface and bridge to [Domoticz](http://domoticz.com). You can also use it in your own code. iKettle 2.0 tested only. Please share you Smarter Coffee codes or any other discoveries you made.
 
 #### Please donate you raw codes
 Someone please run ```iBrew``` sweep on there coffee machines and post the results in the issues.
@@ -17,12 +17,12 @@ Upcoming
  * v0.3 Kettle Rattle
  
  ToDo:
- - [ ] WiFi Setup
+ - [ ] WiFi Setup!!! <- still can't let it connect to my router... 
  - [ ] Heat/Formula & Brew/Hotplate temperature/time controlled
  - [ ] When heating and fast temperature rise auto-shutdown (iKettle2)
- - [?] Fix Network code, it does not read the status messages so it get's backlogged in console...
+ - [ ] Fix Network code??? (usefull???), it does not read the status messages so it get's backlogged in console...
  - [ ] Figure out the waterlevel (iKettle2)
- - [-] Server?
+ - [ ] Server???
  - [ ] History/SetTime missing time
  - [ ] Settings missing parameters
  
