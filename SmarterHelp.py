@@ -104,7 +104,7 @@ class SmarterProtocolHelp:
             print
             print "  It actually sends: 0c 7e 00 00 00 00 00 00"
             print
-            print "  It connect to the home network looking for command device info "64 7e" send from client to 255.255.255.255 on udp"
+            print "  It connect to the home network looking for command device info 64 7e send from client to 255.255.255.255 on udp"
             print "  if it receive it, it send back the device info"
             
         elif id == Smarter.CommandWifiScan:
