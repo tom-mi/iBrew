@@ -90,15 +90,22 @@ class SmarterProtocolHelp:
             
         elif id == Smarter.CommandWifiName:
             print "  Argument: <SSID>{0,32}"
+            print "  Just normal ascii"
             
         elif id == Smarter.CommandWifiPassword:
             print "  Argument: <PASSWORD>{0,32}"
+            print "  Just normal ascii"
             
         elif id == Smarter.CommandWifiConnect:
             print "  Sending this command without previous SSID/password messages will reset WiFi"
             print "  to factory settings."
             print
             print "  For me even after setting the SSID (with or without a \"}\" it still failed to connect."
+            print
+            print "  It actually sends: 0c 7e 00 00 00 00 00 00"
+            print
+            print "  It connect to the home network looking for command device info "64 7e" send from client to 255.255.255.255 on udp"
+            print "  if it receive it, it send back the device info"
             
         elif id == Smarter.CommandWifiScan:
             print "  Example raw code: 0d 7e"
@@ -113,6 +120,7 @@ class SmarterProtocolHelp:
             
         elif id == Smarter.CommandWifiReset:
             print "  Example raw code: 0f 7e"
+            print "  It actually sends: 0f 7e 6d 7e"
             
         elif id == Smarter.CommandReset:
             print "  Example raw code: 10 7e"
@@ -327,6 +335,8 @@ class SmarterProtocolHelp:
             
         elif id == Smarter.CommandCalibrate:
             print "  Example: 2c 7e"
+            print
+            print "  Returns also a command success repsonse message after the base repsonse message"
             
         elif id == Smarter.ResponseBase:
             print "  Response: <BASELHIGHBITS><BASELOWBITS>"
@@ -520,6 +530,12 @@ class SmarterProtocolHelp:
     
     There are some value's like the watersensor that can contains the tail
     so check the length of the response message!
+    
+    
+    To detect a device broadcast a device info command 64 7e on UDP.
+    Also when connecting wifi do this, it disconnects from the home network if
+    this is not found.
+    
               """
     
 
@@ -555,16 +571,31 @@ class SmarterProtocolHelp:
 
   Capturing the protocol using WireShark:
 
-     OS X: Step 1: Download wireshark (https://www.wireshark.org/) for mac and install it.
+     OSX:  (Home Network Only)
+           Step 1: Download wireshark (https://www.wireshark.org/) for mac and install it.
            Step 2: Setup your kettle or coffee machine to use your home network.
            Step 3: Connect you mac to your network NOT using the build in WiFi adapter.
                    Use either a cable (ethernet recommended) or a second WiFi adapter.
            Step 4: Enable and setup internet sharing in system preferences, sharing.
            Step 5: Connect with your phone to the internet sharing wireless access point.
            Step 6: Run wiresharp it and select your build in WiFi adapter and start the capture.
-           Step 7: Connect with smarter phone app.
            Step 8: Look for connection with messages ending in 7e
 
+    iOS & OSX: (Home network & Direct mode)
+           Step 1: Connect your iOS device to your Mac via USB.
+           Step 2: Get the <udid> for the connected device from iTunes (click on the serial).
+           Step 3: Open terminal in your Mac and run the following commands, which creates a virtual network
+                   adapter mirroring the iOS network, which we can dump and inspect:
+           Step 4: rvictl -s <udid>
+           Step 5: tcpdump -i rvi0 -w ~/Desktop/output.pcap
+           Step 7: Connect to kettle's wifi network (or your home network if already setup) on the iOS device.
+           Step 8: Run setup for smarter device setup, or any commands
+           Step 9: When done or the device setup disconnected to switch to your home network, disconnect with ctrl-c
+           Step 10:rvictl -x <udid>
+           Step 11: Download wireshark (https://www.wireshark.org/) for mac and install it.
+           Stap 12: Open ~/Desktop/output.pcap with Wireshark
+           Step 13: Look for connection with messages ending in 7e
+ 
 
   Security:
 
@@ -580,6 +611,9 @@ class SmarterProtocolHelp:
             2. Alternating heat and stop commands.
             3. (Check) Wait until the owner of the kettle log in on the kettle, since its an
                open access point and the password are send in the open you can read it.
+
+
+
 
 
   Coffee Brewing:
