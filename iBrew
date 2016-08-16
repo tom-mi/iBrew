@@ -86,11 +86,11 @@ class iBrewConsole:
         
         if domoticz.use_virtual_hardware("Smarter"):
 
-            temp_name    = name + " Temperature"
+            temp_name    = name + " Water Temperature"
             temp_type    = domoticz.SensorTemperature
             offbase_name = name + " Base"
             offbase_type = domoticz.SensorSwitch
-            water_name   = name + " Water"
+            water_name   = name + " Water Height"
             water_type   = domoticz.SensorCustom
             
             #default_temp_name = name + " Default Temperature"
@@ -141,7 +141,8 @@ class iBrewConsole:
 
         while True:
             try:
-                print datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S') + " Reading... "
+                stamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
+                print stamp + " ♨"
 
                 response = self.client.read()
                 #self.client.print_short_status()
@@ -155,7 +156,7 @@ class iBrewConsole:
                 #print "TEMP: " + str(average)
                 if previousAverage != average:
                     if domoticz.set_temperature(temp_idx,average):
-                        print "\n[DOMOTICZ] Updated water temperature " + str(average) + "ºC\n"
+                        print stamp + " Water temperature: " + str(average) + "ºC"
                     previousAverage = average
                 
                 prevPreviousTemperature = previousTemperature
@@ -170,12 +171,12 @@ class iBrewConsole:
                 if previousStatus != self.client.kettleStatus:
                     status = Smarter.status_kettle_description(self.client.kettleStatus)
                     if domoticz.set_text(status_idx,status):
-                        print "\n[DOMOTICZ] Status " + status + "\n"
+                        print stamp + " iKettle 2.0 is " + status.lower()
                     previousStatus = self.client.kettleStatus
             
                 if previousWaterSensor - 3 > self.client.waterSensor or previousWaterSensor + 3 < self.client.waterSensor:
                     if domoticz.set_custom(water_idx,self.client.waterSensor):
-                        print "\n[DOMOTICZ] Updated water level " + str(self.client.waterSensor) + "\n"
+                        print stamp + " Water height: " + str(self.client.waterSensor)
                     previousWaterSensor = self.client.waterSensor
                 
                 if previousBaseFirst or (previousBase != self.client.onBase):
@@ -184,7 +185,7 @@ class iBrewConsole:
                             s = "on"
                         else:
                             s = "off"
-                        print "\n[DOMOTICZ] Updated kettle " + s + " base\n"
+                        print stamp + " iKettle 2.0 is " + s + " base"
                     previousBase = self.client.onBase
                     previousBaseFirst = False
                     
