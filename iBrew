@@ -494,91 +494,110 @@ class iBrewConsole:
 
     def intro_cl(self):
         print
-        print "Usage: iBrew (dump) [arguments] (host)"
+        print "  Usage: iBrew (dump) [command] (host)"
         print
         print "    host             host address (format: ip4, ip6, fqdn)"
         print "    dump             dump message enabled"
-        print "    arguments        see console commands"
 
     def help(self):
         print
         print "  iKettle 2.0 & Smarter Coffee Commands"
-        print "  info                   Device info"
-        print "  history                Action history"
-        print "  start                  Start the device"
-        print "  status                 Show status"
-        print "  reset                  Reset device to default"
-        print "  stop                   Stop the device"
-        print "  [data]                 Send raw data to device"
+        print "    info                   Device info"
+        print "    history                Action history"
+        print "    reset                  Reset device to default"
+        print "    start                  Start the device"
+        print "    status                 Show status"
+        print "    stop                   Stop the device"
+        print "    [data]                 Send raw data to device"
         print
         print "  iKettle 2.0 Commands"
-        print "  base                   Show watersensor base value"
-        print "  base [base]            Store watersensor base value"
-        print "  calibrate              Calibrates watersensor"
-        print "  default                Set default settings"
-        print "  formula ()()           Heat kettle in formula mode"
-        print "  heat ()()              Heat kettle"
-        print "  settings               Show user settings"
-        print "  settings [] [] [] []   Store user settings"
+        print "    base                   Show watersensor base value"
+        print "    base [base]            Store watersensor base value"
+        print "    calibrate              Calibrates watersensor"
+        print "    default                Set default settings"
+        print "    formula ()()           Heat kettle in formula mode"
+        print "    heat ()()              Heat kettle"
+        print "    settings               Show user settings"
+        print "    settings [] [] [] []   Store user settings"
         print
         print "  Smarter Coffee Commands"
-        print "  brew                   Brew coffee"
-        print "  cups [number]          Set number of cups [1..12]"
-        print "  grinder                Toggle grinder"
-        print "  hotplate off           Turn hotplate off"
-        print "  hotplate on ()         Turn hotplate on"
-        print "  strength [strength]    Set strength coffee [weak, medium or strong]"
+        print "    brew                   Brew coffee"
+        print "    cups [number]          Set number of cups [1..12]"
+        print "    grinder                Toggle grinder"
+        print "    hotplate off           Turn hotplate off"
+        print "    hotplate on ()         Turn hotplate on"
+        print "    strength [strength]    Set strength coffee [weak, medium or strong]"
         print
         print "  WiFi Commands"
-        print "  connect                Connect to wireless network"
-        print "  firmware               Show firmware WiFi"
-        print "  name [name]            Set wireless network name to access"
-        print "  password [password]    Set password of wireless network to access"
-        print "  clear                  Resets WiFi to default"
-        print "  scan                   Scan wireless networks"
-#       print "  setup                  Select and connect wireless network"
+        print "    connect                Connect to wireless network"
+        print "    clear                  Resets WiFi to default"
+        print "    firmware               Show firmware WiFi"
+        print "    name [name]            Set wireless network name to access"
+        print "    password [password]    Set password of wireless network to access"
+        print "    scan                   Scan wireless networks"
+#       print "    setup                  Select and connect wireless network"
         print
         print "  Help Commands"
-        print "  examples               Show examples of commands"
-        print "  messages               Show all known protocol messages"
-        print "  message [id]           Show protocol message detail of message [id]"
-        print "  protocol               Show protocol structure information"
-        print "  smarter                Show whole protocol including messages"
-        print "  domoticz               Show domoticz bridge help"
+        print "    examples               Show examples of commands"
+        print "    messages               Show all known protocol messages"
+        print "    message [id]           Show protocol message detail of message [id]"
+        print "    protocol               Show protocol structure information"
+        print "    smarter                Show whole protocol including messages"
         print
         print "  Bridge Commands"
-        print "  domoticz [host][name]  Enables domoticz bridge mode"
+        print "    domoticz               Show domoticz bridge help"
         print
         print "  Debug Commands"
-        print "  dump                   Toggle \'dump raw messages\'"
-        print "  console                Start console [Command line only]"
-        print "  monitor                Monitor incomming traffic"
-        print "  sweep (id)             Try (all or start with id) unknown command codes"
+        print "    dump                   Toggle \'dump raw messages\'"
+        print "    console                Start console [Command line only]"
+        print "    monitor                Monitor incomming traffic"
+        print "    sweep (id)             Try (all or start with id) unknown command codes"
         print
         print "  Console Commands"
-        print "  joke                   Show joke"
-        print "  quit                   Quit console [Console only]"
+        print "    joke                   Show joke"
+        print "    quit                   Quit console [Console only]"
         print
 
     def domoticz(self):
         print """
 
-Domoticz Bridge
+  Domoticz Bridge
+  _______________
 
-Currently iKettle 2.0 Only
+  Bridge between iKettle 2.0 and domoticz. Its auto-creates 4 devices in domoticz if not yet created. 
+  Monitors the kettle and update the domoticz devices accordingly.
+  
+  *  Water Temperature in ºC (temperature device)
+  *  Water Height (custom device)      
+  *  Kettle on base (motion device)      
+  *  Kettle status (text device)     
 
-  Domoticz Setup
+  *** Currently iKettle 2.0 Only ***
 
-    *  Go to [SETUP] [HARDWARE]
-    *  Add new hardware [Dummy (Does nothing, use for virtual switches only)] with name [Smarter]
-    *  Choose your basename, for example "Kettle", but it can be any name you like.
-    *  Use [Create Virtual Sensors] the create the following virtual sensors
-         
-         Name: basename + " Temperature" Sensor Type: Temperature
-         Name: basename + " Power" Sensor Type: Switch
+  Usage:
 
-       If you have for example basename "Kettle" then temperature sensor would be called "Kettle Temperature"
+    iBrew domoticz domcon name kettle
 
+  Where:
+  
+    domocon         Connection string to domoticz, [host:port] or [username:password@host:port]
+    name            Name of your kettle. The name may contain spaces
+    kettle          Connection string to iKettle 2.0, [host]
+    
+    host            Format: ip4, ip6, fqdn
+    
+
+  Notes:
+    It will auto-create the devices in Domoticz
+    Tested on Domoticz v3.52
+  
+  Examples:
+  
+    iBrew domoticz sofia:$ecrit@localhost:8080 Kettle Kitchen 192.168.4.1
+    iBrew domoticz 10.0.0.1:9001 Kettle Office 192.168.10.13
+    iBrew dump domoticz 10.0.0.1:9001 Kettle Office 192.168.10.13
+    iBrew domoticz localhost:8080 Kettle 
+  
               """
 
     def examples(self):
