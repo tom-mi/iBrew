@@ -239,7 +239,9 @@ class iBrewConsole:
         command = arguments.lower().strip()
         commandCase = arguments.strip()
         
-        self.app_info()
+        if command == "console" or command[0:5] == "sweep" or command == "monitor" or command[0:8] == "domoticz":
+            self.joke()
+            self.app_info()
         
         dump = False
         if "dump" in command:
@@ -267,16 +269,21 @@ class iBrewConsole:
                 print "iBrew: Message range [00..FF], got " + command
             return
 
-
+        client = SmarterClient(host,dump)
+        if command == "list":
+            devices = client.find_devices()
+            for i in range(0,len(devices)):
+                print "iBrew: Found " + Smarter.raw_to_device(Smarter.number_to_raw(devices[i][1])) + " v" + str(devices[i][2]) + " [" + devices[i][0] + "]"
+            return
+        
         try:
-            client = SmarterClient(host,dump)
             self.client = client
+            client.connect()
         except:
             print "iBrew: Could not connect"
             return
 
         if command == "console" or command[0:5] == "sweep" or command == "monitor" or command[0:8] == "domoticz":
-            self.joke()
             client.print_connect_status()
             client.print_status()
         if command == "console":
@@ -407,6 +414,11 @@ class iBrewConsole:
                     self.domoticz_bridge(server,name)
                 elif input == "domoticz":
                     self.domoticz()
+                elif input == "list":
+                    devices = client.find_devices()
+                    for i in range(0,len(devices)):
+                        print "Found " + Smarter.raw_to_device(Smarter.number_to_raw(devices[i][1])) + " v" + str(devices[i][2]) + " [" + devices[i][0] + "]"
+                
                 elif input == "monitor":
                     self.monitor()
                 elif input == "sweep":
@@ -504,6 +516,7 @@ class iBrewConsole:
         print "  iKettle 2.0 & Smarter Coffee Commands"
         print "    info                   Device info"
         print "    history                Action history"
+        print "    list                   List detected devices"
         print "    reset                  Reset device to default"
         print "    start                  Start the device"
         print "    status                 Show status"

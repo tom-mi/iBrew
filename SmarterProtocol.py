@@ -457,16 +457,16 @@ class SmarterProtocol:
     #------------------------------------------------------
 
 
-    DeviceKettle              = 0x00
-    DeviceCoffee              = 0x01
+    DeviceKettle              = 0x01
+    DeviceCoffee              = 0x00
 
     
     def is_kettle(self,raw):
-        return raw == self.DeviceKettle
+        return self.raw_to_number(raw) == self.DeviceKettle
 
 
     def is_coffee(self,raw):
-        return raw == self.DeviceCoffee
+        return self.raw_to_number(raw) == self.DeviceCoffee
 
         
     def raw_to_device(self,raw):

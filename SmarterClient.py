@@ -76,7 +76,7 @@ class SmarterClient:
         self.init()
         self.dump = dump
         self.host = host
-        self.connect()
+        #self.connect()
 
 
     def __del__(self):
@@ -117,6 +117,29 @@ class SmarterClient:
 
 
 
+    def find_devices(self):
+        devices = []
+        try:
+            cs = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            cs.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            cs.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+            command = Smarter.number_to_raw(Smarter.CommandDeviceInfo) + Smarter.number_to_raw(Smarter.MessageTail)
+            #command = '\x64\x7e'
+  
+            cs.sendto(command, ('255.255.255.255', self.port))
+            cs.settimeout(2)
+
+            # support up to 100 devices
+            for i in range (0,100):
+                message, server = cs.recvfrom(4)
+                if Smarter.raw_to_number(message[0]) == Smarter.ResponseDeviceInfo and Smarter.raw_to_number(message[3]) == Smarter.MessageTail:
+                    devices.append((server[0],Smarter.raw_to_number(message[1]),Smarter.raw_to_number(message[2])))
+        except:
+            pass
+        finally:
+            cs.close()
+        return devices
+        
     #------------------------------------------------------
     # MESSAGE RESPONSE DECODERS
     #------------------------------------------------------
