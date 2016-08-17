@@ -1,5 +1,7 @@
 
 ```              
+
+
 ## Bugs / Not done
   *    Set Device Time is missing arguments in console
   *    Set default is missing arguments in console
@@ -10,6 +12,7 @@
   *    History message is not finished
   *    [will not fix] Should read status message 14 all the time in console mode
   *    [will not implement] Default auto connect first coffee or kettle with no host
+
 
 ## Links
 

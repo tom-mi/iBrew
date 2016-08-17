@@ -90,7 +90,7 @@ you can also use them on the command line as arguments:
     cups [number]          set number of cups [1..12]
     grinder                toggle grinder
     hotplate off           turn hotplate off
-    hotplate on ()         turn hotplate on
+    hotplate on (minutes)  turn hotplate on (time in minutes)
     strength [strength]    set strength coffee [weak, medium or strong]
 
   Wireless Network Commands
@@ -1146,6 +1146,8 @@ iKettle Devices in Domoticz
               
 
 ```              
+
+
 ## Bugs / Not done
   *    Set Device Time is missing arguments in console
   *    Set default is missing arguments in console
@@ -1156,6 +1158,7 @@ iKettle Devices in Domoticz
   *    History message is not finished
   *    [will not fix] Should read status message 14 all the time in console mode
   *    [will not implement] Default auto connect first coffee or kettle with no host
+
 
 ## Links
 
