@@ -17,6 +17,7 @@ stops working cuz their servers are down. You are in full control! You can also 
 #### Upcoming   
  * v0.3 Kettle Rattle 
  
+ 
  * Better error handling
  * Final arguments
  * Auto reconnect
