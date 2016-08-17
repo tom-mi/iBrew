@@ -186,7 +186,7 @@ class SmarterServer:
         # return time
 
 
-    def decode_CommandReset(self,message):
+    def decode_CommandResetSettings(self,message):
         # reset to default settings...
         self.send_succes()
  
@@ -382,7 +382,7 @@ class SmarterServer:
     def reads(self,message):
         if = Smarter.raw_to_number(message[0])
         if   id == Smarter.CommandDeviceTime        self.decode_CommandDeviceTime(message)
-        elif id == Smarter.CommandReset             self.decode_CommandReset(message)
+        elif id == Smarter.CommandResetSettings     self.decode_CommandResetSettings(message)
         elif id == Smarter.CommandStop              self.decode_CommandStop(message)
         elif id == Smarter.CommandHistory           self.decode_CommandHistory(message)
         elif id == Smarter.CommandDeviceInfo        self.decode_CommandDeviceInfo(message)

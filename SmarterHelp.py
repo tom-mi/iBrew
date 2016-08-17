@@ -128,7 +128,13 @@ class SmarterProtocolHelp:
             print "  Example raw code: 0f 7e"
             print "  It actually sends: 0f 7e 6d 7e"
             
-        elif id == Smarter.CommandReset:
+        elif id == Smarter.CommandResetSettings:
+            print "  For the kettle these are the default user settings:"
+            print "  keepwarm 0 minutes (0x00), temperature 100ºC (0x64)"
+            print "  formula mode off (0x00) and formula temperature 75ºC (0x4b)"
+            print
+            print "  The Smarter Coffee it will probably reset the number of cups and strength"
+            print
             print "  Example raw code: 10 7e"
             
         elif id == Smarter.ResponseStatus:
@@ -153,7 +159,7 @@ class SmarterProtocolHelp:
             print "    04 Baby Cooling"
             print
             print "  TEMPERATURE"
-            print "    00..64  0..100C"
+            print "    00..64  0..100ºC"
             print "    7f      Kettle Off Base"
             print
             print "  WATERSENSOR = WATERSENSORHIGHBITS * 256 + WATERSENSORLOWBITS"
@@ -214,7 +220,7 @@ class SmarterProtocolHelp:
             print "  Argument: <TEMPERATURE><KEEPWARMTIME>"
             print
             print "  TEMPERATURE"
-            print "    00..64"
+            print "    00..64  0..100ºC"
             print
             print "  KEEPWARMTIME"
             print "    00      Default off"
@@ -236,10 +242,10 @@ class SmarterProtocolHelp:
             print "    05..1e  Keep Warm in Minutes"
             print
             print "  TEMPERATURE"
-            print "    00..64"
+            print "    00..64  0..100ºC"
             print
             print "  FORMULATEMPERATURE"
-            print "    00..64"
+            print "    00..64  0..100ºC"
             print
             print "  Example: 19 32 19 7e"
             
@@ -253,16 +259,18 @@ class SmarterProtocolHelp:
             print "    05..1e  Keep Warm in Minutes"
             print
             print "  TEMPERATURE"
-            print "    00..64"
+            print "    00..64  0..100ºC"
             print
             print "  FORMULA"
             print "    00 Do not use as default"
             print "    01 Use as default"
             print
             print "  FORMULATEMPERATURE"
-            print "    00..64"
+            print "    00..64  0..100ºC"
             print
             print "  Example: 1f 19 64 01 22 7e"
+            print
+            print
             
         elif id == Smarter.Command20:
             print "  This setting ignores the user setting and boils till 100C"
@@ -275,7 +283,7 @@ class SmarterProtocolHelp:
             print "  Arguments: <[<TEMPERATURE><[KEEKWARMTIME]>]>"
             print
             print "  TEMPERATURE"
-            print "    00..64"
+            print "    00..64  0..100ºC"
             print
             print "  KEEPWARMTIME"
             print "    00      Default off"
@@ -310,14 +318,14 @@ class SmarterProtocolHelp:
             print "    <ACTIONCOUNTER???/TIME???><TIME?><TIME?><DATE?><DATE?><???/DATE???><STATE><??>{19}"
             print
             print "  TEMPERATURE"
-            print "    00..64"
+            print "    00..64  0..100ºC"
             print
             print "  KEEPWARMTIME"
             print "    00      Default off"
             print "    05..1e  Keep Warm in Minutes"
             print
             print "  FORMULATEMPERATURE"
-            print "    00..64"
+            print "    00..64  0..100ºC"
             print
             print "  ACTIONCOUNTER"
             print "    00..ff"
@@ -368,10 +376,10 @@ class SmarterProtocolHelp:
             print "    05..1e  Keep Warm in Minutes"
             print
             print "  TEMPERATURE"
-            print "    00..64"
+            print "    00..64  0..100ºC"
             print
             print "  FORMULATEMPERATURE"
-            print "    00..64"
+            print "    00..64  0..100ºC"
             
         elif id == Smarter.Command30:
             print "  Arguments: <[UNKNOWN]>{?}"

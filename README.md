@@ -224,7 +224,7 @@ iKettle Devices in Domoticz
     ✓ ? 0c Connect to wireless network
     ✓ ? 0d Scan for wireless networks
     ✓ ? 0f Leave wireless network
-    ✓ ✓ 10 Working unknown command (reset?)
+    ✓ ✓ 10 Reset default user settings
     ✓ ? 15 Heat kettle
     ✓ ? 16 Stop heating kettle
     ✓ ? 19 Heat kettle using formula mode
@@ -318,7 +318,7 @@ iKettle Devices in Domoticz
 
   Response Message 03: Command status
   ─────────────────────────────────────────────────────────────────────────
-  In response to command message: [02,Set device time] [05,Set wireless network name] [07,Set wireless network password] [10,Working unknown command (reset?)] [15,Heat kettle] [16,Stop heating kettle] [19,Heat kettle using formula mode] [1f,Set default user settings] [20,Working unknown command (turn on?)] [21,Working unknown command (turn on?)] [22,Working unknown command (turn on?)] [23,Working unknown command (turn on?)] [2b,Get water sensor base value] [2c,Calibrate water sensor] [69,Working unknown command] 
+  In response to command message: [02,Set device time] [05,Set wireless network name] [07,Set wireless network password] [10,Reset default user settings] [15,Heat kettle] [16,Stop heating kettle] [19,Heat kettle using formula mode] [1f,Set default user settings] [20,Working unknown command (turn on?)] [21,Working unknown command (turn on?)] [22,Working unknown command (turn on?)] [23,Working unknown command (turn on?)] [2b,Get water sensor base value] [2c,Calibrate water sensor] [69,Working unknown command] 
   Message Size: 3 bytes
 
   ✓ iKettle 2.0   ? Smarter Coffee
@@ -424,11 +424,17 @@ iKettle Devices in Domoticz
 
 
 
-  Command Message 10: Working unknown command (reset?)
+  Command Message 10: Reset default user settings
   ─────────────────────────────────────────────────────────────────────────
   Response message: [03,Command status] 
 
   ✓ iKettle 2.0   ✓ Smarter Coffee
+
+  For the kettle these are the default user settings:
+  keepwarm 0 minutes (0x00), temperature 100ºC (0x64)
+  formula mode off (0x00) and formula temperature 75ºC (0x4b)
+
+  The Smarter Coffee it will probably reset the number of cups and strength
 
   Example raw code: 10 7e
 
@@ -462,7 +468,7 @@ iKettle Devices in Domoticz
     04 Baby Cooling
 
   TEMPERATURE
-    00..64  0..100C
+    00..64  0..100ºC
     7f      Kettle Off Base
 
   WATERSENSOR = WATERSENSORHIGHBITS * 256 + WATERSENSORLOWBITS
@@ -531,7 +537,7 @@ iKettle Devices in Domoticz
   Argument: <TEMPERATURE><KEEPWARMTIME>
 
   TEMPERATURE
-    00..64
+    00..64  0..100ºC
 
   KEEPWARMTIME
     00      Default off
@@ -569,10 +575,10 @@ iKettle Devices in Domoticz
     05..1e  Keep Warm in Minutes
 
   TEMPERATURE
-    00..64
+    00..64  0..100ºC
 
   FORMULATEMPERATURE
-    00..64
+    00..64  0..100ºC
 
   Example: 19 32 19 7e
 
@@ -594,16 +600,18 @@ iKettle Devices in Domoticz
     05..1e  Keep Warm in Minutes
 
   TEMPERATURE
-    00..64
+    00..64  0..100ºC
 
   FORMULA
     00 Do not use as default
     01 Use as default
 
   FORMULATEMPERATURE
-    00..64
+    00..64  0..100ºC
 
   Example: 1f 19 64 01 22 7e
+
+
 
 
 
@@ -684,14 +692,14 @@ iKettle Devices in Domoticz
     <ACTIONCOUNTER???/TIME???><TIME?><TIME?><DATE?><DATE?><???/DATE???><STATE><??>{19}
 
   TEMPERATURE
-    00..64
+    00..64  0..100ºC
 
   KEEPWARMTIME
     00      Default off
     05..1e  Keep Warm in Minutes
 
   FORMULATEMPERATURE
-    00..64
+    00..64  0..100ºC
 
   ACTIONCOUNTER
     00..ff
@@ -791,10 +799,10 @@ iKettle Devices in Domoticz
     05..1e  Keep Warm in Minutes
 
   TEMPERATURE
-    00..64
+    00..64  0..100ºC
 
   FORMULATEMPERATURE
-    00..64
+    00..64  0..100ºC
 
 
 

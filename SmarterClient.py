@@ -377,7 +377,7 @@ class SmarterClient:
 
 
     def device_reset(self):
-        self.send_command(Smarter.CommandReset)
+        self.send_command(Smarter.CommandResetSettings)
 
 
     def device_update(self):

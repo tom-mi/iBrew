@@ -52,7 +52,7 @@ class SmarterProtocol:
 
     # device
     CommandDeviceTime         = 0x02
-    CommandReset              = 0x10
+    CommandResetSettings      = 0x10
     CommandStop               = 0x16
     CommandHistory            = 0x28
     CommandDeviceInfo         = 0x64
@@ -119,7 +119,7 @@ class SmarterProtocol:
         CommandWifiJoin         : (True,None,[],"Connect to wireless network"),
         CommandWifiScan         : (True,None,[ResponseWirelessNetworks],"Scan for wireless networks"),
         CommandWifiLeave        : (True,None,[],"Leave wireless network"),
-        CommandReset            : (True,True,[ResponseCommandStatus],"Working unknown command (reset?)"),
+        CommandResetSettings    : (True,True,[ResponseCommandStatus],"Reset default user settings"),
         CommandHeat             : (True,None,[ResponseCommandStatus],"Heat kettle"),
         CommandStop             : (True,None,[ResponseCommandStatus],"Stop heating kettle"),
         CommandHeatFormula      : (True,None,[ResponseCommandStatus],"Heat kettle using formula mode"),
@@ -154,7 +154,7 @@ class SmarterProtocol:
 
     # format: kettle?, coffee? (None is unnknown), minimal length (0 = variable), response to command, description
     ResponseMessages = {
-        ResponseCommandStatus   : (True,None,3,[CommandDeviceTime,CommandWifiNetwork,CommandWifiPassword,CommandReset,CommandHeat,CommandStop,CommandHeatFormula,CommandStoreSettings,Command20,CommandHeatDefault,Command22,Command23,CommandBase,CommandCalibrate,Command69],"Command status"),
+        ResponseCommandStatus   : (True,None,3,[CommandDeviceTime,CommandWifiNetwork,CommandWifiPassword,CommandResetSettings,CommandHeat,CommandStop,CommandHeatFormula,CommandStoreSettings,Command20,CommandHeatDefault,Command22,Command23,CommandBase,CommandCalibrate,Command69],"Command status"),
         ResponseWirelessNetworks: (True,None,0,[CommandWifiScan],"Wireless networks list"),
         ResponseHistory         : (True,None,0,[CommandHistory],"Device history"),
         ResponseBase            : (True,None,4,[CommandBase,CommandCalibrate],"Water sensor base value"),
