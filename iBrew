@@ -475,7 +475,7 @@ class iBrewConsole:
                     if not client.dump: client.print_history()
                 elif len(input) > 0 and input != "status":
                     try:
-                        client.send(Smarter.codes_to_message(input))
+                        client.device_raw(input)
                     except:
                         print "iBrew: Sending codes failed"
             

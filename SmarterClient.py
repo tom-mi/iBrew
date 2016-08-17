@@ -303,25 +303,20 @@ class SmarterClient:
 
     def send_message(self,message):
         try:
-            if len(message) > 0 and message[len(message)-1] == Smarter.MessageTail:
-                messageTail = message
-            elif len(message) > 0:
-                messageTail = message + Smarter.number_to_raw(Smarter.MessageTail)
-            else:
+            if len(message) == 0:
                 raise SmarterError("Cannot send an empty message")
-            self.socket.send(messageTail)
+            self.socket.send(message)
         except socket.error, msg:
             raise SmarterError("Could not read message (" + msg[1] + ")")
-        
-        self.sendMessage = messageTail
+        self.sendMessage = message
         if self.dump:
-            self.print_message_send(messageTail)
+            self.print_message_send(message)
 
 
     # MESSAGE SEND PROTOCOL
 
     def send_command(self,id,arguments=""):
-        self.send(Smarter.number_to_raw(id) + arguments)
+        self.send(Smarter.number_to_raw(id) + arguments + Smarter.number_to_raw(Smarter.MessageTail))
 
 
     def send(self,message):
@@ -369,8 +364,11 @@ class SmarterClient:
 
 
     def device_raw(self,code):
-        self.send(Smarter.string_to_message(code))
-
+        dump = self.dump
+        self.dump = True
+        self.send(Smarter.codes_to_message(code))
+        self.dump = dump
+        
 
     def device_info(self):
         self.send_command(Smarter.CommandDeviceInfo)
