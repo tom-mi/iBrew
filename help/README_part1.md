@@ -2,7 +2,12 @@
 [iKettle 2.0](http://smarter.am/ikettle) and [Smarter Coffee](http://smarter.am/coffee) Interface
 
 ## Introduction
-iBrew is a (python) interface to iKettle 2.0 and Smarter Coffee devices. It includes a console, monitor, command line interface and bridge to [Domoticz](http://domoticz.com). You can also use it in your own code. iKettle 2.0 tested only. Please share you Smarter Coffee codes or any other discoveries you made.
+iBrew is a (python) interface to iKettle 2.0 and Smarter Coffee devices. It includes a console, monitor, command line interface and bridge to [Domoticz](http://domoticz.com). You can also use it in your own code. iKettle 2.0 v19 tested only. Please share you Smarter Coffee codes or any other discoveries you made.
+
+This means your machine is free! You can connect it yourself and do whatever you want with it, even if the phone app
+stops working cuz their servers are down. You are in full control! You can also interface it with your favorite smarthome controller. A working bridge to domoticz is already included!
+
+   Signed TRiXWooD
 
 #### Versions
  * v0.0 Bean Grinder Pack
