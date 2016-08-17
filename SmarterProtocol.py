@@ -145,7 +145,7 @@ class SmarterProtocol:
         Command41               : (False,True,[],"Working unknown command (schedule?)"),
         Command43               : (False,True,[],"Working unknown command (schedule?)"),
         CommandHotplateOff      : (False,True,[],"Turn off hotplate"),
-        CommandDeviceInfo       : (True,True,[ResponseDeviceInfo],"Get identify of device"),
+        CommandDeviceInfo       : (True,True,[ResponseDeviceInfo],"Get device info"),
         Command69               : (True,None,[ResponseCommandStatus],"Working unknown command"),
         CommandWifiFirmware     : (True,None,[ResponseWifiFirmware],"Get wifi firmware info"),
         CommandUpdate           : (True,None,[],"Device firmware update")
@@ -154,7 +154,7 @@ class SmarterProtocol:
 
     # format: kettle?, coffee? (None is unnknown), minimal length (0 = variable), response to command, description
     ResponseMessages = {
-        ResponseCommandStatus   : (True,None,3,[],"Command status"),
+        ResponseCommandStatus   : (True,None,3,[CommandDeviceTime,CommandWifiNetwork,CommandWifiPassword,CommandReset,CommandHeat,CommandStop,CommandHeatFormula,CommandStoreSettings,Command20,CommandHeatDefault,Command22,Command23,CommandBase,CommandCalibrate,Command69],"Command status"),
         ResponseWirelessNetworks: (True,None,0,[CommandWifiScan],"Wireless networks list"),
         ResponseHistory         : (True,None,0,[CommandHistory],"Device history"),
         ResponseBase            : (True,None,4,[CommandBase,CommandCalibrate],"Water sensor base value"),

@@ -32,7 +32,7 @@ class SmarterProtocolHelp:
         s = ""
         if Smarter.message_is_known(id):
             for i, iid in enumerate(Smarter.message_connection(id)):
-                s = s + "[" + Smarter.message_description(iid) + "] "
+                s = s + "[" + Smarter.number_to_code(iid) + "," + Smarter.message_description(iid) + "] "
             if Smarter.message_connection(id):
                 if Smarter.message_is_response(id):
                     print "  In response to command message: " + s
