@@ -544,11 +544,6 @@ class SmarterProtocolHelp:
     There are some value's like the watersensor that can contains the tail
     so check the length of the response message!
     
-    
-    To detect a device broadcast a device info command 64 7e on UDP.
-    Also when connecting wifi do this, it disconnects from the home network if
-    this is not found.
-    
               """
     
 
@@ -578,10 +573,17 @@ class SmarterProtocolHelp:
 
     If connected to the kettle tcp 192.168.4.1:2081 is the default connection.
 
-    The iKettle2.0 creates an access point with the name iKettle2.0:c0 where c0 probably is part
+    The iKettle2.0 creates an access point with the name iKettle2.0:c0 where c0 is part
     of the mac address of the kettle. When connected directly to the kettle its connection is very flacky.
 
 
+  Device Detection:
+  
+    To detect a device broadcast a device info command (message 64) on UDP. It will reply
+    if the router permits it with a device info response (message 65) and being UDP 
+    with its IP address!
+    
+    
   Capturing the protocol using WireShark:
 
      OSX:  (Home Network Only)
@@ -624,9 +626,6 @@ class SmarterProtocolHelp:
             2. Alternating heat and stop commands.
             3. (Check) Wait until the owner of the kettle log in on the kettle, since its an
                open access point and the password are send in the open you can read it.
-
-
-
 
 
   Coffee Brewing:
