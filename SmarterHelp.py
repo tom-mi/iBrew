@@ -84,9 +84,11 @@ class SmarterProtocolHelp:
             print "    02 No Carafe (Coffee unverified)"
             print "    03 No Water (Coffee unverified)"
             print "    04 Failed"
-            print "    05 No Carafe (Coffee unverified)"
-            print "    06 No Water (Coffee unverified)"
+            print "    05 No Carafe"
+            print "    06 No Water"
             print "    69 Invalid Command"
+            print
+            print " The response status of the coffee can be bit encoded (see response 14)"
             
         elif id == Smarter.CommandWifiNetwork:
             print "  Argument: <SSID>{0,32}"

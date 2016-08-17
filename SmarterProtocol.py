@@ -119,11 +119,11 @@ class SmarterProtocol:
         CommandWifiJoin         : (True,None,[],"Connect to wireless network"),
         CommandWifiScan         : (True,None,[ResponseWirelessNetworks],"Scan for wireless networks"),
         CommandWifiLeave        : (True,None,[],"Leave wireless network"),
-        CommandReset            : (True,None,[ResponseCommandStatus],"Working unknown command (reset?)"),
+        CommandReset            : (True,True,[ResponseCommandStatus],"Working unknown command (reset?)"),
         CommandHeat             : (True,None,[ResponseCommandStatus],"Heat kettle"),
         CommandStop             : (True,None,[ResponseCommandStatus],"Stop heating kettle"),
         CommandHeatFormula      : (True,None,[ResponseCommandStatus],"Heat kettle using formula mode"),
-        CommandStoreSettings    : (True,None,[ResponseCommandStatus],"Set Default Values"),
+        CommandStoreSettings    : (True,None,[ResponseCommandStatus],"Set default user settings"),
         Command20               : (True,None,[ResponseCommandStatus],"Working unknown command (turn on?)"),
         CommandHeatDefault      : (True,None,[ResponseCommandStatus],"Working unknown command (turn on?)"),
         Command22               : (True,None,[ResponseCommandStatus],"Working unknown command (turn on?)"),
@@ -132,7 +132,7 @@ class SmarterProtocol:
         CommandStoreBase        : (True,None,[],"Set water sensor base value"),
         CommandBase             : (True,None,[ResponseBase,ResponseCommandStatus],"Get water sensor base value"),
         CommandCalibrate        : (True,None,[ResponseBase,ResponseCommandStatus],"Calibrate water sensor"),
-        CommandSettings         : (True,None,[ResponseSettings],"Get user settings"),
+        CommandSettings         : (True,None,[ResponseSettings],"Get default user settings"),
         Command30               : (True,None,[],"Working unknown command"),
         Command32               : (False,True,[],"Working unknown command (brew)"),
         CommandBrew             : (False,True,[],"Start coffee brewing"),
@@ -155,12 +155,12 @@ class SmarterProtocol:
     # format: kettle?, coffee? (None is unnknown), minimal length (0 = variable), response to command, description
     ResponseMessages = {
         ResponseCommandStatus   : (True,None,3,[],"Command status"),
-        ResponseWirelessNetworks: (True,None,0,[CommandWifiScan],"List of wireless networks"),
-        ResponseHistory         : (True,None,0,[CommandHistory],"History Device"),
+        ResponseWirelessNetworks: (True,None,0,[CommandWifiScan],"Wireless networks list"),
+        ResponseHistory         : (True,None,0,[CommandHistory],"Device history"),
         ResponseBase            : (True,None,4,[CommandBase,CommandCalibrate],"Water sensor base value"),
-        ResponseSettings        : (True,True,9,[CommandSettings],"User settings"),
+        ResponseSettings        : (True,True,9,[CommandSettings],"Default user settings"),
         ResponseStatus          : (True,True,7,[],"Device status"),
-        ResponseDeviceInfo      : (True,True,4,[CommandDeviceInfo],"Identify of device"),
+        ResponseDeviceInfo      : (True,True,4,[CommandDeviceInfo],"Device info"),
         ResponseWifiFirmware    : (True,None,0,[CommandWifiFirmware],"Wifi firmware info")
     }
 

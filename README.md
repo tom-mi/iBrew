@@ -72,7 +72,8 @@ you can also use them on the command line as arguments:
     start                  start the device
     status                 show status
     stop                   stop the device
-    [data]                 send raw data to device
+    time [time]            set the device time
+    [hexdata]              send raw data to device
 
   iKettle 2.0 Commands
     base                   show watersensor base value
@@ -228,11 +229,11 @@ iKettle Devices in Domoticz
     ✓ ? 0c Connect to wireless network
     ✓ ? 0d Scan for wireless networks
     ✓ ? 0f Leave wireless network
-    ✓ ? 10 Working unknown command (reset?)
+    ✓ ✓ 10 Working unknown command (reset?)
     ✓ ? 15 Heat kettle
     ✓ ? 16 Stop heating kettle
     ✓ ? 19 Heat kettle using formula mode
-    ✓ ? 1f Set Default Values
+    ✓ ? 1f Set default user settings
     ✓ ? 20 Working unknown command (turn on?)
     ✓ ? 21 Working unknown command (turn on?)
     ✓ ? 22 Working unknown command (turn on?)
@@ -241,7 +242,7 @@ iKettle Devices in Domoticz
     ✓ ? 2a Set water sensor base value
     ✓ ? 2b Get water sensor base value
     ✓ ? 2c Calibrate water sensor
-    ✓ ? 2e Get user settings
+    ✓ ? 2e Get default user settings
     ✓ ? 30 Working unknown command
     ✕ ✓ 32 Working unknown command (brew)
     ✕ ✓ 33 Start coffee brewing
@@ -262,12 +263,12 @@ iKettle Devices in Domoticz
     k c ID Response Message
     _______________________________
     ✓ ? 03 Command status
-    ✓ ? 0e List of wireless networks
+    ✓ ? 0e Wireless networks list
     ✓ ✓ 14 Device status
-    ✓ ? 29 History Device
+    ✓ ? 29 Device history
     ✓ ? 2d Water sensor base value
-    ✓ ✓ 2f User settings
-    ✓ ✓ 65 Identify of device
+    ✓ ✓ 2f Default user settings
+    ✓ ✓ 65 Device info
     ✓ ? 6b Wifi firmware info
 
     Legend:
@@ -334,9 +335,11 @@ iKettle Devices in Domoticz
     02 No Carafe (Coffee unverified)
     03 No Water (Coffee unverified)
     04 Failed
-    05 No Carafe (Coffee unverified)
-    06 No Water (Coffee unverified)
+    05 No Carafe
+    06 No Water
     69 Invalid Command
+
+ The response status of the coffee can be bit encoded (see response 14)
 
 
 
@@ -387,7 +390,7 @@ iKettle Devices in Domoticz
 
   Command Message 0d: Scan for wireless networks
   ─────────────────────────────────────────────────────────────────────────
-  Response message: [List of wireless networks] 
+  Response message: [Wireless networks list] 
 
   ✓ iKettle 2.0   ? Smarter Coffee
 
@@ -396,7 +399,7 @@ iKettle Devices in Domoticz
 
 
 
-  Response Message 0e: List of wireless networks
+  Response Message 0e: Wireless networks list
   ─────────────────────────────────────────────────────────────────────────
   In response to command message: [Scan for wireless networks] 
 
@@ -429,7 +432,7 @@ iKettle Devices in Domoticz
   ─────────────────────────────────────────────────────────────────────────
   Response message: [Command status] 
 
-  ✓ iKettle 2.0   ? Smarter Coffee
+  ✓ iKettle 2.0   ✓ Smarter Coffee
 
   Example raw code: 10 7e
 
@@ -580,7 +583,7 @@ iKettle Devices in Domoticz
 
 
 
-  Command Message 1f: Set Default Values
+  Command Message 1f: Set default user settings
   ─────────────────────────────────────────────────────────────────────────
   Response message: [Command status] 
 
@@ -657,7 +660,7 @@ iKettle Devices in Domoticz
 
   Command Message 28: Get History Device
   ─────────────────────────────────────────────────────────────────────────
-  Response message: [History Device] 
+  Response message: [Device history] 
 
   ✓ iKettle 2.0   ? Smarter Coffee
 
@@ -668,7 +671,7 @@ iKettle Devices in Domoticz
 
 
 
-  Response Message 29: History Device
+  Response Message 29: Device history
   ─────────────────────────────────────────────────────────────────────────
   In response to command message: [Get History Device] 
 
@@ -765,9 +768,9 @@ iKettle Devices in Domoticz
 
 
 
-  Command Message 2e: Get user settings
+  Command Message 2e: Get default user settings
   ─────────────────────────────────────────────────────────────────────────
-  Response message: [User settings] 
+  Response message: [Default user settings] 
 
   ✓ iKettle 2.0   ? Smarter Coffee
 
@@ -778,9 +781,9 @@ iKettle Devices in Domoticz
 
 
 
-  Response Message 2f: User settings
+  Response Message 2f: Default user settings
   ─────────────────────────────────────────────────────────────────────────
-  In response to command message: [Get user settings] 
+  In response to command message: [Get default user settings] 
   Message Size: 9 bytes
 
   ✓ iKettle 2.0   ✓ Smarter Coffee
@@ -952,7 +955,7 @@ iKettle Devices in Domoticz
 
   Command Message 64: Get identify of device
   ─────────────────────────────────────────────────────────────────────────
-  Response message: [Identify of device] 
+  Response message: [Device info] 
 
   ✓ iKettle 2.0   ✓ Smarter Coffee
 
@@ -965,7 +968,7 @@ iKettle Devices in Domoticz
 
 
 
-  Response Message 65: Identify of device
+  Response Message 65: Device info
   ─────────────────────────────────────────────────────────────────────────
   In response to command message: [Get identify of device] 
   Message Size: 4 bytes
