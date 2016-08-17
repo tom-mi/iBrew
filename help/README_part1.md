@@ -7,10 +7,11 @@ iBrew is a (python) interface to iKettle 2.0 and Smarter Coffee devices. It incl
 #### Versions
  * v0.0 Bean Grinder Pack
  * v0.1 White Tealeaf Edition
- * v0.2 Tea Noire Sweet 
- * v0.3 (upcoming) Kettle Rattle 
-
+ * v0.2 Tea Noire Sweet
  
+#### Upcoming   
+ * v0.3 Kettle Rattle 
+
 #### Donate
 Please donate raw codes or donate (for) a (working) Smarter Coffee (interface), can not test without one or without help! Someone please run ```iBrew sweep``` on there coffee machines and post the results in the issues.
 
