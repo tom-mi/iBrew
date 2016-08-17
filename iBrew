@@ -562,7 +562,7 @@ class iBrewConsole:
         print "    hotplate on ()         turn hotplate on"
         print "    strength [strength]    set strength coffee [weak, medium or strong]"
         print
-        print "  WiFi Commands"
+        print "  Wireless Network Commands"
         print "    join [net] [pass]      connect to wireless network"
         print "    leave                  disconnect (and open direct mode)"
         print "    scan                   scan wireless networks"

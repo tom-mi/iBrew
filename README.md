@@ -88,7 +88,7 @@ you can also use them on the command line as arguments:
     hotplate on ()         turn hotplate on
     strength [strength]    set strength coffee [weak, medium or strong]
 
-  WiFi Commands
+  Wireless Network Commands
     join [net] [pass]      connect to wireless network
     leave                  disconnect (and open direct mode)
     scan                   scan wireless networks
