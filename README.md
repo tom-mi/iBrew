@@ -15,12 +15,12 @@ stops working cuz their servers are down. You are in full control! You can also 
  * v0.2 Tea Noire Sweet
  
 #### Upcoming   
- * v0.3 Kettle Rattle 
- 
  * Better error handling
  * Final arguments
  * Auto reconnect
-
+ 
+ v0.3 Kettle Rattle 
+ 
 #### Donate
 Please donate raw codes or donate (for) a (working) Smarter Coffee (interface), can not test without one or without help! Someone please run ```iBrew sweep``` on there coffee machines and post the results in the issues.
 
