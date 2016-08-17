@@ -376,10 +376,14 @@ class iBrewConsole:
 
                 # Process Smarter Commands
                 # Hotplate
-                elif input[0:11] == "hotplate on":
-                    print "iBrew: Not Fully Implemented"
-                    # FIX THIS we need time argument
+                elif input == "hotplate on":
                     client.coffee_hotplate_on()
+                elif input[0:12] == "hotplate on ":
+                    client.coffee_hotplate_on()
+                    try:
+                        Smarter.check_hotplate(self,input[12:len(input)])
+                    except:
+                        print "iBrew: Hotplate timer is between 5 and 30 minutes"
                 elif input == "hotplate off":
                     client.coffee_hotplate_off()
                 elif input[0:8] == "hotplate":
@@ -492,6 +496,9 @@ class iBrewConsole:
                 elif input == "history":
                     client.device_history()
                     if not client.dump: client.print_history()
+                elif input[0:5] == "time ":
+                    print "Not yet implemented"
+                    #client.device_time()
                 elif len(input) > 0 and input != "status":
                     try:
                         client.device_raw(input)
@@ -542,7 +549,8 @@ class iBrewConsole:
         print "    start                  start the device"
         print "    status                 show status"
         print "    stop                   stop the device"
-        print "    [data]                 send raw data to device"
+        print "    time [time]            set the device time"
+        print "    [hexdata]              send raw data to device"
         print
         print "  iKettle 2.0 Commands"
         print "    base                   show watersensor base value"

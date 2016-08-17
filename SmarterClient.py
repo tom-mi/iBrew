@@ -132,6 +132,7 @@ class SmarterClient:
             # support up to 100 devices
             for i in range (0,100):
                 message, server = cs.recvfrom(4)
+                # '0x64 type version 0x7e
                 if Smarter.raw_to_number(message[0]) == Smarter.ResponseDeviceInfo and Smarter.raw_to_number(message[3]) == Smarter.MessageTail:
                     devices.append((server[0],Smarter.raw_to_number(message[1]),Smarter.raw_to_number(message[2])))
         except:
@@ -351,10 +352,7 @@ class SmarterClient:
 
 
     def calibrate_store_base(self,base = 1000):
-        if base < 256: # base > 65535
-            self.send_command(Smarter.CommandStoreBase,Smarter.watersensor_to_raw(256))
-        else:
-            self.send_command(Smarter.CommandStoreBase,Smarter.watersensor_to_raw(base))
+        self.send_command(Smarter.CommandStoreBase,Smarter.watersensor_to_raw(base))
 
 
 
@@ -386,9 +384,8 @@ class SmarterClient:
         self.send_command(Smarter.CommandUpdate)
 
 
-    def device_device_time(self,time):
-        # FIX decoding here
-        self.send_command(Smarter.CommandDeviceTime)
+    def device_time(self,second = 0,minute = 0,hour = 12,unknown = 0,day = 17, month=1, century = 20,year = 16):
+        self.send_command(Smarter.CommandDeviceTime,Smarter.number_to_raw(second) + Smarter.number_to_raw(minute) + Smarter.number_to_raw(hour) + Smarter.number_to_raw(unknown) + Smarter.number_to_raw(day) + Smarter.number_to_raw(month) + Smarter.number_to_raw(century) + Smarter.number_to_raw(year))
 
 
     def device_history(self):
@@ -471,9 +468,12 @@ class SmarterClient:
             raise SmarterError("You need a coffee machine to turn off the hotplate")
  
 
-    def coffee_hotplate_on(self, timer=5):
+    def coffee_hotplate_on(self, timer=0):
         if self.isCoffee == True:
-            self.send_command(Smarter.CommandHotplate,Smarter.hotplate_to_raw(timer))
+            if timer == 0:
+                self.send_command(Smarter.CommandHotplateOff)
+            else:
+                self.send_command(Smarter.CommandHotplate,Smarter.hotplate_to_raw(timer))
         else:
             raise SmarterError("You need a coffee machine to turn on the hotplate")
 
