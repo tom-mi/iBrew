@@ -16,6 +16,10 @@ stops working cuz their servers are down. You are in full control! You can also 
  
 #### Upcoming   
  * v0.3 Kettle Rattle 
+ 
+ * Better error handling
+ * Final arguments
+ * Auto reconnect
 
 #### Donate
 Please donate raw codes or donate (for) a (working) Smarter Coffee (interface), can not test without one or without help! Someone please run ```iBrew sweep``` on there coffee machines and post the results in the issues.
@@ -132,32 +136,32 @@ iKettle Devices in Domoticz
   Domoticz Bridge
   _______________
 
-  Bridge between iKettle 2.0 and domoticz. Its auto-creates 4 devices in domoticz, if not yet created. 
-  Monitors the kettle and update the domoticz devices accordingly.
-  
-  *  Water Temperature in ºC (temperature device)
-  *  Water Height (custom device)      
-  *  Kettle on base (motion device)      
-  *  Kettle status (text device)     
 
-  *** Currently iKettle 2.0 Only ***
+  Bridge between iKettle 2.0 and domoticz. Its auto-creates 4 devices in domoticz, if not yet created,
+  and monitors the kettle and update the domoticz devices accordingly.
+  
+    Water Temperature in ºC (temperature device)
+    Water Height (custom device)
+    Kettle on base (motion device)
+    Kettle status (text device)
 
   Usage:
 
-    iBrew domoticz domcon name kettle
+    domoticz [domoticz] [basename] [kettle]
 
   Where:
   
-    domocon         Connection string to domoticz, [host:port] or [username:password@host:port]
-    name            Name of your kettle. The name may contain spaces
+    domoticz        Connection string to domoticz, [host:port] or [username:password@host:port]
+    basename        Base name of your kettle devices in domoticz. The name may contain spaces.
     kettle          Connection string to iKettle 2.0, [host]
-    
     host            Format: ip4, ip6, fqdn
     
 
   Notes:
+  
     It will auto-create the devices in Domoticz
     Tested on Domoticz v3.52
+    *** Currently iKettle 2.0 Only ***
   
   Examples:
   
