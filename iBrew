@@ -48,6 +48,8 @@ class iBrewConsole:
     def monitor(self):
         print "iBrew: Press ctrl-c to stop"
         
+        dump = self.client.dump
+        self.client.dump = True
         # repeat until...
         previousResponse = ""
         while True:
@@ -65,10 +67,10 @@ class iBrewConsole:
                 if previousResponse != response:
                     previousResponse = response
                     # ...else got one! yeah! print it!
-                    self.client.print_short_status()
             except:
                 break
-
+        self.client.dump = dump
+                
 
 
     #------------------------------------------------------
@@ -78,9 +80,9 @@ class iBrewConsole:
     
     def domoticz_bridge(self, server, name, sleep = 0, secure=False):
         
-        #if not client.isKettle:
-         #   print "iBrew: Smarter Coffee not supported"
-         #   return
+        if not self.client.isKettle:
+            print "iBrew: Smarter Coffee not supported"
+            return
         
         domoticz = Domoticz(server,secure)
         
