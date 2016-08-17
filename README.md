@@ -26,6 +26,19 @@ Upcoming
  - [ ] History/SetTime missing time
  - [ ] Settings missing parameters
  
+ 
+#### Help free the Kettle!
+
+We need to control our own devices! Smarter does not have a local api except this procotol.
+
+Setting the Wifi network does not work. This is very bad. This is the last straw in freeing the device!  
+
+The smarter app only works when you login to their server, meaning when their servers goes down, (and it will) you're stuck with a smart kettle (or coffee) which can only be accessed on a unsecure connection (at least its something).
+
+I tried sending the messages for SSID and PASSWORD, (0x05 and 0x07) and then connect (0x0c) but it still fails to connect to the network. (even with 6 zero's added as padding) It except something from the client application but I can not find out what, I thought it was the udp but I still can not get it to work.
+
+Please Help!
+
 #### Donate
 Please donate raw codes or donate (for) a (working) Smarter Coffee (interface), can not test without one or without help!
 
@@ -70,6 +83,7 @@ you can also use them on the command line as arguments:
   iKettle 2.0 & Smarter Coffee Commands
     info                   Device info
     history                Action history
+    list                   List detected devices
     reset                  Reset device to default
     start                  Start the device
     status                 Show status
