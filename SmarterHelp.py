@@ -88,7 +88,7 @@ class SmarterProtocolHelp:
             print "    06 No Water (Coffee unverified)"
             print "    69 Invalid Command"
             
-        elif id == Smarter.CommandWifiName:
+        elif id == Smarter.CommandWifiNetwork:
             print "  Argument: <SSID>{0,32}"
             print "  Just normal ascii"
             
@@ -96,21 +96,23 @@ class SmarterProtocolHelp:
             print "  Argument: <PASSWORD>{0,32}"
             print "  Just normal ascii"
             
-        elif id == Smarter.CommandWifiConnect:
-            print "  Sending this command without previous SSID/password messages will reset WiFi"
+        elif id == Smarter.CommandWifiJoin:
+            print "  Sending this command without previous SSID/password messages will reset the wifi"
             print "  to factory settings."
             print
-            print "  For me even after setting the SSID (with or without a \"}\" it still failed to connect."
+            print "  Send:"
+            print "    " + Smarter.message_description(Smarter.CommandWifiNetwork)
+            print "    " + Smarter.message_description(Smarter.CommandWifiPassword)
+            print "    " + Smarter.message_description(Smarter.CommandWifiJoin)
             print
-            print "  It actually sends: 0c 7e 00 00 00 00 00 00"
+            print "  Read all the command status ssuccess"
             print
-            print "  It connect to the home network looking for command device info 64 7e send from client to 255.255.255.255 on udp"
-            print "  if it receive it, it send back the device info"
-            
+            print "  The apps actually sends: 0c 7e 00 00 00 00 00 00"
+
         elif id == Smarter.CommandWifiScan:
             print "  Example raw code: 0d 7e"
             
-        elif id == Smarter.ResponseWifiList:
+        elif id == Smarter.ResponseWirelessNetworks:
             print "  DB is the signal strength in dBm format."
             print
             print "  Response: <SSID>{0,32}<\",-\"><DB>{2}<\"}\">"
@@ -118,7 +120,9 @@ class SmarterProtocolHelp:
             print "  Examples: MyWifi,-56}"
             print "            MyWifi,-56}OtherWifi,-82}"
             
-        elif id == Smarter.CommandWifiReset:
+        elif id == Smarter.CommandWifiLeave:
+            print "  Leaves wireless network and reset wifi to default"
+            print
             print "  Example raw code: 0f 7e"
             print "  It actually sends: 0f 7e 6d 7e"
             
@@ -329,21 +333,23 @@ class SmarterProtocolHelp:
             print "  BASE = BASELHIGHBITS * 256 + BASELOWBITS"
             print
             print "  Example: 2a 04 03"
-            
+            print
+            print "  This can contain the tail 7e, so check for length here!"
+
         elif id == Smarter.CommandBase:
             print "  Example: 2b 7e"
             
         elif id == Smarter.CommandCalibrate:
             print "  Example: 2c 7e"
             print
-            print "  Returns also a command success repsonse message after the base repsonse message"
+            print "  Returns also a command success response message after the base repsonse message"
             
         elif id == Smarter.ResponseBase:
             print "  Response: <BASELHIGHBITS><BASELOWBITS>"
             print
             print "  BASE = BASELHIGHBITS * 256 + BASELOWBITS"
-            
-            print "  IT SENDS 2d007e bastard... response on get base without home network  2d007e7e03007e  "
+            print
+            print "  This can contain the tail 7e, so check for length here!"
             
         elif id == Smarter.CommandSettings:
             print "  Also return 00 message in an unconfigured state."
@@ -364,13 +370,15 @@ class SmarterProtocolHelp:
             print "    00..64"
             
         elif id == Smarter.Command30:
-            print " Example: 30 7e"
+            print "  Arguments: <[UNKNOWN]>{?}"
+            print
+            print "  Example: 30 7e"
             
         elif id == Smarter.Command32:
-            print " Example: 32 .. .. .. 7e"
+            print "  Example: 32 .. .. .. 7e"
             
         elif id == Smarter.CommandBrew:
-            print " Example: 33 .. .. .. 7e"
+            print "  Example: 33 .. .. .. 7e"
             
         elif id == Smarter.CommandStrength:
             print "  Sets the strength of the coffee to be brewed. Use command 37 to brew"
@@ -457,7 +465,7 @@ class SmarterProtocolHelp:
             print "  Example: 6a 7e"
             
         elif id == Smarter.ResponseWifiFirmware:
-            print "  The firmware of the WiFi module in text with control chars as new line."
+            print "  The firmware of the wifi module in text with control chars as new line."
             print "  The iKettle 2.0 returns (without control chars):"
             print
             print "  Response: <FIRMWARE>{?}"
@@ -469,8 +477,9 @@ class SmarterProtocolHelp:
             print "  OK"
             
         elif id == Smarter.CommandUpdate:
-            print "  Disables WiFi and creates a 'iKettle Update' wireless network and opens port 6000."
-            print "  A hard device reset (hold power button for 10 seconds) required to fix this state."
+            print "  Disables wifi and creates a 'iKettle Update' wireless network and opens port 6000."
+            print "  A hard device reset (hold power button for 10 seconds) is sometimes required to fix this state,"
+            print "  or just unplug the power for a moment."
             print
             print "  Example: 6d 7e"
             
@@ -539,12 +548,12 @@ class SmarterProtocolHelp:
               """
     
 
-    def info(self):
+    def notes(self):
         print """
 
 
   Smarter iKettle 2.0 & Smarter Coffee Notes
-  _____________________________________________
+  __________________________________________
     
   WaterSensor Calibration:
 
@@ -555,13 +564,13 @@ class SmarterProtocolHelp:
     the connecting device must account for the weight of the kettle itSmarter.
 
 
-  WiFi:
+  Wireless Network:
 
-    If the device (coffee?) is configured to access an WiFi access point which is not available
+    If the device (coffee?) is configured to access an wifi access point which is not available
     It will try to connect to it every so minutes. If it tries to connect it beeps three
-    times the WiFi access point of the device will remain active but unreachable,
+    times the wifi access point of the device will remain active but unreachable,
     if it fails to access the access point it beeps once, and it opens up its own default
-    open unencrypted WiFi access point.access
+    open unencrypted wifi access point.access
 
     If connected to the kettle tcp 192.168.4.1:2081 is the default connection.
 
@@ -574,11 +583,11 @@ class SmarterProtocolHelp:
      OSX:  (Home Network Only)
            Step 1: Download wireshark (https://www.wireshark.org/) for mac and install it.
            Step 2: Setup your kettle or coffee machine to use your home network.
-           Step 3: Connect you mac to your network NOT using the build in WiFi adapter.
-                   Use either a cable (ethernet recommended) or a second WiFi adapter.
+           Step 3: Connect you mac to your network NOT using the build in wifi adapter.
+                   Use either a cable (ethernet recommended) or a second wifi adapter.
            Step 4: Enable and setup internet sharing in system preferences, sharing.
            Step 5: Connect with your phone to the internet sharing wireless access point.
-           Step 6: Run wiresharp it and select your build in WiFi adapter and start the capture.
+           Step 6: Run wiresharp it and select your build in wifi adapter and start the capture.
            Step 8: Look for connection with messages ending in 7e
 
     iOS & OSX: (Home network & Direct mode)
@@ -602,7 +611,7 @@ class SmarterProtocolHelp:
     iKettle 2.0:
          *  It will boil empty, making the lights bulbs to flikker.
          *  You can easily knock out it's connection to the wireless network,
-            if it fails to connect it creates an default open unencrypted WiFi access point.
+            if it fails to connect it creates an default open unencrypted wifi access point.
 
             Attack Vectors
             1. Repeat sending heat to 100ºC temperature commands, if we're lucky
@@ -624,13 +633,17 @@ class SmarterProtocolHelp:
  
               """
 
-
-    def show(self):
-        self.structure()
-        self.messages()
+    def all(self):
         for id in range(0,255):
             if Smarter.message_is_known(id):
                 self.message(id)
-        self.info()
+
+
+    def protocol(self):
+        self.structure()
+        self.messages()
+        self.all()
+        self.notes()
+
 
 SmarterHelp = SmarterProtocolHelp()

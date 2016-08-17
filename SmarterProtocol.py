@@ -61,9 +61,9 @@ class SmarterProtocol:
     # wifi
     CommandWifiNetwork        = 0x05
     CommandWifiPassword       = 0x07
-    CommandWifiConnect        = 0x0c
+    CommandWifiJoin           = 0x0c
     CommandWifiScan           = 0x0d
-    CommandWifiReset          = 0x0f
+    CommandWifiLeave          = 0x0f
     CommandWifiFirmware       = 0x6a
 
     # coffee
@@ -102,7 +102,7 @@ class SmarterProtocol:
 
 
     ResponseCommandStatus     = 0x03
-    ResponseWifiList          = 0x0e
+    ResponseWirelessNetworks  = 0x0e
     ResponseHistory           = 0x29
     ResponseBase              = 0x2d
     ResponseSettings          = 0x2f
@@ -113,28 +113,28 @@ class SmarterProtocol:
 
     # format kettle? coffee? response to command, description
     CommandMessages = {
-        CommandDeviceTime       : (True,None,[],"Set device time"),
-        CommandWifiNetwork      : (True,None,[],"Set WiFi network SSID"),
-        CommandWifiPassword     : (True,None,[],"Set WiFi network password"),
-        CommandWifiConnect      : (True,None,[],"Connect to WiFi network"),
-        CommandWifiScan         : (True,None,[ResponseWifiList],"Scan for WiFi networks"),
-        CommandWifiReset        : (True,None,[],"Reset Wifi networks"),
-        CommandReset            : (True,None,[],"Working unknown command (reset?)"),
-        CommandHeat             : (True,None,[],"Heat kettle"),
-        CommandStop             : (True,None,[],"Stop heating kettle"),
-        CommandHeatFormula      : (True,None,[],"Heat kettle using formula mode"),
-        CommandStoreSettings    : (True,None,[],"Set Default Values"),
-        Command20               : (True,None,[],"Working unknown command (turn on?)"),
-        CommandHeatDefault      : (True,None,[],"Working unknown command (turn on?)"),
-        Command22               : (True,None,[],"Working unknown command (turn on?)"),
-        Command23               : (True,None,[],"Working unknown command (turn on?)"),
+        CommandDeviceTime       : (True,None,[ResponseCommandStatus],"Set device time"),
+        CommandWifiNetwork      : (True,None,[ResponseCommandStatus],"Set wireless network name"),
+        CommandWifiPassword     : (True,None,[ResponseCommandStatus],"Set wireless network password"),
+        CommandWifiJoin         : (True,None,[],"Connect to wireless network"),
+        CommandWifiScan         : (True,None,[ResponseWirelessNetworks],"Scan for wireless networks"),
+        CommandWifiLeave        : (True,None,[],"Leave wireless network"),
+        CommandReset            : (True,None,[ResponseCommandStatus],"Working unknown command (reset?)"),
+        CommandHeat             : (True,None,[ResponseCommandStatus],"Heat kettle"),
+        CommandStop             : (True,None,[ResponseCommandStatus],"Stop heating kettle"),
+        CommandHeatFormula      : (True,None,[ResponseCommandStatus],"Heat kettle using formula mode"),
+        CommandStoreSettings    : (True,None,[ResponseCommandStatus],"Set Default Values"),
+        Command20               : (True,None,[ResponseCommandStatus],"Working unknown command (turn on?)"),
+        CommandHeatDefault      : (True,None,[ResponseCommandStatus],"Working unknown command (turn on?)"),
+        Command22               : (True,None,[ResponseCommandStatus],"Working unknown command (turn on?)"),
+        Command23               : (True,None,[ResponseCommandStatus],"Working unknown command (turn on?)"),
         CommandHistory          : (True,None,[ResponseHistory],"Get History Device"),
         CommandStoreBase        : (True,None,[],"Set water sensor base value"),
-        CommandBase             : (True,None,[ResponseBase],"Get water sensor base value"),
-        CommandCalibrate        : (True,None,[ResponseBase],"Calibrate water sensor"),
+        CommandBase             : (True,None,[ResponseBase,ResponseCommandStatus],"Get water sensor base value"),
+        CommandCalibrate        : (True,None,[ResponseBase,ResponseCommandStatus],"Calibrate water sensor"),
         CommandSettings         : (True,None,[ResponseSettings],"Get user settings"),
-        Command23               : (True,None,[],"Working unknown command"),
-        Command23               : (False,True,[],"Working unknown command (brew)"),
+        Command30               : (True,None,[],"Working unknown command"),
+        Command32               : (False,True,[],"Working unknown command (brew)"),
         CommandBrew             : (False,True,[],"Start coffee brewing"),
         CommandStrength         : (False,True,[],"Set strength of the coffee to brew"),
         CommandCups             : (False,True,[],"Set number of cups to brew"),
@@ -146,8 +146,8 @@ class SmarterProtocol:
         Command43               : (False,True,[],"Working unknown command (schedule?)"),
         CommandHotplateOff      : (False,True,[],"Turn off hotplate"),
         CommandDeviceInfo       : (True,True,[ResponseDeviceInfo],"Get identify of device"),
-        Command69               : (True,None,[],"Working unknown command"),
-        CommandWifiFirmware     : (True,None,[ResponseWifiFirmware],"Get WiFi firmware info"),
+        Command69               : (True,None,[ResponseCommandStatus],"Working unknown command"),
+        CommandWifiFirmware     : (True,None,[ResponseWifiFirmware],"Get wifi firmware info"),
         CommandUpdate           : (True,None,[],"Device firmware update")
     }
 
@@ -155,13 +155,13 @@ class SmarterProtocol:
     # format: kettle?, coffee? (None is unnknown), minimal length (0 = variable), response to command, description
     ResponseMessages = {
         ResponseCommandStatus   : (True,None,3,[],"Command status"),
-        ResponseWifiList        : (True,None,0,[CommandWifiScan],"List of WiFi networks"),
+        ResponseWirelessNetworks: (True,None,0,[CommandWifiScan],"List of wireless networks"),
         ResponseHistory         : (True,None,0,[CommandHistory],"History Device"),
         ResponseBase            : (True,None,4,[CommandBase,CommandCalibrate],"Water sensor base value"),
         ResponseSettings        : (True,True,9,[CommandSettings],"User settings"),
         ResponseStatus          : (True,True,7,[],"Device status"),
         ResponseDeviceInfo      : (True,True,4,[CommandDeviceInfo],"Identify of device"),
-        ResponseWifiFirmware    : (True,None,0,[CommandWifiFirmware],"WiFi firmware info")
+        ResponseWifiFirmware    : (True,None,0,[CommandWifiFirmware],"Wifi firmware info")
     }
 
 

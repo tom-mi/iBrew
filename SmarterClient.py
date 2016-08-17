@@ -196,7 +196,7 @@ class SmarterClient:
         self.WifiFirmware = s
 
 
-    def decode_ResponseWifiList(self,message):
+    def decode_ResponseWirelessNetworks(self,message):
         a = ""
         w = []
         db = False
@@ -290,7 +290,7 @@ class SmarterClient:
         elif id == Smarter.ResponseSettings:        self.decode_ResponseSettings(message)
         elif id == Smarter.ResponseDeviceInfo:      self.decode_ResponseDeviceInfo(message)
         elif id == Smarter.ResponseWifiFirmware:    self.decode_ResponseWifiFirmware(message)
-        elif id == Smarter.ResponseWifiList:        self.decode_ResponseWifiList(message)
+        elif id == Smarter.ResponseWirelessNetworks:        self.decode_ResponseWirelessNetworks(message)
         elif id == Smarter.ResponseStatus:          self.decode_ResponseStatus(message)
         
         if self.dump:
@@ -409,13 +409,13 @@ class SmarterClient:
 
 
     def wifi_leave(self):
-        self.send_command(Smarter.CommandWifiReset)
+        self.send_command(Smarter.CommandWifiLeave)
 
 
     def wifi_join(self,network,password):
         self.send_command(Smarter.CommandWifiNetwork,Smarter.text_to_raw(network))
         self.send_command(Smarter.CommandWifiPassword,Smarter.text_to_raw(password))
-        self.send_command(Smarter.CommandWifiConnect)
+        self.send_command(Smarter.CommandWifiJoin)
 
 
     #------------------------------------------------------
@@ -591,7 +591,7 @@ class SmarterClient:
         id = Smarter.raw_to_number(message[0])
         print "Message Received: [" + Smarter.message_description(id) + "] [" + Smarter.message_to_codes(message) + "]"
         if   id == Smarter.ResponseCommandStatus:   print "Command replied: " + Smarter.status_command(self.commandStatus)
-        elif id == Smarter.ResponseWifiList:        self.print_wireless_networks()
+        elif id == Smarter.ResponseWirelessNetworks:        self.print_wireless_networks()
         elif id == Smarter.ResponseWifiFirmware:    self.print_wifi_firmware()
         elif id == Smarter.ResponseHistory:         self.print_history()
         elif id == Smarter.ResponseSettings:        self.print_kettle_settings()

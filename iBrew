@@ -239,7 +239,7 @@ class iBrewConsole:
         command = arguments.lower().strip()
         commandCase = arguments.strip()
         
-        if command == "console" or command[0:5] == "sweep" or command == "monitor" or command[0:8] == "domoticz":
+        if command == "console" or command[0:5] == "sweep" or command == "monitor" or command[0:9] == "domoticz ":
             self.joke()
             self.app_info()
         
@@ -249,12 +249,30 @@ class iBrewConsole:
             command = command.replace("dump","").strip()
             commandCase = commandCase.replace("dump","").strip()
         
-        if command == "help":
-            self.intro_cl()
-            self.help()
+        if command == "help" or command == "?":
+            self.usage()
+            self.commands()
             return
-        if command == "smarter":
-            SmarterHelp.show()
+        if command == "usage":
+            self.usage()
+            return
+            
+        # for README.md
+        if command == "commands":
+            self.commands()
+            return
+        if command == "messages all":
+            SmarterHelp.all()
+            return
+        
+        if command == "protocol":
+            SmarterHelp.protocol()
+            return
+        if command == "structure":
+            SmarterHelp.structure()
+            return
+        if command == "notes":
+            SmarterHelp.notes()
             return
         if command == "domoticz":
             self.domoticz()
@@ -431,8 +449,8 @@ class iBrewConsole:
                     print
                 elif input == "help" or input == "?":
                     self.help()
-                elif input == "smarter":
-                    SmarterProtocolHelp.show()
+                elif input == "protocol":
+                    SmarterHelp.protocol()
                 elif input == "dump":
                     if client.dump:
                         client.dump = False
@@ -442,8 +460,12 @@ class iBrewConsole:
                         print "iBrew: Dump raw messages enabled"
                 elif input == "examples":
                     self.examples()
-                elif input == "protocol":
+                elif input == "structure":
                     SmarterHelp.structure()
+                elif input == "notes":
+                    SmarterHelp.notes()
+                elif input == "messages all":
+                    SmarterHelp.all()
                 elif input == "messages":
                     SmarterHelp.messages()
                 elif input[0:8] == "message ":
@@ -499,69 +521,71 @@ class iBrewConsole:
         print "Press enter for status update and press ctrl-c to quit"
         print
 
-    def intro_cl(self):
+    def usage(self):
         print
         print "  Usage: iBrew (dump) [command] (host)"
         print
-        print "    host             host address (format: ip4, ip6, fqdn)"
-        print "    dump             dump message enabled"
+        print "    host                   host address (format: ip4, ip6, fqdn)"
+        print "    dump                   dump message enabled"
+        print "    command                action to take!"
+        print
 
-    def help(self):
+    def commands(self):
         print
         print "  iKettle 2.0 & Smarter Coffee Commands"
-        print "    info                   Device info"
-        print "    history                Action history"
-        print "    list                   List detected devices"
-        print "    reset                  Reset device to default"
-        print "    start                  Start the device"
-        print "    status                 Show status"
-        print "    stop                   Stop the device"
-        print "    [data]                 Send raw data to device"
+        print "    info                   device info"
+        print "    history                action history"
+        print "    list                   list detected devices"
+        print "    reset                  reset device to default"
+        print "    start                  start the device"
+        print "    status                 show status"
+        print "    stop                   stop the device"
+        print "    [data]                 send raw data to device"
         print
         print "  iKettle 2.0 Commands"
-        print "    base                   Show watersensor base value"
-        print "    base [base]            Store watersensor base value"
-        print "    calibrate              Calibrates watersensor"
-        print "    default                Set default settings"
-        print "    formula ()()           Heat kettle in formula mode"
-        print "    heat ()()              Heat kettle"
-        print "    settings               Show user settings"
-        print "    settings [] [] [] []   Store user settings"
+        print "    base                   show watersensor base value"
+        print "    base [base]            store watersensor base value"
+        print "    calibrate              calibrates watersensor"
+        print "    default                set default settings"
+        print "    formula ()()           heat kettle in formula mode"
+        print "    heat ()()              heat kettle"
+        print "    settings               show user settings"
+        print "    settings [] [] [] []   store user settings"
         print
         print "  Smarter Coffee Commands"
-        print "    brew                   Brew coffee"
-        print "    cups [number]          Set number of cups [1..12]"
-        print "    grinder                Toggle grinder"
-        print "    hotplate off           Turn hotplate off"
-        print "    hotplate on ()         Turn hotplate on"
-        print "    strength [strength]    Set strength coffee [weak, medium or strong]"
+        print "    brew                   brew coffee"
+        print "    cups [number]          set number of cups [1..12]"
+        print "    grinder                toggle grinder"
+        print "    hotplate off           turn hotplate off"
+        print "    hotplate on ()         turn hotplate on"
+        print "    strength [strength]    set strength coffee [weak, medium or strong]"
         print
         print "  WiFi Commands"
-        print "    join [net] [pass]      Connect to wireless network"
-        print "    leave                  Disconnect (and open direct mode)"
-        print "    scan                   Scan wireless networks"
-#       print "    setup                  Select and connect wireless network"
+        print "    join [net] [pass]      connect to wireless network"
+        print "    leave                  disconnect (and open direct mode)"
+        print "    scan                   scan wireless networks"
         print
-        print "  Help Commands"
-        print "    examples               Show examples of commands"
-        print "    messages               Show all known protocol messages"
-        print "    message [id]           Show protocol message detail of message [id]"
-        print "    protocol               Show protocol structure information"
-        print "    smarter                Show whole protocol including messages"
+        print "  Protocol Help Commands"
+        print "    examples               show examples of commands"
+        print "    messages               show all known protocol messages"
+        print "    message [id]           show protocol message detail of message [id]"
+        print "    notes                  show developer notes on the devices"
+        print "    structure              show protocol structure information"
         print
         print "  Bridge Commands"
-        print "    domoticz               Show domoticz bridge help"
+        print "    domoticz               show domoticz bridge help"
         print
         print "  Debug Commands"
-        print "    dump                   Toggle \'dump raw messages\'"
-        print "    console                Start console [Command line only]"
-        print "    monitor                Monitor incomming traffic"
-        print "    sweep (id)             Try (all or start with id) unknown command codes"
-        print "    firmware               Show firmware Wifi"
+        print "    dump                   toggle \'dump raw messages\'"
+        print "    console                start console [Command line only]"
+        print "    firmware               show firmware Wifi"
+        print "    monitor                monitor incomming traffic"
+        print "    protocol               show all protocol information available"
+        print "    sweep (id)             try (all or start with id) unknown command codes"
         print
         print "  Console Commands"
-        print "    joke                   Show joke"
-        print "    quit                   Quit console [Console only]"
+        print "    joke                   show joke"
+        print "    quit                   quit console [Console only]"
         print
 
     def domoticz(self):

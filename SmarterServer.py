@@ -1,5 +1,8 @@
 # -*- coding: utf8 -*-
 
+
+# THIS IS NOT FINISHED
+
 import socket
 import os
 import sys
@@ -139,8 +142,8 @@ class SmarterServer:
         self.send(Smarter.ResponseCalibrationBase + Smarter.watersensor_to_raw(base))
  
 
-    def encode_ResponseWifiList(self):
-        self.send(Smarter.encode_ResponseWifiList + Smarter.text_to_raw(self.Wifi))
+    def encode_ResponseWirelessNetworks(self):
+        self.send(Smarter.encode_ResponseWirelessNetworks + Smarter.text_to_raw(self.Wifi))
 
 
     def encode_ResponseWifiFirmware(self):
@@ -213,16 +216,16 @@ class SmarterServer:
         self.send_succes()
 
 
-    def decode_CommandWifiConnect(self,message):
+    def decode_CommandWifiJoin(self,message):
         # but disconnect anyway....
         pass
 
 
     def decode_CommandWifiScan(self,message):
-        encode_ResponseWifiList()
+        encode_ResponseWirelessNetworks()
 
 
-    def decode_CommandWifiReset(self,message):
+    def decode_CommandWifiLeave(self,message):
         self.send_succes()
         # set to default
         # disconnect send this!!!
@@ -386,9 +389,9 @@ class SmarterServer:
         elif id == Smarter.CommandUpdate            self.decode_CommandUpdate(message)
         elif id == Smarter.CommandWifiName          self.decode_CommandWifiName(message)
         elif id == Smarter.CommandWifiPassword      self.decode_CommandWifiPassword(message)
-        elif id == Smarter.CommandWifiConnect       self.decode_CommandWifiConnect(message)
+        elif id == Smarter.CommandWifiJoin          self.decode_CommandWifiJoin(message)
         elif id == Smarter.CommandWifiScan          self.decode_CommandWifiScan(message)
-        elif id == Smarter.CommandWifiReset         self.decode_CommandWifiReset(message)
+        elif id == Smarter.CommandWifiLeave         self.decode_CommandWifiLeave(message)
         elif id == Smarter.CommandWifiFirmware      self.decode_CommandWifiFirmware(message)
         elif id == Smarter.CommandBrew              self.decode_CommandBrew(message)
         elif id == Smarter.CommandStrength          self.decode_CommandStrength(message)
