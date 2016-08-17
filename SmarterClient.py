@@ -425,7 +425,7 @@ class SmarterClient:
  
     def kettle_store_settings(self,temperature = 100, timer = 0, formulaOn = False, formulaTemperature = 75):
         if self.isKettle:
-            self.send_command(Smarter.CommandStoreSettings,Smarter.temperature_to_raw(temperature) + Smarter.keepwarm_to_raw(timer) + self.bool_to_raw(formulaOn) + Smarter.temperature_to_raw(formulaTemperature))
+            self.send_command(Smarter.keepwarm_to_raw(timer) + Smarter.CommandStoreSettings,Smarter.temperature_to_raw(temperature) + self.bool_to_raw(formulaOn) + Smarter.temperature_to_raw(formulaTemperature))
         else:
             raise SmarterError("You need a kettle to store settings")
 
@@ -444,9 +444,9 @@ class SmarterClient:
             raise SmarterError("You need a kettle to heat water")
 
 
-    def kettle_formula_heat(self):
+    def kettle_formula_heat(self,formulaTemperature = 75,keepwarm = 0):
         if self.isKettle:
-            self.send_command(Smarter.CommandFormula)
+            self.send_command(Smarter.CommandHeatFormula)
         else:
             raise SmarterError("You need a kettle to heat water in formula mode")
 

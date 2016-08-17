@@ -282,6 +282,8 @@ class SmarterProtocolHelp:
             print "  Examples: 21 50 05 7e"
             print "            21 44 7e"
             print "            21 7e"
+            print
+            print " Heat up till 90 if default is 80"
             
         elif id == Smarter.Command22:
             print "  Example: 22 7e"
