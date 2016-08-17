@@ -10,21 +10,12 @@ Someone please run ```iBrew``` sweep on there coffee machines and post the resul
 #### Versions
  * v0.0 Bean Grinder Pack
  * v0.1 White Tealeaf Edition
- * v0.2 Tea Noir Sweet
+ * v0.2 Tea Noire Sweet
  
 Upcoming
  
  * v0.3 Kettle Rattle
- 
- ToDo:
- - [ ] Heat/Formula & Brew/Hotplate temperature/time controlled
- - [ ] When heating and fast temperature rise auto-shutdown (iKettle2)
- - [ ] Fix Network code??? (usefull???, yes we need an auto reconnect plus we can smooth the temperature so no jumps when it .5), it does not read the status messages so it get's backlogged in console...
- - [ ] Figure out the waterlevel (iKettle2)
- - [ ] Server???
- - [ ] History/SetTime missing time
- - [ ] Settings missing parameters
- - [ ] Rewrite console...
+
  
 #### Donate
 Please donate raw codes or donate (for) a (working) Smarter Coffee (interface), can not test without one or without help!
