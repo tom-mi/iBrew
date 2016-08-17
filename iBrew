@@ -448,7 +448,7 @@ class iBrewConsole:
                     self.joke()
                     print
                 elif input == "help" or input == "?":
-                    self.help()
+                    self.commands()
                 elif input == "protocol":
                     SmarterHelp.protocol()
                 elif input == "dump":
