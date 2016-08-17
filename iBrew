@@ -567,7 +567,7 @@ class iBrewConsole:
         print "    cups [number]          set number of cups [1..12]"
         print "    grinder                toggle grinder"
         print "    hotplate off           turn hotplate off"
-        print "    hotplate on ()         turn hotplate on"
+        print "    hotplate on (minutes)  turn hotplate on (time in minutes)"
         print "    strength [strength]    set strength coffee [weak, medium or strong]"
         print
         print "  Wireless Network Commands"
