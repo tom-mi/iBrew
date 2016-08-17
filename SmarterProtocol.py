@@ -59,7 +59,7 @@ class SmarterProtocol:
     CommandUpdate             = 0x6d
 
     # wifi
-    CommandWifiName           = 0x05
+    CommandWifiNetwork        = 0x05
     CommandWifiPassword       = 0x07
     CommandWifiConnect        = 0x0c
     CommandWifiScan           = 0x0d
@@ -114,7 +114,7 @@ class SmarterProtocol:
     # format kettle? coffee? response to command, description
     CommandMessages = {
         CommandDeviceTime       : (True,None,[],"Set device time"),
-        CommandWifiName         : (True,None,[],"Set WiFi network SSID"),
+        CommandWifiNetwork      : (True,None,[],"Set WiFi network SSID"),
         CommandWifiPassword     : (True,None,[],"Set WiFi network password"),
         CommandWifiConnect      : (True,None,[],"Connect to WiFi network"),
         CommandWifiScan         : (True,None,[ResponseWifiList],"Scan for WiFi networks"),

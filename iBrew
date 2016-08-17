@@ -338,26 +338,21 @@ class iBrewConsole:
                 elif input == "firmware":
                     client.wifi_firmware()
                     if not client.dump: client.print_wifi_firmware()
-                elif input == "clear":
-                    client.wifi_reset()
-                elif input == "connect":
-                    client.wifi_connect()
+                elif input == "leave":
+                    client.wifi_leave()
                 elif input == "scan":
                     client.wifi_scan()
                     if not client.dump: client.print_wireless_networks()
-                elif input[0:9] == "password ":
+
+                elif input[0:5] == "join ":
+                    arguments = inputCase[5:len(inputCase)]
                     try:
-                        client.wifi_password(str(input[9:len(input)]))
+                        network  = arguments.split(" ")[0]
+                        password = arguments[len(network)+1:len(arguments)]
                     except:
-                        print "iBrew: Invalid password"
-                elif input[0:5] == "name ":
-                    try:
-                        client.wifi_name(str(input[5:len(input)]))
-                    except:
-                        print "iBrew: Invalid password"
-                elif input == "setup":
-                    print "iBrew: Not Fully Implemented"
-                
+                        print "iBrew: problem with domoticz arguments " + arguments
+                    client.wifi_join(network,password)
+
 
                 # Process Smarter Commands
                 # Hotplate
@@ -542,11 +537,8 @@ class iBrewConsole:
         print "    strength [strength]    Set strength coffee [weak, medium or strong]"
         print
         print "  WiFi Commands"
-        print "    connect                Connect to wireless network"
-        print "    clear                  Resets WiFi to default"
-        print "    firmware               Show firmware WiFi"
-        print "    name [name]            Set wireless network name to access"
-        print "    password [password]    Set password of wireless network to access"
+        print "    join [net] [pass]      Connect to wireless network"
+        print "    leave                  Disconnect (and open direct mode)"
         print "    scan                   Scan wireless networks"
 #       print "    setup                  Select and connect wireless network"
         print
@@ -565,6 +557,7 @@ class iBrewConsole:
         print "    console                Start console [Command line only]"
         print "    monitor                Monitor incomming traffic"
         print "    sweep (id)             Try (all or start with id) unknown command codes"
+        print "    firmware               Show firmware Wifi"
         print
         print "  Console Commands"
         print "    joke                   Show joke"

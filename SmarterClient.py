@@ -408,21 +408,14 @@ class SmarterClient:
         self.send_command(Smarter.CommandWifiScan)
 
 
-    def wifi_reset(self):
+    def wifi_leave(self):
         self.send_command(Smarter.CommandWifiReset)
 
 
-    def wifi_connect(self):
-        self.send_command(Smarter.CommandWifiConnect)
-
-
-    def wifi_password(self,password=""):
+    def wifi_join(self,network,password):
+        self.send_command(Smarter.CommandWifiNetwork,Smarter.text_to_raw(network))
         self.send_command(Smarter.CommandWifiPassword,Smarter.text_to_raw(password))
-
-
-    def wifi_name(self,name=""):
-        self.send_command(Smarter.CommandWifiName,Smarter.text_to_raw(name))
-
+        self.send_command(Smarter.CommandWifiConnect)
 
 
     #------------------------------------------------------
