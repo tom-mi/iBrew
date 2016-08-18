@@ -525,19 +525,19 @@ iKettle Devices in Domoticz
     62 Beans, No carafe, Hotplate On  #  01100010
     63 Beans, Hotplate On             #  01100011
     51 Descaling in progress          #  01010001
-                                          H B RBC
-                                          O O EEA
-                                          T I AAR
-                                          P L DNA
-                                          L I YSF
-                                          A N   E
-                                          T G
-                                          E
+                                           HB RBC
+                                           OO EEA
+                                           TI AAR
+                                           PL DNA
+                                           LI YSF
+                                           AN   E
+                                           TG
+                                           E
 
   These are guesses I do not own a smarter coffee...
   BIT 0 = UNKNOWN/UNUSED?
-  BIT 1 = HOTPLATE
-  BIT 2 = ???
+  BIT 1 = ACTION???
+  BIT 2 = HOTPLATE
   BIT 3 = Boiling & Descaling (USES BIT 6)
   BIT 4 = UNKNOWN/UNUSED?
   BIT 5 = READY/BUSY (OK TO START, FINISHED = 1 else 0)
