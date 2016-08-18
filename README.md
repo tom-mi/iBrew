@@ -73,7 +73,7 @@ you can also use them on the command line as arguments:
     status                 show status
     stop                   stop the device
     time [time]            set the device time
-    [hexdata]              send raw data to device
+    [hexdata]              send raw data to device (e.g. '64 7e')
 
   iKettle 2.0 Commands
     base                   show watersensor base value

@@ -550,7 +550,7 @@ class iBrewConsole:
         print "    status                 show status"
         print "    stop                   stop the device"
         print "    time [time]            set the device time"
-        print "    [hexdata]              send raw data to device"
+        print "    [hexdata]              send raw data to device (e.g. \'64 7e\')"
         print
         print "  iKettle 2.0 Commands"
         print "    base                   show watersensor base value"
