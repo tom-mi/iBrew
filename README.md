@@ -161,6 +161,28 @@ iKettle Devices in Domoticz
     Water Height (custom device)
     Kettle on base (motion device)
     Kettle status (text device)
+    
+  Currently you have to create your boil, brew switches yourself (working on it), so:
+  
+    Place or link iBrew in your domoticz script folder or somewhere readable and reachable.
+    Run iBrew in domoticz bridge mode to auto create the 'smarter' dummy hardware.
+    Go to [SETUP] [HARDWARE] press 'create virtual sensors' on the dummy hardware called 'smarter'
+    Give it a name (e.g. Kettle Boil) and select sensor type is switch.
+    Go to [SWITCHES], scroll all the way down.
+    Select 'edit' on your newly created device.
+      Switch Icon, well heating is nice!
+      On Action:  script://locationibrew/iBrew on kettleip
+      Off Action: script://locationibrew/iBrew off kettleip
+      
+    You now have a functional boil/stop switch... 
+    
+    If you do not want a switch you can also create two push (on/off) buttons
+    and fill in the action.
+  
+  If you use homebridge for domoticz (https://www.domoticz.com/forum/viewtopic.php?t=10272) you can use
+  apple homekit with the kettle. You have to create extra virtual sensor (motion boil???) because the text sensor is not supported
+  by homekit, all the other are.
+  
 
   Usage:
 
@@ -1157,6 +1179,12 @@ iKettle Devices in Domoticz
 
     Between setting the number of cups, the strength of the coffee and start of brewing
     atleast 500ms is recommended.
+    
+
+  Water Boiling:
+  
+    From smarter website the temperature that can be set is between 20 and 100. We still need to read lower 
+    values for cold water in the kettle
      
  
               

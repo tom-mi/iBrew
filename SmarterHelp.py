@@ -640,6 +640,12 @@ class SmarterProtocolHelp:
 
     Between setting the number of cups, the strength of the coffee and start of brewing
     atleast 500ms is recommended.
+    
+
+  Water Boiling:
+  
+    From smarter website the temperature that can be set is between 20 and 100. We still need to read lower 
+    values for cold water in the kettle
      
  
               """
