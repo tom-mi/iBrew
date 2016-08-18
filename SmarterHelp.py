@@ -88,7 +88,7 @@ class SmarterProtocolHelp:
             print "    06 No Water"
             print "    69 Invalid Command"
             print
-            print " The response status of the coffee can be bit encoded (see response 14)"
+            print "  The response status of the coffee can be bit encoded (see response 14)"
             
         elif id == Smarter.CommandWifiNetwork:
             print "  Argument: <SSID>{0,32}"
@@ -293,7 +293,7 @@ class SmarterProtocolHelp:
             print "            21 44 7e"
             print "            21 7e"
             print
-            print " Heat up till 90 if default is 80"
+            print "  Heat up till 90 if default is 80"
             
         elif id == Smarter.Command22:
             print "  Example: 22 7e"
