@@ -116,7 +116,7 @@ class SmarterProtocol:
         CommandDeviceTime       : (True,None,[ResponseCommandStatus],"Set device time"),
         CommandWifiNetwork      : (True,None,[ResponseCommandStatus],"Set wireless network name"),
         CommandWifiPassword     : (True,None,[ResponseCommandStatus],"Set wireless network password"),
-        CommandWifiJoin         : (True,None,[],"Connect to wireless network"),
+        CommandWifiJoin         : (True,None,[],"Join wireless network"),
         CommandWifiScan         : (True,None,[ResponseWirelessNetworks],"Scan for wireless networks"),
         CommandWifiLeave        : (True,None,[],"Leave wireless network"),
         CommandResetSettings    : (True,True,[ResponseCommandStatus],"Reset default user settings"),

@@ -258,7 +258,7 @@ iKettle Devices in Domoticz
     ✓ ? 02 Set device time
     ✓ ? 05 Set wireless network name
     ✓ ? 07 Set wireless network password
-    ✓ ? 0c Connect to wireless network
+    ✓ ? 0c Join wireless network
     ✓ ? 0d Scan for wireless networks
     ✓ ? 0f Leave wireless network
     ✓ ✓ 10 Reset default user settings
@@ -401,7 +401,7 @@ iKettle Devices in Domoticz
 
 
 
-  Command Message 0c: Connect to wireless network
+  Command Message 0c: Join wireless network
   ─────────────────────────────────────────────────────────────────────────
 
   ✓ iKettle 2.0   ? Smarter Coffee
@@ -412,7 +412,7 @@ iKettle Devices in Domoticz
   Send:
     Set wireless network name
     Set wireless network password
-    Connect to wireless network
+    Join wireless network
 
   Read all the command status ssuccess
 
@@ -1106,7 +1106,9 @@ iKettle Devices in Domoticz
     but the differences between levels seem the same. This means that the water level
     detection is probably weight based and that calibration is done at the base,
     which then remembers the weight for 'off base'. To detect an empty kettle,
-    the connecting device must account for the weight of the kettle itSmarter.
+    the connecting device must account for the weight of the kettle.
+    
+    (yeah, not! the watersensor becomes higher if the temperature becomes higher...)
 
 
   Wireless Network:
@@ -1140,7 +1142,7 @@ iKettle Devices in Domoticz
            Step 4: Enable and setup internet sharing in system preferences, sharing.
            Step 5: Connect with your phone to the internet sharing wireless access point.
            Step 6: Run wiresharp it and select your build in wifi adapter and start the capture.
-           Step 8: Look for connection with messages ending in 7e
+           Step 7: Look for connection with messages ending in 7e
 
     iOS & OSX: (Home network & Direct mode)
            Step 1: Connect your iOS device to your Mac via USB.
@@ -1149,13 +1151,13 @@ iKettle Devices in Domoticz
                    adapter mirroring the iOS network, which we can dump and inspect:
            Step 4: rvictl -s <udid>
            Step 5: tcpdump -i rvi0 -w ~/Desktop/output.pcap
-           Step 7: Connect to kettle's wifi network (or your home network if already setup) on the iOS device.
-           Step 8: Run setup for smarter device setup, or any commands
-           Step 9: When done or the device setup disconnected to switch to your home network, disconnect with ctrl-c
-           Step 10:rvictl -x <udid>
-           Step 11: Download wireshark (https://www.wireshark.org/) for mac and install it.
-           Stap 12: Open ~/Desktop/output.pcap with Wireshark
-           Step 13: Look for connection with messages ending in 7e
+           Step 6: Connect to kettle's wifi network (or your home network if already setup) on the iOS device.
+           Step 7: Run setup for smarter device setup, or any commands
+           Step 8: When done or the device setup disconnected to switch to your home network, disconnect with ctrl-c
+           Step 9: rvictl -x <udid>
+           Step A: Download wireshark (https://www.wireshark.org/) for mac and install it.
+           Stap B: Open ~/Desktop/output.pcap with Wireshark
+           Step C: Look for connection with messages ending in 7e
  
 
   Security:
@@ -1163,12 +1165,13 @@ iKettle Devices in Domoticz
     iKettle 2.0:
          *  It will boil empty, making the lights bulbs to flikker.
          *  You can easily knock out it's connection to the wireless network,
-            if it fails to connect it creates an default open unencrypted wifi access point.
+            if it fails to connect it creates an default open unencrypted wifi access point 
+            (check!, could be that wifi was not connecting, then this is rubbish ;-).
 
             Attack Vectors
             1. Repeat sending heat to 100ºC temperature commands, if we're lucky
                there is no water and it will boil empty, if not it will take a while.
-               plus the kettle will get warmer and warmer. If you do not expect that. :-)
+               plus the kettle will get warmer and warmer. If you do not expect that when touching.
             2. Alternating heat and stop commands.
             3. (Check) Wait until the owner of the kettle log in on the kettle, since its an
                open access point and the password are send in the open you can read it.
