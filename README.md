@@ -123,6 +123,22 @@ you can also use them on the command line as arguments:
 
 ```
 
+### Examples
+
+```
+
+  Example:
+    off            iKettle 2.0 Stop boiling
+    messages       Show all protocol messages
+    message 3e     Show protocol message 3a, turn hotplate on
+    167E           Send iKettle 2.0 raw off
+    21 30 05 7e    Send iKettle 2.0 raw on
+    strength weak  Set SmarterCoffee coffee strength to weak
+    cups 3         Set SmarterCoffee number of cups to brew
+
+
+```
+
 ### Domoticz Bridge
 
 Bridge to [Domoticz](http://domoticz.com). You are in full control!

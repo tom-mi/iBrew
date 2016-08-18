@@ -279,6 +279,9 @@ class iBrewConsole:
         if command == "domoticz":
             self.domoticz()
             return
+        if command == "examples":
+            self.examples()
+            return
         if command == "messages":
             SmarterHelp.messages()
             return
