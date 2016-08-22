@@ -344,7 +344,7 @@ class SmarterClient:
         self.read()
         data = Smarter.raw_to_number(self.readMessage[0])
         
-        while data == Smarter.ResponseKettleStatus or data == Smarter.ResponseCoffeeStatus:
+        while (data == Smarter.ResponseKettleStatus) or (data == Smarter.ResponseCoffeeStatus):
             self.read()
             data = Smarter.raw_to_number(self.readMessage[0])
          
@@ -355,9 +355,10 @@ class SmarterClient:
         # Smarter.message_connection(raw_to_number(self.readMessage[0])[0]
         self.read()
         data = Smarter.raw_to_number(self.readMessage[0])
-        while data != Smarter.ResponseKettleStatus and data != Smarter.ResponseCoffeeStatus:
+        while (data != Smarter.ResponseKettleStatus) and (data != Smarter.ResponseCoffeeStatus):
             self.read()
-       
+            data = Smarter.raw_to_number(self.readMessage[0])
+
 
 
     #------------------------------------------------------

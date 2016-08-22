@@ -564,7 +564,7 @@ class iBrewConsole:
         print "    reset                  reset device to default"
         print "    start                  start the device"
         print "    status                 show status"
-        print "    stop                   stop the device"
+        print "    stop                   stop the appliance if its brewing or boiling"
         print "    time [time]            set the device time"
         print "    [hexdata]              send raw data to device (e.g. \'64 7e\')"
         print

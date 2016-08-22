@@ -71,7 +71,7 @@ you can also use them on the command line as arguments:
     reset                  reset device to default
     start                  start the device
     status                 show status
-    stop                   stop the device
+    stop                   stop the appliance if its brewing or boiling
     time [time]            set the device time
     [hexdata]              send raw data to device (e.g. '64 7e')
 
@@ -217,7 +217,7 @@ iKettle Devices in Domoticz
 ```
 
 Example keepalive LaunchAgent for macOS/OSX, i soft linked /usr/local/bin/ibrew to iBrew.
-But you can change it to your normal copy, also change the working directory...
+But you can change it to your normal copy, also change the working directory,domoticz ip and kettle ip.
 
 ```
 <?xml version="1.0" encoding="UTF-8"?>

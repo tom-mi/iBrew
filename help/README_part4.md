@@ -2,7 +2,7 @@
 ```
 
 Example keepalive LaunchAgent for macOS/OSX, i soft linked /usr/local/bin/ibrew to iBrew.
-But you can change it to your normal copy, also change the working directory...
+But you can change it to your normal copy, also change the working directory,domoticz ip and kettle ip.
 
 ```
 <?xml version="1.0" encoding="UTF-8"?>
