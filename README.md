@@ -64,6 +64,7 @@ you can also use them on the command line as arguments:
 ```
 
   iKettle 2.0 & Smarter Coffee Commands
+    default                set default settings
     info                   device info
     history                action history
     list                   list detected devices
@@ -78,7 +79,6 @@ you can also use them on the command line as arguments:
     base                   show watersensor base value
     base [base]            store watersensor base value
     calibrate              calibrates watersensor
-    default                set default settings
     formula ()()           heat kettle in formula mode
     heat ()()              heat kettle
     settings               show user settings
@@ -87,10 +87,12 @@ you can also use them on the command line as arguments:
 
   Smarter Coffee Commands
     brew                   brew coffee
+    carafe                 returns if carafe is required
     cups [number]          set number of cups [1..12]
     grinder                toggle grinder
     hotplate off           turn hotplate off
     hotplate on (minutes)  turn hotplate on (time in minutes)
+    singlecup              return if singlecup mode is on
     strength [strength]    set strength coffee [weak, medium or strong]
     stop coffee            stops brewing
 
