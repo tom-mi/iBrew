@@ -155,6 +155,7 @@ class SmarterClient:
 
 
     def decode_ResponseKettleStatus(self,message):
+        isKettle = True
         self.statusMessage = message
         self.kettleStatus        = Smarter.raw_to_number(message[1])
         self.temperature         = Smarter.raw_to_temperature(message[2])
@@ -163,6 +164,7 @@ class SmarterClient:
 
 
     def decode_ResponseCoffeeStatus(self,message):
+        isCoffee = True
         self.statusMessage = message
         self.coffeeStatus        = Smarter.raw_to_number(message[1])
         #self.waterSensor         = Smarter.raw_to_watersensor(message[3],message[2])
@@ -188,10 +190,12 @@ class SmarterClient:
 
 
     def decode_ResponseResponseCarafe(self,message):
+        isCoffee = True
         self.carafe = Smarter.raw_to_number(message[1])
 
 
     def decode_ResponseSingleCupMode(self,message):
+        isCoffee = True
         self.singlecup  = Smarter.raw_to_bool(message[1])
 
 
@@ -336,18 +340,22 @@ class SmarterClient:
 
     def send(self,message):
         self.send_message(message)
-        self.read()
- 
-        while Smarter.raw_to_number(self.readMessage[0]) == Smarter.ResponseKettleStatus:
-             self.read()
         
+        self.read()
+        data = Smarter.raw_to_number(self.readMessage[0])
+        
+        while data == Smarter.ResponseKettleStatus or data == Smarter.ResponseCoffeeStatus:
+            self.read()
+            data = Smarter.raw_to_number(self.readMessage[0])
+         
         self.responseMessage = self.readMessage
         
         # read until right message.... no threaded read
         
-       # Smarter.message_connection(raw_to_number(self.readMessage[0])[0]
+        # Smarter.message_connection(raw_to_number(self.readMessage[0])[0]
         self.read()
-        while Smarter.raw_to_number(self.readMessage[0]) != Smarter.ResponseKettleStatus:
+        data = Smarter.raw_to_number(self.readMessage[0])
+        while data != Smarter.ResponseKettleStatus and data != Smarter.ResponseCoffeeStatus:
             self.read()
        
 
