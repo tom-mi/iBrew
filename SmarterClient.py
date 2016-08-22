@@ -101,12 +101,14 @@ class SmarterClient:
     
         self.socket = networksocket
         self.connected = True
-        self.read()
         self.device_info()
         #self.device_history()
         if self.isKettle:
             self.kettle_settings()
             self.calibrate_base()
+        elif self.isCoffee:
+            self.coffee_single_cup_mode()
+            self.coffee_carafe()
 
 
     def disconnect(self):
