@@ -392,6 +392,12 @@ class SmarterClient:
         elif self.isCoffee:
             self.coffee_stop()
 
+    def device_restore_default(self):
+        if self.isKettle:
+            self.kettle_store_settings()
+        elif self.isCoffee:
+            self.coffee_store_settings()
+
     def device_reset(self):
         self.send_command(Smarter.CommandResetSettings)
 
@@ -477,7 +483,20 @@ class SmarterClient:
         self.send_command(Smarter.CommandCoffeeStop)
 
 
+    def coffee_single_cup_mode(self):
+        self.send_command(Smarter.CommandSingleCupMode)
+
+
+    def coffee_carafe(self):
+        self.send_command(Smarter.CommandCarafe)
+
+
+    def coffee_store_settings(self,cups = 1,strength = 1,hotplate = 0,grinder = 0):
+        self.send_command(Smarter.CommandCoffeeStoreSettings,Smarter.strength_to_raw(strength),Smarter.cups_to_code(strength),Smarter.bool_to_raw(grinder),Smarter.hotplate_to_raw(hotplate))
+    
+
     def coffee_brew(self):
+ #   $input{cups}.$input{strength}.$input{hotplate}.$input{grinder};
         if self.isCoffee:
             self.send_command(Smarter.CommandBrew)
         else:
@@ -532,6 +551,12 @@ class SmarterClient:
         print self.device + " v" + str(self.version)
 
 
+    def print_singlecupmode(self):
+        print "Single cup mode: " + str(self.singlecup)
+
+    def print_carafe(self):
+        print "Carafe present: " + str(self.carafe)
+
     def print_watersensor_base(self):
         print "Watersensor calibration base value: " + str(self.waterSensorBase)
 
@@ -573,32 +598,47 @@ class SmarterClient:
             s = "Failed to: "
         print s + Smarter.string_kettle_settings(self.historyTemperature, self.historyFormulaTemperature , self.historyFormulaTemperature,self.historyKeepWarmTime)
 
-            
+
+    def print_short_kettle_status(self):
+        if self.onBase:
+            print Smarter.status_kettle_description(self.kettleStatus) + " on base: Temperature " + str(self.temperature) + "ºC, watersensor " + str(self.waterSensor)
+        else:
+            print Smarter.status_kettle_description(self.kettleStatus) + " off base"
+
+
     def print_short_status(self):
         if self.isKettle:
-            if self.onBase:
-                print Smarter.status_kettle_description(self.kettleStatus) + " on base: Temperature " + str(self.temperature) + "ºC, watersensor " + str(self.waterSensor)
-            else:
-                print Smarter.status_kettle_description(self.kettleStatus) + " off base"
-        if self.isCoffee == True:
-            print Smarter.status_coffee_description(self.coffeeStatus) + ": Watersensor: " + str(self.waterSensor) + ", setting: " + Smarter.number_to_strength(self.strength) + " " + Smarter.string_cups(self.cups)
+            self.print_short_kettle_status()
+        elif self.isCoffee:
+            self.print_short_coffee_status()
+
+
+    def print_short_coffee_status(self):
+        print Smarter.status_coffee_description(self.coffeeStatus) + ": Watersensor: " + str(self.waterSensor) + ", setting: " + Smarter.number_to_strength(self.strength) + " " + Smarter.string_cups(self.cups)
+
+
+    def print_kettle_status(self):
+        if self.onBase:
+            print "Status         " + Smarter.status_kettle_description(self.kettleStatus)
+            print "Temperature    " + str(self.temperature) +  "ºC"
+            print "Water sensor   " + str(self.waterSensor) + " (calibration base " + str(self.waterSensorBase) + ")"
+        else:
+            print "Status         Off base"
+        print "Default boil   " + Smarter.string_kettle_settings(self.defaultTemperature,self.defaultFormula, self.defaultFormulaTemperature,self.defaultKeepWarmTime)
+
+    def print_coffee_status(self):
+        print "Status         " + Smarter.status_coffee_description(self.coffeeStatus)
+        print "Water sensor   " + str(self.waterSensor)
+        print "Setting        " + Smarter.number_to_strength(self.strength) + " " + Smarter.string_cups(self.cups)
 
 
     def print_status(self):
         m = self.read()
         print
         if self.isKettle:
-            if self.onBase:
-                print "Status         " + Smarter.status_kettle_description(self.kettleStatus)
-                print "Temperature    " + str(self.temperature) +  "ºC"
-                print "Water sensor   " + str(self.waterSensor) + " (calibration base " + str(self.waterSensorBase) + ")"
-            else:
-                print "Status         Off base"
-            print "Default boil   " + Smarter.string_kettle_settings(self.defaultTemperature,self.defaultFormula, self.defaultFormulaTemperature,self.defaultKeepWarmTime)
-        if self.isCoffee == True:
-            print "Status         " + Smarter.status_coffee_description(self.coffeeStatus)
-            print "Water sensor   " + str(self.waterSensor)
-            print "Setting        " + Smarter.number_to_strength(self.strength) + " " + Smarter.string_cups(self.cups)
+            self.print_kettle_status()
+        elif self.isCoffee:
+            self.print_coffee_status()
         print
 
 
@@ -618,8 +658,11 @@ class SmarterClient:
         elif id == Smarter.ResponseWifiFirmware:    self.print_wifi_firmware()
         elif id == Smarter.ResponseHistory:         self.print_history()
         elif id == Smarter.ResponseSettings:        self.print_kettle_settings()
+        elif id == Smarter.ResponseCarafe:          self.print_carafe()
+        elif id == Smarter.ResponseSingleCupMode:   self.print_singlecupmode()
         elif id == Smarter.ResponseDeviceInfo:      self.print_info()
         elif id == Smarter.ResponseBase:            self.print_watersensor_base()
-        elif id == Smarter.ResponseKettleStatus:          self.print_short_status()
+        elif id == Smarter.ResponseKettleStatus:    self.print_short_kettle_status()
+        elif id == Smarter.ResponseCoffeeStatus:    self.print_short_coffee_status()
         else:                                       print "Unknown Reply Message"
 

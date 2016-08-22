@@ -504,6 +504,14 @@ class SmarterProtocol:
     CoffeeStrong              = 0x02
 
 
+    def strength_to_raw(self,strength):
+        return self.number_to_raw(self.strength_to_number(strength))
+
+
+    def raw_to_strength(self,raw):
+        return self.number_to_strength(self.raw_to_number(strength))
+    
+    
     def number_to_strength(self,raw):
         if raw == CoffeeWeak:
             return "weak"

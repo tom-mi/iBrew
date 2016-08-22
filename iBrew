@@ -338,12 +338,12 @@ class iBrewConsole:
                      print "iBrew: Not Fully Implemented"
                      client.kettle_formula_heat()
                 elif input == "default":
-                    client.kettle_store_settings()
+                    client.device_restore_default()
                 elif input == "settings":
                     client.kettle_settings()
-                    if not client.dump: client.print_kettle_settings()
+                    if not client.dump: client.print_settings()
                 elif input[0:9] == "settings ":
-                    client.kettle_store_settings()
+                    #client.kettle_store_settings()
                     print "iBrew: Not Fully Implemented"
                 elif input == "calibrate":
                     client.calibrate()
@@ -391,6 +391,14 @@ class iBrewConsole:
                     client.coffee_hotplate_off()
                 elif input[0:8] == "hotplate":
                     print "iBrew: Use on or off as argument"
+
+                # Carafe
+                elif input == "carafe":
+                    client.coffee_carafe()
+                # Grinder
+                elif input == "singlecup":
+                    client.coffee_single_cup_mode()
+
                 # Grinder
                 elif input == "grinder":
                     client.coffee_grinder()
@@ -549,6 +557,7 @@ class iBrewConsole:
     def commands(self):
         print
         print "  iKettle 2.0 & Smarter Coffee Commands"
+        print "    default                set default settings"
         print "    info                   device info"
         print "    history                action history"
         print "    list                   list detected devices"
@@ -563,7 +572,6 @@ class iBrewConsole:
         print "    base                   show watersensor base value"
         print "    base [base]            store watersensor base value"
         print "    calibrate              calibrates watersensor"
-        print "    default                set default settings"
         print "    formula ()()           heat kettle in formula mode"
         print "    heat ()()              heat kettle"
         print "    settings               show user settings"
@@ -572,10 +580,12 @@ class iBrewConsole:
         print
         print "  Smarter Coffee Commands"
         print "    brew                   brew coffee"
+        print "    carafe                 returns if carafe is required"
         print "    cups [number]          set number of cups [1..12]"
         print "    grinder                toggle grinder"
         print "    hotplate off           turn hotplate off"
         print "    hotplate on (minutes)  turn hotplate on (time in minutes)"
+        print "    singlecup              return if singlecup mode is on"
         print "    strength [strength]    set strength coffee [weak, medium or strong]"
         print "    stop coffee            stops brewing"
         print
