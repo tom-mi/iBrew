@@ -365,12 +365,12 @@ class SmarterProtocolHelp:
             
         elif id == Smarter.CommandHotplateOn:
             print "  Sets on the hotplate, you can specify how many minutes before it switch off."
-            print "  Range between 5 and 30, the app sends 5 on default"
+            print "  Range between 5 and 40, the app sends 5 on default"
             print
             print "  Argument: <[KEEPWARMTIME]>"
             print
             print "  KEEPWARMTIME"
-            print "    05..1e 5 .. 20 minutes"
+            print "    05..28 5 .. 40 minutes"
             print "    05     5 Minutes (Default)"
             print
             print "  Example: 3e 05 7e"

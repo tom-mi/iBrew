@@ -257,6 +257,21 @@ class SmarterProtocol:
     #------------------------------------------------------
 
 
+    WaterLevel = {
+        0x00 : "Empty",
+        0x00 : "Low",
+        0x02 : "Half",
+        0x03 : "Full",
+    }
+
+
+    def water_level(self,level):
+        if self.WaterLevel.has_key(level):
+            return self.WaterLevel[level]
+        else:
+            return "Unknown water level " + self.number_to_code(level)
+
+
     KettleReady               = 0x00
     KettleBoiling             = 0x01
     KettleKeepWarm            = 0x02
@@ -565,8 +580,8 @@ class SmarterProtocol:
 
 
     def check_hotplate(self,timer):
-        if timer != 0 and (timer < 5 or timer > 30):
-            raise SmarterError("Hotplate timer out of range [0] or [5..30] minutes: " + str(timer))
+        if timer != 0 and (timer < 5 or timer > 40):
+            raise SmarterError("Hotplate timer out of range [0] or [5..40] minutes: " + str(timer))
         return timer
 
 
@@ -607,7 +622,8 @@ class SmarterProtocol:
         return self.number_to_raw(boolean)
 
 
-    def check_cups(self,cups):
+    def check_cups(self,cups_raw):
+        cups = cups_raw % 12
         if cups < 1 or cups > 12:
             raise SmarterError("Unknown coffee cups [1..12]: " + str(cups))
         return cups
