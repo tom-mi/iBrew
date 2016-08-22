@@ -83,6 +83,7 @@ you can also use them on the command line as arguments:
     heat ()()              heat kettle
     settings               show user settings
     settings [] [] [] []   store user settings
+    stop kettle            stops boiling
 
   Smarter Coffee Commands
     brew                   brew coffee
@@ -91,6 +92,7 @@ you can also use them on the command line as arguments:
     hotplate off           turn hotplate off
     hotplate on (minutes)  turn hotplate on (time in minutes)
     strength [strength]    set strength coffee [weak, medium or strong]
+    stop coffee            stops brewing
 
   Wireless Network Commands
     join [net] [pass]      connect to wireless network
@@ -295,7 +297,7 @@ But you can change it to your normal copy, also change the working directory...
     ✓ ? 15 Heat kettle
     ✓ ? 16 Stop heating kettle
     ✓ ? 19 Heat kettle using formula mode
-    ✓ ? 1f Set default user settings
+    ✓ ? 1f Set kettle default user settings
     ✓ ? 20 Working unknown command (turn on?)
     ✓ ? 21 Working unknown command (turn on?)
     ✓ ? 22 Working unknown command (turn on?)
@@ -306,17 +308,20 @@ But you can change it to your normal copy, also change the working directory...
     ✓ ? 2c Calibrate water sensor
     ✓ ? 2e Get default user settings
     ✓ ? 30 Working unknown command
-    ✕ ✓ 32 Working unknown command (brew)
     ✕ ✓ 33 Start coffee brewing
+    ✕ ✓ 34 Stop coffee brewing
     ✕ ✓ 35 Set strength of the coffee to brew
     ✕ ✓ 36 Set number of cups to brew
     ✕ ✓ 37 Start coffee brewing using default
+    ✕ ✓ 38 Set coffee machine default user settings
     ✕ ✓ 3c Toggle grinder
     ✕ ✓ 3e Turn on hotplate
     ✕ ✓ 40 Working unknown command (schedule?)
     ✕ ✓ 41 Working unknown command (schedule?)
     ✕ ✓ 43 Working unknown command (schedule?)
     ✕ ✓ 4a Turn off hotplate
+    ✕ ✓ 4c Coffee Carafe Required Status
+    ✕ ✓ 4f Coffee Single Mode Status
     ✓ ✓ 64 Get device info
     ✓ ? 69 Working unknown command
     ✓ ? 6a Get wifi firmware info
@@ -326,10 +331,13 @@ But you can change it to your normal copy, also change the working directory...
     _______________________________
     ✓ ? 03 Command status
     ✓ ? 0e Wireless networks list
-    ✓ ✓ 14 Device status
+    ✓ ✓ 14 Kettle status
     ✓ ? 29 Device history
     ✓ ? 2d Water sensor base value
     ✓ ✓ 2f Default user settings
+    ✕ ✓ 32 Coffee machine status
+    ✕ ✓ 4d Carafe status
+    ✕ ✓ 50 Single cup mode status
     ✓ ✓ 65 Device info
     ✓ ? 6b Wifi firmware info
 
@@ -385,7 +393,7 @@ But you can change it to your normal copy, also change the working directory...
 
   Response Message 03: Command status
   ─────────────────────────────────────────────────────────────────────────
-  In response to command message: [02,Set device time] [05,Set wireless network name] [07,Set wireless network password] [10,Reset default user settings] [15,Heat kettle] [16,Stop heating kettle] [19,Heat kettle using formula mode] [1f,Set default user settings] [20,Working unknown command (turn on?)] [21,Working unknown command (turn on?)] [22,Working unknown command (turn on?)] [23,Working unknown command (turn on?)] [2b,Get water sensor base value] [2c,Calibrate water sensor] [69,Working unknown command] 
+  In response to command message: [02,Set device time] [05,Set wireless network name] [07,Set wireless network password] [10,Reset default user settings] [15,Heat kettle] [16,Stop heating kettle] [19,Heat kettle using formula mode] [1f,Set kettle default user settings] [20,Working unknown command (turn on?)] [21,Working unknown command (turn on?)] [22,Working unknown command (turn on?)] [23,Working unknown command (turn on?)] [2b,Get water sensor base value] [2c,Calibrate water sensor] [69,Working unknown command] 
   Message Size: 3 bytes
 
   ✓ iKettle 2.0   ? Smarter Coffee
@@ -402,7 +410,7 @@ But you can change it to your normal copy, also change the working directory...
     06 No Water
     69 Invalid Command
 
- The response status of the coffee can be bit encoded (see response 14)
+  The response status of the coffee can be bit encoded (see response 14)
 
 
 
@@ -508,16 +516,11 @@ But you can change it to your normal copy, also change the working directory...
 
 
 
-  Response Message 14: Device status
+  Response Message 14: Kettle status
   ─────────────────────────────────────────────────────────────────────────
   Message Size: 7 bytes
 
   ✓ iKettle 2.0   ✓ Smarter Coffee
-
-  Hope that this is the same ID for the Smarter Coffee as for the iKettle 2.0.
-  The last byte is always 0 on the kettle. I do not have a smarter coffee, but I
-  suspect that the WIFISTRENGTH is just the WATERSENSORBITSLOW part of the waterlevel
-  sensor.
 
   There is correlation between the temperature the watersensor and the base. How higher
   the temperature how higher the watersensor with the same volume of water.
@@ -539,55 +542,6 @@ But you can change it to your normal copy, also change the working directory...
     7f      Kettle Off Base
 
   WATERSENSOR = WATERSENSORHIGHBITS * 256 + WATERSENSORLOWBITS
-
-  STATUSCOFFEE (unverified)
-    04 Filter, ?                      #  00000100
-    05 Filter, OK to start            #  00000101
-    06 Filter, OK to start            #  00000110
-    07 Beans, OK to start             #  00000111
-    20 Filter, No carafe              #  00100000
-    22 Beans, No carafe               #  00100010
-    45 Filter, Done                   #  01000101 <-- from here actions
-    47 Beans, Done                    #  01000111
-    53 Boiling                        #  01010011
-    60 Filter, No carafe, Hotplate On #  01100000
-    61 Filter, Hotplate On            #  01100001
-    62 Beans, No carafe, Hotplate On  #  01100010
-    63 Beans, Hotplate On             #  01100011
-    51 Descaling in progress          #  01010001
-                                           HB RBC
-                                           OO EEA
-                                           TI AAR
-                                           PL DNA
-                                           LI YSF
-                                           AN   E
-                                           TG
-                                           E
-
-  These are guesses I do not own a smarter coffee...
-  BIT 0 = UNKNOWN/UNUSED?
-  BIT 1 = ACTION???
-  BIT 2 = HOTPLATE
-  BIT 3 = Boiling & Descaling (USES BIT 6)
-  BIT 4 = UNKNOWN/UNUSED?
-  BIT 5 = READY/BUSY (OK TO START, FINISHED = 1 else 0)
-  BIT 6 = FILTER/BEANS
-  BIT 7 = CARAFE OFFBASE/ONBASE
-
-  WATERLEVEL
-    00 Not enough water
-    01 Low
-    02 Half
-    12 Half
-    13 Full
-
-  STRENGTH
-    00 Weak
-    01 Medium
-    02 Strong
-
-  CUPS
-    00..0c
 
 
 
@@ -652,7 +606,7 @@ But you can change it to your normal copy, also change the working directory...
 
 
 
-  Command Message 1f: Set default user settings
+  Command Message 1f: Set kettle default user settings
   ─────────────────────────────────────────────────────────────────────────
   Response message: [03,Command status] 
 
@@ -886,12 +840,73 @@ But you can change it to your normal copy, also change the working directory...
 
 
 
-  Command Message 32: Working unknown command (brew)
+  Response Message 32: Coffee machine status
   ─────────────────────────────────────────────────────────────────────────
 
   ✕ iKettle 2.0   ✓ Smarter Coffee
 
-  Example: 32 .. .. .. 7e
+  I do not have a smarter coffee, but I suspect that the WIFISTRENGTH is just
+  the WATERSENSORBITSLOW part of the waterlevel sensor.
+
+  Response: <STATUSCOFFEE><WATERLEVEL><WIFISTRENGTH???/WATERSENSORBITSLOW???><STRENGTH><CUPS>
+
+  STATUSKETTLE
+    00 Ready
+    01 Boiling
+    02 Keep Warm
+    03 Cycle Finished
+    04 Baby Cooling
+
+  WATERSENSOR = WATERSENSORHIGHBITS * 256 + WATERSENSORLOWBITS
+
+  STATUSCOFFEE (unverified)
+    04 Filter, ?                      #  00000100
+    05 Filter, OK to start            #  00000101
+    06 Filter, OK to start            #  00000110
+    07 Beans, OK to start             #  00000111
+    20 Filter, No carafe              #  00100000
+    22 Beans, No carafe               #  00100010
+    45 Filter, Done                   #  01000101 <-- from here actions
+    47 Beans, Done                    #  01000111
+    53 Boiling                        #  01010011
+    60 Filter, No carafe, Hotplate On #  01100000
+    61 Filter, Hotplate On            #  01100001
+    62 Beans, No carafe, Hotplate On  #  01100010
+    63 Beans, Hotplate On             #  01100011
+    51 Descaling in progress          #  01010001
+                                           HB RBC
+                                           OO EEA
+                                           TI AAR
+                                           PL DNA
+                                           LI YSF
+                                           AN   E
+                                           TG
+                                           E
+
+  These are guesses I do not own a smarter coffee...
+  BIT 0 = UNKNOWN/UNUSED?
+  BIT 1 = ACTION???
+  BIT 2 = HOTPLATE
+  BIT 3 = Boiling & Descaling (USES BIT 6)
+  BIT 4 = UNKNOWN/UNUSED?
+  BIT 5 = READY/BUSY (OK TO START, FINISHED = 1 else 0)
+  BIT 6 = FILTER/BEANS
+  BIT 7 = CARAFE OFFBASE/ONBASE
+
+  WATERLEVEL
+    00 Not enough water
+    01 Low
+    02 Half
+    12 Half
+    13 Full
+
+  STRENGTH
+    00 Weak
+    01 Medium
+    02 Strong
+
+  CUPS
+    00..0c
 
 
 
@@ -902,6 +917,16 @@ But you can change it to your normal copy, also change the working directory...
   ✕ iKettle 2.0   ✓ Smarter Coffee
 
   Example: 33 .. .. .. 7e
+
+
+
+
+  Command Message 34: Stop coffee brewing
+  ─────────────────────────────────────────────────────────────────────────
+
+  ✕ iKettle 2.0   ✓ Smarter Coffee
+
+ NEW
 
 
 
@@ -948,6 +973,16 @@ But you can change it to your normal copy, also change the working directory...
   ✕ iKettle 2.0   ✓ Smarter Coffee
 
   Example: 37 7e
+
+
+
+
+  Command Message 38: Set coffee machine default user settings
+  ─────────────────────────────────────────────────────────────────────────
+
+  ✕ iKettle 2.0   ✓ Smarter Coffee
+
+ NEW
 
 
 
@@ -1020,6 +1055,50 @@ But you can change it to your normal copy, also change the working directory...
   ✕ iKettle 2.0   ✓ Smarter Coffee
 
   Example: 4a 7e
+
+
+
+
+  Command Message 4c: Coffee Carafe Required Status
+  ─────────────────────────────────────────────────────────────────────────
+
+  ✕ iKettle 2.0   ✓ Smarter Coffee
+
+ NEW
+
+
+
+
+  Response Message 4d: Carafe status
+  ─────────────────────────────────────────────────────────────────────────
+  In response to command message: [4c,Coffee Carafe Required Status] 
+  Message Size: 3 bytes
+
+  ✕ iKettle 2.0   ✓ Smarter Coffee
+
+  Response: <BOOLEAN>
+
+
+
+
+  Command Message 4f: Coffee Single Mode Status
+  ─────────────────────────────────────────────────────────────────────────
+
+  ✕ iKettle 2.0   ✓ Smarter Coffee
+
+ NEW
+
+
+
+
+  Response Message 50: Single cup mode status
+  ─────────────────────────────────────────────────────────────────────────
+  In response to command message: [4f,Coffee Single Mode Status] 
+  Message Size: 3 bytes
+
+  ✕ iKettle 2.0   ✓ Smarter Coffee
+
+  Response: <BOOLEAN>
 
 
 
@@ -1252,4 +1331,5 @@ But you can change it to your normal copy, also change the working directory...
   *    https://github.com/AdenForshaw/smarter-coffee-api
   *    https://github.com/Half-Shot/Smarter-Coffee-NET
   *    https://domoticz.com/forum/viewtopic.php?f=23&t=12837
+  *    https://github.com/jkellerer/fhem-smarter-coffee/
   *    https://www.pentestpartners.com/blog/hacking-a-wi-fi-coffee-machine-part-1/

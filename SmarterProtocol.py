@@ -53,7 +53,6 @@ class SmarterProtocol:
     # device
     CommandDeviceTime         = 0x02
     CommandResetSettings      = 0x10
-    CommandStop               = 0x16
     CommandHistory            = 0x28
     CommandDeviceInfo         = 0x64
     CommandUpdate             = 0x6d
@@ -68,47 +67,60 @@ class SmarterProtocol:
 
     # coffee
     CommandBrew               = 0x33
+    CommandCoffeeStop         = 0x34
     CommandStrength           = 0x35
     CommandCups               = 0x36
     CommandBrewDefault        = 0x37
+    CommandCoffeeStoreSettings = 0x38
     CommandGrinder            = 0x3c
     CommandHotplateOn         = 0x3e
     CommandHotplateOff        = 0x4a
+    CommandCarafe             = 0x4c
+    CommandSingleCupMode      = 0x4f
 
     # kettle
     CommandHeat               = 0x15
+    CommandKettleStop         = 0x16
     CommandHeatFormula        = 0x19
     CommandHeatDefault        = 0x21
-
     # settings
-    CommandStoreSettings      = 0x1f
+    CommandKettleStoreSettings = 0x1f
     CommandSettings           = 0x2e
-
     # watersensor
     CommandStoreBase          = 0x2a
     CommandBase               = 0x2b
     CommandCalibrate          = 0x2c
     
     # unknown
+    # kettle
     Command20                 = 0x20
     Command22                 = 0x22
     Command23                 = 0x23
     Command30                 = 0x30
-    Command32                 = 0x32
+    # coffee
     Command40                 = 0x40
     Command41                 = 0x41
     Command43                 = 0x43
+    # ?
     Command69                 = 0x69
 
 
+    # device
     ResponseCommandStatus     = 0x03
     ResponseWirelessNetworks  = 0x0e
     ResponseHistory           = 0x29
-    ResponseBase              = 0x2d
-    ResponseSettings          = 0x2f
-    ResponseStatus            = 0x14
     ResponseDeviceInfo        = 0x65
     ResponseWifiFirmware      = 0x6b
+
+    # coffee
+    ResponseCoffeeStatus      = 0x32
+    ResponseCarafe            = 0x4d
+    ResponseSingleCupMode     = 0x50
+    
+    # kettle
+    ResponseKettleStatus      = 0x14
+    ResponseBase              = 0x2d
+    ResponseSettings          = 0x2f
 
 
     # format kettle? coffee? response to command, description
@@ -121,9 +133,9 @@ class SmarterProtocol:
         CommandWifiLeave        : (True,None,[],"Leave wireless network"),
         CommandResetSettings    : (True,True,[ResponseCommandStatus],"Reset default user settings"),
         CommandHeat             : (True,None,[ResponseCommandStatus],"Heat kettle"),
-        CommandStop             : (True,None,[ResponseCommandStatus],"Stop heating kettle"),
+        CommandKettleStop             : (True,None,[ResponseCommandStatus],"Stop heating kettle"),
         CommandHeatFormula      : (True,None,[ResponseCommandStatus],"Heat kettle using formula mode"),
-        CommandStoreSettings    : (True,None,[ResponseCommandStatus],"Set default user settings"),
+        CommandKettleStoreSettings    : (True,None,[ResponseCommandStatus],"Set kettle default user settings"),
         Command20               : (True,None,[ResponseCommandStatus],"Working unknown command (turn on?)"),
         CommandHeatDefault      : (True,None,[ResponseCommandStatus],"Working unknown command (turn on?)"),
         Command22               : (True,None,[ResponseCommandStatus],"Working unknown command (turn on?)"),
@@ -134,13 +146,16 @@ class SmarterProtocol:
         CommandCalibrate        : (True,None,[ResponseBase,ResponseCommandStatus],"Calibrate water sensor"),
         CommandSettings         : (True,None,[ResponseSettings],"Get default user settings"),
         Command30               : (True,None,[],"Working unknown command"),
-        Command32               : (False,True,[],"Working unknown command (brew)"),
         CommandBrew             : (False,True,[],"Start coffee brewing"),
+        CommandCoffeeStop       : (False,True,[],"Stop coffee brewing"),
         CommandStrength         : (False,True,[],"Set strength of the coffee to brew"),
         CommandCups             : (False,True,[],"Set number of cups to brew"),
         CommandBrewDefault      : (False,True,[],"Start coffee brewing using default"),
+        CommandCoffeeStoreSettings : (False,True,[],"Set coffee machine default user settings"),
         CommandGrinder          : (False,True,[],"Toggle grinder"),
         CommandHotplateOn       : (False,True,[],"Turn on hotplate"),
+        CommandCarafe           : (False,True,[],"Coffee Carafe Required Status"),
+        CommandSingleCupMode    : (False,True,[],"Coffee Single Mode Status"),
         Command40               : (False,True,[],"Working unknown command (schedule?)"),
         Command41               : (False,True,[],"Working unknown command (schedule?)"),
         Command43               : (False,True,[],"Working unknown command (schedule?)"),
@@ -149,19 +164,25 @@ class SmarterProtocol:
         Command69               : (True,None,[ResponseCommandStatus],"Working unknown command"),
         CommandWifiFirmware     : (True,None,[ResponseWifiFirmware],"Get wifi firmware info"),
         CommandUpdate           : (True,None,[],"Device firmware update")
+
+    #
     }
 
 
     # format: kettle?, coffee? (None is unnknown), minimal length (0 = variable), response to command, description
     ResponseMessages = {
-        ResponseCommandStatus   : (True,None,3,[CommandDeviceTime,CommandWifiNetwork,CommandWifiPassword,CommandResetSettings,CommandHeat,CommandStop,CommandHeatFormula,CommandStoreSettings,Command20,CommandHeatDefault,Command22,Command23,CommandBase,CommandCalibrate,Command69],"Command status"),
+        ResponseCommandStatus   : (True,None,3,[CommandDeviceTime,CommandWifiNetwork,CommandWifiPassword,CommandResetSettings,CommandHeat,CommandKettleStop,CommandHeatFormula,CommandKettleStoreSettings,Command20,CommandHeatDefault,Command22,Command23,CommandBase,CommandCalibrate,Command69],"Command status"),
         ResponseWirelessNetworks: (True,None,0,[CommandWifiScan],"Wireless networks list"),
         ResponseHistory         : (True,None,0,[CommandHistory],"Device history"),
         ResponseBase            : (True,None,4,[CommandBase,CommandCalibrate],"Water sensor base value"),
         ResponseSettings        : (True,True,9,[CommandSettings],"Default user settings"),
-        ResponseStatus          : (True,True,7,[],"Device status"),
+        ResponseKettleStatus    : (True,True,7,[],"Kettle status"),
         ResponseDeviceInfo      : (True,True,4,[CommandDeviceInfo],"Device info"),
-        ResponseWifiFirmware    : (True,None,0,[CommandWifiFirmware],"Wifi firmware info")
+        ResponseWifiFirmware    : (True,None,0,[CommandWifiFirmware],"Wifi firmware info"),
+        ResponseCarafe          : (False,True,3,[CommandCarafe],"Carafe status"),
+        ResponseCoffeeStatus    : (False,True,0,[],"Coffee machine status"),
+        ResponseSingleCupMode   : (False,True,3,[CommandSingleCupMode],"Single cup mode status"),
+
     }
 
 

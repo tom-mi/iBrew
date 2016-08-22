@@ -491,6 +491,10 @@ class iBrewConsole:
                         client.coffee_brew()
                 elif input == "stop" or input == "off":
                     client.device_stop()
+                elif input == "stop kettle":
+                    client.kettle_stop()
+                elif input == "stop coffee":
+                    client.coffee_stop()
                 elif input == "reset":
                     client.device_reset()
                 elif input == "info":
@@ -564,6 +568,7 @@ class iBrewConsole:
         print "    heat ()()              heat kettle"
         print "    settings               show user settings"
         print "    settings [] [] [] []   store user settings"
+        print "    stop kettle            stops boiling"
         print
         print "  Smarter Coffee Commands"
         print "    brew                   brew coffee"
@@ -572,6 +577,7 @@ class iBrewConsole:
         print "    hotplate off           turn hotplate off"
         print "    hotplate on (minutes)  turn hotplate on (time in minutes)"
         print "    strength [strength]    set strength coffee [weak, medium or strong]"
+        print "    stop coffee            stops brewing"
         print
         print "  Wireless Network Commands"
         print "    join [net] [pass]      connect to wireless network"

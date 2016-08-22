@@ -137,12 +137,7 @@ class SmarterProtocolHelp:
             print
             print "  Example raw code: 10 7e"
             
-        elif id == Smarter.ResponseStatus:
-            print "  Hope that this is the same ID for the Smarter Coffee as for the iKettle 2.0."
-            print "  The last byte is always 0 on the kettle. I do not have a smarter coffee, but I"
-            print "  suspect that the WIFISTRENGTH is just the WATERSENSORBITSLOW part of the waterlevel"
-            print "  sensor."
-            print
+        elif id == Smarter.ResponseKettleStatus:
             print "  There is correlation between the temperature the watersensor and the base. How higher"
             print "  the temperature how higher the watersensor with the same volume of water."
             print
@@ -163,56 +158,7 @@ class SmarterProtocolHelp:
             print "    7f      Kettle Off Base"
             print
             print "  WATERSENSOR = WATERSENSORHIGHBITS * 256 + WATERSENSORLOWBITS"
-            print
-            print "  STATUSCOFFEE (unverified)"
-            print "    04 Filter, ?                      #  00000100"
-            print "    05 Filter, OK to start            #  00000101"
-            print "    06 Filter, OK to start            #  00000110"
-            print "    07 Beans, OK to start             #  00000111"
-            print "    20 Filter, No carafe              #  00100000"
-            print "    22 Beans, No carafe               #  00100010"
-            print "    45 Filter, Done                   #  01000101 <-- from here actions"
-            print "    47 Beans, Done                    #  01000111"
-            print "    53 Boiling                        #  01010011"
-            print "    60 Filter, No carafe, Hotplate On #  01100000"
-            print "    61 Filter, Hotplate On            #  01100001"
-            print "    62 Beans, No carafe, Hotplate On  #  01100010"
-            print "    63 Beans, Hotplate On             #  01100011"
-            print "    51 Descaling in progress          #  01010001"
-            print "                                           HB RBC"
-            print "                                           OO EEA"
-            print "                                           TI AAR"
-            print "                                           PL DNA"
-            print "                                           LI YSF"
-            print "                                           AN   E"
-            print "                                           TG"
-            print "                                           E"
-            print
-            print "  These are guesses I do not own a smarter coffee..."
-            print "  BIT 0 = UNKNOWN/UNUSED?"
-            print "  BIT 1 = ACTION???"
-            print "  BIT 2 = HOTPLATE"
-            print "  BIT 3 = Boiling & Descaling (USES BIT 6)"
-            print "  BIT 4 = UNKNOWN/UNUSED?"
-            print "  BIT 5 = READY/BUSY (OK TO START, FINISHED = 1 else 0)"
-            print "  BIT 6 = FILTER/BEANS"
-            print "  BIT 7 = CARAFE OFFBASE/ONBASE"
-            print 
-            print "  WATERLEVEL"
-            print "    00 Not enough water"
-            print "    01 Low"
-            print "    02 Half"
-            print "    12 Half"
-            print "    13 Full"
-            print
-            print "  STRENGTH"
-            print "    00 Weak"
-            print "    01 Medium"
-            print "    02 Strong"
-            print
-            print "  CUPS"
-            print "    00..0c"
-            
+        
         elif id == Smarter.CommandHeat:
             print "  if it's warming you have to send an off command to boil again"
             print "  if it's not on temp it boils first before warming..."
@@ -228,7 +174,7 @@ class SmarterProtocolHelp:
             print
             print "  Example: 15 32 00 7e"
             
-        elif id == Smarter.CommandStop:
+        elif id == Smarter.CommandKettleStop:
             print "  Example: 16 7e"
             
         elif id == Smarter.CommandHeatFormula:
@@ -249,7 +195,7 @@ class SmarterProtocolHelp:
             print
             print "  Example: 19 32 19 7e"
             
-        elif id == Smarter.CommandStoreSettings:
+        elif id == Smarter.CommandKettleStoreSettings:
             print "  Default user defaults message is 1f 00 64 00 4b 7e"
             print
             print "  Arguments: <KEEPWARMTIME><TEMPERATURE><FORMULA><FORMULATEMPERATURE>"
@@ -385,10 +331,7 @@ class SmarterProtocolHelp:
             print "  Arguments: <[UNKNOWN]>{?}"
             print
             print "  Example: 30 7e"
-            
-        elif id == Smarter.Command32:
-            print "  Example: 32 .. .. .. 7e"
-            
+                        
         elif id == Smarter.CommandBrew:
             print "  Example: 33 .. .. .. 7e"
             
@@ -494,7 +437,89 @@ class SmarterProtocolHelp:
             print "  or just unplug the power for a moment."
             print
             print "  Example: 6d 7e"
-            
+
+        elif id == Smarter.ResponseCarafe:
+            print "  Response: <BOOLEAN>"
+
+        elif id == Smarter.ResponseSingleCupMode:
+            print "  Response: <BOOLEAN>"
+
+        elif id == Smarter.ResponseCoffeeStatus:
+            print "  I do not have a smarter coffee, but I suspect that the WIFISTRENGTH is just"
+            print "  the WATERSENSORBITSLOW part of the waterlevel sensor."
+            print
+            print "  Response: <STATUSCOFFEE><WATERLEVEL><WIFISTRENGTH???/WATERSENSORBITSLOW???><STRENGTH><CUPS>"
+            print
+            print "  STATUSKETTLE"
+            print "    00 Ready"
+            print "    01 Boiling"
+            print "    02 Keep Warm"
+            print "    03 Cycle Finished"
+            print "    04 Baby Cooling"
+            print
+            print "  WATERSENSOR = WATERSENSORHIGHBITS * 256 + WATERSENSORLOWBITS"
+            print
+            print "  STATUSCOFFEE (unverified)"
+            print "    04 Filter, ?                      #  00000100"
+            print "    05 Filter, OK to start            #  00000101"
+            print "    06 Filter, OK to start            #  00000110"
+            print "    07 Beans, OK to start             #  00000111"
+            print "    20 Filter, No carafe              #  00100000"
+            print "    22 Beans, No carafe               #  00100010"
+            print "    45 Filter, Done                   #  01000101 <-- from here actions"
+            print "    47 Beans, Done                    #  01000111"
+            print "    53 Boiling                        #  01010011"
+            print "    60 Filter, No carafe, Hotplate On #  01100000"
+            print "    61 Filter, Hotplate On            #  01100001"
+            print "    62 Beans, No carafe, Hotplate On  #  01100010"
+            print "    63 Beans, Hotplate On             #  01100011"
+            print "    51 Descaling in progress          #  01010001"
+            print "                                           HB RBC"
+            print "                                           OO EEA"
+            print "                                           TI AAR"
+            print "                                           PL DNA"
+            print "                                           LI YSF"
+            print "                                           AN   E"
+            print "                                           TG"
+            print "                                           E"
+            print
+            print "  These are guesses I do not own a smarter coffee..."
+            print "  BIT 0 = UNKNOWN/UNUSED?"
+            print "  BIT 1 = ACTION???"
+            print "  BIT 2 = HOTPLATE"
+            print "  BIT 3 = Boiling & Descaling (USES BIT 6)"
+            print "  BIT 4 = UNKNOWN/UNUSED?"
+            print "  BIT 5 = READY/BUSY (OK TO START, FINISHED = 1 else 0)"
+            print "  BIT 6 = FILTER/BEANS"
+            print "  BIT 7 = CARAFE OFFBASE/ONBASE"
+            print 
+            print "  WATERLEVEL"
+            print "    00 Not enough water"
+            print "    01 Low"
+            print "    02 Half"
+            print "    12 Half"
+            print "    13 Full"
+            print
+            print "  STRENGTH"
+            print "    00 Weak"
+            print "    01 Medium"
+            print "    02 Strong"
+            print
+            print "  CUPS"
+            print "    00..0c"
+
+        elif id == Smarter.CommandCarafe:
+            print " NEW"
+
+        elif id == Smarter.CommandSingleCupMode:
+            print " NEW"
+
+        elif id == Smarter.CommandCoffeeStop:
+            print " NEW"
+
+        elif id == Smarter.CommandCoffeeStoreSettings:
+            print " NEW"
+
         else:
             print "  No information available on message: " + Smarter.number_to_code(id)
             
