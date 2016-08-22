@@ -244,13 +244,25 @@ class iBrewConsole:
         if command == "console" or command[0:5] == "sweep" or command == "monitor" or command[0:9] == "domoticz ":
             self.joke()
             self.app_info()
-        
+
         dump = False
         if "dump" in command:
             dump = True
             command = command.replace("dump","").strip()
             commandCase = commandCase.replace("dump","").strip()
-        
+
+        client = SmarterClient(host,dump)
+        devices = client.find_devices()
+        if len(devices) > 0:
+            if command == "status" or command == "console" or command[0:5] == "sweep" or command == "monitor" or command[0:9] == "domoticz ":
+                for i in range(0,len(devices)):
+                    print "iBrew: Found " + Smarter.raw_to_device(Smarter.number_to_raw(devices[i][1])) + " v" + str(devices[i][2]) + " [" + devices[i][0] + "]"
+            if len(devices) == 1:
+                client.host = devices[0][0]
+            else:
+                print "iBrew: Multiple appliances found"
+
+
         if command == "help" or command == "?":
             self.usage()
             self.commands()
@@ -291,12 +303,7 @@ class iBrewConsole:
             except:
                 print "iBrew: Message range [00..FF], got " + command
             return
-
-        client = SmarterClient(host,dump)
         if command == "list":
-            devices = client.find_devices()
-            for i in range(0,len(devices)):
-                print "iBrew: Found " + Smarter.raw_to_device(Smarter.number_to_raw(devices[i][1])) + " v" + str(devices[i][2]) + " [" + devices[i][0] + "]"
             return
         
         try:
@@ -770,11 +777,12 @@ class iBrewCommandLine:
         except socket.error:  # not a valid address
             return False
         return True
-    
+
+
     def __init__(self):
         
         arguments = len(sys.argv) - 1
-       
+
         # Check last argument is host
         isHost = False
         if arguments > 0:
@@ -785,6 +793,7 @@ class iBrewCommandLine:
                 host = "192.168.4.1"
         else:
             host = "192.168.4.1"
+
     
         # No arguments display help
         if arguments == 0:
