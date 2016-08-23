@@ -34,7 +34,7 @@ class SmarterError(Exception):
 class SmarterProtocol:
 
     DirectHost = "192.168.4.1"
-    Fahrenheid = True
+    Fahrenheid = False
 
     #------------------------------------------------------
     # MESSAGES CONSTANTS

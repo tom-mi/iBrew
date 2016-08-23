@@ -24,8 +24,13 @@ This means your machine is free! You can connect it yourself and do whatever you
  * Todo: Time arguments
  
  
-#### Donate
-Please donate raw codes or donate (for) a (working) Smarter Coffee (interface), can not test without one or without help! Someone please run ```iBrew sweep``` on there coffee machines and post the results in the issues.
+#### Contributing
+
+Fork it
+Create your feature branch (```git checkout -b my-new-feature-or-fix```)
+Commit your changes (```git commit -am 'Add some feature-or-fix```)
+Push to the branch (```git push origin my-new-feature-or-fix```)
+Create new Pull Request
 
 
 #### Contact

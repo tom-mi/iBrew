@@ -512,7 +512,6 @@ class iBrewConsole:
                                                 if not self.client.isKettle and not self.client.isCoffee:
                                                     self.client.fast = False
                                                     self.client.device_info()
-                                                print self.client.isKettle
                                                 self.client.device_settings()
                                                 if not self.client.dump: self.client.print_settings()
                                             elif numarg == 0: print "iBrew: Could not store coffee settings, missing all arguments"
@@ -526,7 +525,10 @@ class iBrewConsole:
                                                 self.client.device_store_settings(arguments[0],arguments[1],arguments[2],arguments[3])
                                                 if not self.client.dump: self.client.print_settings()
             elif command == "stop" or command == "off":
-                                            if numarg == 1:
+                                            if numarg == 0:
+                                                if not self.client.isKettle and not self.client.isCoffee:
+                                                    self.client.fast = False
+                                                    self.client.device_info()
                                                 self.client.device_stop()
                                             else:
                                                 if arguments[0].lower() == "kettle":
