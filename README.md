@@ -1,8 +1,10 @@
-# iBrew Tea Noire Sweet
+# iBrew Kettle Rattle
+
 [iKettle 2.0](http://smarter.am/ikettle) and [Smarter Coffee](http://smarter.am/coffee) Interface
 
+
 ## Introduction
-iBrew is a (python) interface to iKettle 2.0 and Smarter Coffee devices. It includes a console, monitor, command line interface and bridge to [Domoticz](http://domoticz.com). You can also use it in your own code. iKettle 2.0 v19 tested only. Please share you Smarter Coffee codes or any other discoveries you made.
+iBrew is a (python) interface to iKettle 2.0 and Smarter Coffee devices. It includes a console, monitor, command line interface and bridge to [Domoticz](http://domoticz.com). You can also use it in your own code. iKettle 2.0 v19 tested only at the moment. Please share any other discoveries you made!
 
 This means your machine is free! You can connect it yourself and do whatever you want with it. You are in full control! You can also interface it with your favorite smarthome controller. A working bridge to domoticz is already included (which you can bridge with homekit or other fun stuff)!
 
@@ -12,18 +14,15 @@ This means your machine is free! You can connect it yourself and do whatever you
  * v0.0 Bean Grinder Pack
  * v0.1 White Tealeaf Edition
  * v0.2 Tea Noire Sweet
+ * v0.3 Kettle Rattle 
  
 #### Upcoming   
  * Better error handling
- * Final arguments
  * Auto reconnect
- 
- 
- v0.3 Kettle Rattle 
  * Todo: Brew, heat, formula arguments
  * Todo: Time arguments
  * Auto-reconnect
- * Missing Coffee Smarter codes
+ * v0.4 Missing Coffee Smarter codes
  * History message is not finished
  * [will not fix] Should read status message 14/32 all the time in console mode
  
@@ -37,8 +36,8 @@ This means your machine is free! You can connect it yourself and do whatever you
 * python 2.7
 
 #### Download
-You can download and unpack the [source](https://github.com/Tristan79/iBrew/archive/master.zip) or
- download it from github using
+You can download and unpack the [source](https://github.com/Tristan79/iBrew/archive/master.zip) or download it from github using
+
 ```
 git clone https://github.com/Tristan79/iBrew.git
 ```
