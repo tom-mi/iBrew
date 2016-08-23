@@ -14,6 +14,3 @@ all:
 	@rm -f *.pyc
 	@rm -f *.tmp
 
-
-	
-
