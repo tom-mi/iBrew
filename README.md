@@ -18,7 +18,11 @@ This means your machine is free! You can connect it yourself and do whatever you
  * Final arguments
  * Auto reconnect
  
+ 
  v0.3 Kettle Rattle 
+ * Todo: Brew, heat, formula arguments
+ * Todo: Time arguments
+ 
  
 #### Donate
 Please donate raw codes or donate (for) a (working) Smarter Coffee (interface), can not test without one or without help! Someone please run ```iBrew sweep``` on there coffee machines and post the results in the issues.
@@ -75,6 +79,7 @@ you can also use them on the command line as arguments:
     reset                  reset device to default
     start                  start the device
     status                 show status
+    settings               show user settings
     stop                   stop the appliance if its brewing or boiling
     time [time]            set the device time
     [hexdata]              send raw data to device (e.g. '64 7e')
@@ -83,16 +88,15 @@ you can also use them on the command line as arguments:
     base                   show watersensor base value
     base [base]            store watersensor base value
     calibrate              calibrates watersensor
-    celcius                use celcius
-    fahrenheid             use fahrenheid
+    celcius                use celcius ºC [console only]
+    fahrenheid             use fahrenheid ºF [console only]
     formula ()()           heat kettle in formula mode
     heat ()()              heat kettle
-    settings               show user settings
-    settings [] [] [] []   store user settings
     stop kettle            stops boiling
+    settings [keepwarm] [temperature] [formula] [formulatemperature] store kettle user settings
 
   Smarter Coffee Commands
-    brew                   brew coffee
+    brew ()                brew coffee
     carafe                 returns if carafe is required
     cups [number]          set number of cups [1..12]
     grinder                toggle grinder
@@ -101,6 +105,7 @@ you can also use them on the command line as arguments:
     singlecup              return if singlecup mode is on
     strength [strength]    set strength coffee [weak, medium or strong]
     stop coffee            stops brewing
+    settings [cups] [strength] [grinder] [hotplate]   store user settings
 
   Wireless Network Commands
     join [net] [pass]      connect to wireless network
@@ -119,8 +124,8 @@ you can also use them on the command line as arguments:
 
   Debug Commands
     dump                   toggle 'dump raw messages'
-    console                start console [Command line only]
-    connect [host]         connect to device [Console only]
+    console                start console [command line only]
+    connect [host]         connect to device [console only]
     firmware               show firmware Wifi
     monitor                monitor incomming traffic
     protocol               show all protocol information available
@@ -128,7 +133,7 @@ you can also use them on the command line as arguments:
 
   Console Commands
     joke                   show joke
-    quit                   quit console [Console only]
+    quit                   quit console [console only]
 
 
 ```
@@ -302,7 +307,7 @@ But you can change it to your normal copy, also change the working directory,dom
     ✓ ? 0c Join wireless network
     ✓ ? 0d Scan for wireless networks
     ✓ ? 0f Leave wireless network
-    ✓ ✓ 10 Reset default user settings
+    ✓ ? 10 Reset default user settings
     ✓ ? 15 Heat kettle
     ✓ ? 16 Stop heating kettle
     ✓ ? 19 Heat kettle using formula mode
@@ -325,9 +330,9 @@ But you can change it to your normal copy, also change the working directory,dom
     ✕ ✓ 38 Set coffee machine default user settings
     ✕ ✓ 3c Toggle grinder
     ✕ ✓ 3e Turn on hotplate
-    ✕ ✓ 40 Working unknown command (schedule?)
-    ✕ ✓ 41 Working unknown command (schedule?)
-    ✕ ✓ 43 Working unknown command (schedule?)
+    ✕ ? 40 Working unknown command (schedule?)
+    ✕ ? 41 Working unknown command (schedule?)
+    ✕ ? 43 Working unknown command (schedule?)
     ✕ ✓ 46 Get coffee machine history
     ✕ ✓ 48 Get default coffee machine user settings
     ✕ ✓ 4a Turn off hotplate
@@ -342,10 +347,10 @@ But you can change it to your normal copy, also change the working directory,dom
 
     k c ID Response Message
     _______________________________
-    ✓ ? 03 Command status
+    ✓ ✓ 03 Command status
     ✓ ? 0e Wireless networks list
     ✓ ✓ 14 Kettle status
-    ✓ ? 29 Kettle history
+    ✓ ✕ 29 Kettle history
     ✓ ? 2d Water sensor base value
     ✓ ✓ 2f Default kettle user settings
     ✕ ✓ 32 Coffee machine status
@@ -407,10 +412,10 @@ But you can change it to your normal copy, also change the working directory,dom
 
   Response Message 03: Command status
   ─────────────────────────────────────────────────────────────────────────
-  In response to command message: [02,Set device time] [05,Set wireless network name] [07,Set wireless network password] [10,Reset default user settings] [15,Heat kettle] [16,Stop heating kettle] [19,Heat kettle using formula mode] [1f,Set kettle default user settings] [20,Working unknown command (turn on?)] [21,Working unknown command (turn on?)] [22,Working unknown command (turn on?)] [23,Working unknown command (turn on?)] [2b,Get water sensor base value] [2c,Calibrate water sensor] [69,Working unknown command] 
+  In response to command message: [02,Set device time] [05,Set wireless network name] [07,Set wireless network password] [10,Reset default user settings] [15,Heat kettle] [16,Stop heating kettle] [19,Heat kettle using formula mode] [1f,Set kettle default user settings] [20,Working unknown command (turn on?)] [21,Working unknown command (turn on?)] [22,Working unknown command (turn on?)] [23,Working unknown command (turn on?)] [2b,Get water sensor base value] [2c,Calibrate water sensor] [69,Working unknown command] [4b,Working unknown command] [4e,Working unknown command] 
   Message Size: 3 bytes
 
-  ✓ iKettle 2.0   ? Smarter Coffee
+  ✓ iKettle 2.0   ✓ Smarter Coffee
 
   Response: <STATUS>
 
@@ -517,7 +522,7 @@ But you can change it to your normal copy, also change the working directory,dom
   ─────────────────────────────────────────────────────────────────────────
   Response message: [03,Command status] 
 
-  ✓ iKettle 2.0   ✓ Smarter Coffee
+  ✓ iKettle 2.0   ? Smarter Coffee
 
   For the kettle these are the default user settings:
   keepwarm 0 minutes (0x00), temperature 100ºC (0x64)
@@ -714,17 +719,22 @@ But you can change it to your normal copy, also change the working directory,dom
   ─────────────────────────────────────────────────────────────────────────
   In response to command message: [28,Get kettle history] 
 
-  ✓ iKettle 2.0   ? Smarter Coffee
+  ✓ iKettle 2.0   ✕ Smarter Coffee
 
   The payload is generated everytime the kettle stops boiling. The actioncounter increases with every boil
   Formula temperature is above 0 then it was boilded with formula temperature enabled. There seems to be some
   packed time available.
+
+  Payload maximum is 8. So if 8 check again, if there is more history
 
   Response: <COUNTER> [<PAYLOAD>{COUNTER}]
 
   PAYLOAD
     <??><TEMPERATURE><KEEPWARMTIME><FORMULATEMPERATURE><ACTIONCOUNTER>
     <ACTIONCOUNTER???/TIME???><TIME?><TIME?><DATE?><DATE?><???/DATE???><STATE><??>{19}
+
+  COUNTER
+    00..08
 
   TEMPERATURE
     00..64  0..100ºC
@@ -1048,7 +1058,7 @@ But you can change it to your normal copy, also change the working directory,dom
   Command Message 40: Working unknown command (schedule?)
   ─────────────────────────────────────────────────────────────────────────
 
-  ✕ iKettle 2.0   ✓ Smarter Coffee
+  ✕ iKettle 2.0   ? Smarter Coffee
 
   Updating schedules
   No information available on message
@@ -1059,7 +1069,7 @@ But you can change it to your normal copy, also change the working directory,dom
   Command Message 41: Working unknown command (schedule?)
   ─────────────────────────────────────────────────────────────────────────
 
-  ✕ iKettle 2.0   ✓ Smarter Coffee
+  ✕ iKettle 2.0   ? Smarter Coffee
 
   Requesting schedules
   No information available on message
@@ -1070,7 +1080,7 @@ But you can change it to your normal copy, also change the working directory,dom
   Command Message 43: Working unknown command (schedule?)
   ─────────────────────────────────────────────────────────────────────────
 
-  ✕ iKettle 2.0   ✓ Smarter Coffee
+  ✕ iKettle 2.0   ? Smarter Coffee
 
   Schedules
   No information available on message
@@ -1101,7 +1111,12 @@ But you can change it to your normal copy, also change the working directory,dom
   Formula temperature is above 0 then it was boilded with formula temperature enabled. There seems to be some
   packed time available.
 
+  Payload maximum is 8. So if 8 check again, if there is more history
+
   Response: <COUNTER> [<PAYLOAD>{COUNTER}]
+
+  COUNTER
+    00..08
 
   PAYLOAD
     <??><??><(DEFAULT???) CUPS???><(DEFAULT???) CUPS???><??> 

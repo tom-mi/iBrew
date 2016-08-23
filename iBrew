@@ -158,7 +158,7 @@ class iBrewConsole:
                 #print "TEMP: " + str(average)
                 if previousAverage != average:
                     if domoticz.set_temperature(temp_idx,average):
-                        print stamp + " Water temperature: " + str(average) + "ºC"
+                        print stamp + " Water temperature: " + Smarter.temperature_to_string(average)
                     previousAverage = average
                 
                 prevPreviousTemperature = previousTemperature
@@ -223,7 +223,7 @@ class iBrewConsole:
                     # button pressed quit...
                     self.client.send(Smarter.number_to_raw(id))
 
-                    # check if got status message... FIX
+                    # check if got also a ???status message... FIX
                     if self.client.commandStatus != Smarter.StatusInvalid:
                         print "iBrew: New Command Found: " + Smarter.number_to_code(id)
                     self.client.dump = False
@@ -233,309 +233,341 @@ class iBrewConsole:
                 break;
         self.client.dump = dump
 
+
+
     #------------------------------------------------------
     # iBrew Console MAIN LOOP
     #------------------------------------------------------
 
-    def __init__(self,host,arguments=""):
-        command = arguments.lower().strip()
-        commandCase = arguments.strip()
-        
-        if command == "console" or command[0:5] == "sweep" or command == "monitor" or command[0:9] == "domoticz ":
-            self.joke()
-            self.app_info()
-
-        dump = False
-        if "dump" in command:
-            dump = True
-            command = command.replace("dump","").strip()
-            commandCase = commandCase.replace("dump","").strip()
-
-        if command == "help" or command == "?":
-            self.usage()
-            self.commands()
-            return
-
-        if command == "usage":
-            self.usage()
-            return
-            
-        # for README.md
-        if command == "commands":
-            self.commands()
-            return
-        if command == "messages all":
-            SmarterHelp.all()
-            return
-        
-        if command == "protocol":
-            SmarterHelp.protocol()
-            return
-        if command == "structure":
-            SmarterHelp.structure()
-            return
-        if command == "notes":
-            SmarterHelp.notes()
-            return
-        if command == "domoticz":
-            self.domoticz()
-            return
-        if command == "examples":
-            self.examples()
-            return
-        if command == "messages":
-            SmarterHelp.messages()
-            return
-        if command[0:8] == "message ":
-            try:
-                SmarterHelp.message(Smarter.code_to_number(command[8:11]))
-            except:
-                print "iBrew: Message range [00..FF], got " + command
-            return
-        client = SmarterClient(host,dump)
-        devices = client.find_devices()
-        if len(devices) > 0:
-            if command == "status" or command == "console" or command[0:5] == "sweep" or command == "monitor" or command[0:9] == "domoticz ":
-                for i in range(0,len(devices)):
-                    print "iBrew: Found " + Smarter.raw_to_device(Smarter.number_to_raw(devices[i][1])) + " v" + str(devices[i][2]) + " [" + devices[i][0] + "]"
-            if len(devices) == 1:
-                client.host = devices[0][0]
-            else:
-                print "iBrew: Multiple appliances found"
-
-        if command == "list":
-            return
-        
+    def is_valid_ipv4_address(self,address):
         try:
-            self.client = client
-            client.connect()
-        except:
-            print "iBrew: Could not connect"
-            return
-
-        if command == "console" or command[0:5] == "sweep" or command == "monitor" or command[0:8] == "domoticz":
-            client.print_connect_status()
-            client.print_status()
-        if command == "console":
-            command = ""
-            commandCase = ""
-            self.intro()
-
-        cursor = client.host + ":" + client.device + "$"
-        lastreply = ""
-
-        loop = True
-        while loop:
+            socket.inet_pton(socket.AF_INET, address)
+        except AttributeError:  # no inet_pton here, sorry
             try:
-                # are we command line or console?
-                if (command==""):
-                    inputCase = raw_input(cursor).strip()
-                    input = inputCase.lower()
+                socket.inet_aton(address)
+            except socket.error:
+                return False
+            return address.count('.') == 3
+        except socket.error:  # not a valid address
+            return False
+        return True
+
+    def is_valid_ipv6_address(self,address):
+        try:
+            socket.inet_pton(socket.AF_INET6, address)
+        except socket.error:  # not a valid address
+            return False
+        return True
+
+    def execute(self,line):
+    #    try:
+            numarg = 0
+            if len(line) == 0:
+                if self.console:
+                    if not dump:
+                        client.print_short_status()
+                    return
                 else:
-                    input = command
-                    inputCase = commandCase
-                    loop = False
-                
-
-                # iKettle 2.0 Commands
-                if input == "heat":
-                     print "iBrew: Not Fully Implemented"
-                     client.kettle_heat()
-                elif input == "formula":
-                     print "iBrew: Not Fully Implemented"
-                     client.kettle_formula_heat()
-                elif input == "default":
-                    client.device_restore_default()
-                elif input == "settings":
-                    client.kettle_settings()
-                    if not client.dump: client.print_settings()
-                elif input[0:9] == "settings ":
-                    #client.kettle_store_settings()
-                    print "iBrew: Not Fully Implemented"
-                elif input == "calibrate":
-                    client.calibrate()
-                elif input == "base":
-                    client.calibrate_base()
-                    if not client.dump: client.print_watersensor_base()
-                elif input[0:5] == "base ":
-                    try:
-                        client.calibrate_store_base(int(input[5:len(input)]))
-                    except:
-                        print "iBrew: Invalid base value"
-
-
-                # WiFi Commands
-                elif input == "firmware":
-                    client.wifi_firmware()
-                    if not client.dump: client.print_wifi_firmware()
-                elif input == "leave":
-                    client.wifi_leave()
-                elif input == "scan":
-                    client.wifi_scan()
-                    if not client.dump: client.print_wireless_networks()
-
-                elif input[0:5] == "join ":
-                    arguments = inputCase[5:len(inputCase)]
-                    try:
-                        network  = arguments.split(" ")[0]
-                        password = arguments[len(network)+1:len(arguments)]
-                    except:
-                        print "iBrew: problem with domoticz arguments " + arguments
-                    client.wifi_join(network,password)
-
-
-                # Process Smarter Commands
-                # Hotplate
-                elif input == "hotplate on":
-                    client.coffee_hotplate_on()
-                elif input[0:12] == "hotplate on ":
-                    client.coffee_hotplate_on()
-                    try:
-                        Smarter.check_hotplate(self,input[12:len(input)])
-                    except:
-                        print "iBrew: Hotplate timer is between 5 and 30 minutes"
-                elif input == "hotplate off":
-                    client.coffee_hotplate_off()
-                elif input[0:8] == "hotplate":
-                    print "iBrew: Use on or off as argument"
-
-                # Carafe
-                elif input == "carafe":
-                    client.coffee_carafe()
-                # Grinder
-                elif input == "singlecup":
-                    client.coffee_single_cup_mode()
-
-                # Grinder
-                elif input == "grinder":
-                    client.coffee_grinder()
-                # Brew
-                elif input == "brew":
-                    print "iBrew: Not Fully Implemented"
-                    client.coffee_brew()
-                # Strength
-                elif input[0:9] == "strength ":
-                    # double code FIX remove...
-                    if input[9:14] == "weak":
-                        client.coffee_strength("weak")
-                    elif input[9:16] == "strong":
-                        client.coffee_strength("strong")
-                    elif input[9:16] == "medium" or input[9:16] == "normal":
-                        client.coffee_strength("medium")
-                    else:
-                        print "iBrew: Use weak, medium or strong as argument"
-                elif input[0:8] == "strength":
-                    print "iBrew: Use weak, medium or strong as argument"
-                # Cups
-                elif input[0:5] == "cups ":
-                    try:
-                        x = Smarter.check_cups(int(input[5:len(input)]))
-                    except:
-                        print "iBrew: Use 1..12 as range in cups argument"
-                        continue
-                    client.coffee_cups(x)
-                elif input[0:4] == "cups":
-                    print "iBrew: Use 1..12 as range in cups argument"
-
-
-                # Console Commands
-                elif input == "exit" or input == "quit":
-                    break
-                elif input[0:9] == "domoticz ":
-                    arguments = inputCase[9:len(inputCase)]
-                    try:
-                        server = arguments.split(" ")[0]
-                        name   = arguments[len(server)+1:len(arguments)]
-                    except:
-                        print "iBrew: problem with domoticz arguments " + arguments
-                    self.domoticz_bridge(server,name)
-                elif input == "domoticz":
-                    self.domoticz()
-                elif input == "list":
-                    devices = client.find_devices()
-                    for i in range(0,len(devices)):
-                        print "Found " + Smarter.raw_to_device(Smarter.number_to_raw(devices[i][1])) + " v" + str(devices[i][2]) + " [" + devices[i][0] + "]"
-                
-                elif input == "monitor":
-                    self.monitor()
-                elif input == "sweep":
-                    self.sweep()
-                elif input[0:6] == "sweep ":
-                    try:
-                        id = Smarter.code_to_number(input[6:8],16)
-                    except:
-                        print "iBrew: Invalid start command"
-                        continue
-                    self.sweep(id)
-                elif input == "joke" or input == "quote":
-                    print
-                    self.joke()
-                    print
-                elif input == "help" or input == "?":
-                    self.commands()
-                elif input == "protocol":
-                    SmarterHelp.protocol()
-                elif input == "dump":
-                    if client.dump:
-                        client.dump = False
-                        print "iBrew: Dump raw messages disabled"
-                    else:
-                        client.dump = True
-                        print "iBrew: Dump raw messages enabled"
-                elif input == "examples":
-                    self.examples()
-                elif input == "structure":
-                    SmarterHelp.structure()
-                elif input == "notes":
-                    SmarterHelp.notes()
-                elif input == "messages all":
-                    SmarterHelp.all()
-                elif input == "messages":
-                    SmarterHelp.messages()
-                elif input[0:8] == "message ":
-                    try:
-                        SmarterHelp.message(Smarter.code_to_number(input[8:11]))
-                    except:
-                        print "iBrew: Message range [00..FF], got " + input[8:11]
-
-                # iKettle 2.0 & Smarter Coffee Commands
-                elif input == "on" or input == "start"  :
-                    if client.isKettle:
-                        client.kettle_heat()
-                    elif client.isCoffee:
-                        client.coffee_brew()
-                elif input == "stop" or input == "off":
-                    client.device_stop()
-                elif input == "stop kettle":
-                    client.kettle_stop()
-                elif input == "stop coffee":
-                    client.coffee_stop()
-                elif input == "reset":
-                    client.device_reset()
-                elif input == "info":
-                    client.device_info()
-                    if not client.dump: client.print_info()
-                elif input == "history":
-                    client.device_history()
-                    if not client.dump: client.print_history()
-                elif input[0:5] == "time ":
-                    print "Not yet implemented"
-                    #client.device_time()
-                elif len(input) > 0 and input != "status":
-                    try:
-                        client.device_raw(input)
-                    except:
-                        print "iBrew: Sending codes failed"
+                    argument = line
+                    command = "help"
+            else:
+                command = line[0].lower()
+                numarg = len(line) - 1
+                arguments = line[1:]
             
-                client.read()
-                if input == "status":
-                    client.print_status()
+            if command == "dump":
+                if numarg == 0 and not self.console:
+                    print "iBrew: Do I look like a civet cat to you?"
+                    return
                 else:
-                    if not client.dump and loop: client.print_short_status()
+                    if self.client.dump and numarg == 0:
+                        self.client.dump = False
+                        if self.console:
+                            print "iBrew: Dump raw messages disabled"
+                    else:
+                        self.client.dump = True
+                        if self.console:
+                            print "iBrew: Dump raw messages enabled"
+                    
+                    if numarg > 0:
+                        command = arguments[0].lower()
+                        arguments = arguments[1:]
+                        numarg -= 1
+                    else:
+                        return
+
+            if command == "shout":
+                if self.console or numarg == 0:
+                    print "iBrew: Can't hear you. Drinking coffee at a dinner on the other side of the universe..."
+                    return
+                command = arguments[0].lower()
+                arguments = arguments[1:]
+                numarg -= 1
+                if not self.console:
+                    self.client.fast       = True
+                    self.client.lightspeed = True
+                    self.client.isKettle   = True
+                    self.client.isCoffee   = True
+                else:
+                    print "iBrew: \'shout\' not available in the console"
+                
+
+            if command == "fahrenheid":
+                if numarg == 0 and not self.console:
+                    print "iBrew: Kelvin..."
+                    return
+                else:
+                    Smarter.fahrenheid = True
+                    if self.console:
+                        print "iBrew: Temperature in fahrenheid"
+                    if numarg > 0:
+                        command = arguments[0].lower()
+                        arguments = arguments[1:]
+                        numarg -= 1
+                    else:
+                        return
+            
+            if command == "celcius":
+                    Smarter.fahrenheid = False
+                    if self.console:
+                        print "iBrew: Temperature in celcius"
+                    if numarg > 0:
+                        command = arguments[0].lower()
+                        arguments = arguments[1:]
+                        numarg -= 1
+                    else:
+                        return
+
+            haveHost = False
+            if numarg > 0:
+                if self.is_valid_ipv4_address(arguments[numarg-1]) or self.is_valid_ipv6_address(arguments[numarg-1]):
+                    self.client.host = arguments[numarg-1]
+                    haveHost = True
+                    numarg -= 1
+                    arguments = arguments[0:numarg]
+
+
+
+            if not self.client.connected and not haveHost and command != "help" and command != "help" and command != "message" and command != "usage" and command != "commands" and command != "protocol" and command != "structure" and command != "notes" and command != "examples" and command != "messages" and not (command == "domoticz" and numarg == 0):
+
+                devices = self.client.find_devices()
+                if len(devices) > 0:
+                    if self.client.dump:
+                        for i in range(0,len(devices)):
+                            print "iBrew: Found " + Smarter.raw_to_device(Smarter.number_to_raw(devices[i][1])) + " v" + str(devices[i][2]) + " [" + devices[i][0] + "]"
+                    if len(devices) == 1:
+                        self.client.host = devices[0][0]
+                        haveHost = True
+
+
+            if command == "connect" or command == "console" or command == "sweep" or command == "monitor" or (command == "domoticz" and numarg != 0):
+                self.joke()
+                self.app_info()
+                self.client.init_default()
+                self.client.print_connect_status()
+                self.client.print_status()
+                if command == "console" or command == "connect":
+                    self.console = True
+                    self.intro()
+                    return
+                self.client.fast = False
+            else:
+                self.client.fast = True
+
+            if command == "help" or command == "?":
+                                            self.usage()
+                                            self.commands()
+            elif command == "usage":        self.usage()
+            elif command == "commands":     self.commands()
+            elif command == "protocol":     SmarterHelp.protocol()
+            elif command == "structure":    SmarterHelp.structure()
+            elif command == "notes":        SmarterHelp.notes()
+            elif command == "examples":     self.examples()
+            elif command == "messages":
+                                            if numarg >= 1:
+                                                if arguments[0].lower() == "all":   SmarterHelp.all()
+                                                else:                       print "iBrew: Expected \'all\' got " + arguments[0]
+                                            else:                           SmarterHelp.messages()
+            elif command == "message":
+                                            if numarg >= 1:
+                                                SmarterHelp.message(Smarter.code_to_number(argument[0]))
+                                            else:
+                                                print "iBrew: expected [00..FF] got " + argument[0]
+
+            # Kettle
+            elif command == "heat":
+                                            if numarg >= 1:
+                                                self.client.kettle_heat()
+                                            else:
+                                                self.client.kettle_heat()
+            elif command == "formula":
+                                            if numarg >= 1:
+                                                self.client.kettle_formula_heat()
+                                            else:
+                                                self.client.kettle_formula_heat()
+            elif command == "default":      self.client.device_restore_default()
+            elif command == "calibrate":    self.client.calibrate()
+            elif command == "base":
+                                            if numarg == 0: self.client.calibrate_base()
+                        
+                                            if numarg >= 1:
+                                                self.client.calibrate_store_base(arguments[1])
+                                                if not self.client.dump: self.client.print_watersensor_base()
+
+            # WiFi
+            elif command == "firmware":
+                                            self.client.wifi_firmware()
+                                            if not self.client.dump: self.client.print_wifi_firmware()
+            elif command == "leave":        self.client.wifi_leave()
+            elif command == "scan":
+                                            self.client.wifi_scan()
+                                            if not self.client.dump: self.client.print_wireless_networks()
+            elif command == "join":
+                                            if numarg >= 1:
+                                                password = ""
+                                                network = arguments[0]
+                                                if numarg >= 2:
+                                                    password = arguments[1]
+                                                self.client.wifi_join(network,password)
+                                            else:
+                                                print "iBrew: no wireless network name"
+            # Coffee
+            elif command == "hotplate":
+                                            if numarg >= 1:
+                                                if arguments[0].lower() == "off":
+                                                      self.client.coffee_hotplate_off()
+                                                elif arguments[0].lower() == "on":
+                                                    if numarg >= 2:
+                                                        
+                                                            self.client.coffee_hotplate_on(Smarter.string_to_hotplate(arguments[1]))
+                                                    else:
+                                                        self.client.coffee_hotplate_on()
+                                                else:
+                                                    print "iBrew: hotplate missing [on/off] got " + arguments[0]
+                                            else:
+                                                print "iBrew: hotplate missing [on/off]"
+            elif command == "carafe":       self.client.coffee_carafe()
+            elif command == "singlecup":    self.client.coffee_single_cup_mode()
+            elif command == "grinder":      self.client.coffee_grinder()
+            elif command == "brew":
+                                            if numarg == 0:
+                                                self.client.coffee_brew()
+                                            elif numarg >= 1:
+                                                print "Not yet implemented"
+                                                # imclient.coffee_cups(arguments[1])
+            elif command == "strength":
+                                            if numarg == 0:
+                                                print "iBrew: specify strength [weak,medium,strong]"
+                                            elif numarg >= 1:
+                                                self.client.coffee_strength(arguments[0])
+            elif command == "cups":
+                                            if numarg == 0:
+                                                print "iBrew: specify cups [1..12]"
+                                            elif numarg >= 1:
+                                                self.client.coffee_cups(int(arguments[0]))
+
+              # Console Commands
+
+
+            elif command == "exit" or command == "quit":
+                                            self.quit = True
+            elif command == "domoticz":
+                                            if numarg >= 2:
+                                                self.domoticz_bridge(arguments[0],arguments[1])
+                                            elif numarg == 1:
+                                                print "iBrew: missing Domoticz sensor base name"
+                                            else:
+                                                self.domoticz()
+
+            elif command == "list":
+                                            devices = self.client.find_devices()
+                                            for i in range(0,len(devices)):
+                                                print "Found " + Smarter.raw_to_device(Smarter.number_to_raw(devices[i][1])) + " v" + str(devices[i][2]) + " [" + devices[i][0] + "]"
+            elif command == "monitor":      self.monitor()
+            elif command == "sweep":
+                                            if numarg > 1:
+                                                 self.sweep(id)
+                                            else:
+                                                self.sweep()
+            elif command == "joke" or input == "quote":
+                                            print
+                                            self.joke()
+                                            print
+            elif command == "on" or command == "start":
+                                            if numarg == 0 and self.client.fast:
+                                                print "iBrew: Not available in fast mode, try using \'"+command+" coffee\' or \'"+command+" kettle\'"
+                                            else:
+                                                #if not self.client.fast and not self.client.isKettle and not self.client.isCoffee:
+                                                #    self.client.device_info()
+                                                if self.client.isKettle or arguments[0].lower() == "kettle":
+                                                    self.client.kettle_heat()
+                                                elif self.client.isCoffee or arguments[0].lower() == "coffee":
+                                                    self.client.coffee_brew()
+                                                else:
+                                                    print "iBrew: Unknown device: "  + arguments[0]
+                                  
+                                                    
+            elif command == "settings":     # FAST fix need device...
+                                            if numarg == 0:
+                                                if not self.client.isKettle and not self.client.isCoffee:
+                                                    self.client.fast = False
+                                                    self.client.device_info()
+                                                print self.client.isKettle
+                                                self.client.device_settings()
+                                                if not self.client.dump: self.client.print_settings()
+                                            elif numarg == 0: print "iBrew: Could not store coffee settings, missing all arguments"
+                                            elif numarg == 1 and self.client.isCoffee: print "iBrew: Could not store coffee settings, missing cups"
+                                            elif numarg == 2 and self.client.isCoffee: print "iBrew: Could not store coffee settings, missing grinder"
+                                            elif numarg == 3 and self.client.isCoffee: print "iBrew: Could not store coffee settings, missing hotplate"
+                                            elif numarg == 1 and self.client.isKettle: print "iBrew: Could not store kettle settings, missing temperature"
+                                            elif numarg == 2 and self.client.isKettle: print "iBrew: Could not store kettle settinss, missing formula mode"
+                                            elif numarg == 3 and self.client.isKettle: print "iBrew: Could not store kettle settings, missing formula temperature"
+                                            elif numarg >= 4:
+                                                self.client.device_store_settings(arguments[0],arguments[1],arguments[2],arguments[3])
+                                                if not self.client.dump: self.client.print_settings()
+            elif command == "stop" or command == "off":
+                                            if numarg == 1:
+                                                self.client.device_stop()
+                                            else:
+                                                if arguments[0].lower() == "kettle":
+                                                    self.client.kettle_stop()
+                                                elif arguments[0].lower() == "coffee":
+                                                    self.client.coffee_stop()
+                                                else:
+                                                    print "iBrew: Unknown device: "  + arguments[0]
+                                                    self.client.device_stop()
+            elif command == "reset":        self.client.device_reset()
+            elif command == "info":
+                                            self.client.device_info()
+                                            if not self.client.dump: self.client.print_info()
+            elif command == "history":
+                                            self.client.device_history()
+                                            if not self.client.dump: self.client.print_history()
+            elif command == "time":
+                                            print "not yet implemented"
+                                            self.client.device_time()
+            
+            elif command == "status":       self.client.print_status()
+            else:                           self.client.device_raw(command+''.join(arguments))
+    #   except:
+     #       print "iBrew: Command Failed"
+        
+    def __init__(self,arguments):
+        self.console = False
+        self.quit = True
+        self.client = SmarterClient()
+        self.execute(arguments)
+        if self.console:
+            self.quit = False
+            cursor = self.client.host + ":" + self.client.device + "$"
+        while not self.quit:
+            try:
+                # is should be threaded... since the kettle input is still comming as we wait for user input...
+                
+                self.execute(raw_input(cursor).strip().split())
             except:
                 break
-        print
-
+        
 #------------------------------------------------------
 # iBrew Console PRINT
 #------------------------------------------------------
@@ -554,12 +586,16 @@ class iBrewConsole:
 
     def usage(self):
         print
-        print "  Usage: iBrew (dump) [command] (host)"
+        print "  Usage: iBrew (dump) (shout) (fahrenheid) [command] (host)"
         print
-        print "    host                   host address (format: ip4, ip6, fqdn)"
+        print "    fahrenheid             use fahrenheid"
         print "    dump                   dump message enabled"
+        print "    host                   host address (format: ip4, ip6, fqdn)"
+        print "    shout                  sends commands and quits not waiting for a reply"
         print "    command                action to take!"
         print
+        print "  If you do not supply a host, it will try to connect to the first detected device"
+        print "  Thus if you have more then one device supply a host (if its not in direct mode)"
 
     def commands(self):
         print
@@ -571,6 +607,7 @@ class iBrewConsole:
         print "    reset                  reset device to default"
         print "    start                  start the device"
         print "    status                 show status"
+        print "    settings               show user settings"
         print "    stop                   stop the appliance if its brewing or boiling"
         print "    time [time]            set the device time"
         print "    [hexdata]              send raw data to device (e.g. \'64 7e\')"
@@ -579,14 +616,15 @@ class iBrewConsole:
         print "    base                   show watersensor base value"
         print "    base [base]            store watersensor base value"
         print "    calibrate              calibrates watersensor"
+        print "    celcius                use celcius ºC [console only]"
+        print "    fahrenheid             use fahrenheid ºF [console only]"
         print "    formula ()()           heat kettle in formula mode"
         print "    heat ()()              heat kettle"
-        print "    settings               show user settings"
-        print "    settings [] [] [] []   store user settings"
         print "    stop kettle            stops boiling"
+        print "    settings [keepwarm] [temperature] [formula] [formulatemperature] store kettle user settings"
         print
         print "  Smarter Coffee Commands"
-        print "    brew                   brew coffee"
+        print "    brew ()                brew coffee"
         print "    carafe                 returns if carafe is required"
         print "    cups [number]          set number of cups [1..12]"
         print "    grinder                toggle grinder"
@@ -595,6 +633,7 @@ class iBrewConsole:
         print "    singlecup              return if singlecup mode is on"
         print "    strength [strength]    set strength coffee [weak, medium or strong]"
         print "    stop coffee            stops brewing"
+        print "    settings [cups] [strength] [grinder] [hotplate]   store user settings"
         print
         print "  Wireless Network Commands"
         print "    join [net] [pass]      connect to wireless network"
@@ -613,7 +652,8 @@ class iBrewConsole:
         print
         print "  Debug Commands"
         print "    dump                   toggle \'dump raw messages\'"
-        print "    console                start console [Command line only]"
+        print "    console                start console [command line only]"
+        print "    connect [host]         connect to device [console only]"
         print "    firmware               show firmware Wifi"
         print "    monitor                monitor incomming traffic"
         print "    protocol               show all protocol information available"
@@ -621,7 +661,7 @@ class iBrewConsole:
         print
         print "  Console Commands"
         print "    joke                   show joke"
-        print "    quit                   quit console [Console only]"
+        print "    quit                   quit console [console only]"
         print
 
     def domoticz(self):
@@ -691,13 +731,13 @@ class iBrewConsole:
     def examples(self):
         print
         print "  Example:"
-        print "    off            iKettle 2.0 Stop boiling"
+        print "    off            Stop boiling/brewing"
         print "    messages       Show all protocol messages"
         print "    message 3e     Show protocol message 3a, turn hotplate on"
-        print "    167E           Send iKettle 2.0 raw off"
-        print "    21 30 05 7e    Send iKettle 2.0 raw on"
-        print "    strength weak  Set SmarterCoffee coffee strength to weak"
-        print "    cups 3         Set SmarterCoffee number of cups to brew"
+        print "    167E           Send kettle raw stop"
+        print "    21 30 05 7e    Send kettle raw boil"
+        print "    strength weak  Set coffee strength to weak"
+        print "    cups 3         Set number of cups to brew"
         print
 
     teaJokes = [["What do you call a talkative drink?","Chai-tea."],
@@ -745,67 +785,8 @@ class iBrewConsole:
         joke = random.choice(self.teaJokes+self.coffeeJokes)
         print "\n      \'" + joke[0] + "\'\n                  -- " + joke[1] + "\n"
 
-
-#------------------------------------------------------
-# iBrew COMMAND LINE
-#
-# Command line access for iKettle 2.0 or Smarter Coffee
-# Device
-#
-# Redirect command line arguments to console
-#------------------------------------------------------
-
-class iBrewCommandLine:
-
-    def is_valid_ipv4_address(self,address):
-        try:
-            socket.inet_pton(socket.AF_INET, address)
-        except AttributeError:  # no inet_pton here, sorry
-            try:
-                socket.inet_aton(address)
-            except socket.error:
-                return False
-            return address.count('.') == 3
-        except socket.error:  # not a valid address
-            return False
-
-        return True
-
-    def is_valid_ipv6_address(self,address):
-        try:
-            socket.inet_pton(socket.AF_INET6, address)
-        except socket.error:  # not a valid address
-            return False
-        return True
-
-
-    def __init__(self):
-        
-        arguments = len(sys.argv) - 1
-
-        # Check last argument is host
-        isHost = False
-        if arguments > 0:
-            if self.is_valid_ipv4_address(sys.argv[arguments]) or self.is_valid_ipv6_address(sys.argv[arguments]):
-                host = sys.argv[arguments]
-                isHost = True
-            else:
-                host = "192.168.4.1"
-        else:
-            host = "192.168.4.1"
-
-    
-        # No arguments display help
-        if arguments == 0:
-            command = "help"
-        else:
-            command = ""
-            for i in range(1,len(sys.argv)-int(isHost)):
-                command += sys.argv[i] + " "
-        iBrewConsole(host,command)
-
 #------------------------------------------------------
 # MAIN
 #------------------------------------------------------
 
-iBrewCommandLine()
+iBrewConsole(sys.argv[1:])

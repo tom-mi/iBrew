@@ -21,6 +21,8 @@ from SmarterProtocol import *
 #------------------------------------------------------
 
 
+# THIS IS INCOMPLETE AND NOT WORKING....
+# MAYBE I WRITE THIS, FOR FUN, INITIALLY IS WAS CUZ I COULD NOT WIRESHARK....
 
 #------------------------------------------------------
 # SERVER INTERFACE CLASS
@@ -121,10 +123,10 @@ class SmarterServer:
     #------------------------------------------------------
 
 
-    def encode_ResponseSettings(self,message):
+    def encode_ResponseKettleSettings(self,message):
         # ORDER BUG BUG HERE WIRESHARK AGAIN!!!!
         # isKettle?
-        message = Smarter.encode_ResponseSettings+Smarter.temperature_to_raw(self.defaultTemperature)+Smarter.keepwarm_to_raw(self.defaultKeepWarmTime)+Smarter.temperature_to_raw(self.defaultFormulaTemperature)
+        message = Smarter.encode_ResponseKettleSettings+Smarter.temperature_to_raw(self.defaultTemperature)+Smarter.keepwarm_to_raw(self.defaultKeepWarmTime)+Smarter.temperature_to_raw(self.defaultFormulaTemperature)
         message = message + '\x7e\x00\x03\x00'
         self.send(message)
     
@@ -196,8 +198,11 @@ class SmarterServer:
         self.coffeeStatus = '\x04'
         self.send_succes()
 
-    def decode_CommandHistory(self,message):
+    def decode_CommandKettleHistory(self,message):
         send.encode_ResponseHistory()
+
+   def decode_CommandCoffeeHistory(self,message):
+        send.encode_ResponseCoffeeHistory()
 
 
     def decode_CommandDeviceInfo(self,message):
@@ -298,8 +303,8 @@ class SmarterServer:
             self.send_succes()
 
 
-    def decode_CommandSettings(self,message):
-        self.encode_ResponseSettings()
+    def decode_CommandKettleSettings(self,message):
+        self.encode_ResponseKettleSettings()
 
 
     def decode_CommandStoreBase(self,message):
@@ -383,8 +388,9 @@ class SmarterServer:
         if = Smarter.raw_to_number(message[0])
         if   id == Smarter.CommandDeviceTime        self.decode_CommandDeviceTime(message)
         elif id == Smarter.CommandResetSettings     self.decode_CommandResetSettings(message)
-        elif id == Smarter.CommandKettleStop              self.decode_CommandKettleStop(message)
-        elif id == Smarter.CommandHistory           self.decode_CommandHistory(message)
+        elif id == Smarter.CommandKettleStop        self.decode_CommandKettleStop(message)
+        elif id == Smarter.CommandKettleHistory     self.decode_CommandKettleHistory(message)
+        elif id == Smarter.CommandCoffeeHistory     self.decode_CommandCoffeeHistory(message)
         elif id == Smarter.CommandDeviceInfo        self.decode_CommandDeviceInfo(message)
         elif id == Smarter.CommandUpdate            self.decode_CommandUpdate(message)
         elif id == Smarter.CommandWifiName          self.decode_CommandWifiName(message)
@@ -404,7 +410,7 @@ class SmarterServer:
         elif id == Smarter.CommandHeatFormula       self.decode_CommandHeatFormula(message)
         elif id == Smarter.CommandHeatDefault       self.decode_CommandHeatDefault(message)
         elif id == Smarter.CommandKettleStoreSettings     self.decode_CommandKettleStoreSettings(message)
-        elif id == Smarter.CommandSettings          self.decode_CommandSettings(message)
+        elif id == Smarter.CommandKettleSettings          self.decode_CommandKettleSettings(message)
         elif id == Smarter.CommandStoreBase         self.decode_CommandStoreBase(message)
         elif id == Smarter.CommandBase              self.decode_CommandBase(message)
         elif id == Smarter.CommandCalibrate:        self.decode_CommandCalibrate(message)

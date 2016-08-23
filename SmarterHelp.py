@@ -247,21 +247,59 @@ class SmarterProtocolHelp:
         elif id == Smarter.Command23:
             print "  Example: 23 7e"
             
-        elif id == Smarter.CommandHistory:
+        elif id == Smarter.CommandKettleHistory:
             print "  When called will erase this history."
             print
             print "  Example: 28 7e"
-            
-        elif id == Smarter.ResponseHistory:
+
+        elif id == Smarter.CommandCoffeeHistory:
+            print "  When called will erase this history."
+            print
+            print "  Example: 46 7e"
+        
+        elif id == Smarter.ResponseCoffeeHistory:
+            print "  The payload is generated everytime the coffee machine brews. The actioncounter increases with every boil"
+            print "  Formula temperature is above 0 then it was boilded with formula temperature enabled. There seems to be some"
+            print "  packed time available."
+            print
+            print "  Payload maximum is 8. So if 8 check again, if there is more history"
+            print
+            print "  Response: <COUNTER> [<PAYLOAD>{COUNTER}]"
+            print
+            print "  COUNTER"
+            print "    00..08"
+            print
+            print "  PAYLOAD"
+            print "    <??><??><(DEFAULT???) CUPS???><(DEFAULT???) CUPS???><??> "
+            print "    <??><?TIME DATE SOMEWHERE?><??><??><??><??><STATE><??>{19}"
+            print
+            print "  CUPS"
+            print "    00..0c"
+            print
+            print "  TIME/DATE?"
+            print
+            print "  STATE"
+            print "    00 Stopped"
+            print "    01 Success"
+            print
+            print "  Example: 47 02 01 00 00 02 02 00 19 00 01 01 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7d"
+            print "                 01 00 00 0c 0c 00 19 00 01 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7d 7e"
+           
+        elif id == Smarter.ResponseKettleHistory:
             print "  The payload is generated everytime the kettle stops boiling. The actioncounter increases with every boil"
             print "  Formula temperature is above 0 then it was boilded with formula temperature enabled. There seems to be some"
             print "  packed time available."
+            print
+            print "  Payload maximum is 8. So if 8 check again, if there is more history"
             print
             print "  Response: <COUNTER> [<PAYLOAD>{COUNTER}]"
             print
             print "  PAYLOAD"
             print "    <??><TEMPERATURE><KEEPWARMTIME><FORMULATEMPERATURE><ACTIONCOUNTER>"
             print "    <ACTIONCOUNTER???/TIME???><TIME?><TIME?><DATE?><DATE?><???/DATE???><STATE><??>{19}"
+            print
+            print "  COUNTER"
+            print "    00..08"
             print
             print "  TEMPERATURE"
             print "    00..64  0..100ºC"
@@ -280,11 +318,11 @@ class SmarterProtocolHelp:
             print
             print "  STATE"
             print "    00 Stopped"
-            print "    01 Boiled"
+            print "    01 Success"
             print
             print "  Example: 29 02 01 5f 00 00 0f 00 09 03 15 0a 19 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7d"
-            print "              01 64 19 32 10 00 09 0e 15 0a 19 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7d 7e"
-            
+            print "                 01 64 19 32 10 00 09 0e 15 0a 19 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7d 7e"
+        
         elif id == Smarter.CommandStoreBase:
             print "  Arguments: <BASELHIGHBITS><BASELOWBITS>"
             print
@@ -309,12 +347,37 @@ class SmarterProtocolHelp:
             print
             print "  This can contain the tail 7e, so check for length here!"
             
-        elif id == Smarter.CommandSettings:
-            print "  Also return 00 message in an unconfigured state."
+        elif id == Smarter.CommandCoffeeSettings:
+            print "  Also return 00 message in an unconfigured state.???? CHECK"
+            print
+            print "  Example: 48 7e"
+
+
+        elif id == Smarter.CommandKettleSettings:
+            print "  Also return 00 message in an unconfigured state.??? CHECK"
             print
             print "  Example: 2e 7e"
-            
-        elif id == Smarter.ResponseSettings:
+
+
+        elif id == Smarter.ResponseCoffeeSettings:
+            print "  Response: <CUPS><STRENGTH><GRINDER><HOTPLATE>"
+            print
+            print "  CUPS"
+            print "    00..0c"
+            print
+            print "  STRENGTH"
+            print "    00 Weak"
+            print "    01 Medium"
+            print "    02 Strong"
+            print
+            print "  GRINDER <BOOLEAN>"
+            print
+            print "  HOTPLATE"
+            print "    05..28 5 .. 40 minutes"
+            print "    05     5 Minutes (Default)"
+            print
+
+        elif id == Smarter.ResponseKettleSettings:
             print "  Response: <KEEPWARMTIME><TEMPERATURE><FORMULATEMPERATURE>"
             print
             print "  KEEPWARMTIME"
@@ -332,6 +395,16 @@ class SmarterProtocolHelp:
             print
             print "  Example: 30 7e"
                         
+        elif id == Smarter.Command4b:
+            print "  Arguments: <[UNKNOWN]>{?}"
+            print
+            print "  Example: 4b ?? 7e"
+        
+        elif id == Smarter.Command4e:
+            print "  Arguments: <[UNKNOWN]>{?}"
+            print
+            print "  Example: 4e ?? 7e"
+        
         elif id == Smarter.CommandBrew:
             print "  Example: 33 .. .. .. 7e"
             
@@ -515,11 +588,26 @@ class SmarterProtocolHelp:
             print " NEW"
 
         elif id == Smarter.CommandCoffeeStop:
-            print " NEW"
+            print "  Example 33 7e "
 
         elif id == Smarter.CommandCoffeeStoreSettings:
-            print " NEW"
-
+            print "  Arguments: <STRENGTH><CUPS><GRINDER><HOTPLATE>"
+            print
+            print "  STRENGTH"
+            print "    00 Weak"
+            print "    01 Medium"
+            print "    02 Strong"
+            print
+            print "  CUPS"
+            print "    00..0c"
+            print
+            print "  GRINDER <BOOLEAN>"
+            print
+            print "  HOTPLATE"
+            print "    05..28 5 .. 40 minutes"
+            print "    05     5 Minutes (Default)"
+            print
+        
         else:
             print "  No information available on message: " + Smarter.number_to_code(id)
             
