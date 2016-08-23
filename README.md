@@ -1446,7 +1446,7 @@ But you can change it to your normal copy, also change the working directory,dom
 
 
 ## License
- https://github.com/Tristan79/iBrew/master/LICENSE.TXT
+ https://github.com/Tristan79/iBrew/blob/master/LICENSE
 
 
 ## Links
