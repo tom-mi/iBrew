@@ -9,9 +9,9 @@ from SmarterProtocol import *
 #
 # https://github.com/Tristan79/iBrew
 #
-# 2016 Copyright © 2016 Tristan (@monkeycat.nl)
+# Copyright © 2016 Tristan (@monkeycat.nl)
 #
-# White Tea Leaf Edition (rev 4)
+# Kettle Rattle (rev 6)
 #------------------------------------------------------
 
 

@@ -14,10 +14,11 @@ from SmarterProtocol import *
 #
 # https://github.com/Tristan79/iBrew
 #
-# 2016 Copyright © 2016 Tristan (@monkeycat.nl)
+# Copyright © 2016 Tristan (@monkeycat.nl)
 #
-# White Tea Leaf Edition (rev 4)
+# Kettle Rattle (rev 6)
 #------------------------------------------------------
+
 
 
 
@@ -196,13 +197,17 @@ class SmarterClient:
         self.isCoffee = False
         self.isKettle = False
         
-        if Smarter.raw_to_number(message[1]) == 1:
+        self.deviceId = Smarter.raw_to_number(message[1])
+        self.version = Smarter.raw_to_number(message[2])
+
+        if self.deviceId == Smarter.DeviceKettle:
             self.isKettle = True
             self.device = "iKettle 2.0"
-        if Smarter.raw_to_number(message[1]) == 2:
+        
+        if self.deviceId == Smarter.DeviceCoffee:
             self.isCoffee = True
             self.device = "SmarterCoffee"
-        self.version = Smarter.raw_to_number(message[2])
+        
 
 
     def decode_ResponseBase(self,message):
@@ -634,14 +639,16 @@ class SmarterClient:
 
 
     def print_info(self):
-        print self.device + " v" + str(self.version)
+        print Smarter.device_info(self.deviceId,self.version)
 
 
     def print_singlecupmode(self):
         print "Single cup mode: " + str(self.singlecup)
 
+
     def print_carafe(self):
         print "Carafe present: " + str(self.carafe)
+
 
     def print_watersensor_base(self):
         print "Watersensor calibration base value: " + str(self.waterSensorBase)

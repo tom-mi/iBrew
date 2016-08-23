@@ -9,9 +9,9 @@ import struct
 #
 # https://github.com/Tristan79/iBrew
 #
-# 2016 Copyright © 2016 Tristan (@monkeycat.nl)
+# Copyright © 2016 Tristan (@monkeycat.nl)
 #
-# White Tea Leaf Edition (rev 4)
+# Kettle Rattle (rev 6)
 #------------------------------------------------------
 
 
@@ -39,7 +39,6 @@ class SmarterProtocol:
     #------------------------------------------------------
     # MESSAGES CONSTANTS
     #------------------------------------------------------
-
 
     MessageTail               = 0x7e
     MessagePayloadTail        = 0x7d
@@ -507,30 +506,62 @@ class SmarterProtocol:
     #------------------------------------------------------
 
 
+    #------------------------------------------------------
+    # DEVICE & FIRMWARE ARGUMENT WRAPPER
+    #------------------------------------------------------
+
     DeviceKettle              = 0x01
-    DeviceCoffee              = 0x00
+    DeviceCoffee              = 0x02
 
+
+    KettleFirmwareVerified    = [18,19]
+    CoffeeFirmwareVerified    = [22]
+
+
+    def is_kettle(self,device):
+        return device == self.DeviceKettle
+
+
+    def is_kettle_verified(self,firmware):
+        return firmware in self.KettleFirmwareVerified
     
-    def is_kettle(self,raw):
-        return self.raw_to_number(raw) == self.DeviceKettle
+    
+    def is_coffee_verified(self,firmware):
+        return firmware in self.CoffeeFirmwareVerified
+    
+    
+    def is_coffee(self,device):
+        return device == self.DeviceCoffee
 
 
-    def is_coffee(self,raw):
-        return self.raw_to_number(raw) == self.DeviceCoffee
+    def firmware_verified(self,device,firmware):
+        if (device == self.DeviceCoffee and self.is_coffee_verified(firmware)) or (device == self.DeviceKettle and self.is_kettle_verified(firmware)):
+            return "iBrew certified firmware"
+        return "Unsupported firmware"
 
-        
-    def raw_to_device(self,raw):
-        if self.is_kettle(raw):
+
+    def device_to_string(self,device):
+        if self.is_kettle(device):
             return "iKettle 2.0"
-        elif self.is_coffee(raw):
+        elif self.is_coffee(device):
             return "Smarter Coffee"
         else:
             return "Unknown"
 
 
+    def device_info(self,device,firmware):
+        return self.device_to_string(device)  + " (" + self.firmware_verified(device,firmware) + " v" + str(firmware) + ")"
+
+
+    #------------------------------------------------------
+    # STRENGTH ARGUMENT WRAPPER
+    #------------------------------------------------------
+
+
     CoffeeWeak                = 0x00
     CoffeeMedium              = 0x01
     CoffeeStrong              = 0x02
+
 
     def check_strength(self,strength):
         if strength == self.CoffeeMedium or strength == self.CoffeeStrong or strength == self.CoffeeWeak:
@@ -561,6 +592,11 @@ class SmarterProtocol:
             raise SmarterError("Invalid coffee strength [weak, medium, strong]: " + strength)
 
 
+
+    #------------------------------------------------------
+    # TEMPERATURE ARGUMENT WRAPPER
+    #------------------------------------------------------
+
     def is_on_base(self,raw):
         return self.raw_to_number(raw) != self.MessageOffBase
  
@@ -575,6 +611,8 @@ class SmarterProtocol:
     
     
     def check_temperature_celcius(self,temperature):
+        # if fahrenheid then converto...
+        # if self.Fahrenheid
         if temperature < 0 or temperature > 100 and not self.is_on_base(self.number_to_raw(temperature)):
             if self.Fahrenheid:
                 raise SmarterError("Temperature out of range ["+self.celcius_to_fahrenheid(0)+".."+self.celcius_to_fahrenheid(100)+"] ºK: " + str(temperature))
@@ -602,7 +640,7 @@ class SmarterProtocol:
 
     def temperature_to_string(self,temperature):
         if self.Fahrenheid:
-            return str(self.celcius_to_fahrenheid(temperature))+"ºF"
+            return str(temperature)+"ºF"
         else:
             return str(temperature)+"ºC"
 
@@ -618,17 +656,16 @@ class SmarterProtocol:
 
 
 
-    def check_keepwarm(self,timer):
-        if timer != 0 and (timer < 5 or timer > 20):
-            raise SmarterError("Kettle keep warm timer out of range [0] or [5..20] minutes: " + str(timer))
-        return timer
+    #------------------------------------------------------
+    # HOTPLATE KEEPWARM ARGUMENT WRAPPER
+    #------------------------------------------------------
 
 
     def string_to_hotplate(self,string):
         try:
             return int(string)
         except:
-            raise SmarterError("Hotplate timer out of range [0] or [5..40] minutes: " + string)
+            raise SmarterError("Hotplate timer is not a number: " + string)
 
     def check_hotplate(self,timer):
         if timer != 0 and (timer < 5 or timer > 40):
@@ -640,17 +677,38 @@ class SmarterProtocol:
         return self.check_hotplate(self.raw_to_number(raw))
 
 
-    def raw_to_keepwarm(self,raw):
-        return self.check_hotplate(self.raw_to_number(raw))
-
-
     def hotplate_to_raw(self,timer):
         return self.number_to_raw(self.check_hotplate(timer))
+
+
+    #------------------------------------------------------
+    # KEEPWARM ARGUMENT WRAPPER
+    #------------------------------------------------------
+
+    def string_to_keepwarm(self,string):
+        try:
+            return int(string)
+        except:
+            raise SmarterError("Keepwarm timer is not a number: " + string)
+
+
+    def check_keepwarm(self,timer):
+        if timer != 0 and (timer < 5 or timer > 20):
+            raise SmarterError("Kettle keep warm timer out of range [0] or [5..20] minutes: " + str(timer))
+        return timer
+
+
+    def raw_to_keepwarm(self,raw):
+        return self.check_hotplate(self.raw_to_number(raw))
 
 
     def keepwarm_to_raw(self,timer):
         return self.number_to_raw(self.check_keepwarm(timer))
 
+
+    #------------------------------------------------------
+    # WATERSENSOR ARGUMENT WRAPPER
+    #------------------------------------------------------
 
     def raw_to_watersensor(self,raw_low,raw_high):
         return self.raw_to_number(raw_low) + self.raw_to_number(raw_high) * 256
@@ -660,6 +718,10 @@ class SmarterProtocol:
         return self.number_to_raw(watersensor % 256) + self.number_to_raw(watersensor / 256)
  
  
+    #------------------------------------------------------
+    # BOOLEAN ARGUMENT WRAPPER
+    #------------------------------------------------------
+
     def raw_to_bool(self,raw):
         bool = self.raw_to_number(raw)
         if bool > 1:
@@ -672,6 +734,10 @@ class SmarterProtocol:
     def bool_to_raw(self,boolean):
         return self.number_to_raw(boolean)
 
+
+    #------------------------------------------------------
+    # CUPS ARGUMENT WRAPPER
+    #------------------------------------------------------
 
     def check_cups(self,cups_raw):
         cups = cups_raw % 12
@@ -701,8 +767,6 @@ class SmarterProtocol:
             return "1 cup"
         else:
             return str(self.cups) + " cups"
-
-
 
 
 

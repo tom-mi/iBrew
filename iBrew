@@ -18,9 +18,9 @@ from Domoticz import *
 #
 # https://github.com/Tristan79/iBrew
 #
-# 2016 Copyright © 2016 Tristan (@monkeycat.nl)
+# Copyright © 2016 Tristan (@monkeycat.nl)
 #
-# White Tea Leaf Edition (rev 4)
+# Kettle Rattle (rev 6)
 #------------------------------------------------------
 
 
@@ -30,8 +30,8 @@ from Domoticz import *
 
 
 iBrewApp          = "iBrew: iKettle 2.0 & Smarter Coffee Interface"
-iBrewInfo         = "Noir Tea Sweet v0.2a © 2016 Tristan (@monkeycat.nl)"
-iBrewDonate       = "Please donate (for) a (working) Smarter Coffee (interface)"
+iBrewInfo         = "iBrew: Kettle Rattle © 2016 Tristan (@monkeycat.nl)"
+iBrewContribute   = "Please contribute any discoveries on https://github.com/Tristan79/iBrew/issues"
 
 
 class iBrewConsole:
@@ -141,6 +141,10 @@ class iBrewConsole:
         previousBase = False
         previousBaseFirst = True
 
+        then = time.time()
+
+        update = 30
+        
         while True:
             try:
                 stamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
@@ -156,11 +160,14 @@ class iBrewConsole:
                 #print self.client.temperature
                 #print "TEMP: " + str(previousAverage)
                 #print "TEMP: " + str(average)
-                if previousAverage != average:
+                
+                now = time.time()
+                if previousAverage != average or int(now-then) > update:
                     if domoticz.set_temperature(temp_idx,average):
                         print stamp + " Water temperature: " + Smarter.temperature_to_string(average)
                     previousAverage = average
-                
+                    
+                    
                 prevPreviousTemperature = previousTemperature
                 previousTemperature = self.client.temperature
                 
@@ -181,7 +188,7 @@ class iBrewConsole:
                         print stamp + " Water height: " + str(self.client.waterSensor)
                     previousWaterSensor = self.client.waterSensor
                 
-                if previousBaseFirst or (previousBase != self.client.onBase):
+                if previousBaseFirst or (previousBase != self.client.onBase) or int(now-then) > update:
                     if domoticz.set_motion(offbase_idx,self.client.onBase):
                         if self.client.onBase:
                             s = "on"
@@ -190,7 +197,11 @@ class iBrewConsole:
                         print stamp + " iKettle 2.0 is " + s + " base"
                     previousBase = self.client.onBase
                     previousBaseFirst = False
-                    
+ 
+ 
+                if int(now-then) > update:
+                    then = now
+
             except:
                 break
         
@@ -252,12 +263,19 @@ class iBrewConsole:
             return False
         return True
 
+
     def is_valid_ipv6_address(self,address):
         try:
             socket.inet_pton(socket.AF_INET6, address)
         except socket.error:  # not a valid address
             return False
         return True
+
+
+    def print_devices_found(self,devices):
+        for i in range(0,len(devices)):
+            print "iBrew: Found " + Smarter.device_info(devices[i][1],devices[i][2]) + " [" + devices[i][0] + "]"
+
 
     def execute(self,line):
     #    try:
@@ -351,13 +369,11 @@ class iBrewConsole:
             if not self.client.connected and not haveHost and command != "help" and command != "help" and command != "message" and command != "usage" and command != "commands" and command != "protocol" and command != "structure" and command != "notes" and command != "examples" and command != "messages" and not (command == "domoticz" and numarg == 0):
 
                 devices = self.client.find_devices()
-                if len(devices) > 0:
-                    if self.client.dump:
-                        for i in range(0,len(devices)):
-                            print "iBrew: Found " + Smarter.raw_to_device(Smarter.number_to_raw(devices[i][1])) + " v" + str(devices[i][2]) + " [" + devices[i][0] + "]"
-                    if len(devices) == 1:
-                        self.client.host = devices[0][0]
-                        haveHost = True
+                if self.client.dump:
+                    self.print_devices_found(devices)
+                if len(devices) == 1:
+                    self.client.host = devices[0][0]
+                    haveHost = True
 
 
             if command == "connect" or command == "console" or command == "sweep" or command == "monitor" or (command == "domoticz" and numarg != 0):
@@ -478,11 +494,7 @@ class iBrewConsole:
                                                 print "iBrew: missing Domoticz sensor base name"
                                             else:
                                                 self.domoticz()
-
-            elif command == "list":
-                                            devices = self.client.find_devices()
-                                            for i in range(0,len(devices)):
-                                                print "Found " + Smarter.raw_to_device(Smarter.number_to_raw(devices[i][1])) + " v" + str(devices[i][2]) + " [" + devices[i][0] + "]"
+            elif command == "list":         self.print_devices_found(self.client.find_devices())
             elif command == "monitor":      self.monitor()
             elif command == "sweep":
                                             if numarg > 1:
@@ -577,7 +589,7 @@ class iBrewConsole:
         print iBrewApp
         print iBrewInfo
         print
-        print iBrewDonate
+        print iBrewContribute
         print
 
     def intro(self):
