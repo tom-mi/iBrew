@@ -22,17 +22,11 @@ This means your machine is free! You can connect it yourself and do whatever you
  v0.3 Kettle Rattle 
  * Todo: Brew, heat, formula arguments
  * Todo: Time arguments
+ * Auto-reconnect
+ * Missing Coffee Smarter codes
+ * History message is not finished
+ * [will not fix] Should read status message 14/32 all the time in console mode
  
- 
-#### Contributing
-
-Fork it
-Create your feature branch (```git checkout -b my-new-feature-or-fix```)
-Commit your changes (```git commit -am 'Add some feature-or-fix```)
-Push to the branch (```git push origin my-new-feature-or-fix```)
-Create new Pull Request
-
-
 #### Contact
 [Bugs or issues](https://github.com/Tristan79/iBrew/issues). Donations & other questions <tristan@monkeycat.nl>
 
@@ -48,6 +42,27 @@ You can download and unpack the [source](https://github.com/Tristan79/iBrew/arch
 ```
 git clone https://github.com/Tristan79/iBrew.git
 ```
+
+
+## Contributing
+
+Use the fork button in the upper right corner of [iBrew](https://github.com/Tristan79/iBrew/) and [Github Desktop](https://desktop.github.com) 
+or fork it manually. Run the following commands in the root if the iBrew folder to do so.
+
+Create your feature branch 
+
+```git checkout -b my-new-feature-or-fix```
+
+Commit your changes 
+
+```git commit -am 'Add some feature-or-fix```
+
+Push to the branch 
+
+```git push origin my-new-feature-or-fix```
+
+Create new Pull Request
+
 
 ## Usage
 
@@ -1435,18 +1450,20 @@ But you can change it to your normal copy, also change the working directory,dom
 ```              
 
 
-## Bugs / Not done
-  *    Set Device Time is missing arguments in console
-  *    Boil has no arguments 
-  *    Brew has no arguments
-  *    Auto-reconnect
-  *    Missing Coffee Smarter codes
-  *    History message is not finished
-  *    [will not fix] Should read status message 14 all the time in console mode
-
-
 ## License
- https://github.com/Tristan79/iBrew/blob/master/LICENSE
+
+Copyright © 2016, Tristan Crispijn
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+
+3. You may not use source, binary forms or derivative work, with or without modification, for commercial purposes. 
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 ## Links

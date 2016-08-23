@@ -22,17 +22,11 @@ This means your machine is free! You can connect it yourself and do whatever you
  v0.3 Kettle Rattle 
  * Todo: Brew, heat, formula arguments
  * Todo: Time arguments
+ * Auto-reconnect
+ * Missing Coffee Smarter codes
+ * History message is not finished
+ * [will not fix] Should read status message 14/32 all the time in console mode
  
- 
-#### Contributing
-
-Fork it
-Create your feature branch (```git checkout -b my-new-feature-or-fix```)
-Commit your changes (```git commit -am 'Add some feature-or-fix```)
-Push to the branch (```git push origin my-new-feature-or-fix```)
-Create new Pull Request
-
-
 #### Contact
 [Bugs or issues](https://github.com/Tristan79/iBrew/issues). Donations & other questions <tristan@monkeycat.nl>
 
@@ -48,6 +42,27 @@ You can download and unpack the [source](https://github.com/Tristan79/iBrew/arch
 ```
 git clone https://github.com/Tristan79/iBrew.git
 ```
+
+
+## Contributing
+
+Use the fork button in the upper right corner of [iBrew](https://github.com/Tristan79/iBrew/) and [Github Desktop](https://desktop.github.com) 
+or fork it manually. Run the following commands in the root if the iBrew folder to do so.
+
+Create your feature branch 
+
+```git checkout -b my-new-feature-or-fix```
+
+Commit your changes 
+
+```git commit -am 'Add some feature-or-fix```
+
+Push to the branch 
+
+```git push origin my-new-feature-or-fix```
+
+Create new Pull Request
+
 
 ## Usage
 
