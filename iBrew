@@ -14,7 +14,7 @@ from Domoticz import *
 #------------------------------------------------------
 # iBrew
 #
-# Interface to iKettle 2.0 & Smarter Coffee Devices
+# Interface to iKettle 2.0 & SmarterCoffee Devices
 #
 # https://github.com/Tristan79/iBrew
 #
@@ -29,7 +29,7 @@ from Domoticz import *
 #------------------------------------------------------
 
 
-iBrewApp          = "iBrew: iKettle 2.0 & Smarter Coffee Interface"
+iBrewApp          = "iBrew: iKettle 2.0 & SmarterCoffee Interface"
 iBrewInfo         = "iBrew: Kettle Rattle © 2016 Tristan (@monkeycat.nl)"
 iBrewContribute   = "Please contribute any discoveries on https://github.com/Tristan79/iBrew/issues"
 
@@ -82,15 +82,14 @@ class iBrewConsole:
     def domoticz_bridge(self, server, name, sleep = 0, secure=False):
         if self.client.isKettle:
             domoticz_bridge_kettle(server,name,sleep,secure)
-        elif:
-            self.client.isCoffee:
+        elif self.client.isCoffee:
             domoticz_bridge_coffee(server,name,sleep,secure)
             
 
     def domoticz_bridge_kettle(self, server, name, sleep = 0, secure=False):
         
         if not self.client.isKettle:
-            print "iBrew: Smarter Coffee not supported"
+            print "iBrew: SmarterCoffee not supported"
             return
         
         domoticz = Domoticz(server,secure)
@@ -214,7 +213,7 @@ class iBrewConsole:
  
  
  
-   def domoticz_bridge_coffee(self, server, name, sleep = 0, secure=False):
+    def domoticz_bridge_coffee(self, server, name, sleep = 0, secure=False):
         
         if not self.client.isCoffee:
             print "iBrew: iKettle 2.0 not supported"
@@ -286,7 +285,7 @@ class iBrewConsole:
                 if previousStatus != self.client.kettleStatus:
                     status = Smarter.status_kettle_description(self.client.kettleStatus)
                     if domoticz.set_text(status_idx,status):
-                        print stamp + " Smarter Coffee is " + status.lower()
+                        print stamp + " SmarterCoffee  is " + status.lower()
                     previousStatus = self.client.kettleStatus
             
                 if previousWaterSensor != self.client.waterSensor:
@@ -598,20 +597,6 @@ class iBrewConsole:
                                             print
                                             self.joke()
                                             print
-            elif command == "on" or command == "start":
-                                            if numarg == 0 and self.client.fast:
-                                                print "iBrew: Not available in fast mode, try using \'"+command+" coffee\' or \'"+command+" kettle\'"
-                                            else:
-                                                #if not self.client.fast and not self.client.isKettle and not self.client.isCoffee:
-                                                #    self.client.device_info()
-                                                if self.client.isKettle or arguments[0].lower() == "kettle":
-                                                    self.client.kettle_heat()
-                                                elif self.client.isCoffee or arguments[0].lower() == "coffee":
-                                                    self.client.coffee_brew()
-                                                else:
-                                                    print "iBrew: Unknown device: "  + arguments[0]
-                                  
-                                                    
             elif command == "settings":     # FAST fix need device...
                                             if numarg == 0:
                                                 if not self.client.isKettle and not self.client.isCoffee:
@@ -631,9 +616,6 @@ class iBrewConsole:
                                                 if not self.client.dump: self.client.print_settings()
             elif command == "stop" or command == "off":
                                             if numarg == 0:
-                                                if not self.client.isKettle and not self.client.isCoffee:
-                                                    self.client.fast = False
-                                                    self.client.device_info()
                                                 self.client.device_stop()
                                             else:
                                                 if arguments[0].lower() == "kettle":
@@ -643,6 +625,19 @@ class iBrewConsole:
                                                 else:
                                                     print "iBrew: Unknown device: "  + arguments[0]
                                                     self.client.device_stop()
+                                        
+            elif command == "on" or command == "start":
+                                            if numarg == 0:
+                                                self.client.device_start()
+                                            else:
+                                                if arguments[0].lower() == "kettle":
+                                                    self.client.kettle_heat()
+                                                elif arguments[0].lower() == "coffee":
+                                                    self.client.coffee_brew()
+                                                else:
+                                                    print "iBrew: Unknown device: "  + arguments[0]
+                                                    
+
             elif command == "reset":        self.client.device_reset()
             elif command == "info":
                                             self.client.device_info()
@@ -705,7 +700,7 @@ class iBrewConsole:
 
     def commands(self):
         print
-        print "  iKettle 2.0 & Smarter Coffee Commands"
+        print "  iKettle 2.0 & SmarterCoffee  Commands"
         print "    default                set default settings"
         print "    info                   device info"
         print "    history                action history"
@@ -729,7 +724,7 @@ class iBrewConsole:
         print "    stop kettle            stops boiling"
         print "    settings [keepwarm] [temperature] [formula] [formulatemperature] store kettle user settings"
         print
-        print "  Smarter Coffee Commands"
+        print "  SmarterCoffee  Commands"
         print "    brew ()                brew coffee"
         print "    carafe                 returns if carafe is required"
         print "    cups [number]          set number of cups [1..12]"

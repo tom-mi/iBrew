@@ -5,7 +5,7 @@ import struct
 #------------------------------------------------------
 # SMARTER PROTOCOL INTERFACE
 #
-# Python interface to iKettle 2.0 & Smarter Coffee Devices
+# Python interface to iKettle 2.0 & SmarterCoffee  Devices
 #
 # https://github.com/Tristan79/iBrew
 #
@@ -544,7 +544,7 @@ class SmarterProtocol:
         if self.is_kettle(device):
             return "iKettle 2.0"
         elif self.is_coffee(device):
-            return "Smarter Coffee"
+            return "SmarterCoffee "
         else:
             return "Unknown"
 

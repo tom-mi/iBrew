@@ -5,7 +5,7 @@ from SmarterProtocol import *
 #------------------------------------------------------
 # SMARTER PROTOCOL HELP
 #
-# Python interface to iKettle 2.0 & Smarter Coffee Devices
+# Python interface to iKettle 2.0 & SmarterCoffee  Devices
 #
 # https://github.com/Tristan79/iBrew
 #
@@ -43,7 +43,7 @@ class SmarterProtocolHelp:
                 if length > 0:
                     print "  Message Size: " + str(length) + " bytes"
             print
-            print "  " + Smarter.message_kettle_supported(id) + " iKettle 2.0   " + Smarter.message_coffee_supported(id) + " Smarter Coffee"
+            print "  " + Smarter.message_kettle_supported(id) + " iKettle 2.0   " + Smarter.message_coffee_supported(id) + " SmarterCoffee "
         print
 
         if id == Smarter.CommandDeviceTime:
@@ -133,7 +133,7 @@ class SmarterProtocolHelp:
             print "  keepwarm 0 minutes (0x00), temperature 100ºC (0x64)"
             print "  formula mode off (0x00) and formula temperature 75ºC (0x4b)"
             print
-            print "  The Smarter Coffee it will probably reset the number of cups and strength"
+            print "  The SmarterCoffee  it will probably reset the number of cups and strength"
             print
             print "  Example raw code: 10 7e"
             
@@ -143,7 +143,7 @@ class SmarterProtocolHelp:
             print
             print "  Response iKettle: <STATUSKETTLE><TEMPERATURE><WATERSENSORBITSHIGH><WATERSENSORBITSLOW><??>"
             print
-            print "  Response Smarter Coffee: <STATUSCOFFEE><WATERLEVEL><WIFISTRENGTH???/WATERSENSORBITSLOW???>"
+            print "  Response SmarterCoffee : <STATUSCOFFEE><WATERLEVEL><WIFISTRENGTH???/WATERSENSORBITSLOW???>"
             print "                           <STRENGTH><CUPS>"
             print
             print "  STATUSKETTLE"
@@ -475,7 +475,7 @@ class SmarterProtocolHelp:
             print
             print "  TYPE:"
             print "    01 iKettle 2.0"
-            print "    02 Smarter Coffee"
+            print "    02 SmarterCoffee "
             print
             print "  VERSION:"
             print "    13 Firmware v19 of iKettle 2.0"
@@ -618,7 +618,7 @@ class SmarterProtocolHelp:
     def messages(self):
         print
         print
-        print "  Smarter iKettle 2.0 & Smarter Coffee Messages"
+        print "  Smarter iKettle 2.0 & SmarterCoffee  Messages"
         print "  _____________________________________________"
         print
         print
@@ -636,7 +636,7 @@ class SmarterProtocolHelp:
         print
         print "    Legend:"
         print "      k iKettle 2"
-        print "      c Smarter Coffee"
+        print "      c SmarterCoffee "
         print
         print
 
@@ -645,7 +645,7 @@ class SmarterProtocolHelp:
         print """
        
        
-  Smarter iKettle 2.0 & Smarter Coffee Protocol
+  Smarter iKettle 2.0 & SmarterCoffee  Protocol
   _____________________________________________
 
     Smarter uses a binary message protocol, either via UDP or TCP on port 2081
@@ -672,7 +672,7 @@ class SmarterProtocolHelp:
         print """
 
 
-  Smarter iKettle 2.0 & Smarter Coffee Notes
+  Smarter iKettle 2.0 & SmarterCoffee  Notes
   __________________________________________
     
   WaterSensor Calibration:

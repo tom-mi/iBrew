@@ -10,7 +10,7 @@ from SmarterProtocol import *
 #------------------------------------------------------
 # SMARTER CLIENT INTERFACE
 #
-# Python interface to iKettle 2.0 & Smarter Coffee Devices
+# Python interface to iKettle 2.0 & SmarterCoffee  Devices
 #
 # https://github.com/Tristan79/iBrew
 #
@@ -433,7 +433,7 @@ class SmarterClient:
 
 
     #------------------------------------------------------
-    # COMMANDS: iKettle 2.0 & Smarter Coffee
+    # COMMANDS: iKettle 2.0 & SmarterCoffee 
     #------------------------------------------------------
 
 
@@ -448,31 +448,46 @@ class SmarterClient:
         self.send_command(Smarter.CommandDeviceInfo)
 
 
+    def device_check(self):
+            if not self.client.isKettle and not self.client.isCoffee:
+                self.client.fast = False
+                self.client.device_info()
+
     def device_store_settings(self,v1,v2,v3,v4):
-        if self.isKettle:
-            self.kettle_store_settings(v1,v2,v3,v4)
-        elif self.isCoffee:
-            self.coffee_store_settings(v1,v2,v3,v4)
+        self.device_check()
+        if self.isKettle:   self.kettle_store_settings(v1,v2,v3,v4)
+        elif self.isCoffee: self.coffee_store_settings(v1,v2,v3,v4)
 
 
     def device_settings(self):
-        if self.isKettle:
-            self.kettle_settings()
-        elif self.isCoffee:
-            self.coffee_settings()
+        self.device_check()
+        if self.isKettle:   self.kettle_settings()
+        elif self.isCoffee: self.coffee_settings()
+
+
+    def device_history(self):
+        self.device_check()
+        if   self.isKettle: self.kettle_history()
+        elif self.isCoffee: self.coffee_history()
 
 
     def device_stop(self):
-        if self.isKettle:
-            self.kettle_stop()
-        elif self.isCoffee:
-            self.coffee_stop()
+        self.device_check()
+        if self.isKettle:   self.kettle_stop()
+        elif self.isCoffee: self.coffee_stop()
+
+
+    def device_start(self):
+        self.device_check()
+        if self.isKettle:   self.kettle_heat()
+        elif self.isCoffee: self.coffee_brew()
+
 
     def device_restore_default(self):
-        if self.isKettle:
-            self.kettle_store_settings()
-        elif self.isCoffee:
-            self.coffee_store_settings()
+        self.device_check()
+        if self.isKettle:   self.kettle_store_settings()
+        elif self.isCoffee: self.coffee_store_settings()
+
 
     def device_reset(self):
         self.send_command(Smarter.CommandResetSettings)
@@ -486,10 +501,6 @@ class SmarterClient:
         self.send_command(Smarter.CommandDeviceTime,Smarter.number_to_raw(second) + Smarter.number_to_raw(minute) + Smarter.number_to_raw(hour) + Smarter.number_to_raw(unknown) + Smarter.number_to_raw(day) + Smarter.number_to_raw(month) + Smarter.number_to_raw(century) + Smarter.number_to_raw(year))
 
 
-    def device_history(self):
-        if   self.isKettle: self.kettle_history()
-        elif self.isCoffee: self.coffee_history()
- 
 
     #------------------------------------------------------
     # COMMANDS: Wifi
@@ -556,7 +567,7 @@ class SmarterClient:
 
 
     #------------------------------------------------------
-    # COMMANDS: Smarter Coffee
+    # COMMANDS: SmarterCoffee 
     #------------------------------------------------------
 
 
