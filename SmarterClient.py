@@ -10,7 +10,7 @@ from SmarterProtocol import *
 #------------------------------------------------------
 # SMARTER CLIENT INTERFACE
 #
-# Python interface to iKettle 2.0 & SmarterCoffee  Devices
+# Python interface to iKettle 2.0 & SmarterCoffee Devices
 #
 # https://github.com/Tristan79/iBrew
 #
@@ -277,10 +277,20 @@ class SmarterClient:
             for i in range(0,counter):
                 # read 32 bytes payload
                 # queue!!!!
-                self.historyTemperature = Smarter.raw_to_temperature(message[i*32+3])
-                self.historyKeepWarmTime = Smarter.raw_to_keepwarm(message[i*32+4])
-                self.historyFormulaTemperature = Smarter.raw_to_temperature(message[i*32+5])
+                self.historyTemperature = Smarter.raw_to_temperature(message[i*32+1+2])
+                self.historyKeepWarmTime = Smarter.raw_to_keepwarm(message[i*32+2+2])
+                self.historyFormulaTemperature = Smarter.raw_to_temperature(message[i*32+3+2])
+                self.historyHours   = Smarter.raw_to_temperature(message[i*32+6+2])
+                self.historyMinutes = Smarter.raw_to_temperature(message[i*32+7+2])
+                self.historyDay     = Smarter.raw_to_temperature(message[i*32+8+2])
+                self.historyMonth   = Smarter.raw_to_temperature(message[i*32+9+2])
+                self.historyYear    = Smarter.raw_to_temperature(message[i*32+10+2])+1980
+                
+    
                 # CHECK THIS
+                
+                print str(self.historyHours) + ":" + str(self.historyMinutes)
+                print str(self.historyDay) + "-" + str(self.historyMonth) + "-" + str(self.historyYear)
                 self.historySuccess = Smarter.raw_to_bool(message[i*32+13])
         else:
             self.historyTemperature = 0
@@ -449,9 +459,9 @@ class SmarterClient:
 
 
     def device_check(self):
-            if not self.client.isKettle and not self.client.isCoffee:
-                self.client.fast = False
-                self.client.device_info()
+            if not self.isKettle and not self.isCoffee:
+                self.fast = False
+                self.device_info()
 
     def device_store_settings(self,v1,v2,v3,v4):
         self.device_check()
@@ -681,6 +691,7 @@ class SmarterClient:
             print "     " + s + "   " + self.Wifi[i][0]
         print
 
+
     def print_wifi_firmware(self):
         print
         print self.WifiFirmware
@@ -688,21 +699,25 @@ class SmarterClient:
     
     
     def print_settings(self):
-        if isKettle:
-        
+        if self.isKettle:
             self.print_kettle_settings()
-        elif isCoffee:
+        elif self.isCoffee:
             self.print_coffee_settings()
+            
             
     def print_coffee_settings(self):
         print "Not yet implemented"
 
+
     def print_kettle_settings(self):
         if self.isKettle:
             print "Not yet implemented"
-            #print Smarter.(self.defaultTemperature,self.defaultFormula,self.defaultFormulaTemperature,self.defaultKeepWarmTime)
+            #print Smarter.temperature_to_string(self.defaultTemperature) + " "self.defaultFormula,Smarter.temperature_to_string(self.defaultFormulaTemperature),self.defaultKeepWarmTime)
    
 
+    def print_kettle_history(self):
+        self.print_history()
+    
     def print_history(self):
         # fix this
         if self.historySuccess == -1:
@@ -711,8 +726,9 @@ class SmarterClient:
         s = ""
         if not self.historySuccess:
             s = "Failed to: "
-        if isKettle:
-            print s + Smarter.string_kettle_settings(self.historyTemperature, self.historyFormulaTemperature , self.historyFormulaTemperature,self.historyKeepWarmTime)
+        if self.isKettle:
+            pass
+            #print s + Smarter.string_kettle_settings(self.historyTemperature, self.historyFormulaTemperature , self.historyFormulaTemperature,self.historyKeepWarmTime)
         elif isCoffee:
             print "Not yet implemented"
             pass
@@ -773,11 +789,11 @@ class SmarterClient:
         id = Smarter.raw_to_number(message[0])
         print "Message Received: [" + Smarter.message_description(id) + "] [" + Smarter.message_to_codes(message) + "]"
         if   id == Smarter.ResponseCommandStatus:   print "Command replied: " + Smarter.status_command(self.commandStatus)
-        elif id == Smarter.ResponseWirelessNetworks:        self.print_wireless_networks()
+        elif id == Smarter.ResponseWirelessNetworks: self.print_wireless_networks()
         elif id == Smarter.ResponseWifiFirmware:    self.print_wifi_firmware()
         elif id == Smarter.ResponseKettleHistory:   self.print_kettle_history()
         elif id == Smarter.ResponseCoffeeHistory:   self.print_coffee_history()
-        elif id == Smarter.ResponseKettleSettings:        self.print_kettle_settings()
+        elif id == Smarter.ResponseKettleSettings:  self.print_kettle_settings()
         elif id == Smarter.ResponseCarafe:          self.print_carafe()
         elif id == Smarter.ResponseSingleCupMode:   self.print_singlecupmode()
         elif id == Smarter.ResponseDeviceInfo:      self.print_info()

@@ -5,7 +5,7 @@ import struct
 #------------------------------------------------------
 # SMARTER PROTOCOL INTERFACE
 #
-# Python interface to iKettle 2.0 & SmarterCoffee  Devices
+# Python interface to iKettle 2.0 & SmarterCoffee Devices
 #
 # https://github.com/Tristan79/iBrew
 #

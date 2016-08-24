@@ -11,7 +11,7 @@ from SmarterProtocol import *
 #------------------------------------------------------
 # SMARTER SERVER INTERFACE
 #
-# Python interface to iKettle 2.0 & SmarterCoffee  Devices
+# Python interface to iKettle 2.0 & SmarterCoffee Devices
 #
 # https://github.com/Tristan79/iBrew
 #

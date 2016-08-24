@@ -5,7 +5,7 @@ from SmarterProtocol import *
 #------------------------------------------------------
 # SMARTER PROTOCOL HELP
 #
-# Python interface to iKettle 2.0 & SmarterCoffee  Devices
+# Python interface to iKettle 2.0 & SmarterCoffee Devices
 #
 # https://github.com/Tristan79/iBrew
 #
@@ -73,7 +73,7 @@ class SmarterProtocolHelp:
             print "  YEAR"
             print "    00..63"
             print
-            print "  Example: 00 00 00 00 00 00 00 00 ???"
+            print "  Example: 02 12 13 03 01 05 02 14 10 ???"
             
         elif id == Smarter.ResponseCommandStatus:
             print "  Response: <STATUS>"
@@ -263,6 +263,7 @@ class SmarterProtocolHelp:
             print "  packed time available."
             print
             print "  Payload maximum is 8. So if 8 check again, if there is more history"
+            print "  month checked only accepts value from 1..0c"
             print
             print "  Response: <COUNTER> [<PAYLOAD>{COUNTER}]"
             print
@@ -270,13 +271,29 @@ class SmarterProtocolHelp:
             print "    00..08"
             print
             print "  PAYLOAD"
-            print "    <??><??><(DEFAULT???) CUPS???><(DEFAULT???) CUPS???><??> "
-            print "    <??><?TIME DATE SOMEWHERE?><??><??><??><??><STATE><??>{19}"
+            print "    <??><??><??><DEFAULT/CUPS?><DEFAULT/CUPS?><SECONDS??>"
+            print "    <HOURS???><MINUTES???><DAY??><MONTH><YEAR80???><STATE><??>{19}"
             print
             print "  CUPS"
             print "    00..0c"
             print
-            print "  TIME/DATE?"
+            print "  SECONDS"
+            print "    00..3b"
+            print
+            print "  MINUTES"
+            print "    00..3b"
+            print
+            print "  HOURS"
+            print "    00..17"
+            print
+            print "  DAY"
+            print "    00..1e"
+            print
+            print "  MONTH"
+            print "    00..0b"
+            print
+            print "  YEAR80"
+            print "    00..FF  YEAR = YEAR80 + 1980"
             print
             print "  STATE"
             print "    00 Stopped"
@@ -291,12 +308,13 @@ class SmarterProtocolHelp:
             print "  packed time available."
             print
             print "  Payload maximum is 8. So if 8 check again, if there is more history"
+            print "  month checked only accepts value from 1..0c"
             print
             print "  Response: <COUNTER> [<PAYLOAD>{COUNTER}]"
             print
             print "  PAYLOAD"
             print "    <??><TEMPERATURE><KEEPWARMTIME><FORMULATEMPERATURE><ACTIONCOUNTER>"
-            print "    <ACTIONCOUNTER???/TIME???><TIME?><TIME?><DATE?><DATE?><???/DATE???><STATE><??>{19}"
+            print "    <SECONDS??><HOURS?><MINUTES?><DAY?><MONTH><YEAR80?><STATE><??>{19}"
             print
             print "  COUNTER"
             print "    00..08"
@@ -312,9 +330,25 @@ class SmarterProtocolHelp:
             print "    00..64  0..100ºC"
             print
             print "  ACTIONCOUNTER"
-            print "    00..ff"
+            print "    00..ff  Amount of boils before off base"
             print
-            print "  TIME/DATE?"
+            print "  SECONDS"
+            print "    00..3b"
+            print
+            print "  MINUTES"
+            print "    00..3b"
+            print
+            print "  HOURS"
+            print "    00..17"
+            print
+            print "  DAY"
+            print "    00..1e"
+            print
+            print "  MONTH"
+            print "    00..0b"
+            print
+            print "  YEAR80"
+            print "    00..FF  YEAR = YEAR80 + 1980"
             print
             print "  STATE"
             print "    00 Stopped"
