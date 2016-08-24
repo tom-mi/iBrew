@@ -728,7 +728,7 @@ class SmarterClient:
     def print_kettle_status(self):
         if self.onBase:
             print "Status         " + Smarter.status_kettle_description(self.kettleStatus)
-            print "Temperature    " + Smarter.temperature_to_string(temperature)
+            print "Temperature    " + Smarter.temperature_to_string(self.temperature)
             print "Water sensor   " + str(self.waterSensor) + " (calibration base " + str(self.waterSensorBase) + ")"
         else:
             print "Status         Off base"
@@ -751,7 +751,7 @@ class SmarterClient:
 
 
     def print_connect_status(self):
-        print "Connected to " + self.device + " Firmware v" + str(self.version) + " (" + self.host + ")"
+        print "Connected to [" + self.host + "] " + Smarter.device_info(self.deviceId,self.version)
 
 
     def print_message_send(self,message):

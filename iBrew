@@ -147,6 +147,7 @@ class iBrewConsole:
         
         while True:
             try:
+                now = time.time()
                 stamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
                 print stamp + " ♨"
 
@@ -155,27 +156,25 @@ class iBrewConsole:
                
                 average = int(round(float((float(previousTemperature) + float(prevPreviousTemperature) + float(self.client.temperature))/3),0))
 
-                #print prevPreviousTemperature
-                #print previousTemperature
-                #print self.client.temperature
-                #print "TEMP: " + str(previousAverage)
-                #print "TEMP: " + str(average)
-                
-                now = time.time()
-                if previousAverage != average or int(now-then) > update:
+                if int(now-then) > update:
+                    if domoticz.set_temperature(temp_idx,average,False):
+                        print stamp + " Water temperature: " + Smarter.temperature_to_string(average)
+                    if domoticz.set_custom(water_idx,self.client.waterSensor,False):
+                        print stamp + " Water height: " + str(self.client.waterSensor)
+       
+                if previousAverage != average:
                     if domoticz.set_temperature(temp_idx,average):
                         print stamp + " Water temperature: " + Smarter.temperature_to_string(average)
                     previousAverage = average
-                    
-                    
+
                 prevPreviousTemperature = previousTemperature
                 previousTemperature = self.client.temperature
-                
-                
+
                 if previousResponse == response:
+                    if int(now-then) > update: then = now
                     continue
+
                 previousResponse = response
-                
 
                 if previousStatus != self.client.kettleStatus:
                     status = Smarter.status_kettle_description(self.client.kettleStatus)
@@ -183,12 +182,12 @@ class iBrewConsole:
                         print stamp + " iKettle 2.0 is " + status.lower()
                     previousStatus = self.client.kettleStatus
             
-                if previousWaterSensor - 3 > self.client.waterSensor or previousWaterSensor + 3 < self.client.waterSensor:
+                if previousWaterSensor - 3 > self.client.waterSensor or previousWaterSensor + 3 < self.client.waterSensor or int(now-then) > update:
                     if domoticz.set_custom(water_idx,self.client.waterSensor):
                         print stamp + " Water height: " + str(self.client.waterSensor)
                     previousWaterSensor = self.client.waterSensor
                 
-                if previousBaseFirst or (previousBase != self.client.onBase) or int(now-then) > update:
+                if previousBaseFirst or (previousBase != self.client.onBase):
                     if domoticz.set_motion(offbase_idx,self.client.onBase):
                         if self.client.onBase:
                             s = "on"
@@ -198,9 +197,7 @@ class iBrewConsole:
                     previousBase = self.client.onBase
                     previousBaseFirst = False
  
- 
-                if int(now-then) > update:
-                    then = now
+                if int(now-then) > update: then = now
 
             except:
                 break
@@ -577,7 +574,6 @@ class iBrewConsole:
         while not self.quit:
             try:
                 # is should be threaded... since the kettle input is still comming as we wait for user input...
-                
                 self.execute(raw_input(cursor).strip().split())
             except:
                 break

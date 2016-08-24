@@ -12,7 +12,7 @@ import urllib
 #
 # 2016 Copyright © 2016 Tristan (@monkeycat.nl)
 #
-# CRAP WRAP v0.01
+# CRAP WRAP v0.02
 #------------------------------------------------------
 
 
@@ -170,12 +170,17 @@ class Domoticz:
 
 
     # should chop of ax... just do not use ax for the moment...
-    def set_custom(self,idx,custom):
-        if float(self.get_custom(idx)) != float(custom):
-            url = self.base() + "type=command&param=udevice&idx=" + idx + "&nvalue=0&svalue="+str(custom)
+    def set_custom(self,idx,custom,check=True):
+        url = self.base() + "type=command&param=udevice&idx=" + idx + "&nvalue=0&svalue="+str(custom)
+        if check:
+            if float(self.get_custom(idx)) != float(custom):
+                response = urllib.urlopen(url)
+                return True
+            else:
+                return False
+        else:
             response = urllib.urlopen(url)
             return True
-        return False
 
 
     def get_temperature(self,idx):
@@ -185,12 +190,18 @@ class Domoticz:
         return data["result"][0]["Temp"]
     
 
-    def set_temperature(self,idx,temperature):
-        if float(self.get_temperature(idx)) != float(temperature):
-            url = self.base() + "type=command&param=udevice&idx=" + idx + "&nvalue=0&svalue="+str(temperature)
+    def set_temperature(self,idx,temperature,check=True):
+        url = self.base() + "type=command&param=udevice&idx=" + idx + "&nvalue=0&svalue="+str(temperature)
+        if check:
+            if float(self.get_temperature(idx)) != float(temperature):
+                response = urllib.urlopen(url)
+                return True
+            else:
+                return False
+        else:
             response = urllib.urlopen(url)
             return True
-        return False
+
 
     def get_text(self,idx):
         url = self.base() + "type=devices&rid=" + idx
