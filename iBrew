@@ -60,7 +60,7 @@ class iBrewConsole:
                 
                 # ...if the response is the same as before then skip...
                 
-                # this is possible due to that response message 14 (status device)
+                # this is possible due to that response message 14/32 (status device)
                 # is the only one repeated after eachothers
                 # and we are not interested in anything but changes!
                 
@@ -77,8 +77,17 @@ class iBrewConsole:
     # iBrew DOMOTICZ
     #------------------------------------------------------
     # See monitor
-    
+
+
     def domoticz_bridge(self, server, name, sleep = 0, secure=False):
+        if self.client.isKettle:
+            domoticz_bridge_kettle(server,name,sleep,secure)
+        elif:
+            self.client.isCoffee:
+            domoticz_bridge_coffee(server,name,sleep,secure)
+            
+
+    def domoticz_bridge_kettle(self, server, name, sleep = 0, secure=False):
         
         if not self.client.isKettle:
             print "iBrew: Smarter Coffee not supported"
@@ -128,7 +137,7 @@ class iBrewConsole:
             return
 
 
-        print "iBrew: Domoticz Bridge: Press ctrl-c to stop"
+        print "iBrew: iKettle 2.0 Domoticz Bridge. Press ctrl-c to stop"
 
         previousResponse = ""
         previousWaterSensor = 0
@@ -196,13 +205,100 @@ class iBrewConsole:
                         print stamp + " iKettle 2.0 is " + s + " base"
                     previousBase = self.client.onBase
                     previousBaseFirst = False
- 
+
                 if int(now-then) > update: then = now
 
             except:
                 break
         
-    
+ 
+ 
+ 
+   def domoticz_bridge_coffee(self, server, name, sleep = 0, secure=False):
+        
+        if not self.client.isCoffee:
+            print "iBrew: iKettle 2.0 not supported"
+            return
+        
+        domoticz = Domoticz(server,secure)
+        
+        if domoticz.use_virtual_hardware("Smarter"):
+
+            water_name   = name + " Water Level"
+            water_type   = domoticz.SensorCustom
+            status_name = name + " Status"
+            status_type = domoticz.SensorSwitch
+            
+            water_idx   = domoticz.use_virtual_custom_water(water_name,"")
+            status_idx  = domoticz.use_virtual_text(status_name)
+
+            if status_idx == "None" or water_idx == "None":
+                print "iBrew: Failed to get Sensor IDX"
+                return
+            
+            print "iBrew: Using " + domoticz.print_type(water_type) + " sensor ["+ water_name + "] IDX " + str(water_idx)
+            print "iBrew: Using " + domoticz.print_type(status_type) + " sensor ["+ status_name + "] IDX " + str(status_idx)
+        else:
+            print "iBrew: Could not find hardware"
+            return
+
+
+        print "iBrew: SmarterCoffee Domoticz Bridge. Press ctrl-c to stop"
+
+        previousResponse = ""
+        previousWaterSensor = 0
+        previousStatus = "Unknown"
+
+        then = time.time()
+        update = 30
+        
+        while True:
+            try:
+                now = time.time()
+                stamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
+                print stamp + " ♨"
+
+                response = self.client.read()
+                #self.client.print_short_status()
+               
+                average = int(round(float((float(previousTemperature) + float(prevPreviousTemperature) + float(self.client.temperature))/3),0))
+
+                if int(now-then) > update:
+                    if domoticz.set_temperature(temp_idx,average,False):
+                        print stamp + " Water temperature: " + Smarter.temperature_to_string(average)
+                    if domoticz.set_custom(water_idx,self.client.waterSensor,False):
+                        print stamp + " Water height: " + str(self.client.waterSensor)
+       
+                if previousAverage != average:
+                    if domoticz.set_temperature(temp_idx,average):
+                        print stamp + " Water temperature: " + Smarter.temperature_to_string(average)
+                    previousAverage = average
+
+                prevPreviousTemperature = previousTemperature
+                previousTemperature = self.client.temperature
+
+                if previousResponse == response:
+                    if int(now-then) > update: then = now
+                    continue
+
+                previousResponse = response
+
+                if previousStatus != self.client.kettleStatus:
+                    status = Smarter.status_kettle_description(self.client.kettleStatus)
+                    if domoticz.set_text(status_idx,status):
+                        print stamp + " Smarter Coffee is " + status.lower()
+                    previousStatus = self.client.kettleStatus
+            
+                if previousWaterSensor != self.client.waterSensor:
+                    if domoticz.set_custom(water_idx,self.client.waterSensor):
+                        print stamp + " Water level: " + str(self.client.waterSensor)
+                    previousWaterSensor = self.client.waterSensor
+
+                if int(now-then) > update: then = now
+
+            except:
+                break
+
     #------------------------------------------------------
     # iBrew SWEEP
     #------------------------------------------------------
@@ -313,7 +409,7 @@ class iBrewConsole:
 
             if command == "shout":
                 if self.console or numarg == 0:
-                    print "iBrew: Can't hear you. Drinking coffee at a dinner on the other side of the universe..."
+                    print "iBrew: Can't hear you. Drinking tea at a dinner on the other side of the universe..."
                     return
                 command = arguments[0].lower()
                 arguments = arguments[1:]
