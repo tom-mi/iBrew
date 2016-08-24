@@ -20,8 +20,6 @@ from SmarterProtocol import *
 #------------------------------------------------------
 
 
-
-
 #------------------------------------------------------
 # CLIENT INTERFACE CLASS
 #------------------------------------------------------
@@ -30,7 +28,7 @@ class SmarterClient:
     
     def init(self):
         # network
-        self.port                       = 2081
+        self.port                       = Smarter.Port
         self.connected                  = False
         
         # device
@@ -81,7 +79,7 @@ class SmarterClient:
                 #set this to try is you want to connect send receive and don't care about the new status or other messages the about the out come, its disconnect afterwards....
         self.fast                       = False
         #set this to try is you want to connect send and really do not care about the about the out come, its disconnect afterwards....
-        self.lightspeed                 = False
+        self.shout                      = False
 
         self.init()
 
@@ -97,7 +95,10 @@ class SmarterClient:
 
 
     def init_default(self):
+        self.fast = False
+        self.shout = False
         self.device_info()
+        self.wifi_firmware()
         #self.device_history()
         if self.isKettle:
             self.kettle_settings()
@@ -180,7 +181,7 @@ class SmarterClient:
         self.statusMessage       = message
         self.kettleStatus        = Smarter.raw_to_number(message[1])
         self.temperature         = Smarter.raw_to_temperature(message[2])
-        self.waterSensor         = Smarter.raw_to_watersensor(message[4],message[3])
+        self.waterSensor         = Smarter.raw_to_watersensor(message[3],message[4])
         self.onBase              = Smarter.is_on_base(message[2])
 
 
@@ -211,7 +212,7 @@ class SmarterClient:
 
 
     def decode_ResponseBase(self,message):
-        self.waterSensorBase = Smarter.raw_to_watersensor(message[2],message[1])
+        self.waterSensorBase = Smarter.raw_to_watersensor(message[1],message[2])
 
 
     def decode_ResponseResponseCarafe(self,message):
@@ -319,10 +320,6 @@ class SmarterClient:
             # debug
             #print "[" + Smarter.number_to_code(id) + "]"
             minlength = Smarter.message_response_length(id)
-            
-            # we got an empty message read the next one...
-            #if id == Smarter.MessageTail or id == Smarter.MessageEmpty:
-            #    raw = self.socket.recv(1)
 
             i = 1
             while raw != Smarter.number_to_raw(Smarter.MessageTail) or (minlength > 0 and raw == Smarter.number_to_raw(Smarter.MessageTail) and i < minlength):
@@ -355,7 +352,7 @@ class SmarterClient:
         elif id == Smarter.ResponseSingleCupMode:   self.decode_ResponseSingleCupMode(message)
         elif id == Smarter.ResponseKettleHistory:   self.decode_ResponseKettleHistory(message)
         elif id == Smarter.ResponseCoffeeHistory:   self.decode_ResponseCoffeeHistory(message)
-        elif id == Smarter.ResponseKettleSettings:        self.decode_ResponseKettleSettings(message)
+        elif id == Smarter.ResponseKettleSettings:  self.decode_ResponseKettleSettings(message)
         elif id == Smarter.ResponseDeviceInfo:      self.decode_ResponseDeviceInfo(message)
         elif id == Smarter.ResponseWifiFirmware:    self.decode_ResponseWifiFirmware(message)
         elif id == Smarter.ResponseWirelessNetworks:self.decode_ResponseWirelessNetworks(message)
@@ -397,7 +394,7 @@ class SmarterClient:
     def send(self,message):
         self.send_message(message)
 
-        if self.lightspeed:
+        if self.shout:
             self.disconnect()
             return
 
@@ -439,6 +436,7 @@ class SmarterClient:
 
     def calibrate_store_base(self,base = 1000):
         self.send_command(Smarter.CommandStoreBase,Smarter.watersensor_to_raw(base))
+        self.waterSensorBase = base
 
 
 

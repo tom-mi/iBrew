@@ -5,7 +5,7 @@ from SmarterProtocol import *
 #------------------------------------------------------
 # SMARTER PROTOCOL HELP
 #
-# Python interface to iKettle 2.0 & SmarterCoffee Devices
+# Python help interface to iKettle 2.0 & SmarterCoffee Devices
 #
 # https://github.com/Tristan79/iBrew
 #
@@ -157,7 +157,7 @@ class SmarterProtocolHelp:
             print "    00..64  0..100ºC"
             print "    7f      Kettle Off Base"
             print
-            print "  WATERSENSOR = WATERSENSORHIGHBITS * 256 + WATERSENSORLOWBITS"
+            print "  WATERSENSOR = WATERSENSORHIGHBITS * 256 + WATERSENSORLOWBITS  [0..4095]"
         
         elif id == Smarter.CommandHeat:
             print "  if it's warming you have to send an off command to boil again"
@@ -360,8 +360,7 @@ class SmarterProtocolHelp:
         elif id == Smarter.CommandStoreBase:
             print "  Arguments: <BASELHIGHBITS><BASELOWBITS>"
             print
-            print "  BASE = BASELHIGHBITS * 256 + BASELOWBITS"
-            print
+            print "  BASE = BASELHIGHBITS * 256 + BASELOWBITS [0..4095]"
             print "  Example: 2a 04 03"
             print
             print "  This can contain the tail 7e, so check for length here!"
@@ -377,7 +376,7 @@ class SmarterProtocolHelp:
         elif id == Smarter.ResponseBase:
             print "  Response: <BASELHIGHBITS><BASELOWBITS>"
             print
-            print "  BASE = BASELHIGHBITS * 256 + BASELOWBITS"
+            print "  BASE = BASELHIGHBITS * 256 + BASELOWBITS [0..4095]"
             print
             print "  This can contain the tail 7e, so check for length here!"
             

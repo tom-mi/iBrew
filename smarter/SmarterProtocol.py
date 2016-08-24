@@ -5,7 +5,7 @@ import struct
 #------------------------------------------------------
 # SMARTER PROTOCOL INTERFACE
 #
-# Python interface to iKettle 2.0 & SmarterCoffee Devices
+# Python protocol interface to iKettle 2.0 & SmarterCoffee Devices
 #
 # https://github.com/Tristan79/iBrew
 #
@@ -34,6 +34,7 @@ class SmarterError(Exception):
 class SmarterProtocol:
 
     DirectHost = "192.168.4.1"
+    Port       = 2081
     Fahrenheid = False
 
     #------------------------------------------------------
@@ -602,7 +603,6 @@ class SmarterProtocol:
  
  
     def celcius_to_fahrenheid(self,temperature):
-        print temperature
         return ((temperature * 9) / 5) + 32
     
     
@@ -710,12 +710,24 @@ class SmarterProtocol:
     # WATERSENSOR ARGUMENT WRAPPER
     #------------------------------------------------------
 
+    def check_watersensor(self, watersensor):
+        if watersensor < 0 or watersensor > 4095:
+            raise SmarterError("Watersensor out of range [0..4095]")
+        return watersensor
+        
     def raw_to_watersensor(self,raw_low,raw_high):
-        return self.raw_to_number(raw_low) + self.raw_to_number(raw_high) * 256
+        return self.check_watersensor(self.raw_to_number(raw_low) * 256 + self.raw_to_number(raw_high))
 
 
     def watersensor_to_raw(self,watersensor):
-        return self.number_to_raw(watersensor % 256) + self.number_to_raw(watersensor / 256)
+        return self.number_to_raw(watersensor / 256) + self.number_to_raw(watersensor % 256)
+
+    def string_to_watersensor(self,string):
+        try:
+            watersensor = int(string)
+        except:
+            raise SmarterError("Not a watersensor value")
+        return self.check_watersensor(watersensor)
  
  
     #------------------------------------------------------

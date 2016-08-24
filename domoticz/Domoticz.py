@@ -6,7 +6,7 @@ import urllib
 #------------------------------------------------------
 # DOMOTICZ INTERFACE
 #
-# Python interface to domoticz
+# Python interface to Domoticz
 #
 # https://github.com/Tristan79/???
 #
