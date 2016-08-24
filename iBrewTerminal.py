@@ -8,7 +8,9 @@ import datetime
 from smarter.SmarterClient import *
 from smarter.SmarterProtocol import *
 from smarter.SmarterHelp import *
+
 from domoticz.Domoticz import *
+
 from iBrewREST import *
 
 #------------------------------------------------------

@@ -18,41 +18,16 @@ from smarter.SmarterClient import *
 #------------------------------------------------------
 
 
-
+from datetime import date
+import tornado.escape
+import tornado.ioloop
+import tornado.web
 
 class iBrewREST:
 
-    """
-    from datetime import date
-    import tornado.escape
-    import tornado.ioloop
-    import tornado.web
-
-    client = SmarterClient()
-    client.host = '10.0.0.99'
-    client.init_default()
-    clients = dict()
-    clients['10.0.0.99'] = client
 
 
-    class GenericAPIHandler(BaseHandler):
-        def validateAPIKey(self):
-                api_key = self.get_argument(u"api_key", default="")
-                if api_key == "TRIXWOOD"
-                    return True
-                else:
-                    raise tornado.web.HTTPError(400)
-                    return False
 
-
-    
-    class APIHandler(tornado.web.RequestHandler):
-        def get(self):
-            response = { 'description': 'iBrew Smarter REST API',
-                         'version'    : '0.3 rev 6',
-                         'copyright'  : '2016 Tristan Crispijn'
-                        }
-            self.write(response)
 
     class VersionHandler(tornado.web.RequestHandler):
         def get(self):
@@ -245,39 +220,6 @@ class iBrewREST:
     # REST INTERFACE
     #------------------------------------------------------
 
-
-    class LoginHandler(BaseHandler):
-        def get(self):
-            if  len(self.get_arguments("next")) != 0:
-                next=self.get_argument("next")
-            else:
-                next=self.webroot + "/"
-            
-            #if password and user are blank, just skip to the "next"
-            if (  self.application.config['security']['password_digest'] == utils.getDigest("")  and
-                  self.application.config['security']['username'] == ""
-                ):
-                self.set_secure_cookie("user", fix_username(self.application.config['security']['username']))
-                self.redirect(next)
-            else:
-                self.render(deviceroot(self)+'login.html', next=next)
-
-        def post(self):
-            next = self.get_argument("next")
-
-            if  len(self.get_arguments("password")) != 0:
-                    
-                #print self.application.password, self.get_argument("password") , next
-                if (self.get_argument("password")  ==  'trixwood' and
-                    self.set_secure_cookie("user", "trixwood")
-                    
-            self.redirect(next)
-
-    class AboutPageHandler(BaseHandler):
-        #@tornado.web.authenticated
-        def get(self):
-            self.render("web/about.html", version=self.application.version)
-
     application = tornado.web.Application([
         (r"/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/",DeviceHandler),
         (r"/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/kettle/calibrate/",CalibrateHandler),
@@ -320,8 +262,14 @@ class iBrewREST:
 
         
     ])
-    """
+    
     def __init__(self,port):
         pass
-        #self.application.listen(port)
-        #tornado.ioloop.IOLoop.instance().start()
+        client = SmarterClient()
+        client.host = '10.0.0.99'
+        client.init_default()
+        clients = dict()
+        clients['10.0.0.99'] = client
+
+        self.application.listen(port)
+        tornado.ioloop.IOLoop.instance().start()
