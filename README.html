@@ -1,80 +1,94 @@
-# iBrew Kettle Rattle
-
-[iKettle 2.0](http://smarter.am/ikettle) and [Smarter Coffee](http://smarter.am/coffee) Interface
-
-
-## Introduction
-iBrew is a (python) interface to iKettle 2.0 and Smarter Coffee devices. It includes a console, monitor, command line interface, web interface, rest api and bridge to [Domoticz](http://domoticz.com). You can also use it in your own code. iKettle 2.0 v19 tested only at the moment. Please share any other discoveries you made!
-
-This means your machine is free! You can connect it yourself and do whatever you want with it. You are in full control! You can also interface it with your favorite smarthome controller. A working bridge to domoticz is already included (which you can bridge with homekit or other fun stuff)!
-
-   Signed TRiXWooD
-
-#### Versions
- * v0.0 Bean Grinder Pack
- * v0.1 White Tealeaf Edition
- * v0.2 Tea Noire Sweet
- * v0.3 Kettle Rattle 
- 
-#### Upcoming   
- * Better error handling
- * Auto reconnect
- * Todo: Brew, heat, formula arguments
- * Todo: Time arguments
- * Auto-reconnect
- * v0.4 Missing Coffee Smarter codes
- * web interface & rest api
- * History message is not finished
- * Should read status message 14/32 all the time in console mode and in web interface.
- 
-#### Contact
-[Bugs or issues](https://github.com/Tristan79/iBrew/issues). Donations & other questions <tristan@monkeycat.nl>
-
-
-## Installation
-
-#### Software Requirements 
-* python 2.7
-* python (optional) package: tornado 
-* python (optional) package: pybonjour)
-* pandoc (optional, development only)
-
-#### Download
-You can download and unpack the [source](https://github.com/Tristan79/iBrew/archive/master.zip) or download it from github using
-
-```
-git clone https://github.com/Tristan79/iBrew.git
-```
-
-
-## Contributing
-
-Use the fork button in the upper right corner of [iBrew](https://github.com/Tristan79/iBrew/) and [Github Desktop](https://desktop.github.com) 
-or fork it manually. Run the following commands in the root if the iBrew folder to do so.
-
-Create your feature branch 
-
-```git checkout -b my-new-feature-or-fix```
-
-Commit your changes 
-
-```git commit -am 'Add some feature-or-fix```
-
-Push to the branch 
-
-```git push origin my-new-feature-or-fix```
-
-Create new Pull Request
-
-
-## Usage
-
-### Command Line Options
-
-See the console section for the commands
- 
-```
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+</head>
+<body>
+<div id="TOC">
+<ul>
+<li><a href="#ibrew-kettle-rattle">iBrew Kettle Rattle</a><ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#contributing">Contributing</a></li>
+<li><a href="#usage">Usage</a><ul>
+<li><a href="#command-line-options">Command Line Options</a></li>
+<li><a href="#console">Console</a></li>
+<li><a href="#web-interface">Web Interface</a></li>
+<li><a href="#rest-api">REST API</a></li>
+<li><a href="#domoticz-bridge">Domoticz Bridge</a></li>
+</ul></li>
+<li><a href="#protocol">Protocol</a><ul>
+<li><a href="#structure">Structure</a></li>
+<li><a href="#messages-index">Messages Index</a></li>
+<li><a href="#message-information">Message Information</a></li>
+<li><a href="#notes">Notes</a></li>
+</ul></li>
+<li><a href="#license">License</a></li>
+<li><a href="#links">Links</a></li>
+</ul></li>
+</ul>
+</div>
+<h1 id="ibrew-kettle-rattle">iBrew Kettle Rattle</h1>
+<p><a href="http://smarter.am/ikettle">iKettle 2.0</a> and <a href="http://smarter.am/coffee">Smarter Coffee</a> Interface</p>
+<h2 id="introduction">Introduction</h2>
+<p>iBrew is a (python) interface to iKettle 2.0 and Smarter Coffee devices. It includes a console, monitor, command line interface, web interface, rest api and bridge to <a href="http://domoticz.com">Domoticz</a>. You can also use it in your own code. iKettle 2.0 v19 tested only at the moment. Please share any other discoveries you made!</p>
+<p>This means your machine is free! You can connect it yourself and do whatever you want with it. You are in full control! You can also interface it with your favorite smarthome controller. A working bridge to domoticz is already included (which you can bridge with homekit or other fun stuff)!</p>
+<p>Signed TRiXWooD</p>
+<h4 id="versions">Versions</h4>
+<ul>
+<li>v0.0 Bean Grinder Pack</li>
+<li>v0.1 White Tealeaf Edition</li>
+<li>v0.2 Tea Noire Sweet</li>
+<li>v0.3 Kettle Rattle</li>
+</ul>
+<h4 id="upcoming">Upcoming</h4>
+<ul>
+<li>Better error handling</li>
+<li>Auto reconnect</li>
+<li>Todo: Brew, heat, formula arguments</li>
+<li>Todo: Time arguments</li>
+<li>Auto-reconnect</li>
+<li>v0.4 Missing Coffee Smarter codes</li>
+<li>web interface &amp; rest api</li>
+<li>History message is not finished</li>
+<li>Should read status message 14/32 all the time in console mode and in web interface.</li>
+</ul>
+<h4 id="contact">Contact</h4>
+<p><a href="https://github.com/Tristan79/iBrew/issues">Bugs or issues</a>. Donations &amp; other questions <script type="text/javascript">
+<!--
+h='&#x6d;&#x6f;&#110;&#x6b;&#x65;&#x79;&#x63;&#x61;&#116;&#46;&#110;&#108;';a='&#64;';n='&#116;&#114;&#x69;&#x73;&#116;&#x61;&#110;';e=n+a+h;
+document.write('<a h'+'ref'+'="ma'+'ilto'+':'+e+'" clas'+'s="em' + 'ail">'+e+'<\/'+'a'+'>');
+// -->
+</script><noscript>&#116;&#114;&#x69;&#x73;&#116;&#x61;&#110;&#32;&#x61;&#116;&#32;&#x6d;&#x6f;&#110;&#x6b;&#x65;&#x79;&#x63;&#x61;&#116;&#32;&#100;&#x6f;&#116;&#32;&#110;&#108;</noscript></p>
+<h2 id="installation">Installation</h2>
+<h4 id="software-requirements">Software Requirements</h4>
+<ul>
+<li>python 2.7</li>
+<li>python (optional) package: tornado</li>
+<li>python (optional) package: pybonjour)</li>
+<li>pandoc (optional, development only)</li>
+</ul>
+<h4 id="download">Download</h4>
+<p>You can download and unpack the <a href="https://github.com/Tristan79/iBrew/archive/master.zip">source</a> or download it from github using</p>
+<pre><code>git clone https://github.com/Tristan79/iBrew.git</code></pre>
+<h2 id="contributing">Contributing</h2>
+<p>Use the fork button in the upper right corner of <a href="https://github.com/Tristan79/iBrew/">iBrew</a> and <a href="https://desktop.github.com">Github Desktop</a><br />
+or fork it manually. Run the following commands in the root if the iBrew folder to do so.</p>
+<p>Create your feature branch</p>
+<p><code>git checkout -b my-new-feature-or-fix</code></p>
+<p>Commit your changes</p>
+<p><code>git commit -am 'Add some feature-or-fix</code></p>
+<p>Push to the branch</p>
+<p><code>git push origin my-new-feature-or-fix</code></p>
+<p>Create new Pull Request</p>
+<h2 id="usage">Usage</h2>
+<h3 id="command-line-options">Command Line Options</h3>
+<p>See the console section for the commands</p>
+<pre><code>
   Usage: iBrew (dump) (shout|coffee|kettle) (fahrenheid) [command] (host)
 
     fahrenheid             use fahrenheid
@@ -85,16 +99,12 @@ See the console section for the commands
 
   If you do not supply a host, it will try to connect to the first detected device
   Thus if you have more then one device supply a host (if its not in direct mode)
-
-```
-
-### Console
-Start the console with the command `iBrew console`. The following commands are available within the console,
-you can also use them on the command line as arguments:
-
-```
-
-  iKettle 2.0 & SmarterCoffee  Commands
+</code></pre>
+<h3 id="console">Console</h3>
+<p>Start the console with the command <code>iBrew console</code>. The following commands are available within the console,<br />
+you can also use them on the command line as arguments:</p>
+<pre><code>
+  iKettle 2.0 &amp; SmarterCoffee  Commands
     default                set default settings
     info                   device info
     history                action history
@@ -143,11 +153,11 @@ you can also use them on the command line as arguments:
 
   Bridge Commands
     domoticz               show domoticz bridge help
-    web (port)             start web interface & rest api on port [default 2082]
+    web (port)             start web interface &amp; rest api on port [default 2082]
 
   Debug Commands
-    [hexdata]              send raw data to device (e.g. '64 7e')
-    dump                   toggle 'dump raw messages'
+    [hexdata]              send raw data to device (e.g. &#39;64 7e&#39;)
+    dump                   toggle &#39;dump raw messages&#39;
     console                start console [command line only]
     connect [host]         connect to device [console only]
     firmware               show firmware Wifi
@@ -159,13 +169,9 @@ you can also use them on the command line as arguments:
     joke                   show joke
     quit                   quit console [console only]
 
-
-```
-
-#### Examples
-
-```
-
+</code></pre>
+<h4 id="examples">Examples</h4>
+<pre><code>
   Example:
     off            Stop boiling/brewing
     messages       Show all protocol messages
@@ -175,42 +181,20 @@ you can also use them on the command line as arguments:
     strength weak  Set coffee strength to weak
     cups 3         Set number of cups to brew
 
-
-```
-
-
-### Web Interface
-
-This is a build in progress, please contribute!
-
-
-### REST API
-
-Start the web interface.
-
-
-```
-http://ip:port/api
-```
-
-The following links are available
-
-```
-/version
+</code></pre>
+<h3 id="web-interface">Web Interface</h3>
+<p>This is a build in progress, please contribute!</p>
+<h3 id="rest-api">REST API</h3>
+<p>Start the web interface.</p>
+<pre><code>http://ip:port/api</code></pre>
+<p>The following links are available</p>
+<pre><code>/version
 /devices
-/joke
-```
-
-Which contains the ip which you can use to monitor or control individual devices.
-
-```
-http://ip:port/api/ip
-```
-
-The following links are available
-
-```
-/start
+/joke</code></pre>
+<p>Which contains the ip which you can use to monitor or control individual devices.</p>
+<pre><code>http://ip:port/api/ip</code></pre>
+<p>The following links are available</p>
+<pre><code>/start
 /stop
 /join/name/(password)
 /leave
@@ -227,22 +211,13 @@ The following links are available
 /hotplate/value
 /grinder/bool
 /cups/value
-/strength/value
-```
-
-Look up the the possible arguments in the console commands.
-
-
-### Domoticz Bridge
-
-Bridge to [Domoticz](http://domoticz.com). You are in full control!
-
-
-iKettle Devices in Domoticz
-![alt tag](https://raw.githubusercontent.com/Tristan79/iBrew/master/help/Domoticz.png)
-   
-```
-
+/strength/value</code></pre>
+<p>Look up the the possible arguments in the console commands.</p>
+<h3 id="domoticz-bridge">Domoticz Bridge</h3>
+<p>Bridge to <a href="http://domoticz.com">Domoticz</a>. You are in full control!</p>
+<p>iKettle Devices in Domoticz<br />
+<img src="https://raw.githubusercontent.com/Tristan79/iBrew/master/help/Domoticz.png" alt="alt tag" /></p>
+<pre><code>
 
   Domoticz Bridge
   _______________
@@ -259,11 +234,11 @@ iKettle Devices in Domoticz
   Currently you have to create your boil, brew switches yourself (working on it), so:
   
     Place or link iBrew in your domoticz script folder or somewhere readable and reachable.
-    Run iBrew in domoticz bridge mode to auto create the 'smarter' dummy hardware.
-    Go to [SETUP] [HARDWARE] press 'create virtual sensors' on the dummy hardware called 'smarter'
+    Run iBrew in domoticz bridge mode to auto create the &#39;smarter&#39; dummy hardware.
+    Go to [SETUP] [HARDWARE] press &#39;create virtual sensors&#39; on the dummy hardware called &#39;smarter&#39;
     Give it a name (e.g. Kettle Boil) and select sensor type is switch.
     Go to [SWITCHES], scroll all the way down.
-    Select 'edit' on your newly created device.
+    Select &#39;edit&#39; on your newly created device.
       Switch Icon, well heating is nice!
       On Action:  script://locationibrew/iBrew on kettleip
       Off Action: script://locationibrew/iBrew off kettleip
@@ -304,77 +279,64 @@ iKettle Devices in Domoticz
     iBrew domoticz localhost:8080 Kettle 
   
               
-
-```
-
-Example keepalive LaunchAgent for macOS/OSX, i soft linked /usr/local/bin/ibrew to iBrew.
-But you can change it to your normal copy, also change the working directory,domoticz ip and kettle ip.
-
-```
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-	<key>Disabled</key>
-	<false/>
-	<key>KeepAlive</key>
-	<true/>
-	<key>Label</key>
-	<string>com.domoticz.ikettle</string>
-	<key>ProgramArguments</key>
-	<array>
-		<string>/usr/local/bin/ibrew</string>
-		<string>domoticz</string>
-		<string>10.0.0.1:8090</string>
-		<string>Kettle</string>
-		<string>10.0.0.99</string>
-	</array>
-	<key>RunAtLoad</key>
-	<true/>
-	<key>WorkingDirectory</key>
-	<string>/Users/Tristan/Smarthome/domoticz/scripts</string>
-</dict>
-</plist>
-```
-
-## Protocol
-
-### Structure
-
-```
-
+</code></pre>
+<p>Example keepalive LaunchAgent for macOS/OSX, i soft linked /usr/local/bin/ibrew to iBrew.<br />
+But you can change it to your normal copy, also change the working directory,domoticz ip and kettle ip.</p>
+<pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;!DOCTYPE plist PUBLIC &quot;-//Apple//DTD PLIST 1.0//EN&quot; &quot;http://www.apple.com/DTDs/PropertyList-1.0.dtd&quot;&gt;
+&lt;plist version=&quot;1.0&quot;&gt;
+&lt;dict&gt;
+    &lt;key&gt;Disabled&lt;/key&gt;
+    &lt;false/&gt;
+    &lt;key&gt;KeepAlive&lt;/key&gt;
+    &lt;true/&gt;
+    &lt;key&gt;Label&lt;/key&gt;
+    &lt;string&gt;com.domoticz.ikettle&lt;/string&gt;
+    &lt;key&gt;ProgramArguments&lt;/key&gt;
+    &lt;array&gt;
+        &lt;string&gt;/usr/local/bin/ibrew&lt;/string&gt;
+        &lt;string&gt;domoticz&lt;/string&gt;
+        &lt;string&gt;10.0.0.1:8090&lt;/string&gt;
+        &lt;string&gt;Kettle&lt;/string&gt;
+        &lt;string&gt;10.0.0.99&lt;/string&gt;
+    &lt;/array&gt;
+    &lt;key&gt;RunAtLoad&lt;/key&gt;
+    &lt;true/&gt;
+    &lt;key&gt;WorkingDirectory&lt;/key&gt;
+    &lt;string&gt;/Users/Tristan/Smarthome/domoticz/scripts&lt;/string&gt;
+&lt;/dict&gt;
+&lt;/plist&gt;</code></pre>
+<h2 id="protocol">Protocol</h2>
+<h3 id="structure">Structure</h3>
+<pre><code>
        
        
-  Smarter iKettle 2.0 & SmarterCoffee  Protocol
+  Smarter iKettle 2.0 &amp; SmarterCoffee  Protocol
   _____________________________________________
 
     Smarter uses a binary message protocol, either via UDP or TCP on port 2081
 
     Messages (commands and responses) use the syntax:
 
-     <ID>[ARGUMENTS]<TAIL>
+     &lt;ID&gt;[ARGUMENTS]&lt;TAIL&gt;
 
     Arguments use this syntax:
 
-      <ARGUMENT>     is a single mandatory byte
-      <[ARGUMENT]>   is a single optional byte
-      <ARGUMENT>{x}  is mandatory, between 1 and x bytes
+      &lt;ARGUMENT&gt;     is a single mandatory byte
+      &lt;[ARGUMENT]&gt;   is a single optional byte
+      &lt;ARGUMENT&gt;{x}  is mandatory, between 1 and x bytes
  
     The tail is always 7e or ~ in ASCII, everything else are ASCII literals
     
-    There are some value's like the watersensor that can contains the tail
+    There are some value&#39;s like the watersensor that can contains the tail
     so check the length of the response message!
     
               
+</code></pre>
+<h3 id="messages-index">Messages Index</h3>
+<pre><code>
 
-```
-
-### Messages Index
-
-```
-
-
-  Smarter iKettle 2.0 & SmarterCoffee  Messages
+  Smarter iKettle 2.0 &amp; SmarterCoffee  Messages
   _____________________________________________
 
 
@@ -444,13 +406,9 @@ But you can change it to your normal copy, also change the working directory,dom
       c SmarterCoffee 
 
 
-
-```
-
-### Message Information
-
-```
-
+</code></pre>
+<h3 id="message-information">Message Information</h3>
+<pre><code>
 
   Command Message 02: Set device time
   ─────────────────────────────────────────────────────────────────────────
@@ -461,7 +419,7 @@ But you can change it to your normal copy, also change the working directory,dom
   Set the time on the device, is used in history reply messages.
   Unknown is Day of week index?
 
-  Arguments: <SECONDS><MINUTES><HOURS><??><DAY><MONTH><CENTURY><YEAR>
+  Arguments: &lt;SECONDS&gt;&lt;MINUTES&gt;&lt;HOURS&gt;&lt;??&gt;&lt;DAY&gt;&lt;MONTH&gt;&lt;CENTURY&gt;&lt;YEAR&gt;
 
   SECONDS
     00..3b
@@ -496,7 +454,7 @@ But you can change it to your normal copy, also change the working directory,dom
 
   ✓ iKettle 2.0   ✓ SmarterCoffee 
 
-  Response: <STATUS>
+  Response: &lt;STATUS&gt;
 
   STATUS
     00 Success
@@ -519,7 +477,7 @@ But you can change it to your normal copy, also change the working directory,dom
 
   ✓ iKettle 2.0   ? SmarterCoffee 
 
-  Argument: <SSID>{0,32}
+  Argument: &lt;SSID&gt;{0,32}
   Just normal ascii
 
 
@@ -531,7 +489,7 @@ But you can change it to your normal copy, also change the working directory,dom
 
   ✓ iKettle 2.0   ? SmarterCoffee 
 
-  Argument: <PASSWORD>{0,32}
+  Argument: &lt;PASSWORD&gt;{0,32}
   Just normal ascii
 
 
@@ -576,7 +534,7 @@ But you can change it to your normal copy, also change the working directory,dom
 
   DB is the signal strength in dBm format.
 
-  Response: <SSID>{0,32}<",-"><DB>{2}<"}">
+  Response: &lt;SSID&gt;{0,32}&lt;&quot;,-&quot;&gt;&lt;DB&gt;{2}&lt;&quot;}&quot;&gt;
 
   Examples: MyWifi,-56}
             MyWifi,-56}OtherWifi,-82}
@@ -623,10 +581,10 @@ But you can change it to your normal copy, also change the working directory,dom
   There is correlation between the temperature the watersensor and the base. How higher
   the temperature how higher the watersensor with the same volume of water.
 
-  Response iKettle: <STATUSKETTLE><TEMPERATURE><WATERSENSORBITSHIGH><WATERSENSORBITSLOW><??>
+  Response iKettle: &lt;STATUSKETTLE&gt;&lt;TEMPERATURE&gt;&lt;WATERSENSORBITSHIGH&gt;&lt;WATERSENSORBITSLOW&gt;&lt;??&gt;
 
-  Response SmarterCoffee : <STATUSCOFFEE><WATERLEVEL><WIFISTRENGTH???/WATERSENSORBITSLOW???>
-                           <STRENGTH><CUPS>
+  Response SmarterCoffee : &lt;STATUSCOFFEE&gt;&lt;WATERLEVEL&gt;&lt;WIFISTRENGTH???/WATERSENSORBITSLOW???&gt;
+                           &lt;STRENGTH&gt;&lt;CUPS&gt;
 
   STATUSKETTLE
     00 Ready
@@ -650,10 +608,10 @@ But you can change it to your normal copy, also change the working directory,dom
 
   ✓ iKettle 2.0   ? SmarterCoffee 
 
-  if it's warming you have to send an off command to boil again
-  if it's not on temp it boils first before warming...
+  if it&#39;s warming you have to send an off command to boil again
+  if it&#39;s not on temp it boils first before warming...
 
-  Argument: <TEMPERATURE><KEEPWARMTIME>
+  Argument: &lt;TEMPERATURE&gt;&lt;KEEPWARMTIME&gt;
 
   TEMPERATURE
     00..64  0..100ºC
@@ -687,7 +645,7 @@ But you can change it to your normal copy, also change the working directory,dom
   Boil water to (default user temperature)
  and cool until the formula temperature and then keep it warm.
 
-  Arguments: <FORMULATEMPERATURE><KEEPWARMTIME>
+  Arguments: &lt;FORMULATEMPERATURE&gt;&lt;KEEPWARMTIME&gt;
 
   KEEPWARMTIME
     00      Default off
@@ -712,7 +670,7 @@ But you can change it to your normal copy, also change the working directory,dom
 
   Default user defaults message is 1f 00 64 00 4b 7e
 
-  Arguments: <KEEPWARMTIME><TEMPERATURE><FORMULA><FORMULATEMPERATURE>
+  Arguments: &lt;KEEPWARMTIME&gt;&lt;TEMPERATURE&gt;&lt;FORMULA&gt;&lt;FORMULATEMPERATURE&gt;
 
   KEEPWARMTIME
     00      Default off
@@ -807,11 +765,11 @@ But you can change it to your normal copy, also change the working directory,dom
   Payload maximum is 8. So if 8 check again, if there is more history
   month checked only accepts value from 1..0c
 
-  Response: <COUNTER> [<PAYLOAD>{COUNTER}]
+  Response: &lt;COUNTER&gt; [&lt;PAYLOAD&gt;{COUNTER}]
 
   PAYLOAD
-    <??><TEMPERATURE><KEEPWARMTIME><FORMULATEMPERATURE><ACTIONCOUNTER>
-    <SECONDS??><HOURS?><MINUTES?><DAY?><MONTH><YEAR80?><STATE><??>{19}
+    &lt;??&gt;&lt;TEMPERATURE&gt;&lt;KEEPWARMTIME&gt;&lt;FORMULATEMPERATURE&gt;&lt;ACTIONCOUNTER&gt;
+    &lt;SECONDS??&gt;&lt;HOURS?&gt;&lt;MINUTES?&gt;&lt;DAY?&gt;&lt;MONTH&gt;&lt;YEAR80?&gt;&lt;STATE&gt;&lt;??&gt;{19}
 
   COUNTER
     00..08
@@ -862,7 +820,7 @@ But you can change it to your normal copy, also change the working directory,dom
 
   ✓ iKettle 2.0   ? SmarterCoffee 
 
-  Arguments: <BASELHIGHBITS><BASELOWBITS>
+  Arguments: &lt;BASELHIGHBITS&gt;&lt;BASELOWBITS&gt;
 
   BASE = BASELHIGHBITS * 256 + BASELOWBITS [0..4095]
   Example: 2a 04 03
@@ -903,7 +861,7 @@ But you can change it to your normal copy, also change the working directory,dom
 
   ✓ iKettle 2.0   ? SmarterCoffee 
 
-  Response: <BASELHIGHBITS><BASELOWBITS>
+  Response: &lt;BASELHIGHBITS&gt;&lt;BASELOWBITS&gt;
 
   BASE = BASELHIGHBITS * 256 + BASELOWBITS [0..4095]
 
@@ -932,7 +890,7 @@ But you can change it to your normal copy, also change the working directory,dom
 
   ✓ iKettle 2.0   ✓ SmarterCoffee 
 
-  Response: <TEMPERATURE><KEEPWARMTIME><FORMULATEMPERATURE>
+  Response: &lt;TEMPERATURE&gt;&lt;KEEPWARMTIME&gt;&lt;FORMULATEMPERATURE&gt;
 
   KEEPWARMTIME
     00      Default off
@@ -952,7 +910,7 @@ But you can change it to your normal copy, also change the working directory,dom
 
   ✓ iKettle 2.0   ? SmarterCoffee 
 
-  Arguments: <[UNKNOWN]>{?}
+  Arguments: &lt;[UNKNOWN]&gt;{?}
 
   Example: 30 7e
 
@@ -967,7 +925,7 @@ But you can change it to your normal copy, also change the working directory,dom
   I do not have a smarter coffee, but I suspect that the WIFISTRENGTH is just
   the WATERSENSORBITSLOW part of the waterlevel sensor.
 
-  Response: <STATUSCOFFEE><WATERLEVEL><WIFISTRENGTH???/WATERSENSORBITSLOW???><STRENGTH><CUPS>
+  Response: &lt;STATUSCOFFEE&gt;&lt;WATERLEVEL&gt;&lt;WIFISTRENGTH???/WATERSENSORBITSLOW???&gt;&lt;STRENGTH&gt;&lt;CUPS&gt;
 
   STATUSKETTLE
     00 Ready
@@ -985,7 +943,7 @@ But you can change it to your normal copy, also change the working directory,dom
     07 Beans, OK to start             #  00000111
     20 Filter, No carafe              #  00100000
     22 Beans, No carafe               #  00100010
-    45 Filter, Done                   #  01000101 <-- from here actions
+    45 Filter, Done                   #  01000101 &lt;-- from here actions
     47 Beans, Done                    #  01000111
     53 Boiling                        #  01010011
     60 Filter, No carafe, Hotplate On #  01100000
@@ -1006,7 +964,7 @@ But you can change it to your normal copy, also change the working directory,dom
   BIT 0 = UNKNOWN/UNUSED?
   BIT 1 = ACTION???
   BIT 2 = HOTPLATE
-  BIT 3 = Boiling & Descaling (USES BIT 6)
+  BIT 3 = Boiling &amp; Descaling (USES BIT 6)
   BIT 4 = UNKNOWN/UNUSED?
   BIT 5 = READY/BUSY (OK TO START, FINISHED = 1 else 0)
   BIT 6 = FILTER/BEANS
@@ -1056,7 +1014,7 @@ But you can change it to your normal copy, also change the working directory,dom
   ✕ iKettle 2.0   ✓ SmarterCoffee 
 
   Sets the strength of the coffee to be brewed. Use command 37 to brew
-  Argument: <STRENGTH>
+  Argument: &lt;STRENGTH&gt;
 
   STRENGTH
     00 Weak
@@ -1076,7 +1034,7 @@ But you can change it to your normal copy, also change the working directory,dom
   Sets the number of cups to be brewed, range between 1 and 12.
   Use command 37 to brew
 
-  Argument: <CUPS>
+  Argument: &lt;CUPS&gt;
 
   CUPS
     00..0c
@@ -1101,7 +1059,7 @@ But you can change it to your normal copy, also change the working directory,dom
 
   ✕ iKettle 2.0   ✓ SmarterCoffee 
 
-  Arguments: <STRENGTH><CUPS><GRINDER><HOTPLATE>
+  Arguments: &lt;STRENGTH&gt;&lt;CUPS&gt;&lt;GRINDER&gt;&lt;HOTPLATE&gt;
 
   STRENGTH
     00 Weak
@@ -1111,7 +1069,7 @@ But you can change it to your normal copy, also change the working directory,dom
   CUPS
     00..0c
 
-  GRINDER <BOOLEAN>
+  GRINDER &lt;BOOLEAN&gt;
 
   HOTPLATE
     05..28 5 .. 40 minutes
@@ -1139,7 +1097,7 @@ But you can change it to your normal copy, also change the working directory,dom
   Sets on the hotplate, you can specify how many minutes before it switch off.
   Range between 5 and 40, the app sends 5 on default
 
-  Argument: <[KEEPWARMTIME]>
+  Argument: &lt;[KEEPWARMTIME]&gt;
 
   KEEPWARMTIME
     05..28 5 .. 40 minutes
@@ -1209,14 +1167,14 @@ But you can change it to your normal copy, also change the working directory,dom
   Payload maximum is 8. So if 8 check again, if there is more history
   month checked only accepts value from 1..0c
 
-  Response: <COUNTER> [<PAYLOAD>{COUNTER}]
+  Response: &lt;COUNTER&gt; [&lt;PAYLOAD&gt;{COUNTER}]
 
   COUNTER
     00..08
 
   PAYLOAD
-    <??><??><??><DEFAULT/CUPS?><DEFAULT/CUPS?><SECONDS??>
-    <HOURS???><MINUTES???><DAY??><MONTH><YEAR80???><STATE><??>{19}
+    &lt;??&gt;&lt;??&gt;&lt;??&gt;&lt;DEFAULT/CUPS?&gt;&lt;DEFAULT/CUPS?&gt;&lt;SECONDS??&gt;
+    &lt;HOURS???&gt;&lt;MINUTES???&gt;&lt;DAY??&gt;&lt;MONTH&gt;&lt;YEAR80???&gt;&lt;STATE&gt;&lt;??&gt;{19}
 
   CUPS
     00..0c
@@ -1278,7 +1236,7 @@ But you can change it to your normal copy, also change the working directory,dom
 
   ✕ iKettle 2.0   ✓ SmarterCoffee 
 
-  Arguments: <[UNKNOWN]>{?}
+  Arguments: &lt;[UNKNOWN]&gt;{?}
 
   Example: 4b ?? 7e
 
@@ -1302,7 +1260,7 @@ But you can change it to your normal copy, also change the working directory,dom
 
   ✕ iKettle 2.0   ✓ SmarterCoffee 
 
-  Response: <BOOLEAN>
+  Response: &lt;BOOLEAN&gt;
 
 
 
@@ -1313,7 +1271,7 @@ But you can change it to your normal copy, also change the working directory,dom
 
   ✕ iKettle 2.0   ✓ SmarterCoffee 
 
-  Arguments: <[UNKNOWN]>{?}
+  Arguments: &lt;[UNKNOWN]&gt;{?}
 
   Example: 4e ?? 7e
 
@@ -1337,7 +1295,7 @@ But you can change it to your normal copy, also change the working directory,dom
 
   ✕ iKettle 2.0   ✓ SmarterCoffee 
 
-  Response: <BOOLEAN>
+  Response: &lt;BOOLEAN&gt;
 
 
 
@@ -1348,9 +1306,9 @@ But you can change it to your normal copy, also change the working directory,dom
 
   ✓ iKettle 2.0   ✓ SmarterCoffee 
 
-  Get the type of the device connected to and it's firmware. It is used for
+  Get the type of the device connected to and it&#39;s firmware. It is used for
   auto discovery over UDP broadcast (after device setup is complete?)
-  This fails on some routers, which don't propagate UDP broadcasts
+  This fails on some routers, which don&#39;t propagate UDP broadcasts
 
   Example: 64 7e
 
@@ -1364,7 +1322,7 @@ But you can change it to your normal copy, also change the working directory,dom
 
   ✓ iKettle 2.0   ✓ SmarterCoffee 
 
-  Response: <TYPE><VERSION>
+  Response: &lt;TYPE&gt;&lt;VERSION&gt;
 
   TYPE:
     01 iKettle 2.0
@@ -1386,7 +1344,7 @@ But you can change it to your normal copy, also change the working directory,dom
 
   Without argumens it returns failed otherwise it returns success.
 
-  Arguments: <UNKNOWN>{?}
+  Arguments: &lt;UNKNOWN&gt;{?}
 
   Example: 69 7e
 
@@ -1413,7 +1371,7 @@ But you can change it to your normal copy, also change the working directory,dom
   The firmware of the wifi module in text with control chars as new line.
   The iKettle 2.0 returns (without control chars):
 
-  Response: <FIRMWARE>{?}
+  Response: &lt;FIRMWARE&gt;{?}
 
   AT+GMR
   AT version:0.40.0.0(Aug  8 2015 14:45:58)
@@ -1429,23 +1387,19 @@ But you can change it to your normal copy, also change the working directory,dom
 
   ✓ iKettle 2.0   ? SmarterCoffee 
 
-  Disables wifi and creates a 'iKettle Update' wireless network and opens port 6000.
+  Disables wifi and creates a &#39;iKettle Update&#39; wireless network and opens port 6000.
   A hard device reset (hold power button for 10 seconds) is sometimes required to fix this state,
   or just unplug the power for a moment.
 
   Example: 6d 7e
 
 
-
-```
-
-### Notes
-
-```
+</code></pre>
+<h3 id="notes">Notes</h3>
+<pre><code>
 
 
-
-  Smarter iKettle 2.0 & SmarterCoffee  Notes
+  Smarter iKettle 2.0 &amp; SmarterCoffee  Notes
   __________________________________________
     
   WaterSensor Calibration:
@@ -1453,7 +1407,7 @@ But you can change it to your normal copy, also change the working directory,dom
     If the kettle is on the base during calibration, the numbers change to be higher,
     but the differences between levels seem the same. This means that the water level
     detection is probably weight based and that calibration is done at the base,
-    which then remembers the weight for 'off base'. To detect an empty kettle,
+    which then remembers the weight for &#39;off base&#39;. To detect an empty kettle,
     the connecting device must account for the weight of the kettle.
     
     (yeah, not! the watersensor becomes higher if the temperature becomes higher...)
@@ -1492,17 +1446,17 @@ But you can change it to your normal copy, also change the working directory,dom
            Step 6: Run wiresharp it and select your build in wifi adapter and start the capture.
            Step 7: Look for connection with messages ending in 7e
 
-    iOS & OSX: (Home network & Direct mode)
+    iOS &amp; OSX: (Home network &amp; Direct mode)
            Step 1: Connect your iOS device to your Mac via USB.
-           Step 2: Get the <udid> for the connected device from iTunes (click on the serial).
+           Step 2: Get the &lt;udid&gt; for the connected device from iTunes (click on the serial).
            Step 3: Open terminal in your Mac and run the following commands, which creates a virtual network
                    adapter mirroring the iOS network, which we can dump and inspect:
-           Step 4: rvictl -s <udid>
+           Step 4: rvictl -s &lt;udid&gt;
            Step 5: tcpdump -i rvi0 -w ~/Desktop/output.pcap
-           Step 6: Connect to kettle's wifi network (or your home network if already setup) on the iOS device.
+           Step 6: Connect to kettle&#39;s wifi network (or your home network if already setup) on the iOS device.
            Step 7: Run setup for smarter device setup, or any commands
            Step 8: When done or the device setup disconnected to switch to your home network, disconnect with ctrl-c
-           Step 9: rvictl -x <udid>
+           Step 9: rvictl -x &lt;udid&gt;
            Step A: Download wireshark (https://www.wireshark.org/) for mac and install it.
            Stap B: Open ~/Desktop/output.pcap with Wireshark
            Step C: Look for connection with messages ending in 7e
@@ -1512,12 +1466,12 @@ But you can change it to your normal copy, also change the working directory,dom
 
     iKettle 2.0:
          *  It will boil empty, making the lights bulbs to flikker.
-         *  You can easily knock out it's connection to the wireless network,
+         *  You can easily knock out it&#39;s connection to the wireless network,
             if it fails to connect it creates an default open unencrypted wifi access point 
             (check!, could be that wifi was not connecting, then this is rubbish ;-).
 
             Attack Vectors
-            1. Repeat sending heat to 100ºC temperature commands, if we're lucky
+            1. Repeat sending heat to 100ºC temperature commands, if we&#39;re lucky
                there is no water and it will boil empty, if not it will take a while.
                plus the kettle will get warmer and warmer. If you do not expect that when touching.
             2. Alternating heat and stop commands.
@@ -1538,41 +1492,37 @@ But you can change it to your normal copy, also change the working directory,dom
      
  
               
-
-```              
-
-
-## License
-
-Copyright © 2016, Tristan Crispijn
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-
-1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-
-2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-
-3. You may not use source, binary forms or derivative work, with or without modification, for commercial purposes. 
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-
-## Links
-
-#### Smart Kettles & Coffee Machines
-  *    http://smarter.am/
-
-#### Smarthome Controller
-  *    https://domoticz.com/  
-      
-#### References
-  *    https://github.com/Jamstah/libsmarteram2/
-  *    https://github.com/ian-kent/ikettle2/
-  *    https://github.com/athombv/am.smarter/
-  *    https://github.com/nanab/smartercoffee/
-  *    https://github.com/AdenForshaw/smarter-coffee-api
-  *    https://github.com/Half-Shot/Smarter-Coffee-NET
-  *    https://domoticz.com/forum/viewtopic.php?f=23&t=12837
-  *    https://github.com/jkellerer/fhem-smarter-coffee/
-  *    https://www.pentestpartners.com/blog/hacking-a-wi-fi-coffee-machine-part-1/
+</code></pre>
+<h2 id="license">License</h2>
+<p>Copyright © 2016, Tristan Crispijn<br />
+All rights reserved.</p>
+<p>Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:</p>
+<ol>
+<li><p>Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.</p></li>
+<li><p>Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.</p></li>
+<li><p>You may not use source, binary forms or derivative work, with or without modification, for commercial purposes.</p></li>
+</ol>
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
+<h2 id="links">Links</h2>
+<h4 id="smart-kettles-coffee-machines">Smart Kettles &amp; Coffee Machines</h4>
+<ul>
+<li><a href="http://smarter.am/" class="uri">http://smarter.am/</a></li>
+</ul>
+<h4 id="smarthome-controller">Smarthome Controller</h4>
+<ul>
+<li><a href="https://domoticz.com/" class="uri">https://domoticz.com/</a></li>
+</ul>
+<h4 id="references">References</h4>
+<ul>
+<li><a href="https://github.com/Jamstah/libsmarteram2/" class="uri">https://github.com/Jamstah/libsmarteram2/</a></li>
+<li><a href="https://github.com/ian-kent/ikettle2/" class="uri">https://github.com/ian-kent/ikettle2/</a></li>
+<li><a href="https://github.com/athombv/am.smarter/" class="uri">https://github.com/athombv/am.smarter/</a></li>
+<li><a href="https://github.com/nanab/smartercoffee/" class="uri">https://github.com/nanab/smartercoffee/</a></li>
+<li><a href="https://github.com/AdenForshaw/smarter-coffee-api" class="uri">https://github.com/AdenForshaw/smarter-coffee-api</a></li>
+<li><a href="https://github.com/Half-Shot/Smarter-Coffee-NET" class="uri">https://github.com/Half-Shot/Smarter-Coffee-NET</a></li>
+<li><a href="https://domoticz.com/forum/viewtopic.php?f=23&amp;t=12837" class="uri">https://domoticz.com/forum/viewtopic.php?f=23&amp;t=12837</a></li>
+<li><a href="https://github.com/jkellerer/fhem-smarter-coffee/" class="uri">https://github.com/jkellerer/fhem-smarter-coffee/</a></li>
+<li><a href="https://www.pentestpartners.com/blog/hacking-a-wi-fi-coffee-machine-part-1/" class="uri">https://www.pentestpartners.com/blog/hacking-a-wi-fi-coffee-machine-part-1/</a></li>
+</ul>
+</body>
+</html>

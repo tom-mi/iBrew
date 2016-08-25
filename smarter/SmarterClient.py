@@ -51,6 +51,9 @@ class SmarterClient:
         self.defaultKeepWarmTime        = 0
         self.defaultFormula             = False
         self.defaultFormulaTemperature  = 50
+        # watersensor
+        self.waterSensorBase            = 0
+        self.waterSensor                = 0
         
         # coffee
         self.isCoffee                   = False
@@ -63,10 +66,8 @@ class SmarterClient:
         self.defaultStrength            = 1
         self.defaultGrinder             = False
         self.defaultHotPlate            = 0
+        self.waterLevel                 = 0
         
-        # watersensor
-        self.waterSensorBase            = 0
-        self.waterSensor                = 0
  
         # Wifi
         self.Wifi                       = []
@@ -164,8 +165,8 @@ class SmarterClient:
 
 
     def decode_ResponseKettleSettings(self,message):
-        self.defaultKeepWarmTime  = Smarter.raw_to_number(message[1])
-        self.defaultTemperature   = Smarter.raw_to_temperature(message[2])
+        self.defaultKeepWarmTime  = Smarter.raw_to_number(message[2])
+        self.defaultTemperature   = Smarter.raw_to_temperature(message[1])
         self.defaultFormulaTemperature = Smarter.raw_to_temperature(message[3])
 
 
@@ -189,7 +190,7 @@ class SmarterClient:
         isCoffee = True
         self.statusMessage       = message
         self.coffeeStatus        = Smarter.raw_to_number(message[1])
-        self.waterSensor         = Smarter.raw_to_number(message[2])
+        self.waterLevel          = Smarter.raw_to_number(message[2])
         self.strength            = Smarter.raw_to_strength(message[4])
         self.cups                = Smarter.raw_to_cups(message[5])
 
@@ -540,7 +541,12 @@ class SmarterClient:
  
     def kettle_store_settings(self,temperature = 100, timer = 0, formulaOn = False, formulaTemperature = 75):
         if self.fast or self.isKettle:
-            self.send_command(Smarter.keepwarm_to_raw(timer) + Smarter.CommandKettleStoreSettings,Smarter.temperature_to_raw(temperature) + self.bool_to_raw(formulaOn) + Smarter.temperature_to_raw(formulaTemperature))
+            self.send_command(Smarter.CommandKettleStoreSettings, Smarter.keepwarm_to_raw(timer) + Smarter.temperature_to_raw(temperature) + Smarter.bool_to_raw(formulaOn) + Smarter.temperature_to_raw(formulaTemperature))
+            if self.commandStatus == Smarter.StatusSucces:
+                self.defaultKeepWarmTime        = timer
+                self.defaultFormula             = formulaOn
+                self.defaultFormulaTemperature  = formulaTemperature
+                self.defaultTemperature         = temperature
         else:
             raise SmarterError("You need a kettle to store settings")
 
@@ -747,7 +753,7 @@ class SmarterClient:
 
 
     def print_short_coffee_status(self):
-        print Smarter.status_coffee_description(self.coffeeStatus) + ": Watersensor: " + str(self.waterSensor) + ", setting: " + Smarter.strength_to_string(self.strength) + " " + Smarter.cups_to_string(self.cups)
+        print Smarter.status_coffee_description(self.coffeeStatus) + ": Watersensor: " + str(self.waterLevel) + ", setting: " + Smarter.strength_to_string(self.strength) + " " + Smarter.cups_to_string(self.cups)
 
 
     def print_kettle_status(self):
@@ -761,7 +767,7 @@ class SmarterClient:
 
     def print_coffee_status(self):
         print "Status         " + Smarter.status_coffee_description(self.coffeeStatus)
-        print "Water sensor   " + str(self.waterSensor)
+        print "Water sensor   " + str(self.waterLevel)
         print "Setting        " + Smarter.strength_to_string(self.strength) + " " + Smarter.cups_to_string(self.cups)
 
 

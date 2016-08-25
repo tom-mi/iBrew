@@ -35,8 +35,9 @@ This means your machine is free! You can connect it yourself and do whatever you
 
 #### Software Requirements 
 * python 2.7
-* python package: tornado
-* python package: pybonjour
+* python (optional) package: tornado 
+* python (optional) package: pybonjour)
+* pandoc (optional, development only)
 
 #### Download
 You can download and unpack the [source](https://github.com/Tristan79/iBrew/archive/master.zip) or download it from github using

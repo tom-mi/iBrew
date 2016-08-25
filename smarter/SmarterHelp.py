@@ -411,7 +411,7 @@ class SmarterProtocolHelp:
             print
 
         elif id == Smarter.ResponseKettleSettings:
-            print "  Response: <KEEPWARMTIME><TEMPERATURE><FORMULATEMPERATURE>"
+            print "  Response: <TEMPERATURE><KEEPWARMTIME><FORMULATEMPERATURE>"
             print
             print "  KEEPWARMTIME"
             print "    00      Default off"
