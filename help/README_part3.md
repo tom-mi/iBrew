@@ -12,18 +12,22 @@ This is a build in progress, please contribute!
 Start the web interface.
 
 
-```http://ip:port/api```
+```
+http://ip:port/api
+```
 
 The following links are available
 
 ```
-/api/version
-/api/devices
+/version
+/devices
 ```
 
 Which contains the ip which you can use to monitor or control individual devices.
 
-```http://ip:port/api/ip```
+```
+http://ip:port/api/ip
+```
 
 The following links are available
 
