@@ -190,6 +190,8 @@ Start the web interface.
 
 ```http://ip:port/api```
 
+The following links are available
+
 ```
 /api/version
 /api/devices
@@ -198,6 +200,8 @@ Start the web interface.
 Which contains the ip which you can use to monitor or control individual devices.
 
 ```http://ip:port/api/ip```
+
+The following links are available
 
 ```
 /start
