@@ -67,3 +67,27 @@ a:hover {
     margin-left: 10px;
     width: 128px;
 }
+
+
+.tTable {
+    display: table;
+    width: 400px;
+}
+
+.tRow {
+   	display: table-row;
+}
+
+.tCell {
+   	display: table-cell;
+    padding: 3px 10px;
+    width: 200px;
+    text-align: left;
+}
+
+
+
+
+
+
+

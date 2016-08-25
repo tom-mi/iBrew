@@ -5,6 +5,8 @@
 <br>
 
 <center>
+
+<div id="largeicon"><a href="/help"><img src="{{ static_url('icons/help.png') }}"></a></div>
 "The help is drinking a cuppa!"
 
 <br>
@@ -29,37 +31,92 @@
 
 <div id="largeicon"><img src="{{ static_url('icons/api.png') }}"></div>
 
-Tbe API is located under /api/
+<div class="tTable">
+    <div class="tRow">
+        <div class="tCell">API version</div>
+        <div class="tCell"><a href="api/version">/version</a></div>
+    </div>
+    <div class="tRow">
+        <div class="tCell">list of devices</div>
+        <div class="tCell"><a href="api/devices">/devices</a></div>
+    </div>
+</div>
 
-<div>
-<pre>
-<a href="api/version">/version</a>    version API&nbsp;
-<a href="api/devices">/devices</a>    list devices
+
+
 
 {% for ip in devices %}
-  {% if "iKettle 2.0" == devices[ip]%}
-    <img src="{{ static_url('icons/kettle.png')}}"></a>
-    <a href="/api/{{ escape(ip) }}/calibrate">/</a>    Status
-    <a href="/api/{{ escape(ip) }}/calibrate">/calibrate</a>    Calibrate
-    <a href="/api/{{ escape(ip) }}/calibrate/base">/calibrate/base</a>    Calibration base
-    <a href="/api/{{ escape(ip) }}/calibrate/base">/calibrate/base/?</a>    Calibration base
-    <a href="/api/{{ escape(ip) }}/start">/start</a>    Boil water&nbsp;
-    <a href="/api/{{ escape(ip) }}/stop">/stop</a>    Stop boiling
+<div class="tTable">
 
-  {% elif "SmarterCoffee" == devices[ip] %}
-    <a href="/api/{{ escape(ip) }}/"><img src="{{ static_url('icons/coffee.png')}}"></a>
-    <a href="/api/{{ escape(ip) }}/start">/start</a>    Brew coffee&nbsp;
-    <a href="/api/{{ escape(ip) }}/stop">/stop</a>    Stop brewing
-  {% end %}
-    <a href="/api/{{ escape(ip) }}/default">/default</a>
-    <a href="/api/{{ escape(ip) }}/settings">/settings</a>
-    <a href="/api/{{ escape(ip) }}/scan">/scan</a>
-    <a href="/api/{{ escape(ip) }}/leave">/leave</a>
-<!-- <a href="/api/{{ escape(ip) }}/settings">/join</a> -->
+    {% if "SmarterCoffee" == devices[ip] %}
+    <div class="tRow">
+        <div class="tCell"><img src="{{ static_url('icons/coffee.png')}}"></a></div>
+        <div class="tCell"></div>
+    </div>
+    <div class="tRow">
+        <div class="tCell">Start brewing</div>
+        <div class="tCell"><a href="/api/{{ escape(ip) }}/start">/start</a></div>
+    </div>
+    <div class="tRow">
+        <div class="tCell">Stop brewing</div>
+        <div class="tCell"><a href="/api/{{ escape(ip) }}/start">/start</a></div>
+    </div>
+    <div class="tRow">
+        <div class="tCell">Single cup mode</div>
+        <div class="tCell"><a href="/api/{{ escape(ip) }}/stop">/singlecup</a></div>
+    </div>
+    <div class="tRow">
+        <div class="tCell">Carafe required</div>
+        <div class="tCell"><a href="/api/{{ escape(ip) }}/stop">/carafe</a></div>
+    </div>
+    {% end %}
+    {% if "iKettle 2.0" == devices[ip] %}
+    <div class="tRow">
+        <div class="tCell"><img src="{{ static_url('icons/kettle.png')}}"></a></div>
+        <div class="tCell"></div>
+    </div>
+    <div class="tRow">
+        <div class="tCell">Start boiling</div>
+        <div class="tCell"><a href="/api/{{ escape(ip) }}/start">/start</a></div>
+    </div>
+    <div class="tRow">
+        <div class="tCell">Stop boiling</div>
+        <div class="tCell"><a href="/api/{{ escape(ip) }}/stop">/stop</a></div>
+    </div>
+    <div class="tRow">
+        <div class="tCell">Calibrate</div>
+        <div class="tCell"><a href="/api/{{ escape(ip) }}/calibrate">/calibrate</a></div>
+    </div>
+    
+    {% end %}
+    
+    <div class="tRow">
+        <div class="tCell">Default user settings</div>
+        <div class="tCell"><a href="/api/{{ escape(ip) }}/settings">/default</a></div>
+    </div>
+
+    <div class="tRow">
+        <div class="tCell">User settings</div>
+        <div class="tCell"><a href="/api/{{ escape(ip) }}/settings">/settings</a></div>
+    </div>
+
+    <div class="tRow">
+        <div class="tCell">Scan for wireless network</div>
+        <div class="tCell"><a href="/api/{{ escape(ip) }}/scan">/scan</a></div>
+    </div>
+
+    <div class="tRow">
+        <div class="tCell">Leave wireless network</div>
+        <div class="tCell"><a href="/api/{{ escape(ip) }}/leave">/leave</a></div>
+    </div>
+
+
+ </div>
 {% end %}
 
-</pre>
-</div>
+
+
+
 <br>
 <br>
 <br>
