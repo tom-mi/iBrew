@@ -5,11 +5,13 @@ from datetime import date
 import tornado.escape
 import tornado.ioloop
 import tornado.web
+import socket
 
 import os
 from smarter.SmarterClient import *
 
 from iBrewBonjour import *
+from iBrewJokes import *
 
 #------------------------------------------------------
 # SMARTER PROTOCOL INTERFACE REST API
@@ -71,24 +73,15 @@ class MainHandler(BaseHandler):
         self.render(webroot+"index.html")
 
 
+
 #------------------------------------------------------
 # REST PAGES
 #------------------------------------------------------
 
-#------------------------------------------------------
-# Version Handler
-#------------------------------------------------------
 
-
-class VersionHandler(tornado.web.RequestHandler):
-    def get(self):
-        response = { 'description': 'iBrew Smarter REST API',
-                     'version'    : version,
-                     'copyright'  : { 'year'   : '2016',
-                                      'holder' : 'Tristan Crispijn'
-                                    }
-                    }
-        self.write(response)
+#------------------------------------------------------
+# Devices Handler
+#------------------------------------------------------
 
 
 def encodeFirmware(device,version):
@@ -137,7 +130,6 @@ class DeviceHandler(tornado.web.RequestHandler):
 class DevicesHandler(tornado.web.RequestHandler):
     def get(self):
         devices = SmarterClient().find_devices()
-        response = { 'devices' : len(devices) }
         for device in devices:
             response[device[0]] = encodeDevice(device[1],device[2])
         self.write(response)
@@ -375,6 +367,38 @@ class StartHandler(tornado.web.RequestHandler):
 
 
 #------------------------------------------------------
+# Misc
+#------------------------------------------------------
+
+
+class JokeHandler(tornado.web.RequestHandler):
+    def get(self,ip=""):
+        if ip in clients:
+            client = clients[ip]
+            joke = iBrewJokes().joke()
+            response = { 'joke' :  { 'question' : joke[0] , 'answer' : joke[1] }}
+        elif ip == "":
+            joke = iBrewJokes().joke()
+            response = { 'joke' :  { 'question' : joke[0] , 'answer' : joke[1] }}
+        else:
+            response = { 'error': 'no device' }
+        self.write(response)
+
+
+
+class VersionHandler(tornado.web.RequestHandler):
+    def get(self):
+        response = { 'description': 'iBrew Smarter REST API',
+                     'version'    : version,
+                     'copyright'  : { 'year'   : '2016',
+                                      'holder' : 'Tristan Crispijn'
+                                    }
+                    }
+        self.write(response)
+
+
+
+#------------------------------------------------------
 # REST INTERFACE
 #------------------------------------------------------
 
@@ -406,14 +430,29 @@ class iBrewWeb:
         stop_loop()
  
  
-    def __init__(self,port):
+    def __init__(self,port,host=""):
         self.port = port
         
-        client = SmarterClient()
-        client.host = '10.0.0.99'
-        client.init_default()
+        devices = SmarterClient().find_devices()
+        
+        for device in devices:
+            client = SmarterClient()
+            client.host = device[0]
+            client.init_default()
+            clients[device[0]] = client
+            client.print_connect_status()
 
-        clients['10.0.0.99'] = client
+        if host != "":
+            ip = socket.gethostbyname(host)
+            print host
+            print ip
+            print clients
+            if not ip in clients:
+                client = SmarterClient()
+                client.host = host
+                client.init_default()
+                clients[ip] = client
+                client.print_connect_status()
 
         settings = {
                 "debug": True,
@@ -439,6 +478,7 @@ class iBrewWeb:
             
             (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/start/?",StartHandler),
             (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/stop/?",StopHandler),
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/joke/?",JokeHandler),
             
             (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/?",SettingsHandler),
             (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/default/?",SettingsDefaultHandler),
@@ -446,6 +486,7 @@ class iBrewWeb:
             
             (r"/api/version/?",           VersionHandler),
             (r"/api/devices/?",           DevicesHandler),
+            (r"/api/joke/?",              JokeHandler),
             (r"/api/?.*",                 UnknownHandler),
             
             (r"/",                        MainHandler),
@@ -458,7 +499,7 @@ class iBrewWeb:
         self.application = tornado.web.Application(handlers, **settings)
         self.application.listen(self.port)
         
-      #  bonjour = iBrewBonjourThread(self.port)
-      #  bonjour.start()
+        bonjour = iBrewBonjourThread(self.port)
+        bonjour.start()
         tornado.ioloop.IOLoop.instance().start()
 

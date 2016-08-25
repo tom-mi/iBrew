@@ -21,6 +21,7 @@ The following links are available
 ```
 /version
 /devices
+/joke
 ```
 
 Which contains the ip which you can use to monitor or control individual devices.
@@ -37,10 +38,13 @@ The following links are available
 /join/name/(password)
 /leave
 /scan
+/joke
 /default
 /settings/(v1/v2/v3/v4/)
+
 /calibrate
 /calibrate/base/(value)
+
 /carafe
 /singlecup
 /hotplate/value
@@ -48,6 +52,9 @@ The following links are available
 /cups/value
 /strength/value
 ```
+
+Look up the the possible arguments in the console commands.
+
 
 ### Domoticz Bridge
 

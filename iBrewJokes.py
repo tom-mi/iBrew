@@ -36,7 +36,7 @@ class iBrewJokes:
                 ["Why did the teapot get in trouble?","Because he was naugh-tea."],
                 ["What did the teapot wear to bed?","A nightea"],
                 ["What happens when an old teapot laughs too hard?","It teas its pants."],
-                ["It is time to get this par tea started!","Right?"],
+                ["It is time to get this par-tea started!","Right?"],
                 ["Hello Brew-TEA-Full!!!","Your kettle"],
                 ["I love to drink tea each day","It brings out my inner tranquili-tea"],
                 ["Today!","Full of creativi-Tea"],
@@ -86,4 +86,5 @@ class iBrewJokes:
 
     def joke(self):
         return random.choice(self.teaJokes+self.coffeeJokes)
+
 

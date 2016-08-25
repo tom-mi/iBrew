@@ -350,7 +350,10 @@ class iBrewTerminal:
         dump = self.client.dump
         self.client.dump = False
         print "iBrew: Starting Web Interface & REST API on port " + str(port) + ". Press ctrl-c to stop"
-        iBrewWeb(port)
+        if self.haveHost:
+            iBrewWeb(port,self.client.host)
+        else:
+            iBrewWeb(port)
         print "iBrew: Stopped Web Interface & REST API on port " + str(port)
         self.client.dump = dump
 
@@ -466,24 +469,24 @@ class iBrewTerminal:
                     else:
                         return
 
-            haveHost = False
+            self.haveHost = False
             if numarg > 0:
                 if self.is_valid_ipv4_address(arguments[numarg-1]) or self.is_valid_ipv6_address(arguments[numarg-1]):
                     self.client.host = arguments[numarg-1]
-                    haveHost = True
+                    self.haveHost = True
                     numarg -= 1
                     arguments = arguments[0:numarg]
 
 
 
-            if not self.client.connected and not haveHost and command != "help" and command != "help" and command != "message" and command != "usage" and command != "commands" and command != "web" and command != "joke" and command != "protocol" and command != "structure" and command != "notes" and command != "examples" and command != "messages" and not (command == "domoticz" and numarg == 0):
+            if not self.client.connected and not self.haveHost and command != "help" and command != "help" and command != "message" and command != "usage" and command != "commands" and command != "web" and command != "joke" and command != "protocol" and command != "structure" and command != "notes" and command != "examples" and command != "messages" and not (command == "domoticz" and numarg == 0):
 
                 devices = self.client.find_devices()
                 if self.client.dump:
                     self.print_devices_found(devices)
                 if len(devices) == 1:
                     self.client.host = devices[0][0]
-                    haveHost = True
+                    self.haveHost = True
 
 
             if command == "connect" or command == "console" or command == "sweep" or command == "monitor" or (command == "domoticz" and numarg != 0):
@@ -712,9 +715,9 @@ class iBrewTerminal:
         joke = iBrewJokes().joke()
         if self.client is not None:
             if self.client.isCoffee:
-                joke = iBrewJokes.coffee()
+                joke = iBrewJokes().coffee()
             elif self.client.isKettle:
-                joke = iBrewJokes.tea()
+                joke = iBrewJokes().tea()
         print "\n      \'" + joke[0] + "\'\n                  -- " + joke[1] + "\n"
 
 
