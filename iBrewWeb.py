@@ -27,7 +27,7 @@ from iBrewJokes import *
 
 
 clients = dict()
-version = '0.1'
+version = '0.2'
 
 
 def custom_get_current_user(handler):
@@ -78,7 +78,6 @@ class MainHandler(BaseHandler):
 # REST PAGES
 #------------------------------------------------------
 
-
 #------------------------------------------------------
 # Devices Handler
 #------------------------------------------------------
@@ -97,31 +96,58 @@ def encodeDevice(device,version):
 class DeviceHandler(tornado.web.RequestHandler):
     def get(self, ip):
         if ip in clients:
-            x = clients[ip]
-            response = { 'device'      : encodeDevice(x.deviceId,x.version),
-                         'firmware'    : encodeFirmware(x.deviceId,version),
-                         'connected'   : x.connected,
-                         'status'      : { 'watersensor' : { 'value'  : x.waterSensor,
-                                                             'base'   : x.waterSensorBase
-                                                           },
-                                           'offbase'     : not x.onBase,
+            client = clients[ip]
+            if client.isKettle:
+                response = { 'device'      : encodeDevice(client.deviceId,client.version),
+                             'firmware'    : encodeFirmware(client.deviceId,client.version),
+                             'connected'   : client.connected,
+                             'sensors'     : { 'watersensor' : { 'level'  : client.waterSensor,
+                                                                 'base'   : client.waterSensorBase
+                                                               },
+                                               'offbase'     : not client.onBase,
 
-                                           'temperature' : { 'fahrenheid' : Smarter.celcius_to_fahrenheid(x.temperature),
-                                                             'celcius   ' : x.temperature
-                                                           }
-                                         },
-                         'default'     : { 'temperature' : { 'fahrenheid' : Smarter.celcius_to_fahrenheid(x.defaultTemperature),
-                                                             'celcius   ' : x.defaultTemperature
-                                                           },
-                                           'keepwarm'    : x.defaultKeepWarmTime,
-                                           'formula'     : { 'enabled'     : x.defaultFormula,
-                                                             'temperature' : { 'fahrenheid' : Smarter.celcius_to_fahrenheid(x.defaultFormulaTemperature),
-                                                                               'celcius   ' : x.defaultFormulaTemperature
-                                                                             }
+                                               'temperature' : { 'fahrenheid' : Smarter.celcius_to_fahrenheid(client.temperature),
+                                                                 'celcius   ' : client.temperature
+                                                               }
+                                             },
+                             'status'      : { 'message' : Smarter.status_kettle_description(client.kettleStatus),
+                                               'id'          : client.kettleStatus
+                                             },
+                             'default'     : { 'temperature' : { 'fahrenheid' : Smarter.celcius_to_fahrenheid(client.defaultTemperature),
+                                                                 'celcius   ' : client.defaultTemperature
+                                                               },
+                                               'keepwarm'    : client.defaultKeepWarmTime,
+                                               'formula'     : { 'use'     : client.defaultFormula,
+                                                                 'temperature' : { 'fahrenheid' : Smarter.celcius_to_fahrenheid(client.defaultFormulaTemperature),
+                                                                                   'celcius   ' : client.defaultFormulaTemperature
+                                                                                 }
 
-                                                           }
-                                         }
-                        }
+                                                               }
+                                             }
+                            }
+            elif client.isCoffee:
+                response = { 'device'      : encodeDevice(client.deviceId,client.version),
+                             'firmware'    : encodeFirmware(client.deviceId,client.version),
+                             'connected'   : client.connected,
+                             'status'      : { 'message' : Smarter.status_coffee_description(client.coffeeStatus),
+                                               'id'          : client.kettleStatus
+                                             },
+                             'sensors'     : { 'cups'       : client.cups,
+                                               'strength'   : client.strength,
+                                               'grinder'    : client.grinder,
+                                               'hotplate'   : client.hotplate,
+                                               'singlecup'  : client.singlecup,
+                                               'carafe'     : client.carafe,
+                                               'waterlevel' : client.waterLevel
+                                             },
+                             'default'     : { 'cups'       : client.defaultCups,
+                                               'strength'   : client.defaultStrength,
+                                               'grinder'    : client.defaultGrinder,
+                                               'hotplate'   : client.defaultHotplate
+                                              }
+                            }
+
+
         else:
             response = { 'error': 'no device' }
         self.write(response)
@@ -151,11 +177,14 @@ class UnknownHandler(tornado.web.RequestHandler):
 class CalibrateHandler(tornado.web.RequestHandler):
     def get(self,ip):
         if ip in clients:
-            x = clients[ip]
-            x.calibrate()
-            response = { 'base'            : x.waterSensorBase,
-                         'command status'  : x.commandStatus }
-            self.write(response)
+            client = clients[ip]
+            if client.isKettle:
+                client.calibrate()
+                response = { 'base'            : client.waterSensorBase,
+                             'command status'  : client.commandStatus }
+                self.write(response)
+            else:
+                response = { 'error': 'need kettle' }
         else:
             response = { 'error': 'no device' }
 
@@ -163,11 +192,14 @@ class CalibrateHandler(tornado.web.RequestHandler):
 class CalibrateBaseHandler(tornado.web.RequestHandler):
     def get(self,ip):
         if ip in clients:
-            x = clients[ip]
-            x.calibrate_base()
-            response = { 'base'            : x.waterSensorBase,
-                         'command status'  : x.commandStatus }
-            self.write(response)
+            client = clients[ip]
+            if client.isKettle:
+                client.calibrate_base()
+                response = { 'base'            : client.waterSensorBase,
+                             'command status'  : client.commandStatus }
+                self.write(response)
+            else:
+                response = { 'error': 'need kettle' }
         else:
             response = { 'error': 'no device' }
 
@@ -175,10 +207,13 @@ class CalibrateBaseHandler(tornado.web.RequestHandler):
 class CalibrateStoreBaseHandler(tornado.web.RequestHandler):
     def get(self,ip,base):
         if ip in clients:
-            x = clients[ip]
-            x.calibrate_store_base(Smarter.string_to_watersensor(base))
-            response = { 'base'            : x.waterSensorBase,
-                         'command status'  : x.commandStatus }
+            client = clients[ip]
+            if client.isKettle:
+                client.calibrate_store_base(Smarter.string_to_watersensor(base))
+                response = { 'base'            : client.waterSensorBase,
+                             'command status'  : client.commandStatus }
+            else:
+                response = { 'error': 'need kettle' }
         else:
             response = { 'error': 'no device' }
         self.write(response)
@@ -275,8 +310,11 @@ class StrengthHandler(tornado.web.RequestHandler):
     def get(self,ip,strength):
         if ip in clients:
             client = clients[ip]
-            client.coffee_strength(strength)
-            response = { 'command status'  : client.commandStatus }
+            if client.isCoffee:
+                client.coffee_strength(strength)
+                response = { 'command status'  : client.commandStatus }
+            else:
+                response = { 'error': 'need coffee machine' }
         else:
             response = { 'error': 'no device' }
         self.write(response)
@@ -286,8 +324,11 @@ class CupsHandler(tornado.web.RequestHandler):
     def get(self,ip,cups):
         if ip in clients:
             client = clients[ip]
-            client.coffee_strength(strength)
-            response = { 'command status'  : client.commandStatus }
+            if client.isCoffee:
+                client.coffee_strength(strength)
+                response = { 'command status'  : client.commandStatus }
+            else:
+                response = { 'error': 'need coffee machine' }
         else:
             response = { 'error': 'no device' }
         self.write(response)
@@ -297,8 +338,11 @@ class GrinderHandler(tornado.web.RequestHandler):
     def get(self,ip,bool):
         if ip in clients:
             client = clients[ip]
-            client.coffee_grinder(bool)
-            response = { 'command status'  : client.commandStatus }
+            if client.isCoffee:
+                client.coffee_grinder(bool)
+                response = { 'command status'  : client.commandStatus }
+            else:
+                response = { 'error': 'need coffee machine' }
         else:
             response = { 'error': 'no device' }
         self.write(response)
@@ -308,8 +352,11 @@ class HotPlateHandler(tornado.web.RequestHandler):
     def get(self,ip,timer):
         if ip in clients:
             client = clients[ip]
-            client.coffee_cups(timer)
-            response = { 'command status'  : client.commandStatus }
+            if client.isCoffee:
+                client.coffee_cups(timer)
+                response = { 'command status'  : client.commandStatus }
+            else:
+                response = { 'error': 'need coffee machine' }
         else:
             response = { 'error': 'no device' }
         self.write(response)
@@ -319,9 +366,12 @@ class CarafeHandler(tornado.web.RequestHandler):
     def get(self,ip):
         if ip in clients:
             client = clients[ip]
-            client.coffee_carafe()
-            response = { 'carafe'         : client.carafe,
-                         'command status' : client.commandStatus }
+            if client.isCoffee:
+                client.coffee_carafe()
+                response = { 'carafe'         : client.carafe,
+                             'command status' : client.commandStatus }
+            else:
+                response = { 'error': 'need coffee machine' }
         else:
             response = { 'error': 'no device' }
         self.write(response)
@@ -331,9 +381,12 @@ class SingleCupHandler(tornado.web.RequestHandler):
     def get(self,ip):
         if ip in clients:
             client = clients[ip]
-            client.coffee_singlecup()
-            response = { 'singlecup'      : client.singlecup,
-                         'command status' : client.commandStatus }
+            if client.isCoffee:
+                client.coffee_singlecup()
+                response = { 'singlecup'      : client.singlecup,
+                             'command status' : client.commandStatus }
+            else:
+                response = { 'error': 'need coffee machine' }
         else:
             response = { 'error': 'no device' }
         self.write(response)
@@ -431,13 +484,14 @@ class iBrewWeb:
         stop_loop()
  
  
-    def __init__(self,port,host=""):
+    def __init__(self,port,dump=False,host=""):
         self.port = port
         
         devices = SmarterClient().find_devices()
         
         for device in devices:
             client = SmarterClient()
+            client.dump = dump
             client.host = device[0]
             client.init_default()
             clients[device[0]] = client
@@ -451,6 +505,7 @@ class iBrewWeb:
             if not ip in clients:
                 client = SmarterClient()
                 client.host = host
+                client.dump = dump
                 client.init_default()
                 clients[ip] = client
                 client.print_connect_status()
@@ -500,7 +555,7 @@ class iBrewWeb:
         self.application = tornado.web.Application(handlers, **settings)
         self.application.listen(self.port)
         
-        bonjour = iBrewBonjourThread(self.port)
-        bonjour.start()
+    #    bonjour = iBrewBonjourThread(self.port)
+    #    bonjour.start()
         tornado.ioloop.IOLoop.instance().start()
 

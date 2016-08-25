@@ -1,19 +1,12 @@
-@font-face {
-    font-family:'Raleway',sans-serif
-}
-
 body
 {
-    /* background-image: url('images/watermark.png');
     background-repeat: no-repeat;
     background-attachment: fixed;
-    background-position: center; */
-
+    background-position: center;
+    background-image: url('watermark/both.png');
+    font-family:Arial;
 }
 
-#license {
-    font-family: Courier New;
-}
 
 #title, #icon {
     font-family: Arial;
@@ -22,9 +15,27 @@ body
 }
 
 #menu img {
-    vertical-align: center;
-    margin-top: 10px;
+    margin-left: 10px;
     width: 64px;
+}
+
+
+#content {
+    margin-left: 100px;
+    right:0px;
+}
+
+#menu
+{
+    background: #00B0FB;
+    width: 80px;
+    top: 0px;
+    left:0px;
+    position: fixed;
+    z-index: 99;
+    height: 9000px;
+    box-shadow: 0 1px 10px rgba(0, 0, 0, 0.4);
+     
 }
 
 #icon img {
@@ -32,4 +43,11 @@ body
     margin-top: 10px;
     margin-left: 10px;
     width: 32px;
+}
+
+#largeicon img {
+    vertical-align: center;
+    margin-top: 10px;
+    margin-left: 10px;
+    width: 128px;
 }

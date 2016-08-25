@@ -269,7 +269,7 @@ class iBrewTerminal:
                     if domoticz.set_temperature(temp_idx,average,False):
                         print stamp + " Water temperature: " + Smarter.temperature_to_string(average)
                     if domoticz.set_custom(water_idx,self.client.waterSensor,False):
-                        print stamp + " Water height: " + str(self.client.waterSensor)
+                        print stamp + " Water height: " + str(self.client.waterLevel)
        
                 if previousAverage != average:
                     if domoticz.set_temperature(temp_idx,average):
@@ -291,10 +291,10 @@ class iBrewTerminal:
                         print stamp + " SmarterCoffee  is " + status.lower()
                     previousStatus = self.client.kettleStatus
             
-                if previousWaterSensor != self.client.waterSensor:
-                    if domoticz.set_custom(water_idx,self.client.waterSensor):
-                        print stamp + " Water level: " + str(self.client.waterSensor)
-                    previousWaterSensor = self.client.waterSensor
+                if previousWaterSensor != self.client.waterLevel:
+                    if domoticz.set_custom(water_idx,self.client.waterLevel):
+                        print stamp + " Water level: " + str(self.client.waterLevel)
+                    previousWaterSensor = self.client.waterLevel
 
                 if int(now-then) > update: then = now
 
@@ -347,15 +347,13 @@ class iBrewTerminal:
     # assume we're connected to a client
     # you can stop the sweep by pressing ctrl-c
     def web(self,port=Smarter.Port+1):
-        dump = self.client.dump
-        self.client.dump = False
+
         print "iBrew: Starting Web Interface & REST API on port " + str(port) + ". Press ctrl-c to stop"
         if self.haveHost:
-            iBrewWeb(port,self.client.host)
+            iBrewWeb(port,self.client.dump,self.client.host)
         else:
-            iBrewWeb(port)
+            iBrewWeb(port,self.client.dump)
         print "iBrew: Stopped Web Interface & REST API on port " + str(port)
-        self.client.dump = dump
 
 
 
@@ -435,7 +433,6 @@ class iBrewTerminal:
                 arguments = arguments[1:]
                 numarg -= 1
                 if not self.console:
-                    self.client.fast       = True
                     self.client.shout      = True
                     self.client.isKettle   = True
                     self.client.isCoffee   = True
@@ -443,31 +440,58 @@ class iBrewTerminal:
                     print "iBrew: \'shout\' not available in the console"
                 
 
+            if command == "coffee":
+                if self.console or numarg == 0:
+                    print "iBrew: Can't hear you. Drinking tea at a dinner on the other side of the universe..."
+                    return
+                command = arguments[0].lower()
+                arguments = arguments[1:]
+                numarg -= 1
+                if not self.console:
+                    self.client.isCoffee   = True
+                else:
+                    print "iBrew: \'coffee\' not available in the console"
+
+
+            if command == "kettle":
+                if self.console or numarg == 0:
+                    print "iBrew: Can't hear you. Drinking tea at a dinner on the other side of the universe..."
+                    return
+                command = arguments[0].lower()
+                arguments = arguments[1:]
+                numarg -= 1
+                if not self.console:
+                    self.client.isKettle   = True
+                else:
+                    print "iBrew: \'kettle\' not available in the console"
+
+
+
             if command == "fahrenheid":
                 if numarg == 0 and not self.console:
                     print "iBrew: Kelvin..."
                     return
                 else:
                     Smarter.fahrenheid = True
+                    if numarg > 0:
+                        command = arguments[0].lower()
+                        arguments = arguments[1:]
+                        numarg -= 1
                     if self.console:
                         print "iBrew: Temperature in fahrenheid"
-                    if numarg > 0:
-                        command = arguments[0].lower()
-                        arguments = arguments[1:]
-                        numarg -= 1
-                    else:
                         return
-            
+
+
             if command == "celcius":
                     Smarter.fahrenheid = False
-                    if self.console:
-                        print "iBrew: Temperature in celcius"
                     if numarg > 0:
                         command = arguments[0].lower()
                         arguments = arguments[1:]
                         numarg -= 1
-                    else:
+                    if self.console:
+                        print "iBrew: Temperature in celcius"
                         return
+
 
             self.haveHost = False
             if numarg > 0:
@@ -522,9 +546,9 @@ class iBrewTerminal:
                                             else:                           SmarterHelp.messages()
             elif command == "message":
                                             if numarg >= 1:
-                                                SmarterHelp.message(Smarter.code_to_number(argument[0]))
+                                                SmarterHelp.message(Smarter.code_to_number(arguments[0]))
                                             else:
-                                                print "iBrew: expected [00..FF] got " + argument[0]
+                                                print "iBrew: expected [00..FF]"
 
             # Kettle
             elif command == "heat":
