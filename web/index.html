@@ -1,13 +1,11 @@
 {% set title = "iBrew" %} {% include wrapper/head.html %}
 
-<p id="title">iBrew!</p>
-
 <div id="devices">
 {% for ip in devices %}
   {% if "iKettle 2.0" == devices[ip]%}
-    <a href="/api/{{ escape(ip) }}/"><img src="{{ static_url('icons/kettle.png')}}"></a>
+    <a href="/{{ escape(ip) }}/"><img src="{{ static_url('icons/kettle.png')}}"></a>
   {% elif "SmarterCoffee" == devices[ip] %}
-    <a href="/api/{{ escape(ip) }}/"><img src="{{ static_url('icons/coffee.png')}}"></a>
+    <a href="/{{ escape(ip) }}/"><img src="{{ static_url('icons/coffee.png')}}"></a>
   {% end %}
 {% end %}
 </div>

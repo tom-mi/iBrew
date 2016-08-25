@@ -61,7 +61,6 @@ webroot = "web/"
 class GenericPageHandler(BaseHandler):
     #@tornado.web.authenticated
     def get(self,page):
-        print os.path.join(os.path.dirname(__file__), webroot)+page+".html"
         if os.path.isfile(os.path.join(os.path.dirname(__file__), webroot)+page+".html"):
             self.render(webroot+page+".html")
         else:
@@ -75,6 +74,24 @@ class MainHandler(BaseHandler):
         for i in FUCKS:
             d.update({i[0] : Smarter.device_to_string(i[1])})
         self.render(webroot+"index.html",devices = d)
+
+
+class InfoHandler(BaseHandler):
+    #@tornado.web.authenticated
+    def get(self):
+        d = dict()
+        for i in FUCKS:
+            d.update({i[0] : Smarter.device_to_string(i[1])})
+        self.render(webroot+"info.html",devices = d)
+
+
+class WebDeviceHandler(BaseHandler):
+    #@tornado.web.authenticated
+    def get(self,ip):
+        d = dict()
+        for i in FUCKS:
+            d.update({i[0] : Smarter.device_to_string(i[1])})
+        self.render(webroot+"device.html",devices = d)
 
 
 #------------------------------------------------------
@@ -493,7 +510,6 @@ class iBrewWeb:
         global FUCKS
         FUCKS = SmarterClient().find_devices()
         
-        print FUCKS
         for device in FUCKS:
             client = SmarterClient()
             client.dump = dump
@@ -549,7 +565,8 @@ class iBrewWeb:
             (r"/api/devices/?",           DevicesHandler),
             (r"/api/joke/?",              JokeHandler),
             (r"/api/?.*",                 UnknownHandler),
-            
+            (r"/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/?",WebDeviceHandler),
+            (r"/info/?",                  InfoHandler),
             (r"/",                        MainHandler),
                  #(r"/login",             LoginHandler),
             (r"/(.*)",                    GenericPageHandler),
