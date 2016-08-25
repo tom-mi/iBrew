@@ -5,7 +5,7 @@ import random
 #------------------------------------------------------
 # iBrew
 #
-# Ccoffee & tea jokes
+# Coffee & tea jokes
 #
 # https://github.com/Tristan79/iBrew
 #

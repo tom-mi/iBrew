@@ -1,6 +1,12 @@
 {% set title = "iBrew" %} {% include wrapper/head.html %}
 
 <center>
+
+<div id="joke">
+     '{{ escape(joke[0]) }}'<br>
+     --{{ escape(joke[1]) }}
+</div>
+
 <div id="devices">
 {% for ip in devices %}
   {% if "iKettle 2.0" == devices[ip]%}
@@ -10,7 +16,7 @@
   {% end %}
 {% end %}
 </div>
-</center>
 
+</center>
 {% include wrapper/foot.html %}
 

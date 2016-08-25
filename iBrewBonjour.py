@@ -6,6 +6,20 @@ import sys
 import logging
 import socket
 
+#------------------------------------------------------
+# iBrew
+#
+# Bonjour wrapper
+#
+# https://github.com/Tristan79/iBrew
+#
+# Copyright © 2016 Tristan (@monkeycat.nl)
+#
+# Kettle Rattle (rev 6)
+#------------------------------------------------------
+
+
+
 try:
     import pybonjour
     have_bonjour = True

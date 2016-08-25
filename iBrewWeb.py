@@ -73,7 +73,7 @@ class MainHandler(BaseHandler):
         d = dict()
         for i in FUCKS:
             d.update({i[0] : Smarter.device_to_string(i[1])})
-        self.render(webroot+"index.html",devices = d)
+        self.render(webroot+"index.html",devices = d,joke = iBrewJokes().joke())
 
 
 class InfoHandler(BaseHandler):
@@ -82,7 +82,7 @@ class InfoHandler(BaseHandler):
         d = dict()
         for i in FUCKS:
             d.update({i[0] : Smarter.device_to_string(i[1])})
-        self.render(webroot+"info.html",devices = d)
+        self.render(webroot+"info.html",devices = d,joke = iBrewJokes().joke())
 
 
 class WebDeviceHandler(BaseHandler):
@@ -91,7 +91,7 @@ class WebDeviceHandler(BaseHandler):
         d = dict()
         for i in FUCKS:
             d.update({i[0] : Smarter.device_to_string(i[1])})
-        self.render(webroot+"device.html",devices = d)
+        self.render(webroot+"device.html",devices = d,joke = iBrewJokes().joke())
 
 
 #------------------------------------------------------

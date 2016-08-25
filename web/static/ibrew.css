@@ -4,7 +4,8 @@ body
     background-attachment: fixed;
     background-position: center;
     background-image: url('watermark/both.png');
-    font-family:Arial;
+    font-family: 'Syncopate';
+    font-weight: bold;
 }
 
 a:link, a:visited, a:active {
@@ -18,7 +19,6 @@ a:hover {
 /* #FFA72B */
 
 #title, #icon {
-    font-family: Arial;
     font-size: 300%;
     font-weight: bold;
 }
@@ -53,6 +53,19 @@ a:hover {
     box-shadow: 0 1px 10px rgba(0, 0, 0, 0.4);
      
 }
+
+#joke
+{
+    font-style: italic;
+    font-size: 120%;
+}
+
+#devices
+{
+    font-style: italic;
+}
+
+
 
 #icon img {
     vertical-align: center;

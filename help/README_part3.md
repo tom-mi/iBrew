@@ -41,10 +41,17 @@ The following links are available
 /joke
 /default
 /settings/(v1/v2/v3/v4/)
+/status
+```
 
+Kettle
+```
 /calibrate
 /calibrate/base/(value)
+```
 
+Coffee Machine
+```
 /carafe
 /singlecup
 /hotplate/value
