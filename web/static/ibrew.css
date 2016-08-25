@@ -29,6 +29,11 @@ a:hover {
 }
 
 
+#devices img {
+    margin-left: 10px;
+    width: 96px;
+}
+
 #content {
     margin-left: 100px;
     right:0px;

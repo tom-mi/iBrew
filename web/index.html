@@ -2,7 +2,15 @@
 
 <p id="title">iBrew!</p>
 
-You are not supposed to be here! Not finished
+<div id="devices">
+{% for ip in devices %}
+  {% if "iKettle 2.0" == devices[ip]%}
+    <a href="/api/{{ escape(ip) }}/"><img src="{{ static_url('icons/kettle.png')}}"></a>
+  {% elif "SmarterCoffee" == devices[ip] %}
+    <a href="/api/{{ escape(ip) }}/"><img src="{{ static_url('icons/coffee.png')}}"></a>
+  {% end %}
+{% end %}
+</div>
 
 {% include wrapper/foot.html %}
 
