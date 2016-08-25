@@ -7,6 +7,15 @@ body
     font-family:Arial;
 }
 
+a:link, a:visited, a:active {
+    color:  #FFA72B;
+}
+
+a:hover {
+    color: #E27400;
+}
+
+/* #FFA72B */
 
 #title, #icon {
     font-family: Arial;
@@ -20,14 +29,21 @@ body
 }
 
 
+#devices img {
+    margin-left: 10px;
+    width: 96px;
+}
+
 #content {
     margin-left: 100px;
     right:0px;
 }
 
+/* #00B0FB */
+
 #menu
 {
-    background: #00B0FB;
+    background: #FFA72B;
     width: 80px;
     top: 0px;
     left:0px;

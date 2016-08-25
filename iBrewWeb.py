@@ -27,6 +27,7 @@ from iBrewJokes import *
 
 
 clients = dict()
+FUCKS = dict()
 version = '0.2'
 
 
@@ -70,8 +71,10 @@ class GenericPageHandler(BaseHandler):
 class MainHandler(BaseHandler):
     #@tornado.web.authenticated
     def get(self):
-        self.render(webroot+"index.html")
-
+        d = dict()
+        for i in FUCKS:
+            d.update({i[0] : Smarter.device_to_string(i[1])})
+        self.render(webroot+"index.html",devices = d)
 
 
 #------------------------------------------------------
@@ -487,9 +490,11 @@ class iBrewWeb:
     def __init__(self,port,dump=False,host=""):
         self.port = port
         
-        devices = SmarterClient().find_devices()
+        global FUCKS
+        FUCKS = SmarterClient().find_devices()
         
-        for device in devices:
+        print FUCKS
+        for device in FUCKS:
             client = SmarterClient()
             client.dump = dump
             client.host = device[0]
