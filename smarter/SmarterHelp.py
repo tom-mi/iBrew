@@ -5,13 +5,13 @@ from SmarterProtocol import *
 #------------------------------------------------------
 # SMARTER PROTOCOL HELP
 #
-# Python interface to iKettle 2.0 & Smarter Coffee Devices
+# Python help interface to iKettle 2.0 & SmarterCoffee Devices
 #
 # https://github.com/Tristan79/iBrew
 #
-# 2016 Copyright © 2016 Tristan (@monkeycat.nl)
+# Copyright © 2016 Tristan (@monkeycat.nl)
 #
-# White Tea Leaf Edition (rev 4)
+# Kettle Rattle (rev 6)
 #------------------------------------------------------
 
 
@@ -43,7 +43,7 @@ class SmarterProtocolHelp:
                 if length > 0:
                     print "  Message Size: " + str(length) + " bytes"
             print
-            print "  " + Smarter.message_kettle_supported(id) + " iKettle 2.0   " + Smarter.message_coffee_supported(id) + " Smarter Coffee"
+            print "  " + Smarter.message_kettle_supported(id) + " iKettle 2.0   " + Smarter.message_coffee_supported(id) + " SmarterCoffee "
         print
 
         if id == Smarter.CommandDeviceTime:
@@ -73,7 +73,7 @@ class SmarterProtocolHelp:
             print "  YEAR"
             print "    00..63"
             print
-            print "  Example: 00 00 00 00 00 00 00 00 ???"
+            print "  Example: 02 12 13 03 01 05 02 14 10 ???"
             
         elif id == Smarter.ResponseCommandStatus:
             print "  Response: <STATUS>"
@@ -133,7 +133,7 @@ class SmarterProtocolHelp:
             print "  keepwarm 0 minutes (0x00), temperature 100ºC (0x64)"
             print "  formula mode off (0x00) and formula temperature 75ºC (0x4b)"
             print
-            print "  The Smarter Coffee it will probably reset the number of cups and strength"
+            print "  The SmarterCoffee  it will probably reset the number of cups and strength"
             print
             print "  Example raw code: 10 7e"
             
@@ -143,7 +143,7 @@ class SmarterProtocolHelp:
             print
             print "  Response iKettle: <STATUSKETTLE><TEMPERATURE><WATERSENSORBITSHIGH><WATERSENSORBITSLOW><??>"
             print
-            print "  Response Smarter Coffee: <STATUSCOFFEE><WATERLEVEL><WIFISTRENGTH???/WATERSENSORBITSLOW???>"
+            print "  Response SmarterCoffee : <STATUSCOFFEE><WATERLEVEL><WIFISTRENGTH???/WATERSENSORBITSLOW???>"
             print "                           <STRENGTH><CUPS>"
             print
             print "  STATUSKETTLE"
@@ -157,7 +157,7 @@ class SmarterProtocolHelp:
             print "    00..64  0..100ºC"
             print "    7f      Kettle Off Base"
             print
-            print "  WATERSENSOR = WATERSENSORHIGHBITS * 256 + WATERSENSORLOWBITS"
+            print "  WATERSENSOR = WATERSENSORHIGHBITS * 256 + WATERSENSORLOWBITS  [0..4095]"
         
         elif id == Smarter.CommandHeat:
             print "  if it's warming you have to send an off command to boil again"
@@ -247,21 +247,77 @@ class SmarterProtocolHelp:
         elif id == Smarter.Command23:
             print "  Example: 23 7e"
             
-        elif id == Smarter.CommandHistory:
+        elif id == Smarter.CommandKettleHistory:
             print "  When called will erase this history."
             print
             print "  Example: 28 7e"
-            
-        elif id == Smarter.ResponseHistory:
+
+        elif id == Smarter.CommandCoffeeHistory:
+            print "  When called will erase this history."
+            print
+            print "  Example: 46 7e"
+        
+        elif id == Smarter.ResponseCoffeeHistory:
+            print "  The payload is generated everytime the coffee machine brews. The actioncounter increases with every boil"
+            print "  Formula temperature is above 0 then it was boilded with formula temperature enabled. There seems to be some"
+            print "  packed time available."
+            print
+            print "  Payload maximum is 8. So if 8 check again, if there is more history"
+            print "  month checked only accepts value from 1..0c"
+            print
+            print "  Response: <COUNTER> [<PAYLOAD>{COUNTER}]"
+            print
+            print "  COUNTER"
+            print "    00..08"
+            print
+            print "  PAYLOAD"
+            print "    <??><??><??><DEFAULT/CUPS?><DEFAULT/CUPS?><SECONDS??>"
+            print "    <HOURS???><MINUTES???><DAY??><MONTH><YEAR80???><STATE><??>{19}"
+            print
+            print "  CUPS"
+            print "    00..0c"
+            print
+            print "  SECONDS"
+            print "    00..3b"
+            print
+            print "  MINUTES"
+            print "    00..3b"
+            print
+            print "  HOURS"
+            print "    00..17"
+            print
+            print "  DAY"
+            print "    00..1e"
+            print
+            print "  MONTH"
+            print "    00..0b"
+            print
+            print "  YEAR80"
+            print "    00..FF  YEAR = YEAR80 + 1980"
+            print
+            print "  STATE"
+            print "    00 Stopped"
+            print "    01 Success"
+            print
+            print "  Example: 47 02 01 00 00 02 02 00 19 00 01 01 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7d"
+            print "                 01 00 00 0c 0c 00 19 00 01 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7d 7e"
+           
+        elif id == Smarter.ResponseKettleHistory:
             print "  The payload is generated everytime the kettle stops boiling. The actioncounter increases with every boil"
             print "  Formula temperature is above 0 then it was boilded with formula temperature enabled. There seems to be some"
             print "  packed time available."
+            print
+            print "  Payload maximum is 8. So if 8 check again, if there is more history"
+            print "  month checked only accepts value from 1..0c"
             print
             print "  Response: <COUNTER> [<PAYLOAD>{COUNTER}]"
             print
             print "  PAYLOAD"
             print "    <??><TEMPERATURE><KEEPWARMTIME><FORMULATEMPERATURE><ACTIONCOUNTER>"
-            print "    <ACTIONCOUNTER???/TIME???><TIME?><TIME?><DATE?><DATE?><???/DATE???><STATE><??>{19}"
+            print "    <SECONDS??><HOURS?><MINUTES?><DAY?><MONTH><YEAR80?><STATE><??>{19}"
+            print
+            print "  COUNTER"
+            print "    00..08"
             print
             print "  TEMPERATURE"
             print "    00..64  0..100ºC"
@@ -274,22 +330,37 @@ class SmarterProtocolHelp:
             print "    00..64  0..100ºC"
             print
             print "  ACTIONCOUNTER"
-            print "    00..ff"
+            print "    00..ff  Amount of boils before off base"
             print
-            print "  TIME/DATE?"
+            print "  SECONDS"
+            print "    00..3b"
+            print
+            print "  MINUTES"
+            print "    00..3b"
+            print
+            print "  HOURS"
+            print "    00..17"
+            print
+            print "  DAY"
+            print "    00..1e"
+            print
+            print "  MONTH"
+            print "    00..0b"
+            print
+            print "  YEAR80"
+            print "    00..FF  YEAR = YEAR80 + 1980"
             print
             print "  STATE"
             print "    00 Stopped"
-            print "    01 Boiled"
+            print "    01 Success"
             print
             print "  Example: 29 02 01 5f 00 00 0f 00 09 03 15 0a 19 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7d"
-            print "              01 64 19 32 10 00 09 0e 15 0a 19 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7d 7e"
-            
+            print "                 01 64 19 32 10 00 09 0e 15 0a 19 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7d 7e"
+        
         elif id == Smarter.CommandStoreBase:
             print "  Arguments: <BASELHIGHBITS><BASELOWBITS>"
             print
-            print "  BASE = BASELHIGHBITS * 256 + BASELOWBITS"
-            print
+            print "  BASE = BASELHIGHBITS * 256 + BASELOWBITS [0..4095]"
             print "  Example: 2a 04 03"
             print
             print "  This can contain the tail 7e, so check for length here!"
@@ -305,16 +376,41 @@ class SmarterProtocolHelp:
         elif id == Smarter.ResponseBase:
             print "  Response: <BASELHIGHBITS><BASELOWBITS>"
             print
-            print "  BASE = BASELHIGHBITS * 256 + BASELOWBITS"
+            print "  BASE = BASELHIGHBITS * 256 + BASELOWBITS [0..4095]"
             print
             print "  This can contain the tail 7e, so check for length here!"
             
-        elif id == Smarter.CommandSettings:
-            print "  Also return 00 message in an unconfigured state."
+        elif id == Smarter.CommandCoffeeSettings:
+            print "  Also return 00 message in an unconfigured state.???? CHECK"
+            print
+            print "  Example: 48 7e"
+
+
+        elif id == Smarter.CommandKettleSettings:
+            print "  Also return 00 message in an unconfigured state.??? CHECK"
             print
             print "  Example: 2e 7e"
-            
-        elif id == Smarter.ResponseSettings:
+
+
+        elif id == Smarter.ResponseCoffeeSettings:
+            print "  Response: <CUPS><STRENGTH><GRINDER><HOTPLATE>"
+            print
+            print "  CUPS"
+            print "    00..0c"
+            print
+            print "  STRENGTH"
+            print "    00 Weak"
+            print "    01 Medium"
+            print "    02 Strong"
+            print
+            print "  GRINDER <BOOLEAN>"
+            print
+            print "  HOTPLATE"
+            print "    05..28 5 .. 40 minutes"
+            print "    05     5 Minutes (Default)"
+            print
+
+        elif id == Smarter.ResponseKettleSettings:
             print "  Response: <KEEPWARMTIME><TEMPERATURE><FORMULATEMPERATURE>"
             print
             print "  KEEPWARMTIME"
@@ -332,6 +428,16 @@ class SmarterProtocolHelp:
             print
             print "  Example: 30 7e"
                         
+        elif id == Smarter.Command4b:
+            print "  Arguments: <[UNKNOWN]>{?}"
+            print
+            print "  Example: 4b ?? 7e"
+        
+        elif id == Smarter.Command4e:
+            print "  Arguments: <[UNKNOWN]>{?}"
+            print
+            print "  Example: 4e ?? 7e"
+        
         elif id == Smarter.CommandBrew:
             print "  Example: 33 .. .. .. 7e"
             
@@ -402,7 +508,7 @@ class SmarterProtocolHelp:
             print
             print "  TYPE:"
             print "    01 iKettle 2.0"
-            print "    02 Smarter Coffee"
+            print "    02 SmarterCoffee "
             print
             print "  VERSION:"
             print "    13 Firmware v19 of iKettle 2.0"
@@ -515,11 +621,26 @@ class SmarterProtocolHelp:
             print " NEW"
 
         elif id == Smarter.CommandCoffeeStop:
-            print " NEW"
+            print "  Example 33 7e "
 
         elif id == Smarter.CommandCoffeeStoreSettings:
-            print " NEW"
-
+            print "  Arguments: <STRENGTH><CUPS><GRINDER><HOTPLATE>"
+            print
+            print "  STRENGTH"
+            print "    00 Weak"
+            print "    01 Medium"
+            print "    02 Strong"
+            print
+            print "  CUPS"
+            print "    00..0c"
+            print
+            print "  GRINDER <BOOLEAN>"
+            print
+            print "  HOTPLATE"
+            print "    05..28 5 .. 40 minutes"
+            print "    05     5 Minutes (Default)"
+            print
+        
         else:
             print "  No information available on message: " + Smarter.number_to_code(id)
             
@@ -530,7 +651,7 @@ class SmarterProtocolHelp:
     def messages(self):
         print
         print
-        print "  Smarter iKettle 2.0 & Smarter Coffee Messages"
+        print "  Smarter iKettle 2.0 & SmarterCoffee  Messages"
         print "  _____________________________________________"
         print
         print
@@ -548,7 +669,7 @@ class SmarterProtocolHelp:
         print
         print "    Legend:"
         print "      k iKettle 2"
-        print "      c Smarter Coffee"
+        print "      c SmarterCoffee "
         print
         print
 
@@ -557,7 +678,7 @@ class SmarterProtocolHelp:
         print """
        
        
-  Smarter iKettle 2.0 & Smarter Coffee Protocol
+  Smarter iKettle 2.0 & SmarterCoffee  Protocol
   _____________________________________________
 
     Smarter uses a binary message protocol, either via UDP or TCP on port 2081
@@ -584,7 +705,7 @@ class SmarterProtocolHelp:
         print """
 
 
-  Smarter iKettle 2.0 & Smarter Coffee Notes
+  Smarter iKettle 2.0 & SmarterCoffee  Notes
   __________________________________________
     
   WaterSensor Calibration:

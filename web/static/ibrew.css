@@ -1,0 +1,35 @@
+@font-face {
+    font-family:'Raleway',sans-serif
+}
+
+body
+{
+    /* background-image: url('images/watermark.png');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center; */
+
+}
+
+#license {
+    font-family: Courier New;
+}
+
+#title, #icon {
+    font-family: Arial;
+    font-size: 300%;
+    font-weight: bold;
+}
+
+#menu img {
+    vertical-align: center;
+    margin-top: 10px;
+    width: 64px;
+}
+
+#icon img {
+    vertical-align: center;
+    margin-top: 10px;
+    margin-left: 10px;
+    width: 32px;
+}
