@@ -139,7 +139,7 @@ you can also use them on the command line as arguments:
 
   Bridge Commands
     domoticz               show domoticz bridge help
-    rest (port)            start rest api on port default 2082
+    web (port)             start web interface & rest api on port [default 2082]
 
   Debug Commands
     [hexdata]              send raw data to device (e.g. '64 7e')

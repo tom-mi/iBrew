@@ -49,7 +49,6 @@ class GenericAPIHandler(BaseHandler):
             raise tornado.web.HTTPError(400)
             return False
 
-
 #------------------------------------------------------
 # WEB GUI PAGES
 #------------------------------------------------------
@@ -92,14 +91,22 @@ class VersionHandler(tornado.web.RequestHandler):
         self.write(response)
 
 
+def encodeFirmware(device,version):
+    return { 'version'   : version, 'certified' : Smarter.firmware_verified(device,version) }
+
+
+def encodeDevice(device,version):
+    return { 'id'          : device,
+             'type'        : Smarter.device_to_string(device),
+            }
+
+
 class DeviceHandler(tornado.web.RequestHandler):
     def get(self, ip):
         if ip in clients:
             x = clients[ip]
-            response = { 'device'      : { 'id'          : x.deviceId,
-                                           'description' : Smarter.device_info(x.deviceId,x.version),
-                                           'firmware'    : x.version
-                                         },
+            response = { 'device'      : encodeDevice(x.deviceId,x.version),
+                         'firmware'    : encodeFirmware(x.deviceId,version),
                          'connected'   : x.connected,
                          'status'      : { 'watersensor' : { 'value'  : x.waterSensor,
                                                              'base'   : x.waterSensorBase
@@ -132,11 +139,13 @@ class DevicesHandler(tornado.web.RequestHandler):
         devices = SmarterClient().find_devices()
         response = { 'devices' : len(devices) }
         for device in devices:
-            response[device[0]] = { 'type'        : Smarter.device_to_string(device[1]),
-                                    'firmware'    : { 'version'   : device[2],
-                                                      'certified' : Smarter.firmware_verified(device[1],device[2])
-                                                    }
-                                  }
+            response[device[0]] = encodeDevice(device[1],device[2])
+        self.write(response)
+
+
+class UnknownHandler(tornado.web.RequestHandler):
+    def get(self):
+        response = { 'error' : { 'code' : '0', 'message' : 'Request unavailable' }}
         self.write(response)
 
 
@@ -144,6 +153,7 @@ class DevicesHandler(tornado.web.RequestHandler):
 #------------------------------------------------------
 # Kettle calibration
 #------------------------------------------------------
+
 
 class CalibrateHandler(tornado.web.RequestHandler):
     def get(self,ip):
@@ -176,23 +186,15 @@ class CalibrateStoreBaseHandler(tornado.web.RequestHandler):
             x.calibrate_store_base(Smarter.string_to_watersensor(base))
             response = { 'base'            : x.waterSensorBase,
                          'command status'  : x.commandStatus }
-            self.write(response)
         else:
             response = { 'error': 'no device' }
+        self.write(response)
+
 
 
 #------------------------------------------------------
-# Wifi
+# Wifi operation
 #------------------------------------------------------
-
-class WifiHandler(tornado.web.RequestHandler):
-    def get(self,ip):
-        if ip in clients:
-            client = clients[ip]
-            response = { 'firmware   ': client.WifiFirmware}
-            self.write(response)
-        else:
-            response = { 'error': 'no device' }
 
 
 class WifiScanHandler(tornado.web.RequestHandler):
@@ -200,81 +202,182 @@ class WifiScanHandler(tornado.web.RequestHandler):
         if ip in clients:
             client = clients[ip]
             client.wifi_scan()
-        
-            response = { 'firmware   ': client.WifiFirmware
-                        }
-            self.write(response)
+            networks = {}
+            for i in range(0,len(client.Wifi)):
+                networks.update( { client.Wifi[i][0] :
+                                            { 'signal'  : str(client.Wifi[i][1]),
+                                              'quality' : Smarter.dbm_to_quality(int(client.Wifi[i][1]))
+                                            }
+                                  } )
+            response = { 'networks ': networks }
         else:
             response = { 'error': 'no device' }
+        self.write(response)
+
+
+class WifiJoinHandler(tornado.web.RequestHandler):
+    def get(self,ip,name,password):
+        if ip in clients:
+            clients[ip].wifi_join(name,password)
+            response = { 'success': 'joining wireless network' }
+        else:
+            response = { 'error': 'no device' }
+        self.write(response)
 
 
 class WifiLeaveHandler(tornado.web.RequestHandler):
     def get(self,ip):
         if ip in clients:
-            client = clients[ip]
-            response = { 'firmware   ': client.WifiFirmware
-                   }
-            self.write(response)
+            clients[ip].wifi_leave()
+            response = { 'success': 'left wireless network' }
         else:
             response = { 'error': 'no device' }
+        self.write(response)
+
 
 
 #------------------------------------------------------
 # Settings
 #------------------------------------------------------
 
+
 class StoreSettingsHandler(tornado.web.RequestHandler):
     def get(self,ip,x1,x2,x3,x4):
         if ip in clients:
             client = clients[ip]
-            response = { 'base'            : x1,
-                         'command status'  : client.commandStatus }
-            self.write(response)
+            client.device_store_settings(x1,x2,x3,x4)
+            response = { 'command status'  : client.commandStatus }
         else:
             response = { 'error': 'no device' }
+        self.write(response)
 
 
-class DefaultHandler(tornado.web.RequestHandler):
+class SettingsHandler(tornado.web.RequestHandler):
     def get(self,ip):
-        response = { 'description': 'iBrew Smarter REST API',
-                     'version'    : SmarterRESTAPIVersion,
-                     'copyright'  : '2016 Tristan Crispijn'
-                    }
+        if ip in clients:
+            client = clients[ip]
+            client.device_settings()
+            response = { 'command status'  : client.commandStatus }
+        else:
+            response = { 'error': 'no device' }
+        self.write(response)
+
+
+class SettingsDefaultHandler(tornado.web.RequestHandler):
+    def get(self,ip):
+        if ip in clients:
+            client = clients[ip]
+            client.device_defaults()
+            response = { 'command status'  : client.commandStatus }
+        else:
+            response = { 'error': 'no device' }
         self.write(response)
 
 
 #------------------------------------------------------
-# Coffee
+# Coffee settings
 #------------------------------------------------------
 
 class StrengthHandler(tornado.web.RequestHandler):
     def get(self,ip,strength):
-        response = { 'description': 'iBrew Smarter REST API',
-                     'version'    : SmarterRESTAPIVersion,
-                     'copyright'  : '2016 Tristan Crispijn'
-                    }
+        if ip in clients:
+            client = clients[ip]
+            client.coffee_strength(strength)
+            response = { 'command status'  : client.commandStatus }
+        else:
+            response = { 'error': 'no device' }
         self.write(response)
+
 
 class CupsHandler(tornado.web.RequestHandler):
     def get(self,ip,cups):
-        response = { 'description': 'iBrew Smarter REST API',
-                     'version'    : SmarterRESTAPIVersion,
-                     'copyright'  : '2016 Tristan Crispijn'
-                    }
+        if ip in clients:
+            client = clients[ip]
+            client.coffee_strength(strength)
+            response = { 'command status'  : client.commandStatus }
+        else:
+            response = { 'error': 'no device' }
+        self.write(response)
+
+
+class GrinderHandler(tornado.web.RequestHandler):
+    def get(self,ip,bool):
+        if ip in clients:
+            client = clients[ip]
+            client.coffee_grinder(bool)
+            response = { 'command status'  : client.commandStatus }
+        else:
+            response = { 'error': 'no device' }
         self.write(response)
 
 
 class HotPlateHandler(tornado.web.RequestHandler):
-    def get(self,ip,cups):
-        response = { 'description': 'iBrew Smarter REST API',
-                     'version'    : SmarterRESTAPIVersion,
-                     'copyright'  : '2016 Tristan Crispijn'
-                    }
+    def get(self,ip,timer):
+        if ip in clients:
+            client = clients[ip]
+            client.coffee_cups(timer)
+            response = { 'command status'  : client.commandStatus }
+        else:
+            response = { 'error': 'no device' }
         self.write(response)
 
-    #------------------------------------------------------
-    # REST INTERFACE
-    #------------------------------------------------------
+
+class CarafeHandler(tornado.web.RequestHandler):
+    def get(self,ip):
+        if ip in clients:
+            client = clients[ip]
+            client.coffee_carafe()
+            response = { 'carafe'         : client.carafe,
+                         'command status' : client.commandStatus }
+        else:
+            response = { 'error': 'no device' }
+        self.write(response)
+
+
+class SingleCupHandler(tornado.web.RequestHandler):
+    def get(self,ip):
+        if ip in clients:
+            client = clients[ip]
+            client.coffee_singlecup()
+            response = { 'singlecup'      : client.singlecup,
+                         'command status' : client.commandStatus }
+        else:
+            response = { 'error': 'no device' }
+        self.write(response)
+
+
+
+#------------------------------------------------------
+# STOP START COMMANDS
+#------------------------------------------------------
+
+
+class StopHandler(tornado.web.RequestHandler):
+    def get(self,ip):
+        if ip in clients:
+            client = clients[ip]
+            client.device_stop()
+            response = { 'command status' : client.commandStatus }
+        else:
+            response = { 'error': 'no device' }
+        self.write(response)
+
+
+class StartHandler(tornado.web.RequestHandler):
+    def get(self,ip):
+        if ip in clients:
+            client = clients[ip]
+            client.device_start()
+            response = { 'command status' : client.commandStatus }
+        else:
+            response = { 'error': 'no device' }
+        self.write(response)
+
+
+#------------------------------------------------------
+# REST INTERFACE
+#------------------------------------------------------
+
 
 class iBrewWeb:
 
@@ -311,20 +414,6 @@ class iBrewWeb:
         client.init_default()
 
         clients['10.0.0.99'] = client
-        version = "s"
-
-        '''
-        settings = dict(
-            template_path=os.path.join(AppFolders.appBase(), "web"),
-            static_path=os.path.join(AppFolders.appBase(), "static"),
-            static_url_prefix=self.webroot + "/static/",
-            debug=True,
-            #autoreload=False,
-            login_url=self.webroot + "/login",
-            cookie_secret=self.config['security']['cookie_secret'],
-            xsrf_cookies=True,
-        )
-        '''
 
         settings = {
                 "debug": True,
@@ -332,42 +421,36 @@ class iBrewWeb:
             }
 
         handlers = [
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/",DeviceHandler),
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/kettle/calibrate/",CalibrateHandler),
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/kettle/calibrate/base",CalibrateBaseHandler),
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/kettle/calibrate/base/([0-9]+)",CalibrateStoreBaseHandler),
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/kettle/temperature/",DefaultHandler),
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/?",DeviceHandler),
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/calibrate/?",CalibrateHandler),
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/calibrate/base/?",CalibrateBaseHandler),
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/calibrate/base/([0-9]+)/?",CalibrateStoreBaseHandler),
             
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/coffee/carafe/",DefaultHandler),
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/coffee/singlecup/",DefaultHandler),
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/coffee/hotplate/([0-9]+)/",HotPlateHandler),
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/coffee/cups/([0-9]+)/",CupsHandler),
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/coffee/grinder/",DefaultHandler),
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/coffee/strength/(weak|normal|strong)/",StrengthHandler),
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/carafe/?",CarafeHandler),
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/singlecup/?",SingleCupHandler),
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/hotplate/([0-9]+)/?",HotPlateHandler),
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/cups/([0-9]+)/?",CupsHandler),
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/grinder/?",GrinderHandler),
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/strength/(weak|normal|strong)/?",StrengthHandler),
             
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/wifi/",WifiHandler),
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/wifi/scan/",WifiScanHandler),
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/wifi/join/",DefaultHandler),
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/wifi/leave/",WifiLeaveHandler),
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/scan/?",WifiScanHandler),
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/join/(.+)/(.*)/?",WifiJoinHandler),
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/leave/?",WifiLeaveHandler),
             
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/history/",DefaultHandler),
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/start/",DefaultHandler),
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/stop/",DefaultHandler),
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/reset/",DefaultHandler),
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/raw/",DefaultHandler),
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/update/",DefaultHandler),
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/time/",DefaultHandler),
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/start/?",StartHandler),
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/stop/?",StopHandler),
             
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/",DefaultHandler),
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/default",DefaultHandler),
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/([0-9]+)/([0-9]+)/([0-9]+)/([0-9]+)",StoreSettingsHandler),
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/?",SettingsHandler),
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/default/?",SettingsDefaultHandler),
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/([0-9]+)/([0-9]+)/([0-9]+)/([0-9]+)/?",StoreSettingsHandler),
             
-            (r"/api/version",           VersionHandler),
-            (r"/api/devices",           DevicesHandler),
+            (r"/api/version/?",           VersionHandler),
+            (r"/api/devices/?",           DevicesHandler),
+            (r"/api/?.*",                 UnknownHandler),
             
-            (r"/",                  MainHandler),
+            (r"/",                        MainHandler),
                  #(r"/login",             LoginHandler),
-            (r"/(.*)",                GenericPageHandler),
+            (r"/(.*)",                    GenericPageHandler),
 
             
         ]
@@ -375,7 +458,7 @@ class iBrewWeb:
         self.application = tornado.web.Application(handlers, **settings)
         self.application.listen(self.port)
         
-        bonjour = iBrewBonjourThread(self.port)
-        bonjour.start()
+      #  bonjour = iBrewBonjourThread(self.port)
+      #  bonjour.start()
         tornado.ioloop.IOLoop.instance().start()
 

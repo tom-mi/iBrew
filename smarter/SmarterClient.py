@@ -250,7 +250,7 @@ class SmarterClient:
                continue
             elif x == '}':
                db = False
-               w += [(a,d)]
+               w += [(a,int(d))]
                a = ""
                continue
             elif not db and x in string.printable:
@@ -678,7 +678,7 @@ class SmarterClient:
         print "         Signal   Wireless Network"
         for i in range(0,len(self.Wifi)):
             
-            quality = Smarter.dbm_to_quality(int(self.Wifi[i][1]))
+            quality = Smarter.dbm_to_quality(self.Wifi[i][1])
             
             s = ""
             for x in range(quality / 10,10):
