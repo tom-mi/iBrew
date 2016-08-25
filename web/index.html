@@ -1,5 +1,6 @@
 {% set title = "iBrew" %} {% include wrapper/head.html %}
 
+<center>
 <div id="devices">
 {% for ip in devices %}
   {% if "iKettle 2.0" == devices[ip]%}
@@ -9,6 +10,7 @@
   {% end %}
 {% end %}
 </div>
+</center>
 
 {% include wrapper/foot.html %}
 

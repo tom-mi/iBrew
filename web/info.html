@@ -37,12 +37,15 @@
         <div class="tCell"><a href="api/version">/version</a></div>
     </div>
     <div class="tRow">
-        <div class="tCell">list of devices</div>
+        <div class="tCell">Joke</div>
+        <div class="tCell"><a href="api/joke">/joke</a></div>
+    </div>
+    <div class="tRow">
+        <div class="tCell">List of devices</div>
         <div class="tCell"><a href="api/devices">/devices</a></div>
     </div>
+
 </div>
-
-
 
 
 {% for ip in devices %}
@@ -52,6 +55,10 @@
     <div class="tRow">
         <div class="tCell"><img src="{{ static_url('icons/coffee.png')}}"></a></div>
         <div class="tCell"></div>
+    </div>
+    <div class="tRow">
+        <div class="tCell">Status</div>
+        <div class="tCell"><a href="/api/{{ escape(ip) }}/">/</a></div>
     </div>
     <div class="tRow">
         <div class="tCell">Start brewing</div>
@@ -69,11 +76,17 @@
         <div class="tCell">Carafe required</div>
         <div class="tCell"><a href="/api/{{ escape(ip) }}/stop">/carafe</a></div>
     </div>
+
+    
     {% end %}
     {% if "iKettle 2.0" == devices[ip] %}
     <div class="tRow">
         <div class="tCell"><img src="{{ static_url('icons/kettle.png')}}"></a></div>
         <div class="tCell"></div>
+    </div>
+    <div class="tRow">
+        <div class="tCell">Status</div>
+        <div class="tCell"><a href="/api/{{ escape(ip) }}/status">/status</a></div>
     </div>
     <div class="tRow">
         <div class="tCell">Start boiling</div>
@@ -92,7 +105,7 @@
     
     <div class="tRow">
         <div class="tCell">Default user settings</div>
-        <div class="tCell"><a href="/api/{{ escape(ip) }}/settings">/default</a></div>
+        <div class="tCell"><a href="/api/{{ escape(ip) }}/default">/default</a></div>
     </div>
 
     <div class="tRow">
@@ -110,6 +123,10 @@
         <div class="tCell"><a href="/api/{{ escape(ip) }}/leave">/leave</a></div>
     </div>
 
+    <div class="tRow">
+        <div class="tCell">Joke</div>
+        <div class="tCell"><a href="api/{{ escape(ip) }}/joke">/joke</a></div>
+    </div>
 
  </div>
 {% end %}

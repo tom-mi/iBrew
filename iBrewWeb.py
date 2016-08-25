@@ -449,7 +449,8 @@ class JokeHandler(tornado.web.RequestHandler):
     def get(self,ip=""):
         if ip in clients:
             client = clients[ip]
-            joke = iBrewJokes().joke()
+            if   client.isCoffee: joke = iBrewJokes().coffee()
+            elif client.isKettle: joke = iBrewJokes().tea()
             response = { 'joke' :  { 'question' : joke[0] , 'answer' : joke[1] }}
         elif ip == "":
             joke = iBrewJokes().joke()
@@ -537,7 +538,7 @@ class iBrewWeb:
             }
 
         handlers = [
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/?",DeviceHandler),
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/status/?",DeviceHandler),
             (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/calibrate/?",CalibrateHandler),
             (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/calibrate/base/?",CalibrateBaseHandler),
             (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/calibrate/base/([0-9]+)/?",CalibrateStoreBaseHandler),
