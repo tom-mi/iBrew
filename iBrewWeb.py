@@ -130,6 +130,7 @@ class DeviceHandler(tornado.web.RequestHandler):
 class DevicesHandler(tornado.web.RequestHandler):
     def get(self):
         devices = SmarterClient().find_devices()
+        response = {}
         for device in devices:
             response[device[0]] = encodeDevice(device[1],device[2])
         self.write(response)
