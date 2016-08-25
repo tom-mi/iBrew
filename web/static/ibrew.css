@@ -7,6 +7,15 @@ body
     font-family:Arial;
 }
 
+a:link, a:visited, a:active {
+    color:  #FFA72B;
+}
+
+a:hover {
+    color: #E27400;
+}
+
+/* #FFA72B */
 
 #title, #icon {
     font-family: Arial;
@@ -25,9 +34,11 @@ body
     right:0px;
 }
 
+/* #00B0FB */
+
 #menu
 {
-    background: #00B0FB;
+    background: #FFA72B;
     width: 80px;
     top: 0px;
     left:0px;
