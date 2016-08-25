@@ -25,7 +25,7 @@ This means your machine is free! You can connect it yourself and do whatever you
  * v0.4 Missing Coffee Smarter codes
  * web interface & rest api
  * History message is not finished
- * [will not fix] Should read status message 14/32 all the time in console mode
+ * Should read status message 14/32 all the time in console mode and in web interface.
  
 #### Contact
 [Bugs or issues](https://github.com/Tristan79/iBrew/issues). Donations & other questions <tristan@monkeycat.nl>
@@ -161,7 +161,7 @@ you can also use them on the command line as arguments:
 
 ```
 
-### Examples
+#### Examples
 
 ```
 
@@ -215,6 +215,7 @@ Which contains the ip which you can use to monitor or control individual devices
 /grinder/bool
 /cups/value
 /strength/value
+```
 
 ### Domoticz Bridge
 

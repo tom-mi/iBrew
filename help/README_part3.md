@@ -39,6 +39,7 @@ Which contains the ip which you can use to monitor or control individual devices
 /grinder/bool
 /cups/value
 /strength/value
+```
 
 ### Domoticz Bridge
 
