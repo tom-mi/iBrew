@@ -253,11 +253,11 @@ Look up the the possible arguments in the console commands.
 
 ### Domoticz Bridge
 
-Bridge to [Domoticz](http://domoticz.com). You are in full control!
-
+Bridge to [Domoticz](http://domoticz.com)!
 
 iKettle Devices in Domoticz
-![domoticz](https://raw.githubusercontent.com/Tristan79/iBrew/master/help/domoticz.png)
+![domoticz v3.52](https://raw.githubusercontent.com/Tristan79/iBrew/master/help/domoticz.png)
+   
    
 ```
 
