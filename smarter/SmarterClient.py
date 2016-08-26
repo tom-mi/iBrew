@@ -492,7 +492,7 @@ class SmarterClient:
         elif self.isCoffee: self.coffee_brew()
 
 
-    def device_restore_default(self):
+    def device_default(self):
         self.device_check()
         if self.isKettle:   self.kettle_store_settings()
         elif self.isCoffee: self.coffee_store_settings()
@@ -589,7 +589,7 @@ class SmarterClient:
         if self.fast or self.isCoffee:
             self.send_command(Smarter.CommandCoffeeSettings)
         else:
-            raise SmarterError("You need a kettle to get its settings")
+            raise SmarterError("You need coffee machine to get its settings")
 
     def coffee_history(self):
         self.send_command(Smarter.CommandCoffeeHistory)

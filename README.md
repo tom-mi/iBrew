@@ -69,7 +69,7 @@ Create new Pull Request
 
 ## Usage
 
-### Command Line Options
+### Command Line
 
 See the console section for the commands
  

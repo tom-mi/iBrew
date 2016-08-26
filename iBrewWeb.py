@@ -315,7 +315,7 @@ class SettingsDefaultHandler(tornado.web.RequestHandler):
     def get(self,ip):
         if ip in clients:
             client = clients[ip]
-            client.device_defaults()
+            client.device_default()
             response = { 'command status'  : client.commandStatus }
         else:
             response = { 'error': 'no device' }
