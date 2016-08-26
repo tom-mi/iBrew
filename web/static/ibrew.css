@@ -5,7 +5,6 @@ body
     background-position: center;
     background-image: url('watermark/both.png'); */
     font-family: Arial;
-    font-weight: bold;
 }
 
 a:link, a:visited, a:active {
