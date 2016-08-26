@@ -8,14 +8,15 @@ This is a build in progress, please contribute!
 
 ```
 http://ip:port/
-
-![domoticz](https://raw.githubusercontent.com/Tristan79/iBrew/master/help/devices.png)
-
-![domoticz](https://raw.githubusercontent.com/Tristan79/iBrew/master/help/api.png)
-
-![domoticz](https://raw.githubusercontent.com/Tristan79/iBrew/master/help/info.png)
-
 ```
+
+![devices](https://raw.githubusercontent.com/Tristan79/iBrew/master/help/devices.png)
+
+![api](https://raw.githubusercontent.com/Tristan79/iBrew/master/help/api.png)
+
+![info](https://raw.githubusercontent.com/Tristan79/iBrew/master/help/info.png)
+
+
 
 ### REST API
 
