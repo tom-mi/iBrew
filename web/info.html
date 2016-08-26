@@ -5,145 +5,42 @@
 <br>
 
 <center>
-<div id="icon">HELP</div>
 
-<div id="largeicon"><a href="/help"><img src="{{ static_url('icons/help.png') }}"></a></div>
-"The help is drinking a cuppa!"
-
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-
-<div id="icon">Contact<img src="{{ static_url('icons/contact.png') }}"></div>
-
-<br>
-
+<div id="icon">Contact</div>
 <div id="largeicon">
-    <a href="http://www.monkeycat.nl/"><img src="{{ static_url('icons/monkeycat.png') }}"></a>
-    <a href="mailto:tristan@monkeycat.nl"><img src="{{ static_url('icons/mail.png') }}"></a>
+    <a href="mailto:tristan@monkeycat.nl"><img src="{{ static_url('icons/info/contact.png') }}"></a>
 </div>
 
 <br>
 <br>
 <br>
+<br>
+<br>
+<br>
 
+
+<div id="icon">Manual</div>
+<div id="largeicon">
+    <a href="/manual"><img src="{{ static_url('icons/info/manual.png') }}"></a>
+</div>
+<div id="quote">
+    <a href="/manual">"The help is drinking a cuppa!"</a>
+</div>
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
 
 <div id="icon">API</div>
-
-<div class="tTable">
-    <div class="tRow">
-        <div class="tCell"><img src="{{ static_url('icons/coffee.png')}}"><img src="{{ static_url('icons/kettle.png')}}"></a></div>
-        <div class="tCell"><div id="largeicon"><img src="{{ static_url('icons/api.png') }}"></div>
-</div>
-    </div>
-    <div class="tRow">
-        <div class="tCell">API version</div>
-        <div class="tCell"><a href="api/version">/version</a></div>
-    </div>
-    <div class="tRow">
-        <div class="tCell">Joke</div>
-        <div class="tCell"><a href="api/joke">/joke</a></div>
-    </div>
-    <div class="tRow">
-        <div class="tCell">List of devices</div>
-        <div class="tCell"><a href="api/devices">/devices</a></div>
-    </div>
-
+<div id="largeicon">
+    <a href="/api"><img src="{{ static_url('icons/info/api.png') }}"></a>
 </div>
 
 
-{% for ip in devices %}
-<div class="tTable">
 
-    {% if "SmarterCoffee" == devices[ip] %}
-    <div class="tRow">
-        <div class="tCell"><img src="{{ static_url('icons/coffee.png')}}"></a></div>
-        <div class="tCell"></div>
-    </div>
-    <div class="tRow">
-        <div class="tCell">Status</div>
-        <div class="tCell"><a href="/api/{{ escape(ip) }}/">/</a></div>
-    </div>
-    <div class="tRow">
-        <div class="tCell">Start brewing</div>
-        <div class="tCell"><a href="/api/{{ escape(ip) }}/start">/start</a></div>
-    </div>
-    <div class="tRow">
-        <div class="tCell">Stop brewing</div>
-        <div class="tCell"><a href="/api/{{ escape(ip) }}/start">/start</a></div>
-    </div>
-    <div class="tRow">
-        <div class="tCell">Single cup mode</div>
-        <div class="tCell"><a href="/api/{{ escape(ip) }}/stop">/singlecup</a></div>
-    </div>
-    <div class="tRow">
-        <div class="tCell">Carafe required</div>
-        <div class="tCell"><a href="/api/{{ escape(ip) }}/stop">/carafe</a></div>
-    </div>
-
-    
-    {% end %}
-    {% if "iKettle 2.0" == devices[ip] %}
-    <div class="tRow">
-        <div class="tCell"><img src="{{ static_url('icons/kettle.png')}}"></a></div>
-        <div class="tCell"></div>
-    </div>
-    <div class="tRow">
-        <div class="tCell">Status</div>
-        <div class="tCell"><a href="/api/{{ escape(ip) }}/status">/status</a></div>
-    </div>
-    <div class="tRow">
-        <div class="tCell">Start boiling</div>
-        <div class="tCell"><a href="/api/{{ escape(ip) }}/start">/start</a></div>
-    </div>
-    <div class="tRow">
-        <div class="tCell">Stop boiling</div>
-        <div class="tCell"><a href="/api/{{ escape(ip) }}/stop">/stop</a></div>
-    </div>
-    <div class="tRow">
-        <div class="tCell">Calibrate</div>
-        <div class="tCell"><a href="/api/{{ escape(ip) }}/calibrate">/calibrate</a></div>
-    </div>
-    
-    {% end %}
-    
-    <div class="tRow">
-        <div class="tCell">Default user settings</div>
-        <div class="tCell"><a href="/api/{{ escape(ip) }}/default">/default</a></div>
-    </div>
-
-    <div class="tRow">
-        <div class="tCell">User settings</div>
-        <div class="tCell"><a href="/api/{{ escape(ip) }}/settings">/settings</a></div>
-    </div>
-
-    <div class="tRow">
-        <div class="tCell">Scan for wireless network</div>
-        <div class="tCell"><a href="/api/{{ escape(ip) }}/scan">/scan</a></div>
-    </div>
-
-    <div class="tRow">
-        <div class="tCell">Leave wireless network</div>
-        <div class="tCell"><a href="/api/{{ escape(ip) }}/leave">/leave</a></div>
-    </div>
-
-    <div class="tRow">
-        <div class="tCell">Joke</div>
-        <div class="tCell"><a href="api/{{ escape(ip) }}/joke">/joke</a></div>
-    </div>
-
- </div>
-{% end %}
-
-
-
-
-<br>
-<br>
-<br>
-
+<center>
 
 {% include wrapper/foot.html %}

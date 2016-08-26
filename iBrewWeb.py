@@ -76,13 +76,13 @@ class MainHandler(BaseHandler):
         self.render(webroot+"index.html",devices = d,joke = iBrewJokes().joke())
 
 
-class InfoHandler(BaseHandler):
+class APIHandler(BaseHandler):
     #@tornado.web.authenticated
     def get(self):
         d = dict()
         for i in FUCKS:
             d.update({i[0] : Smarter.device_to_string(i[1])})
-        self.render(webroot+"info.html",devices = d,joke = iBrewJokes().joke())
+        self.render(webroot+"api.html",devices = d,joke = iBrewJokes().joke())
 
 
 class WebDeviceHandler(BaseHandler):
@@ -565,9 +565,9 @@ class iBrewWeb:
             (r"/api/version/?",           VersionHandler),
             (r"/api/devices/?",           DevicesHandler),
             (r"/api/joke/?",              JokeHandler),
+            (r"/api/?",                   APIHandler),
             (r"/api/?.*",                 UnknownHandler),
             (r"/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/?",WebDeviceHandler),
-            (r"/info/?",                  InfoHandler),
             (r"/",                        MainHandler),
                  #(r"/login",             LoginHandler),
             (r"/(.*)",                    GenericPageHandler),

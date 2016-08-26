@@ -1,10 +1,10 @@
 body
 {
-    background-repeat: no-repeat;
+/*    background-repeat: no-repeat;
     background-attachment: fixed;
     background-position: center;
-    background-image: url('watermark/both.png');
-    font-family: 'Syncopate';
+    background-image: url('watermark/both.png'); */
+    font-family: Arial;
     font-weight: bold;
 }
 
@@ -24,8 +24,9 @@ a:hover {
 }
 
 #menu img {
+    margin-top: 10px;
     margin-left: 10px;
-    width: 64px;
+    width: 40px;
 }
 
 
@@ -35,7 +36,7 @@ a:hover {
 }
 
 #content {
-    margin-left: 100px;
+    margin-top: 100px;
     right:0px;
 }
 
@@ -44,19 +45,22 @@ a:hover {
 #menu
 {
     background: #FFA72B;
-    width: 80px;
+    width: 9000px;
     top: 0px;
     left:0px;
     position: fixed;
-    z-index: 99;
-    height: 9000px;
+    z-index: 98;
+    height: 64px;
     box-shadow: 0 1px 10px rgba(0, 0, 0, 0.4);
      
 }
 
-#joke
-{
-    font-style: italic;
+#quote
+{   
+    top:10px;
+    left:64px;
+    z-index: 99;
+    font-family: 'Architects Daughter';
     font-size: 120%;
 }
 
@@ -67,11 +71,21 @@ a:hover {
 
 
 
+
+
+
+
+
 #icon img {
     vertical-align: center;
     margin-top: 10px;
     margin-left: 10px;
     width: 32px;
+
+}
+
+#icon {
+    font-family: 'Architects Daughter';
 }
 
 #largeicon img {
@@ -79,7 +93,12 @@ a:hover {
     margin-top: 10px;
     margin-left: 10px;
     width: 128px;
+
 }
+
+
+
+
 
 
 .tTable {
