@@ -67,7 +67,7 @@ class GenericPageHandler(BaseHandler):
             self.render(webroot+"somethingwrong.html")
 
 
-class MainHandler(BaseHandler):
+class WebMainHandler(BaseHandler):
     #@tornado.web.authenticated
     def get(self):
         d = dict()
@@ -88,10 +88,22 @@ class APIHandler(BaseHandler):
 class WebDeviceHandler(BaseHandler):
     #@tornado.web.authenticated
     def get(self,ip):
-        d = dict()
-        for i in FUCKS:
-            d.update({i[0] : Smarter.device_to_string(i[1])})
-        self.render(webroot+"device.html",devices = d,joke = iBrewJokes().joke())
+        if ip in clients:
+            c = clients[ip]
+            self.render(webroot+"device.html",client = c)
+        else:
+            self.render(webroot+"somethingwrong.html")
+
+
+class WebSettingsHandler(BaseHandler):
+    #@tornado.web.authenticated
+    def get(self,ip):
+        if ip in clients:
+            c = clients[ip]
+            self.render(webroot+"settings.html",client = c)
+        else:
+            self.render(webroot+"somethingwrong.html")
+
 
 
 #------------------------------------------------------
@@ -568,7 +580,8 @@ class iBrewWeb:
             (r"/api/?",                   APIHandler),
             (r"/api/?.*",                 UnknownHandler),
             (r"/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/?",WebDeviceHandler),
-            (r"/",                        MainHandler),
+            (r"/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/?",WebSettingsHandler),
+            (r"/",                        WebMainHandler),
                  #(r"/login",             LoginHandler),
             (r"/(.*)",                    GenericPageHandler),
 
