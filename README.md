@@ -183,6 +183,9 @@ you can also use them on the command line as arguments:
 
 This is a build in progress, please contribute!
 
+```
+http://ip:port/
+```
 
 ### REST API
 

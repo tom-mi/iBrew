@@ -6,6 +6,9 @@
 
 This is a build in progress, please contribute!
 
+```
+http://ip:port/
+```
 
 ### REST API
 
