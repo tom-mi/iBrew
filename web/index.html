@@ -20,8 +20,8 @@ function process_update(status) { if ( status.default.temperature.prefered == 'C
 
 
     
-function update()               { $.getJSON( '/api/10.0.0.99/status', process_update); }
-function auto_update()          { update(); setTimeout(auto_update, wait_update); }
+function update(ip)             { $.getJSON( '/api/' + ip + '/status', process_update); }
+function auto_update(ip)        { update(ip); setTimeout(auto_update, wait_update, ip); }
 
 
 
@@ -31,7 +31,11 @@ function calibrate(ip)          { $.getJSON( '/api/' + ip + '/calibrate'); }
 function start(ip)              { $.getJSON( '/api/' + ip + '/start'); }
 function stop(ip)               { $.getJSON( '/api/' + ip + '/stop'); }
 
-$(document).ready(              function() { setTimeout(auto_joke, wait_joke); setTimeout(auto_update, wait_update); }
+$(document).ready(              function() { setTimeout(auto_joke, wait_joke);
+                                {% for ip in clients %}
+                                setTimeout(auto_update, wait_update, '{{ ip }}');
+                                {% end %}
+                                }
                  );
 
 </script>
