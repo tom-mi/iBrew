@@ -44,6 +44,9 @@ class BaseHandler(tornado.web.RequestHandler):
 
 
 class GenericAPIHandler(BaseHandler):
+    def setContentType(self):
+        self.add_header("Content-type","application/json; charset=UTF-8")
+
     def validateAPIKey(self):
         api_key = self.get_argument(u"apikey", default="")
         if api_key == "APIKEY":
@@ -88,7 +91,7 @@ class WebSettingsHandler(BaseHandler):
     def get(self,ip):
         if ip in self.application.clients:
             c = self.application.clients[ip]
-            self.render(webroot+"settings.html",client = c)
+            self.render(webroot+"settings.html",client = c, server_time =  int(time.mktime(datetime.utcnow().timetuple()) * 1000))
         else:
             self.render(webroot+"somethingwrong.html")
 
@@ -113,7 +116,7 @@ def encodeDevice(device,version):
             }
 
 
-class DeviceHandler(tornado.web.RequestHandler):
+class DeviceHandler(GenericAPIHandler):
     def get(self, ip):
         if ip in self.application.clients:
             client = self.application.clients[ip]
@@ -121,25 +124,26 @@ class DeviceHandler(tornado.web.RequestHandler):
                 response = { 'device'      : encodeDevice(client.deviceId,client.version),
                              'firmware'    : encodeFirmware(client.deviceId,client.version),
                              'connected'   : client.connected,
-                             'sensors'     : { 'watersensor' : { 'level'  : client.waterSensor,
+                             'sensors'     : { 'water'       : { 'level'  : client.waterSensor,
                                                                  'base'   : client.waterSensorBase
                                                                },
                                                'offbase'     : not client.onBase,
 
-                                               'temperature' : { 'fahrenheid' : Smarter.celcius_to_fahrenheid(client.temperature),
-                                                                 'celcius   ' : client.temperature
+                                               'temperature' : { 'fahrenheid' : Smarter.celsius_to_fahrenheid(client.temperature),
+                                                                 'celsius'    : client.temperature
                                                                }
                                              },
                              'status'      : { 'message' : Smarter.status_kettle_description(client.kettleStatus),
                                                'id'          : client.kettleStatus
                                              },
-                             'default'     : { 'temperature' : { 'fahrenheid' : Smarter.celcius_to_fahrenheid(client.defaultTemperature),
-                                                                 'celcius   ' : client.defaultTemperature
+                             'default'     : { 'temperature' : { 'fahrenheid' : Smarter.celsius_to_fahrenheid(client.defaultTemperature),
+                                                                 'celsius'    : client.defaultTemperature,
+                                                                 'prefered'   : Smarter.temperature_metric_to_string()
                                                                },
                                                'keepwarm'    : client.defaultKeepWarmTime,
                                                'formula'     : { 'use'     : client.defaultFormula,
-                                                                 'temperature' : { 'fahrenheid' : Smarter.celcius_to_fahrenheid(client.defaultFormulaTemperature),
-                                                                                   'celcius   ' : client.defaultFormulaTemperature
+                                                                 'temperature' : { 'fahrenheid' : Smarter.celsius_to_fahrenheid(client.defaultFormulaTemperature),
+                                                                                   'celsius' : client.defaultFormulaTemperature
                                                                                  }
 
                                                                }
@@ -170,21 +174,24 @@ class DeviceHandler(tornado.web.RequestHandler):
 
         else:
             response = { 'error': 'no device' }
+        self.setContentType()
         self.write(response)
 
 
-class DevicesHandler(tornado.web.RequestHandler):
+class DevicesHandler(GenericAPIHandler):
     def get(self):
         devices = SmarterClient().find_devices()
         response = {}
         for device in devices:
             response[device[0]] = encodeDevice(device[1],device[2])
+        self.setContentType()
         self.write(response)
 
 
-class UnknownHandler(tornado.web.RequestHandler):
+class UnknownHandler(GenericAPIHandler):
     def get(self):
         response = { 'error' : { 'code' : '0', 'message' : 'Request unavailable' }}
+        self.setContentType()
         self.write(response)
 
 
@@ -194,7 +201,7 @@ class UnknownHandler(tornado.web.RequestHandler):
 #------------------------------------------------------
 
 
-class CalibrateHandler(tornado.web.RequestHandler):
+class CalibrateHandler(GenericAPIHandler):
     def get(self,ip):
         if ip in self.application.clients:
             client = self.application.clients[ip]
@@ -202,14 +209,15 @@ class CalibrateHandler(tornado.web.RequestHandler):
                 client.calibrate()
                 response = { 'base'            : client.waterSensorBase,
                              'command status'  : client.commandStatus }
-                self.write(response)
             else:
                 response = { 'error': 'need kettle' }
         else:
             response = { 'error': 'no device' }
+        self.setContentType()
+        self.write(response)
 
 
-class CalibrateBaseHandler(tornado.web.RequestHandler):
+class CalibrateBaseHandler(GenericAPIHandler):
     def get(self,ip):
         if ip in self.application.clients:
             client = self.application.clients[ip]
@@ -217,14 +225,15 @@ class CalibrateBaseHandler(tornado.web.RequestHandler):
                 client.calibrate_base()
                 response = { 'base'            : client.waterSensorBase,
                              'command status'  : client.commandStatus }
-                self.write(response)
             else:
                 response = { 'error': 'need kettle' }
         else:
             response = { 'error': 'no device' }
+        self.setContentType()
+        self.write(response)
 
 
-class CalibrateStoreBaseHandler(tornado.web.RequestHandler):
+class CalibrateStoreBaseHandler(GenericAPIHandler):
     def get(self,ip,base):
         if ip in self.application.clients:
             client = self.application.clients[ip]
@@ -236,6 +245,7 @@ class CalibrateStoreBaseHandler(tornado.web.RequestHandler):
                 response = { 'error': 'need kettle' }
         else:
             response = { 'error': 'no device' }
+        self.setContentType()
         self.write(response)
 
 
@@ -245,7 +255,7 @@ class CalibrateStoreBaseHandler(tornado.web.RequestHandler):
 #------------------------------------------------------
 
 
-class WifiScanHandler(tornado.web.RequestHandler):
+class WifiScanHandler(GenericAPIHandler):
     def get(self,ip):
         if ip in self.application.clients:
             client = self.application.clients[ip]
@@ -260,26 +270,29 @@ class WifiScanHandler(tornado.web.RequestHandler):
             response = { 'networks ': networks }
         else:
             response = { 'error': 'no device' }
+        self.setContentType()
         self.write(response)
 
 
-class WifiJoinHandler(tornado.web.RequestHandler):
+class WifiJoinHandler(GenericAPIHandler):
     def get(self,ip,name,password):
         if ip in self.application.clients:
             self.application.clients[ip].wifi_join(name,password)
             response = { 'success': 'joining wireless network' }
         else:
             response = { 'error': 'no device' }
+        self.setContentType()
         self.write(response)
 
 
-class WifiLeaveHandler(tornado.web.RequestHandler):
+class WifiLeaveHandler(GenericAPIHandler):
     def get(self,ip):
         if ip in self.application.clients:
             self.application.clients[ip].wifi_leave()
             response = { 'success': 'left wireless network' }
         else:
             response = { 'error': 'no device' }
+        self.setContentType()
         self.write(response)
 
 
@@ -289,7 +302,7 @@ class WifiLeaveHandler(tornado.web.RequestHandler):
 #------------------------------------------------------
 
 
-class StoreSettingsHandler(tornado.web.RequestHandler):
+class StoreSettingsHandler(GenericAPIHandler):
     def get(self,ip,x1,x2,x3,x4):
         if ip in self.application.clients:
             client = self.application.clients[ip]
@@ -297,10 +310,11 @@ class StoreSettingsHandler(tornado.web.RequestHandler):
             response = { 'command status'  : client.commandStatus }
         else:
             response = { 'error': 'no device' }
+        self.setContentType()
         self.write(response)
 
 
-class SettingsHandler(tornado.web.RequestHandler):
+class SettingsHandler(GenericAPIHandler):
     def get(self,ip):
         if ip in self.application.clients:
             client = self.application.clients[ip]
@@ -308,10 +322,11 @@ class SettingsHandler(tornado.web.RequestHandler):
             response = { 'command status'  : client.commandStatus }
         else:
             response = { 'error': 'no device' }
+        self.setContentType()
         self.write(response)
 
 
-class SettingsDefaultHandler(tornado.web.RequestHandler):
+class SettingsDefaultHandler(GenericAPIHandler):
     def get(self,ip):
         if ip in self.application.clients:
             client = self.application.clients[ip]
@@ -319,6 +334,7 @@ class SettingsDefaultHandler(tornado.web.RequestHandler):
             response = { 'command status'  : client.commandStatus }
         else:
             response = { 'error': 'no device' }
+        self.setContentType()
         self.write(response)
 
 
@@ -326,7 +342,7 @@ class SettingsDefaultHandler(tornado.web.RequestHandler):
 # Coffee settings
 #------------------------------------------------------
 
-class StrengthHandler(tornado.web.RequestHandler):
+class StrengthHandler(GenericAPIHandler):
     def get(self,ip,strength):
         if ip in self.application.clients:
             client = self.application.clients[ip]
@@ -337,10 +353,11 @@ class StrengthHandler(tornado.web.RequestHandler):
                 response = { 'error': 'need coffee machine' }
         else:
             response = { 'error': 'no device' }
+        self.setContentType()
         self.write(response)
 
 
-class CupsHandler(tornado.web.RequestHandler):
+class CupsHandler(GenericAPIHandler):
     def get(self,ip,cups):
         if ip in self.application.clients:
             client = self.application.clients[ip]
@@ -351,10 +368,11 @@ class CupsHandler(tornado.web.RequestHandler):
                 response = { 'error': 'need coffee machine' }
         else:
             response = { 'error': 'no device' }
+        self.setContentType()
         self.write(response)
 
 
-class GrinderHandler(tornado.web.RequestHandler):
+class GrinderHandler(GenericAPIHandler):
     def get(self,ip,bool):
         if ip in self.application.clients:
             client = self.application.clients[ip]
@@ -365,10 +383,11 @@ class GrinderHandler(tornado.web.RequestHandler):
                 response = { 'error': 'need coffee machine' }
         else:
             response = { 'error': 'no device' }
+        self.setContentType()
         self.write(response)
 
 
-class HotPlateHandler(tornado.web.RequestHandler):
+class HotPlateHandler(GenericAPIHandler):
     def get(self,ip,timer):
         if ip in self.application.clients:
             client = self.application.clients[ip]
@@ -379,10 +398,11 @@ class HotPlateHandler(tornado.web.RequestHandler):
                 response = { 'error': 'need coffee machine' }
         else:
             response = { 'error': 'no device' }
+        self.setContentType()
         self.write(response)
 
 
-class CarafeHandler(tornado.web.RequestHandler):
+class CarafeHandler(GenericAPIHandler):
     def get(self,ip):
         if ip in self.application.clients:
             client = self.application.clients[ip]
@@ -394,10 +414,11 @@ class CarafeHandler(tornado.web.RequestHandler):
                 response = { 'error': 'need coffee machine' }
         else:
             response = { 'error': 'no device' }
+        self.setContentType()
         self.write(response)
 
 
-class SingleCupHandler(tornado.web.RequestHandler):
+class SingleCupHandler(GenericAPIHandler):
     def get(self,ip):
         if ip in self.application.clients:
             client = self.application.clients[ip]
@@ -409,6 +430,7 @@ class SingleCupHandler(tornado.web.RequestHandler):
                 response = { 'error': 'need coffee machine' }
         else:
             response = { 'error': 'no device' }
+        self.setContentType()
         self.write(response)
 
 
@@ -418,7 +440,7 @@ class SingleCupHandler(tornado.web.RequestHandler):
 #------------------------------------------------------
 
 
-class StopHandler(tornado.web.RequestHandler):
+class StopHandler(GenericAPIHandler):
     def get(self,ip):
         if ip in self.application.clients:
             client = self.application.clients[ip]
@@ -426,10 +448,11 @@ class StopHandler(tornado.web.RequestHandler):
             response = { 'command status' : client.commandStatus }
         else:
             response = { 'error': 'no device' }
+        self.setContentType()
         self.write(response)
 
 
-class StartHandler(tornado.web.RequestHandler):
+class StartHandler(GenericAPIHandler):
     def get(self,ip):
         if ip in self.application.clients:
             client = self.application.clients[ip]
@@ -437,23 +460,8 @@ class StartHandler(tornado.web.RequestHandler):
             response = { 'command status' : client.commandStatus }
         else:
             response = { 'error': 'no device' }
+        self.setContentType()
         self.write(response)
-
-
-
-class SSStopHandler(tornado.web.RequestHandler):
-    def get(self,ip):
-        if ip in self.application.clients:
-            client = self.application.clients[ip]
-            client.device_stop()
-
-
-class SSStartHandler(tornado.web.RequestHandler):
-    def get(self,ip):
-        if ip in self.application.clients:
-            client = self.application.clients[ip]
-            client.device_start()
-
 
 
 #------------------------------------------------------
@@ -461,23 +469,24 @@ class SSStartHandler(tornado.web.RequestHandler):
 #------------------------------------------------------
 
 
-class JokeHandler(tornado.web.RequestHandler):
+class JokeHandler(GenericAPIHandler):
     def get(self,ip=""):
         if ip in self.application.clients:
             client = self.application.clients[ip]
             if   client.isCoffee: joke = iBrewJokes().coffee()
             elif client.isKettle: joke = iBrewJokes().tea()
-            response = { 'joke' :  { 'question' : joke[0] , 'answer' : joke[1] }}
+            response = { 'question' : joke[0] , 'answer' : joke[1] }
         elif ip == "":
             joke = iBrewJokes().joke()
-            response = { 'joke' :  { 'question' : joke[0] , 'answer' : joke[1] }}
+            response = { 'question' : joke[0] , 'answer' : joke[1] }
         else:
             response = { 'error': 'no device' }
+        self.setContentType()
         self.write(response)
 
 
 
-class VersionHandler(tornado.web.RequestHandler):
+class VersionHandler(GenericAPIHandler):
     def get(self):
         response = { 'description': 'iBrew Smarter REST API',
                      'version'    : self.application.version,
@@ -485,6 +494,7 @@ class VersionHandler(tornado.web.RequestHandler):
                                       'holder' : 'Tristan Crispijn'
                                     }
                     }
+        self.setContentType()
         self.write(response)
 
 

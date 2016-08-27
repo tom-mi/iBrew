@@ -602,20 +602,20 @@ class SmarterProtocol:
         return self.raw_to_number(raw) != self.MessageOffBase
  
  
-    def celcius_to_fahrenheid(self,temperature):
+    def celsius_to_fahrenheid(self,temperature):
         return ((temperature * 9) / 5) + 32
     
     
-    def fahrenheid_to_celcius(self,temperature):
+    def fahrenheid_to_celsius(self,temperature):
         return ((temperature - 32) * 5) / 9
     
     
-    def check_temperature_celcius(self,temperature):
+    def check_temperature_celsius(self,temperature):
         # if fahrenheid then converto...
         # if self.Fahrenheid
         if temperature < 0 or temperature > 100 and not self.is_on_base(self.number_to_raw(temperature)):
             if self.Fahrenheid:
-                raise SmarterError("Temperature out of range ["+self.celcius_to_fahrenheid(0)+".."+self.celcius_to_fahrenheid(100)+"] ºK: " + str(temperature))
+                raise SmarterError("Temperature out of range ["+self.celsius_to_fahrenheid(0)+".."+self.celsius_to_fahrenheid(100)+"] ºK: " + str(temperature))
             else:
                 raise SmarterError("Temperature out of range [0..100] ºC: " + str(temperature))
         return temperature
@@ -623,32 +623,44 @@ class SmarterProtocol:
     
     def check_temperature(self,temperature):
         if self.Fahrenheid:
-            return self.fahrenheid_to_celcius(temperature)
+            return self.fahrenheid_to_celsius(temperature)
         else:
             return temperature
 
 
     def raw_to_temperature(self,raw):
         if self.is_on_base(raw):
-            return self.check_temperature_celcius(self.raw_to_number(raw))
+            return self.check_temperature_celsius(self.raw_to_number(raw))
         return 0
 
 
     def temperature_to_raw(self,temperature):
-        return self.number_to_raw(self.check_temperature_celcius(temperature))
+        return self.number_to_raw(self.check_temperature_celsius(temperature))
 
 
     def temperature_to_string(self,temperature):
         if self.Fahrenheid:
-            return str(temperature)+"ºF"
+            return str(temperature)+" ºF"
         else:
-            return str(temperature)+"ºC"
+            return str(temperature)+" ºC"
 
+
+    def temperature_symbol_to_string(self):
+        if self.Fahrenheid:
+            return "ºF"
+        else:
+            return "ºC"
+
+    def temperature_metric_to_string(self):
+        if self.Fahrenheid:
+            return "Fahrenheid"
+        else:
+            return "Celsius"
 
     def string_to_temperature(self,string):
         try:
             if self.Fahrenheid:
-                return self.fahrenheid_to_celcius(int(string))
+                return self.fahrenheid_to_celsius(int(string))
             else:
                 return int(temperature)
         except:

@@ -2,19 +2,48 @@
 {% from smarter.SmarterProtocol import * %}
 
 <script type="text/javascript" language="javascript" charset="utf-8">
+
+var wait_update = 1000;
+var wait_joke   = 60000;
+
+// auto joke timer is not synchronized with the click event (wow that's some sufisasactating... stuff
+function process_joke(joke)     { $('#quote').html( joke.question + '<br>' + joke.answer ); }
+function joke()                 { $.getJSON( '/api/joke', process_joke); }
+function auto_joke()            { joke(); setTimeout(auto_joke, wait_joke);}
+
+function process_update(status) { if ( status.default.temperature.prefered == 'Celsius' ) {
+                                    $('#temperature').html( status.sensors.temperature.celsius + " ºC" ); }
+                                  else
+                                    $('#temperature').html( status.sensors.temperature.fahrenheid + " ºF" );
+                                  $('#water').html( status.sensors.water.level);
+                                }
+
+
     
-    function calibrate(ip)    { $.getJSON( '/api/' + ip + '/calibrate'); }
-    function start(ip)        { $.getJSON( '/api/' + ip + '/start'); }
-    function stop(ip)         { $.getJSON( '/api/' + ip + '/stop'); }
-    
+function update()               { $.getJSON( '/api/10.0.0.99/status', process_update); }
+function auto_update()          { update(); setTimeout(auto_update, wait_update); }
+
+
+
+
+
+function calibrate(ip)          { $.getJSON( '/api/' + ip + '/calibrate'); }
+function start(ip)              { $.getJSON( '/api/' + ip + '/start'); }
+function stop(ip)               { $.getJSON( '/api/' + ip + '/stop'); }
+
+$(document).ready(              function() { setTimeout(auto_joke, wait_joke); setTimeout(auto_update, wait_update); }
+                 );
+
 </script>
 
 
 
 
+<a href="javascript:joke()">
 <div id="quote">
 '{{ escape(joke[0]) }}...'<br>...{{ escape(joke[1]) }}
 </div>
+</a>
 
 <div align="center">
 {% for ip in clients %}
@@ -36,6 +65,7 @@
 {% end %}
 
 <br>
+{% if clients[ip].isKettle %}
 {% if clients[ip].onBase %}
 {% if clients[ip].temperature < 33 %}
 <img height="24px" src="{{ static_url('icons/kettle/temperature/low.png')}}">
@@ -44,11 +74,13 @@
 {% else %}
 <img height="24px" src="{{ static_url('icons/kettle/temperature/high.png')}}">
 {% end %}
-{{ Smarter.temperature_to_string(clients[ip].temperature) }}
+<span id="temperature">{{ Smarter.temperature_to_string(clients[ip].temperature) }}</span>
 <img height="24px" src="{{ static_url('icons/kettle/water/water.png')}}">
-{{ str(clients[ip].waterSensor - clients[ip].waterSensorBase) }}
+<span id="water">{{ str(clients[ip].waterSensor - clients[ip].waterSensorBase) }}</span>
 {% else %}
 {% end %}
+{% end %}
+
 
 {% end %}
 </div>

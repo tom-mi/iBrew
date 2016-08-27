@@ -18,14 +18,12 @@ This means your machine is free! You can connect it yourself and do whatever you
  
 #### Upcoming   
  * Better error handling
- * Auto reconnect
  * Todo: Brew, heat, formula arguments
  * Todo: Time arguments
  * Auto-reconnect
  * v0.4 Missing Coffee Smarter codes
  * web interface & rest api
  * History message is not finished
- * Should read status message 14/32 all the time in console mode and in web interface.
  
 #### Contact
 [Bugs or issues](https://github.com/Tristan79/iBrew/issues). Donations & other questions <tristan@monkeycat.nl>

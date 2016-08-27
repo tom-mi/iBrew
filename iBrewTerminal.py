@@ -485,14 +485,14 @@ class iBrewTerminal:
                         return
 
 
-            if command == "celcius":
+            if command == "celsius":
                     Smarter.fahrenheid = False
                     if numarg > 0:
                         command = arguments[0].lower()
                         arguments = arguments[1:]
                         numarg -= 1
                     if self.console:
-                        print "iBrew: Temperature in celcius"
+                        print "iBrew: Temperature in celsius"
                         return
 
 
@@ -789,7 +789,7 @@ class iBrewTerminal:
         print "    base                   show watersensor base value"
         print "    base [base]            store watersensor base value"
         print "    calibrate              calibrates watersensor"
-        print "    celcius                use celcius ºC [console only]"
+        print "    celsius                use celsius ºC [console only]"
         print "    fahrenheid             use fahrenheid ºF [console only]"
         print "    formula ()()           heat kettle in formula mode"
         print "    heat ()()              heat kettle"
