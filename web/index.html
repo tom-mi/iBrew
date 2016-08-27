@@ -6,28 +6,20 @@
 '{{ escape(joke[0]) }}...'<br>...{{ escape(joke[1]) }}
 </div>
 
-<center>
-
-<p>
-
-
-<p>
+<div align="center">
 {% for ip in clients %}
 
-<div id="largeicon">
 {% if clients[ip].isCoffee %}
 <img src="{{ static_url('icons/coffee/coffee.png')}}">
 {% end %}
 {% if clients[ip].isKettle %}
 {% if clients[ip].onBase %}
-<img src="{{ static_url('icons/kettle/kettle.png')}}">
+<img id="devices" src="{{ static_url('icons/kettle/kettle.png')}}">
 {% else %}
-<img src="{{ static_url('icons/kettle/offbase.png')}}">
+<img  id="devices" src="{{ static_url('icons/kettle/offbase.png')}}">
 {% end %}
 {% end %}
-</div>
 
-<div id="devices">
 <br>
 {% if clients[ip].onBase %}
 {% if clients[ip].temperature < 33 %}
@@ -42,11 +34,9 @@
 {{ str(clients[ip].waterSensor - clients[ip].waterSensorBase) }}
 {% else %}
 {% end %}
-</div>
 
 {% end %}
+</div>
 
-
-</center>
 {% include wrapper/foot.html %}
 

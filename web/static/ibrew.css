@@ -18,20 +18,21 @@ a:hover {
 /* #FFA72B */
 
 #title, #icon {
+    position: block;
     font-size: 300%;
     font-weight: bold;
 }
 
-#menu img {
+#icon img {
+    vertical-align: center;
     margin-top: 10px;
     margin-left: 10px;
-    width: 40px;
+    width: 32px;
+
 }
 
-
 #content {
-    margin-top: 100px;
-    right:0px;
+    margin-top: 12vw;
 }
 
 /* #00B0FB */
@@ -44,17 +45,25 @@ a:hover {
     left:0px;
     position: fixed;
     z-index: 98;
-    height: 64px;
+    height: 8vw;
     box-shadow: 0 1px 10px rgba(0, 0, 0, 0.4);
      
 }
 
+#menu img {
+    margin-top:   1vw;
+    margin-left:  1vw;
+    height:       6vw;
+}
 
 #quote
-{   position: absolute;
-    top:10px;
-    right:20px;
+{   position: fixed;
+    top:2vw;
+    right:1vw;
+    height:6vw;
+    width: 50vw;
     font-size: 1.5vw;
+    text-align:center;
     z-index: 99;
     font-family: 'Architects Daughter';
     color: #FFE6B0;
@@ -66,27 +75,28 @@ a:hover {
 {
     font-family: 'Architects Daughter';
     font-size: 120%;
-        text-shadow: 0 1px 10px rgba(0, 0, 0, 0.4);
-
+    text-shadow: 0 1px 10px rgba(0, 0, 0, 0.4);
+    z-index: 101;
+    width: 600px;
 }
-#icon img {
-    vertical-align: center;
-    margin-top: 10px;
-    margin-left: 10px;
-    width: 32px;
 
+#devices img {
+	max-width: 100%;
+	height: auto;
+	width: auto\9; /* IE8 */
 }
+
 
 #icon {
     font-family: 'Architects Daughter';
 }
 
 #largeicon img {
-    vertical-align: center;
-    margin-top: 10px;
-    margin-left: 10px;
-    width: 128px;
-
+    margin-top: 1vw;
+    margin-left: 1vw;
+    height:20vw;
+  /*  min-width: 64px; */
+    max-width: 256px;
 }
 
 

@@ -1593,7 +1593,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
   *    https://github.com/nanab/smartercoffee/
   *    https://github.com/AdenForshaw/smarter-coffee-api
   *    https://github.com/Half-Shot/Smarter-Coffee-NET
-  *    https://domoticz.com/forum/viewtopic.php?f=23&t=12837
   *    https://github.com/jkellerer/fhem-smarter-coffee/
   *    https://github.com/krsandvik/IFTTT-SmarterCoffee
   *    https://www.pentestpartners.com/blog/hacking-a-wi-fi-coffee-machine-part-1/
