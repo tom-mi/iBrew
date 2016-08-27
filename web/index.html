@@ -11,12 +11,21 @@ function process_joke(joke)     { $('#quote').html( joke.question + '<br>' + jok
 function joke()                 { $.getJSON( '/api/joke', process_joke); }
 function auto_joke()            { joke(); setTimeout(auto_joke, wait_joke);}
 
-function process_update_kettle(status) { if ( status.default.temperature.prefered == 'Celsius' ) {
-                                    $('#temperature').html( status.sensors.temperature.celsius + " ºC" ); }
-                                  else
-                                    $('#temperature').html( status.sensors.temperature.fahrenheid + " ºF" );
-                                  $('#water').html( status.sensors.water.level-status.sensors.water.base );
-                                }
+function process_update_kettle(status) { if ( status.sensors.base == "On") {
+                                           $('#kettle').attr('src','{{ static_url('icons/kettle/kettle.png')}}');
+                                           if ( status.default.temperature.prefered == 'Celsius' ) {
+                                             $('#temperature').html( status.sensors.temperature.celsius + " ºC" ); }
+                                           else
+                                             $('#temperature').html( status.sensors.temperature.fahrenheid + " ºF" );
+                                           $('#water').html( status.sensors.water.level-status.sensors.water.base );
+                                           }
+                                           else {
+                                                $('#water').html( "" );
+                                                $('#temperature').html( "" );
+                                                $('#kettle').attr('src','{{ static_url('icons/kettle/offbase.png')}}');
+                                                
+                                           }
+                                        }
 
 
     
@@ -62,14 +71,14 @@ $(document).ready(              function() { setTimeout(auto_joke, wait_joke);
 {% for ip in clients %}
 
 {% if clients[ip].isCoffee %}
-<img src="{{ static_url('icons/coffee/coffee.png')}}"><br>
+<img class="devices" id="coffee" src="{{ static_url('icons/coffee/coffee.png')}}"><br>
 {% end %}
 {% if clients[ip].isKettle %}
 {% if clients[ip].onBase %}
-<img id="devices" src="{{ static_url('icons/kettle/kettle.png')}}"><br>
+<img class="devices" id="kettle" src="{{ static_url('icons/kettle/kettle.png')}}"><br>
 <a href="javascript:calibrate('{{ ip }}')"><img height="24px" src="{{ static_url('icons/commands/calibrate.png') }}"></a>
 {% else %}
-<img  id="devices" src="{{ static_url('icons/kettle/offbase.png')}}">
+<img  class="devices" id="kettle" src="{{ static_url('icons/kettle/offbase.png')}}">
 {% end %}
 <a href="javascript:stop('{{ ip }}')"><img height="24px" src="{{ static_url('icons/commands/stop.png') }}"></a>
 <a href="javascript:start('{{ ip }}')"><img height="24px" src="{{ static_url('icons/commands/start.png') }}"></a>

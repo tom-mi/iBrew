@@ -71,7 +71,7 @@ a:hover {
 }
 }
 
-#devices
+.devices
 {
     font-family: 'Architects Daughter';
     font-size: 120%;
@@ -80,7 +80,7 @@ a:hover {
     width: 600px;
 }
 
-#devices img {
+.devices img {
 	max-width: 100%;
 	height: auto;
 	width: auto\9; /* IE8 */

@@ -602,6 +602,12 @@ class SmarterProtocol:
         return self.raw_to_number(raw) != self.MessageOffBase
  
  
+    def string_base_on_off(self,onbase):
+        if onbase:
+            return "On"
+        else:
+           return "Off"
+           
     def celsius_to_fahrenheid(self,temperature):
         return ((temperature * 9) / 5) + 32
     

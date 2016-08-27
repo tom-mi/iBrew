@@ -117,6 +117,8 @@ def encodeDevice(device,version):
 
 
 class DeviceHandler(GenericAPIHandler):
+
+
     def get(self, ip):
         if ip in self.application.clients:
             client = self.application.clients[ip]
@@ -127,7 +129,7 @@ class DeviceHandler(GenericAPIHandler):
                              'sensors'     : { 'water'       : { 'level'  : client.waterSensor,
                                                                  'base'   : client.waterSensorBase
                                                                },
-                                               'offbase'     : not client.onBase,
+                                               'base'        : Smarter.string_base_on_off(client.onBase),
 
                                                'temperature' : { 'fahrenheid' : Smarter.celsius_to_fahrenheid(client.temperature),
                                                                  'celsius'    : client.temperature
