@@ -5,6 +5,8 @@ import os
 import sys
 import string
 
+import threading
+
 from SmarterProtocol import *
 
 #------------------------------------------------------
@@ -18,6 +20,21 @@ from SmarterProtocol import *
 #
 # Kettle Rattle (rev 6)
 #------------------------------------------------------
+
+
+def threadsafe_function(fn):
+    """decorator making sure that the decorated function is thread safe"""
+    lock = threading.Lock()
+    def new(*args, **kwargs):
+        lock.acquire()
+        try:
+            r = fn(*args, **kwargs)
+        except Exception as e:
+            raise e
+        finally:
+            lock.release()
+        return r
+    return new
 
 
 #------------------------------------------------------
@@ -122,12 +139,6 @@ class SmarterClient:
         previousResponse = ""
         self.run = True
         
-        print "MONITOR"
-        print "MONITOR"
-        print "MONITOR"
-        print "MONITOR"
-        print "MONITOR"
-        
         while self.run:
             self.reading = True
             if not self.sending:
@@ -149,7 +160,7 @@ class SmarterClient:
             self.host = Smarter.DirectHost
         try:
             networksocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            networksocket.settimeout(10)
+            networksocket.settimeout(5)
             networksocket.connect((self.host, self.port))
         except socket.error, msg:
             raise SmarterError("Could not connect to + " + self.host + " (" + msg[1] + ")")
@@ -167,16 +178,15 @@ class SmarterClient:
 
     def disconnect(self):
         self.run = False
-        self.connected = False
-        if self.monitor:
-            self.monitor.join()
-            self.monitor = None
         if self.connected:
             try:
+                self.monitor.join()
                 self.socket.close()
+            # FIX: Also except thread exceptions..
             except socket.error, msg:
                 raise SmarterError("Could not disconnect from + " + self.host + " (" + msg[1] + ")")
-
+        self.connected = False
+ 
 
 
     def find_devices(self):
@@ -189,7 +199,7 @@ class SmarterClient:
             #command = '\x64\x7e'
   
             cs.sendto(command, ('255.255.255.255', self.port))
-            cs.settimeout(3)
+            cs.settimeout(2)
 
             # support up to 100 devices
             for i in range (0,100):
@@ -387,6 +397,7 @@ class SmarterClient:
 
     # MESSAGE READ PROTOCOL
 
+    @threadsafe_function 
     def read(self):
         message = self.read_message()
         id = Smarter.raw_to_number(message[0])
@@ -403,7 +414,7 @@ class SmarterClient:
         elif id == Smarter.ResponseWifiFirmware:    self.decode_ResponseWifiFirmware(message)
         elif id == Smarter.ResponseWirelessNetworks:self.decode_ResponseWirelessNetworks(message)
         
-        if self.dump and ((id != Smarter.ResponseCoffeeStatus and id != Smarter.ResponseKettleStatus)):
+        if self.dump and ((id != Smarter.ResponseCoffeeStatus and id != Smarter.ResponseKettleStatus) or self.dump_status):
             self.print_message_read(message)
  
         return message
@@ -438,6 +449,7 @@ class SmarterClient:
         self.send(Smarter.number_to_raw(id) + arguments + Smarter.number_to_raw(Smarter.MessageTail))
 
 
+    @threadsafe_function
     def send(self,message):
         self.sending = True
         while self.reading:
@@ -832,10 +844,12 @@ class SmarterClient:
         print
 
 
+    def string_connect_status(self):
+        return "Connected to [" + self.host + "] " + Smarter.device_info(self.deviceId,self.version)
+
     def print_connect_status(self):
-        print "Connected to [" + self.host + "] " + Smarter.device_info(self.deviceId,self.version)
-
-
+        print self.string_connect_status()
+    
     def print_message_send(self,message):
         print "Message Send:     [" + Smarter.message_description(Smarter.raw_to_number(message[0])) + "] [" + Smarter.message_to_codes(message) + "]"
 

@@ -13,9 +13,9 @@
 <div id="devices">
 {% for ip in devices %}
   {% if "iKettle 2.0" == devices[ip]%}
-    <a href="/{{ escape(ip) }}/"><img src="{{ static_url('icons/devices/kettle.png')}}"><br><!-- {{ escape(ip) }}--></a>
+    <a href="/{{ escape(ip) }}/"><img src="{{ static_url('icons/kettle/kettle.png')}}"><br><!-- {{ escape(ip) }}--></a>
   {% elif "SmarterCoffee" == devices[ip] %}
-    <a href="/{{ escape(ip) }}/"><img src="{{ static_url('icons/devices/coffee.png')}}"><!-- <br>{{ escape(ip) }} --></a>
+    <a href="/{{ escape(ip) }}/"><img src="{{ static_url('icons/coffee/coffee.png')}}"><!-- <br>{{ escape(ip) }} --></a>
   {% end %}
 {% end %}
 </div>

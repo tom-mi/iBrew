@@ -53,29 +53,45 @@ class iBrewTerminal:
     def monitor(self):
         print "iBrew: Press ctrl-c to stop"
         
+        
         dump = self.client.dump
+        self.client.dump_status = True
         self.client.dump = True
-        # repeat until...
-        previousResponse = ""
+        
         while True:
-            # ...we catch ctrl-c, lets try...
             try:
-                # ...read response message (every second or so)...
-                response = self.client.read()
-                
-                # ...if the response is the same as before then skip...
-                
-                # this is possible due to that response message 14/32 (status device)
-                # is the only one repeated after eachothers
-                # and we are not interested in anything but changes!
-                
-                if previousResponse != response:
-                    previousResponse = response
-                    # ...else got one! yeah! print it!
+                x = raw_input("")
             except:
                 break
+    
         self.client.dump = dump
-                
+        self.client.dump_status = False
+        print
+
+
+
+    #------------------------------------------------------
+    # iBrew WEB
+    #------------------------------------------------------
+
+    # assume we're connected to a client
+    # you can stop the sweep by pressing ctrl-c
+    def web(self,port=Smarter.Port+1):
+ 
+        print "iBrew: Starting Web Interface & REST API on port " + str(port) + ". Press ctrl-c to stop"
+        web = None
+        #try:
+        if self.haveHost:
+            web = iBrewWeb(port,self.client.dump,self.client.host)
+        else:
+            web = iBrewWeb(port,self.client.dump)
+        #except:
+        
+        web.run()
+        self.monitor()
+        print "iBrew: Stopped Web Interface & REST API on port " + str(port)
+        web.kill()
+
 
 
     #------------------------------------------------------
@@ -342,22 +358,6 @@ class iBrewTerminal:
         self.client.dump = dump
 
 
-    #------------------------------------------------------
-    # iBrew WEB
-    #------------------------------------------------------
-
-    # assume we're connected to a client
-    # you can stop the sweep by pressing ctrl-c
-    def web(self,port=Smarter.Port+1):
-
-        print "iBrew: Starting Web Interface & REST API on port " + str(port) + ". Press ctrl-c to stop"
-        if self.haveHost:
-            iBrewWeb(port,self.client.dump,self.client.host)
-        else:
-            iBrewWeb(port,self.client.dump)
-        print "iBrew: Stopped Web Interface & REST API on port " + str(port)
-
-
 
     #------------------------------------------------------
     # iBrew Console MAIN LOOP
@@ -503,10 +503,11 @@ class iBrewTerminal:
                     self.haveHost = True
                     numarg -= 1
                     arguments = arguments[0:numarg]
+                    if self.client:
+                        self.client.disconnect()
 
 
-
-            if not self.client.connected and not self.haveHost and command != "help" and command != "help" and command != "message" and command != "usage" and command != "commands" and command != "web" and command != "joke" and command != "protocol" and command != "structure" and command != "notes" and command != "examples" and command != "messages" and not (command == "domoticz" and numarg == 0):
+            if not self.client.connected and not self.haveHost and command != "help" and command != "message" and command != "usage" and command != "commands" and command != "web" and command != "joke" and command != "protocol" and command != "structure" and command != "notes" and command != "examples" and command != "messages" and not (command == "domoticz" and numarg == 0):
 
                 devices = self.client.find_devices()
                 if self.client.dump:
@@ -517,17 +518,20 @@ class iBrewTerminal:
 
 
             if command == "connect" or command == "console" or command == "sweep" or command == "monitor" or (command == "domoticz" and numarg != 0):
-                self.app_info()
-                self.client.init_default()
-                self.joke()
-                self.client.print_connect_status()
-                self.client.print_status()
+                
+                if not self.console or command == "connect":
+                    self.app_info()
+                    self.client.init_default()
+                    self.joke()
+                    self.client.print_connect_status()
+                    self.client.print_status()
+                    
                 if command == "console" or command == "connect":
                     self.console = True
-                    self.dump_status = False
+                    self.client.dump_status = False
                     self.intro()
-                return
-
+                    return
+            
 
             if command == "web":
                 self.app_info()
@@ -705,12 +709,11 @@ class iBrewTerminal:
             elif command == "status":       self.client.print_status()
             else:                           self.client.device_raw(command+''.join(arguments))
         except Exception,e:
+            self.quit = True
             print str(e)
             print(traceback.format_exc())
-            self.client.disconnect()
-            self.client.run = False
-            
             print "iBrew: Command Failed"
+            
         
     def __init__(self,arguments):
         self.console = False
@@ -727,6 +730,7 @@ class iBrewTerminal:
                 self.execute(raw_input(cursor).strip().split())
             except:
                 break
+        self.client.disconnect()
         
 #------------------------------------------------------
 # iBrew Console PRINT

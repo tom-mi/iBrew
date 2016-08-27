@@ -6,6 +6,7 @@ import tornado.escape
 import tornado.ioloop
 import tornado.web
 import socket
+import time
 
 import os
 from smarter.SmarterClient import *
@@ -26,9 +27,7 @@ from iBrewJokes import *
 #------------------------------------------------------
 
 
-clients = dict()
-FUCKS = dict()
-version = '0.2'
+
 
 
 def custom_get_current_user(handler):
@@ -41,6 +40,7 @@ def custom_get_current_user(handler):
 class BaseHandler(tornado.web.RequestHandler):
     def get_current_user(self):
         return custom_get_current_user(self)
+
 
 
 class GenericAPIHandler(BaseHandler):
@@ -71,25 +71,27 @@ class WebMainHandler(BaseHandler):
     #@tornado.web.authenticated
     def get(self):
         d = dict()
-        for i in FUCKS:
-            d.update({i[0] : Smarter.device_to_string(i[1])})
+        for ip in self.application.clients:
+            client = self.application.clients[ip]
+            d.update({client.host : Smarter.device_to_string(client.deviceId)})
         self.render(webroot+"index.html",devices = d,joke = iBrewJokes().joke())
 
 
-class APIHandler(BaseHandler):
+class WebAPIHandler(BaseHandler):
     #@tornado.web.authenticated
     def get(self):
         d = dict()
-        for i in FUCKS:
-            d.update({i[0] : Smarter.device_to_string(i[1])})
+        for ip in self.application.clients:
+            client = self.application.clients[ip]
+            d.update({client.host : Smarter.device_to_string(client.deviceId)})
         self.render(webroot+"api.html",devices = d,joke = iBrewJokes().joke())
 
 
 class WebDeviceHandler(BaseHandler):
     #@tornado.web.authenticated
     def get(self,ip):
-        if ip in clients:
-            c = clients[ip]
+        if ip in self.application.clients:
+            c = self.application.clients[ip]
             self.render(webroot+"device.html",client = c)
         else:
             self.render(webroot+"somethingwrong.html")
@@ -98,8 +100,8 @@ class WebDeviceHandler(BaseHandler):
 class WebSettingsHandler(BaseHandler):
     #@tornado.web.authenticated
     def get(self,ip):
-        if ip in clients:
-            c = clients[ip]
+        if ip in self.application.clients:
+            c = self.application.clients[ip]
             self.render(webroot+"settings.html",client = c)
         else:
             self.render(webroot+"somethingwrong.html")
@@ -127,8 +129,8 @@ def encodeDevice(device,version):
 
 class DeviceHandler(tornado.web.RequestHandler):
     def get(self, ip):
-        if ip in clients:
-            client = clients[ip]
+        if ip in self.application.clients:
+            client = self.application.clients[ip]
             if client.isKettle:
                 response = { 'device'      : encodeDevice(client.deviceId,client.version),
                              'firmware'    : encodeFirmware(client.deviceId,client.version),
@@ -208,8 +210,8 @@ class UnknownHandler(tornado.web.RequestHandler):
 
 class CalibrateHandler(tornado.web.RequestHandler):
     def get(self,ip):
-        if ip in clients:
-            client = clients[ip]
+        if ip in self.application.clients:
+            client = self.application.clients[ip]
             if client.isKettle:
                 client.calibrate()
                 response = { 'base'            : client.waterSensorBase,
@@ -223,8 +225,8 @@ class CalibrateHandler(tornado.web.RequestHandler):
 
 class CalibrateBaseHandler(tornado.web.RequestHandler):
     def get(self,ip):
-        if ip in clients:
-            client = clients[ip]
+        if ip in self.application.clients:
+            client = self.application.clients[ip]
             if client.isKettle:
                 client.calibrate_base()
                 response = { 'base'            : client.waterSensorBase,
@@ -238,8 +240,8 @@ class CalibrateBaseHandler(tornado.web.RequestHandler):
 
 class CalibrateStoreBaseHandler(tornado.web.RequestHandler):
     def get(self,ip,base):
-        if ip in clients:
-            client = clients[ip]
+        if ip in self.application.clients:
+            client = self.application.clients[ip]
             if client.isKettle:
                 client.calibrate_store_base(Smarter.string_to_watersensor(base))
                 response = { 'base'            : client.waterSensorBase,
@@ -259,8 +261,8 @@ class CalibrateStoreBaseHandler(tornado.web.RequestHandler):
 
 class WifiScanHandler(tornado.web.RequestHandler):
     def get(self,ip):
-        if ip in clients:
-            client = clients[ip]
+        if ip in self.application.clients:
+            client = self.application.clients[ip]
             client.wifi_scan()
             networks = {}
             for i in range(0,len(client.Wifi)):
@@ -277,8 +279,8 @@ class WifiScanHandler(tornado.web.RequestHandler):
 
 class WifiJoinHandler(tornado.web.RequestHandler):
     def get(self,ip,name,password):
-        if ip in clients:
-            clients[ip].wifi_join(name,password)
+        if ip in self.application.clients:
+            self.application.clients[ip].wifi_join(name,password)
             response = { 'success': 'joining wireless network' }
         else:
             response = { 'error': 'no device' }
@@ -287,8 +289,8 @@ class WifiJoinHandler(tornado.web.RequestHandler):
 
 class WifiLeaveHandler(tornado.web.RequestHandler):
     def get(self,ip):
-        if ip in clients:
-            clients[ip].wifi_leave()
+        if ip in self.application.clients:
+            self.application.clients[ip].wifi_leave()
             response = { 'success': 'left wireless network' }
         else:
             response = { 'error': 'no device' }
@@ -303,8 +305,8 @@ class WifiLeaveHandler(tornado.web.RequestHandler):
 
 class StoreSettingsHandler(tornado.web.RequestHandler):
     def get(self,ip,x1,x2,x3,x4):
-        if ip in clients:
-            client = clients[ip]
+        if ip in self.application.clients:
+            client = self.application.clients[ip]
             client.device_store_settings(x1,x2,x3,x4)
             response = { 'command status'  : client.commandStatus }
         else:
@@ -314,8 +316,8 @@ class StoreSettingsHandler(tornado.web.RequestHandler):
 
 class SettingsHandler(tornado.web.RequestHandler):
     def get(self,ip):
-        if ip in clients:
-            client = clients[ip]
+        if ip in self.application.clients:
+            client = self.application.clients[ip]
             client.device_settings()
             response = { 'command status'  : client.commandStatus }
         else:
@@ -325,8 +327,8 @@ class SettingsHandler(tornado.web.RequestHandler):
 
 class SettingsDefaultHandler(tornado.web.RequestHandler):
     def get(self,ip):
-        if ip in clients:
-            client = clients[ip]
+        if ip in self.application.clients:
+            client = self.application.clients[ip]
             client.device_default()
             response = { 'command status'  : client.commandStatus }
         else:
@@ -340,8 +342,8 @@ class SettingsDefaultHandler(tornado.web.RequestHandler):
 
 class StrengthHandler(tornado.web.RequestHandler):
     def get(self,ip,strength):
-        if ip in clients:
-            client = clients[ip]
+        if ip in self.application.clients:
+            client = self.application.clients[ip]
             if client.isCoffee:
                 client.coffee_strength(strength)
                 response = { 'command status'  : client.commandStatus }
@@ -354,8 +356,8 @@ class StrengthHandler(tornado.web.RequestHandler):
 
 class CupsHandler(tornado.web.RequestHandler):
     def get(self,ip,cups):
-        if ip in clients:
-            client = clients[ip]
+        if ip in self.application.clients:
+            client = self.application.clients[ip]
             if client.isCoffee:
                 client.coffee_strength(strength)
                 response = { 'command status'  : client.commandStatus }
@@ -368,8 +370,8 @@ class CupsHandler(tornado.web.RequestHandler):
 
 class GrinderHandler(tornado.web.RequestHandler):
     def get(self,ip,bool):
-        if ip in clients:
-            client = clients[ip]
+        if ip in self.application.clients:
+            client = self.application.clients[ip]
             if client.isCoffee:
                 client.coffee_grinder(bool)
                 response = { 'command status'  : client.commandStatus }
@@ -382,8 +384,8 @@ class GrinderHandler(tornado.web.RequestHandler):
 
 class HotPlateHandler(tornado.web.RequestHandler):
     def get(self,ip,timer):
-        if ip in clients:
-            client = clients[ip]
+        if ip in self.application.clients:
+            client = self.application.clients[ip]
             if client.isCoffee:
                 client.coffee_cups(timer)
                 response = { 'command status'  : client.commandStatus }
@@ -396,8 +398,8 @@ class HotPlateHandler(tornado.web.RequestHandler):
 
 class CarafeHandler(tornado.web.RequestHandler):
     def get(self,ip):
-        if ip in clients:
-            client = clients[ip]
+        if ip in self.application.clients:
+            client = self.application.clients[ip]
             if client.isCoffee:
                 client.coffee_carafe()
                 response = { 'carafe'         : client.carafe,
@@ -411,8 +413,8 @@ class CarafeHandler(tornado.web.RequestHandler):
 
 class SingleCupHandler(tornado.web.RequestHandler):
     def get(self,ip):
-        if ip in clients:
-            client = clients[ip]
+        if ip in self.application.clients:
+            client = self.application.clients[ip]
             if client.isCoffee:
                 client.coffee_singlecup()
                 response = { 'singlecup'      : client.singlecup,
@@ -432,8 +434,8 @@ class SingleCupHandler(tornado.web.RequestHandler):
 
 class StopHandler(tornado.web.RequestHandler):
     def get(self,ip):
-        if ip in clients:
-            client = clients[ip]
+        if ip in self.application.clients:
+            client = self.application.clients[ip]
             client.device_stop()
             response = { 'command status' : client.commandStatus }
         else:
@@ -443,13 +445,29 @@ class StopHandler(tornado.web.RequestHandler):
 
 class StartHandler(tornado.web.RequestHandler):
     def get(self,ip):
-        if ip in clients:
-            client = clients[ip]
+        if ip in self.application.clients:
+            client = self.application.clients[ip]
             client.device_start()
             response = { 'command status' : client.commandStatus }
         else:
             response = { 'error': 'no device' }
         self.write(response)
+
+
+
+class SSStopHandler(tornado.web.RequestHandler):
+    def get(self,ip):
+        if ip in self.application.clients:
+            client = self.application.clients[ip]
+            client.device_stop()
+
+
+class SSStartHandler(tornado.web.RequestHandler):
+    def get(self,ip):
+        if ip in self.application.clients:
+            client = self.application.clients[ip]
+            client.device_start()
+
 
 
 #------------------------------------------------------
@@ -459,8 +477,8 @@ class StartHandler(tornado.web.RequestHandler):
 
 class JokeHandler(tornado.web.RequestHandler):
     def get(self,ip=""):
-        if ip in clients:
-            client = clients[ip]
+        if ip in self.application.clients:
+            client = self.application.clients[ip]
             if   client.isCoffee: joke = iBrewJokes().coffee()
             elif client.isKettle: joke = iBrewJokes().tea()
             response = { 'joke' :  { 'question' : joke[0] , 'answer' : joke[1] }}
@@ -476,7 +494,7 @@ class JokeHandler(tornado.web.RequestHandler):
 class VersionHandler(tornado.web.RequestHandler):
     def get(self):
         response = { 'description': 'iBrew Smarter REST API',
-                     'version'    : version,
+                     'version'    : self.application.version,
                      'copyright'  : { 'year'   : '2016',
                                       'holder' : 'Tristan Crispijn'
                                     }
@@ -490,20 +508,24 @@ class VersionHandler(tornado.web.RequestHandler):
 #------------------------------------------------------
 
 
-class iBrewWeb:
+class iBrewWeb(tornado.web.Application):
 
-
-    def run(self):
+    version = '0.2'
+    
+    def start(self):
         tornado.ioloop.IOLoop.instance().start()
-
-
-    def runInThread(self):
+    
+    def run(self):
         import threading
-        t = threading.Thread(target=self.run)
+        t = threading.Thread(target=self.start)
         t.start()
 
 
-    def shutdown(self):
+    def kill(self):
+    
+        for ip in self.clients:
+            self.clients[ip].disconnect()
+        
         deadline = time.time() + 3
         io_loop = tornado.ioloop.IOLoop.instance()
      
@@ -520,31 +542,39 @@ class iBrewWeb:
     def __init__(self,port,dump=False,host=""):
         self.port = port
         
-        global FUCKS
-        FUCKS = SmarterClient().find_devices()
+        devices = SmarterClient().find_devices()
+        self.clients = dict()
         
-        for device in FUCKS:
+        for device in devices:
             client = SmarterClient()
             client.dump = dump
+            if dump:
+                client.dump_status = True
             client.host = device[0]
             client.init_default()
-            clients[device[0]] = client
-            client.print_connect_status()
-
-        FUCKS = None
+            self.clients[device[0]] = client
+            print "iBrew Web Server: " + client.string_connect_status()
         
         if host != "":
             ip = socket.gethostbyname(host)
             print host
             print ip
-            print clients
-            if not ip in clients:
+            print self.application.clients
+            if not ip in self.application.clients:
                 client = SmarterClient()
                 client.host = host
                 client.dump = dump
+                if dump:
+                    client.dump_status = True
                 client.init_default()
-                clients[ip] = client
-                client.print_connect_status()
+                self.clients[ip] = client
+                print "iBrew Web Server: " + client.string_connect_status()
+
+        try:
+            self.listen(self.port, no_keep_alive = True)
+        except:
+            print  "iBrew Web Server: Couldn't open socket on port" + str(self.port)
+        
 
         settings = {
                 "debug": True,
@@ -579,10 +609,11 @@ class iBrewWeb:
             (r"/api/version/?",           VersionHandler),
             (r"/api/devices/?",           DevicesHandler),
             (r"/api/joke/?",              JokeHandler),
-            (r"/api/?",                   APIHandler),
+            (r"/api/?",                   WebAPIHandler),
             (r"/api/?.*",                 UnknownHandler),
             (r"/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/?",WebDeviceHandler),
             (r"/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/?",WebSettingsHandler),
+   
             (r"/",                        WebMainHandler),
                  #(r"/login",             LoginHandler),
             (r"/(.*)",                    GenericPageHandler),
@@ -590,10 +621,7 @@ class iBrewWeb:
             
         ]
 
-        self.application = tornado.web.Application(handlers, **settings)
-        self.application.listen(self.port)
+        tornado.web.Application.__init__(self, handlers, **settings)
         
     #    bonjour = iBrewBonjourThread(self.port)
     #    bonjour.start()
-        tornado.ioloop.IOLoop.instance().start()
-
