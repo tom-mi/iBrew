@@ -15,7 +15,7 @@ function process_update(status) { if ( status.default.temperature.prefered == 'C
                                     $('#temperature').html( status.sensors.temperature.celsius + " ºC" ); }
                                   else
                                     $('#temperature').html( status.sensors.temperature.fahrenheid + " ºF" );
-                                  $('#water').html( status.sensors.water.level);
+                                  $('#water').html( status.sensors.water.level-status.sensors.water.base );
                                 }
 
 
