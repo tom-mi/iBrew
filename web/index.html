@@ -1,4 +1,5 @@
 {% set title = "Devices" %} {% include wrapper/head.html %}
+{% from smarter.SmarterProtocol import * %}
 
 <center>
 
@@ -10,15 +11,40 @@
 </div>
 
 <p>
-<div id="devices">
-{% for ip in devices %}
-  {% if "iKettle 2.0" == devices[ip]%}
-    <a href="/{{ escape(ip) }}/"><img src="{{ static_url('icons/kettle/kettle.png')}}"><br><!-- {{ escape(ip) }}--></a>
-  {% elif "SmarterCoffee" == devices[ip] %}
-    <a href="/{{ escape(ip) }}/"><img src="{{ static_url('icons/coffee/coffee.png')}}"><!-- <br>{{ escape(ip) }} --></a>
-  {% end %}
+{% for ip in clients %}
+
+<div id="largeicon">
+{% if clients[ip].isCoffee %}
+<img src="{{ static_url('icons/coffee/coffee.png')}}">
+{% end %}
+{% if clients[ip].isKettle %}
+{% if clients[ip].onBase %}
+<img src="{{ static_url('icons/kettle/kettle.png')}}">
+{% else %}
+<img src="{{ static_url('icons/kettle/offbase.png')}}">
+{% end %}
 {% end %}
 </div>
+
+<div id="quote">
+<br>
+{% if clients[ip].onBase %}
+{% if clients[ip].temperature < 33 %}
+<img height="24px' "src="{{ static_url('icons/kettle/temperature/low.png')}}">
+{% elif clients[ip].temperature < 66 %}
+<img height="24px' "src="{{ static_url('icons/kettle/temperature/middle.png')}}">
+{% else %}
+<img height="24px' "src="{{ static_url('icons/kettle/temperature/high.png')}}">
+{% end %}
+{{ Smarter.temperature_to_string(clients[ip].temperature) }}
+<img height="24px' "src="{{ static_url('icons/kettle/water/water.png')}}">
+{{ str(clients[ip].waterSensor - clients[ip].waterSensorBase) }}
+{% else %}
+{% end %}
+</div>
+
+{% end %}
+
 
 </center>
 {% include wrapper/foot.html %}

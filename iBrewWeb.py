@@ -70,11 +70,7 @@ class GenericPageHandler(BaseHandler):
 class WebMainHandler(BaseHandler):
     #@tornado.web.authenticated
     def get(self):
-        d = dict()
-        for ip in self.application.clients:
-            client = self.application.clients[ip]
-            d.update({client.host : Smarter.device_to_string(client.deviceId)})
-        self.render(webroot+"index.html",devices = d,joke = iBrewJokes().joke())
+        self.render(webroot+"index.html",clients = self.application.clients,joke = iBrewJokes().joke())
 
 
 class WebAPIHandler(BaseHandler):
@@ -85,16 +81,6 @@ class WebAPIHandler(BaseHandler):
             client = self.application.clients[ip]
             d.update({client.host : Smarter.device_to_string(client.deviceId)})
         self.render(webroot+"api.html",devices = d,joke = iBrewJokes().joke())
-
-
-class WebDeviceHandler(BaseHandler):
-    #@tornado.web.authenticated
-    def get(self,ip):
-        if ip in self.application.clients:
-            c = self.application.clients[ip]
-            self.render(webroot+"device.html",client = c)
-        else:
-            self.render(webroot+"somethingwrong.html")
 
 
 class WebSettingsHandler(BaseHandler):
@@ -611,8 +597,7 @@ class iBrewWeb(tornado.web.Application):
             (r"/api/joke/?",              JokeHandler),
             (r"/api/?",                   WebAPIHandler),
             (r"/api/?.*",                 UnknownHandler),
-            (r"/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/?",WebDeviceHandler),
-            (r"/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/?",WebSettingsHandler),
+#            (r"/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/?",WebSettingsHandler),
    
             (r"/",                        WebMainHandler),
                  #(r"/login",             LoginHandler),
