@@ -11,7 +11,7 @@ function process_joke(joke)     { $('#quote').html( joke.question + '<br>' + jok
 function joke()                 { $.getJSON( '/api/joke', process_joke); }
 function auto_joke()            { joke(); setTimeout(auto_joke, wait_joke);}
 
-function process_update(status) { if ( status.default.temperature.prefered == 'Celsius' ) {
+function process_update_kettle(status) { if ( status.default.temperature.prefered == 'Celsius' ) {
                                     $('#temperature').html( status.sensors.temperature.celsius + " ºC" ); }
                                   else
                                     $('#temperature').html( status.sensors.temperature.fahrenheid + " ºF" );
@@ -20,9 +20,14 @@ function process_update(status) { if ( status.default.temperature.prefered == 'C
 
 
     
-function update(ip)             { $.getJSON( '/api/' + ip + '/status', process_update); }
-function auto_update(ip)        { update(ip); setTimeout(auto_update, wait_update, ip); }
+function update_kettle(ip)             { $.getJSON( '/api/' + ip + '/status', process_update_kettle); }
+function auto_update_kettle(ip)        { update_kettle(ip); setTimeout(auto_update_kettle, wait_update, ip); }
 
+
+function process_update_coffee(status) { }
+
+function update_cofee(ip)             { $.getJSON( '/api/' + ip + '/status', process_update_cofee); }
+function auto_update_coffee(ip)        { update_cofee(ip); setTimeout(auto_update_cofee, wait_update, ip); }
 
 
 
@@ -33,7 +38,11 @@ function stop(ip)               { $.getJSON( '/api/' + ip + '/stop'); }
 
 $(document).ready(              function() { setTimeout(auto_joke, wait_joke);
                                 {% for ip in clients %}
-                                setTimeout(auto_update, wait_update, '{{ ip }}');
+                                {% if clients[ip].isKettle %}
+                                    setTimeout(auto_update_kettle, wait_update, '{{ ip }}');
+                                {% elif clients[ip].isCoffee %}
+                                    setTimeout(auto_update_coffee, wait_update, '{{ ip }}');
+                                {% end %}
                                 {% end %}
                                 }
                  );
