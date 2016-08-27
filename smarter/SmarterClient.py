@@ -76,17 +76,25 @@ class SmarterClient:
 
     def __init__(self):
         self.host                       = Smarter.DirectHost
+        self.dump_status                = True
         self.dump                       = False
                 #set this to try is you want to connect send receive and don't care about the new status or other messages the about the out come, its disconnect afterwards....
         self.fast                       = False
         #set this to try is you want to connect send and really do not care about the about the out come, its disconnect afterwards....
         self.shout                      = False
-
+        
+        # Threading info
+        self.sending                    = False
+        self.reading                    = False
+        self.monitor                    = None
+        self.run                        = False
+  
         self.init()
 
 
     def __del__(self):
         self.disconnect()
+
 
 
 
@@ -109,6 +117,31 @@ class SmarterClient:
             self.coffee_carafe()
 
 
+    def monitor_device(self):
+        self.reading = False
+        previousResponse = ""
+        self.run = True
+        
+        print "MONITOR"
+        print "MONITOR"
+        print "MONITOR"
+        print "MONITOR"
+        print "MONITOR"
+        
+        while self.run:
+            self.reading = True
+            if not self.sending:
+                try:
+                    response = self.read()
+                    if previousResponse != response:
+                        previousResponse = response
+                        # call monitor function
+                        # ...else got one! yeah! print it!
+                except:
+                    # do something?
+                    break
+            self.reading = False
+
     def connect(self):
         self.disconnect()
         self.init()
@@ -122,11 +155,22 @@ class SmarterClient:
             raise SmarterError("Could not connect to + " + self.host + " (" + msg[1] + ")")
     
         self.socket = networksocket
+
+        if not self.fast and not self.monitor:
+            import threading
+            self.monitor = threading.Thread(target=self.monitor_device)
+            self.reading = False
+            self.monitor.start()
         self.connected = True
 
 
 
     def disconnect(self):
+        self.run = False
+        self.connected = False
+        if self.monitor:
+            self.monitor.join()
+            self.monitor = None
         if self.connected:
             try:
                 self.socket.close()
@@ -209,7 +253,6 @@ class SmarterClient:
         if self.deviceId == Smarter.DeviceCoffee:
             self.isCoffee = True
             self.device = "SmarterCoffee"
-        
 
 
     def decode_ResponseBase(self,message):
@@ -272,7 +315,8 @@ class SmarterClient:
         else:
             pass
         print "Not yet implemented"
-    
+  
+  
     def decode_ResponseKettleHistory(self,message):
         counter = Smarter.raw_to_number(message[1])
         if counter > 0:
@@ -325,6 +369,7 @@ class SmarterClient:
             i = 1
             while raw != Smarter.number_to_raw(Smarter.MessageTail) or (minlength > 0 and raw == Smarter.number_to_raw(Smarter.MessageTail) and i < minlength):
             
+            
                 message += raw
                 raw = self.socket.recv(1)
                 
@@ -358,13 +403,14 @@ class SmarterClient:
         elif id == Smarter.ResponseWifiFirmware:    self.decode_ResponseWifiFirmware(message)
         elif id == Smarter.ResponseWirelessNetworks:self.decode_ResponseWirelessNetworks(message)
         
-        if self.dump:
+        if self.dump and ((id != Smarter.ResponseCoffeeStatus and id != Smarter.ResponseKettleStatus)):
             self.print_message_read(message)
  
         return message
 
 
     # MESSAGE SEND
+    
 
     def send_message(self,message):
         try:
@@ -393,9 +439,14 @@ class SmarterClient:
 
 
     def send(self,message):
+        self.sending = True
+        while self.reading:
+            pass
+
         self.send_message(message)
 
         if self.shout:
+            self.sending = False
             self.disconnect()
             return
 
@@ -409,6 +460,7 @@ class SmarterClient:
         self.responseMessage = self.readMessage
 
         if self.fast:
+            self.sending = False
             self.disconnect()
             return
         # read until right message.... no threaded read
@@ -419,7 +471,7 @@ class SmarterClient:
         while (data != Smarter.ResponseKettleStatus) and (data != Smarter.ResponseCoffeeStatus):
             self.read()
             data = Smarter.raw_to_number(self.readMessage[0])
-
+        self.sending = False
 
 
     #------------------------------------------------------
@@ -772,7 +824,6 @@ class SmarterClient:
 
 
     def print_status(self):
-        m = self.read()
         print
         if self.isKettle:
             self.print_kettle_status()

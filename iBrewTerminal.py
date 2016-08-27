@@ -13,6 +13,8 @@ from domoticz.Domoticz import *
 from iBrewWeb import *
 from iBrewJokes import *
 
+import traceback
+
 #------------------------------------------------------
 # iBrew
 #
@@ -389,12 +391,13 @@ class iBrewTerminal:
 
 
     def execute(self,line):
-    #    try:
+        try:
             numarg = 0
             if len(line) == 0:
                 if self.console:
-                    if not dump:
-                        client.print_short_status()
+                    if self.client.connected:
+                        self.client.print_short_status()
+                    else: print "iBrew: Not connected"
                     return
                 else:
                     argument = line
@@ -521,6 +524,7 @@ class iBrewTerminal:
                 self.client.print_status()
                 if command == "console" or command == "connect":
                     self.console = True
+                    self.dump_status = False
                     self.intro()
                 return
 
@@ -700,8 +704,13 @@ class iBrewTerminal:
             
             elif command == "status":       self.client.print_status()
             else:                           self.client.device_raw(command+''.join(arguments))
-    #   except:
-     #       print "iBrew: Command Failed"
+        except Exception,e:
+            print str(e)
+            print(traceback.format_exc())
+            self.client.disconnect()
+            self.client.run = False
+            
+            print "iBrew: Command Failed"
         
     def __init__(self,arguments):
         self.console = False

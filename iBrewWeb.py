@@ -531,6 +531,8 @@ class iBrewWeb:
             clients[device[0]] = client
             client.print_connect_status()
 
+        FUCKS = None
+        
         if host != "":
             ip = socket.gethostbyname(host)
             print host
