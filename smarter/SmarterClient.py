@@ -103,6 +103,11 @@ class SmarterClient:
         # Threading info
         self.sending                    = False
         self.reading                    = False
+        
+        self.sendCount                  = 0
+        self.readCount                  = 0
+        self.connectCount               = 0
+        
         self.monitor                    = None
         self.run                        = False
   
@@ -154,6 +159,7 @@ class SmarterClient:
             self.reading = False
 
     def connect(self):
+        
         self.disconnect()
         self.init()
         if self.host == "":
@@ -162,6 +168,7 @@ class SmarterClient:
             networksocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             networksocket.settimeout(5)
             networksocket.connect((self.host, self.port))
+            self.connectCount += 1
         except socket.error, msg:
             raise SmarterError("Could not connect to + " + self.host + " (" + msg[1] + ")")
     
@@ -389,6 +396,7 @@ class SmarterClient:
                 i += 1
             message += raw
             self.readMessage = message
+            self.readCount += 1
             return message
 
         except socket.error, msg:
@@ -432,6 +440,8 @@ class SmarterClient:
             self.socket.send(message)
         except socket.error, msg:
             raise SmarterError("Could not read message (" + msg[1] + ")")
+
+        self.sendCount += 1
         self.sendMessage = message
         if self.dump:
             self.print_message_send(message)

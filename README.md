@@ -151,6 +151,7 @@ you can also use them on the command line as arguments:
     firmware               show firmware Wifi
     monitor                monitor incomming traffic
     protocol               show all protocol information available
+    stats                  show traffic statistics
     sweep (id)             try (all or start with id) unknown command codes
 
   Console Commands

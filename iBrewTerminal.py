@@ -652,6 +652,14 @@ class iBrewTerminal:
                                             print
                                             self.joke()
                                             print
+            elif command == "stats":
+                                            print
+                                            print "  Responses : " + str(self.client.readCount)
+                                            print "  Commands  : " + str(self.client.sendCount)
+                                            print "  Status    : ?"
+                                            print "  Connect   : " + str(self.client.connectCount)
+                                            print
+                                            
             elif command == "web":
                                             if numarg == 0:
                                                 self.web()
@@ -832,6 +840,7 @@ class iBrewTerminal:
         print "    firmware               show firmware Wifi"
         print "    monitor                monitor incomming traffic"
         print "    protocol               show all protocol information available"
+        print "    stats                  show traffic statistics"
         print "    sweep (id)             try (all or start with id) unknown command codes"
         print
         print "  Console Commands"
