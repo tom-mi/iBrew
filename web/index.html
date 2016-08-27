@@ -1,6 +1,16 @@
 {% set title = "Devices" %} {% include wrapper/head.html %}
 {% from smarter.SmarterProtocol import * %}
 
+<script type="text/javascript" language="javascript" charset="utf-8">
+    
+    function calibrate(ip)    { $.getJSON( '/api/' + ip + '/calibrate'); }
+    function start(ip)        { $.getJSON( '/api/' + ip + '/start'); }
+    function stop(ip)         { $.getJSON( '/api/' + ip + '/stop'); }
+    
+</script>
+
+
+
 
 <div id="quote">
 '{{ escape(joke[0]) }}...'<br>...{{ escape(joke[1]) }}
@@ -10,27 +20,32 @@
 {% for ip in clients %}
 
 {% if clients[ip].isCoffee %}
-<img src="{{ static_url('icons/coffee/coffee.png')}}">
+<img src="{{ static_url('icons/coffee/coffee.png')}}"><br>
 {% end %}
 {% if clients[ip].isKettle %}
 {% if clients[ip].onBase %}
-<img id="devices" src="{{ static_url('icons/kettle/kettle.png')}}">
+<img id="devices" src="{{ static_url('icons/kettle/kettle.png')}}"><br>
+<a href="javascript:calibrate('{{ ip }}')"><img height="24px" src="{{ static_url('icons/commands/calibrate.png') }}"></a>
 {% else %}
 <img  id="devices" src="{{ static_url('icons/kettle/offbase.png')}}">
 {% end %}
+<a href="javascript:stop('{{ ip }}')"><img height="24px" src="{{ static_url('icons/commands/stop.png') }}"></a>
+<a href="javascript:start('{{ ip }}')"><img height="24px" src="{{ static_url('icons/commands/start.png') }}"></a>
+<a href="/wifi"><img height="24px" src="{{ static_url('icons/commands/wifi.png') }}"></a>
+<a href="/settings"><img height="24px" src="{{ static_url('icons/commands/settings.png') }}"></a>
 {% end %}
 
 <br>
 {% if clients[ip].onBase %}
 {% if clients[ip].temperature < 33 %}
-<img height="24px' "src="{{ static_url('icons/kettle/temperature/low.png')}}">
+<img height="24px" src="{{ static_url('icons/kettle/temperature/low.png')}}">
 {% elif clients[ip].temperature < 66 %}
-<img height="24px' "src="{{ static_url('icons/kettle/temperature/middle.png')}}">
+<img height="24px" src="{{ static_url('icons/kettle/temperature/middle.png')}}">
 {% else %}
-<img height="24px' "src="{{ static_url('icons/kettle/temperature/high.png')}}">
+<img height="24px" src="{{ static_url('icons/kettle/temperature/high.png')}}">
 {% end %}
 {{ Smarter.temperature_to_string(clients[ip].temperature) }}
-<img height="24px' "src="{{ static_url('icons/kettle/water/water.png')}}">
+<img height="24px" src="{{ static_url('icons/kettle/water/water.png')}}">
 {{ str(clients[ip].waterSensor - clients[ip].waterSensorBase) }}
 {% else %}
 {% end %}
