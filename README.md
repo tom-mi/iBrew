@@ -18,14 +18,12 @@ This means your machine is free! You can connect it yourself and do whatever you
  
 #### Upcoming   
  * Better error handling
- * Auto reconnect
  * Todo: Brew, heat, formula arguments
  * Todo: Time arguments
  * Auto-reconnect
  * v0.4 Missing Coffee Smarter codes
  * web interface & rest api
  * History message is not finished
- * Should read status message 14/32 all the time in console mode and in web interface.
  
 #### Contact
 [Bugs or issues](https://github.com/Tristan79/iBrew/issues). Donations & other questions <tristan@monkeycat.nl>
@@ -110,7 +108,7 @@ you can also use them on the command line as arguments:
     base                   show watersensor base value
     base [base]            store watersensor base value
     calibrate              calibrates watersensor
-    celcius                use celcius ºC [console only]
+    celsius                use celsius ºC [console only]
     fahrenheid             use fahrenheid ºF [console only]
     formula ()()           heat kettle in formula mode
     heat ()()              heat kettle
