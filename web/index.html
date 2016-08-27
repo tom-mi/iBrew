@@ -1,14 +1,15 @@
 {% set title = "Devices" %} {% include wrapper/head.html %}
 {% from smarter.SmarterProtocol import * %}
 
+
+<div id="quote">
+'{{ escape(joke[0]) }}...'<br>...{{ escape(joke[1]) }}
+</div>
+
 <center>
 
 <p>
 
-<div id="quote">
-     '{{ escape(joke[0]) }}...'<br>
-     ...{{ escape(joke[1]) }}
-</div>
 
 <p>
 {% for ip in clients %}
@@ -26,7 +27,7 @@
 {% end %}
 </div>
 
-<div id="quote">
+<div id="devices">
 <br>
 {% if clients[ip].onBase %}
 {% if clients[ip].temperature < 33 %}
