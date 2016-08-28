@@ -78,16 +78,18 @@ class iBrewTerminal:
     # you can stop the sweep by pressing ctrl-c
     def web(self,port=Smarter.Port+1):
  
-        print "iBrew: Starting Web Interface & REST API on port " + str(port) + ". Press ctrl-c to stop"
         web = None
-        #try:
-        if self.haveHost:
-            web = iBrewWeb(port,self.client.dump,self.client.host)
-        else:
-            web = iBrewWeb(port,self.client.dump)
-        #except:
-        
-        web.run()
+        try:
+            if self.haveHost:
+                web = iBrewWeb()
+                web.run(port,self.client.dump,self.client.host)
+            else:
+                web = iBrewWeb()
+                web.run(port,self.client.dump)
+        except:
+            print "iBrew: Failed to run Web Interface & REST API on port " + str(port)
+            return
+        print "iBrew: Starting Web Interface & REST API on port " + str(port) + ". Press ctrl-c to stop"
         self.monitor()
         print "iBrew: Stopped Web Interface & REST API on port " + str(port)
         web.kill()
@@ -654,12 +656,18 @@ class iBrewTerminal:
                                             print
             elif command == "stats":
                                             print
-                                            print "  Responses : " + str(self.client.readCount)
-                                            print "  Commands  : " + str(self.client.sendCount)
-                                            print "  Status    : ?"
-                                            print "  Connect   : " + str(self.client.connectCount)
+                                            print "  " + str(self.client.connectCount).rjust(10, ' ') + "  Connected"
+                                            print "  " + str(self.client.sendCount).rjust(10, ' ')   + "  Commands ("  + Smarter.bytes_to_human(self.client.sendBytesCount) + ")"
+                                            print "  " + str(self.client.readCount).rjust(10, ' ')   + "  Responses (" + Smarter.bytes_to_human(self.client.readBytesCount) + ")"
                                             print
                                             
+                                            for id in sorted(self.client.commandCount):
+                                                print "  " + str(self.client.commandCount[id]).rjust(10, ' ') + "  [" + Smarter.number_to_code(id) + "] " + Smarter.message_description(id)
+                                            print
+                                            
+                                            for id in sorted(self.client.responseCount):
+                                                print "  " + str(self.client.responseCount[id]).rjust(10, ' ') + "  [" + Smarter.number_to_code(id) + "] "  + Smarter.message_description(id)
+                                            print
             elif command == "web":
                                             if numarg == 0:
                                                 self.web()
@@ -715,7 +723,11 @@ class iBrewTerminal:
                                             self.client.device_time()
             
             elif command == "status":       self.client.print_status()
-            else:                           self.client.device_raw(command+''.join(arguments))
+            else:
+                                            try:
+                                                self.client.device_raw(command+''.join(arguments))
+                                            except:
+                                                print "iBrew: Sending raw command message failed"
         except Exception,e:
             self.quit = True
             print str(e)

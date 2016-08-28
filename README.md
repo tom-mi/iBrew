@@ -15,15 +15,21 @@ This means your machine is free! You can connect it yourself and do whatever you
  * v0.1 White Tealeaf Edition
  * v0.2 Tea Noire Sweet
  * v0.3 Kettle Rattle 
+ * v0.4 Brewing on the 7th day (web interface)
  
 #### Upcoming   
- * Better error handling
- * Todo: Brew, heat, formula arguments
- * Todo: Time arguments
- * Auto-reconnect
- * v0.4 Missing Coffee Smarter codes
- * web interface & rest api
+ * Better error handling (sometimes it does not quit, and the exceptions are not handled :-)
+ * Brew, heat, formula arguments (I have to figure out what is what, one cup at a time...)
+ * Time arguments (have not figured that out)
+ * Auto-reconnect (pretty important)
+ * Web interface & rest api (rest almost finished, web interface still have to create some pages) and introduce webroot & api key...
  * History message is not finished
+ * Fahrenheid not finished, please to not use.
+ * v0.5 Missing Coffee Smarter codes (!)
+ 
+ 
+ iBrew v0.5: Dumb Dump Limited Collector Edition
+ (numbered, signed by author)
  
 #### Contact
 [Bugs or issues](https://github.com/Tristan79/iBrew/issues). Donations & other questions <tristan@monkeycat.nl>

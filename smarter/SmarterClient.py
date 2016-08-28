@@ -46,7 +46,6 @@ class SmarterClient:
     def init(self):
         # network
         self.port                       = Smarter.Port
-        self.connected                  = False
         
         # device
         self.commandStatus              = Smarter.StatusSucces
@@ -100,14 +99,20 @@ class SmarterClient:
         #set this to try is you want to connect send and really do not care about the about the out come, its disconnect afterwards....
         self.shout                      = False
         
-        # Threading info
-        self.sending                    = False
-        self.reading                    = False
         
         self.sendCount                  = 0
         self.readCount                  = 0
+        self.sendBytesCount             = 0
+        self.readBytesCount             = 0
         self.connectCount               = 0
+        self.commandCount               = dict()
+        self.responseCount              = dict()
         
+        # Threading info
+        self.sending                    = False
+        self.sendingMonitor             = False
+        self.reading                    = False
+        self.connected                  = False
         self.monitor                    = None
         self.run                        = False
   
@@ -118,6 +123,7 @@ class SmarterClient:
         self.disconnect()
 
 
+    
 
 
     #------------------------------------------------------
@@ -144,19 +150,43 @@ class SmarterClient:
         previousResponse = ""
         self.run = True
         
+        monitorCount = 0
+        
+        timeout = 30
         while self.run:
             self.reading = True
             if not self.sending:
                 try:
                     response = self.read()
+                    monitorCount += 1
                     if previousResponse != response:
                         previousResponse = response
                         # call monitor function
                         # ...else got one! yeah! print it!
                 except:
                     # do something?
-                    break
+                    raise SmarterError("Monitor Error")
             self.reading = False
+
+            dump = self.dump
+            
+            if self.dump_status:
+                self.dump = True;
+            else:
+                self.dump = False;
+            
+            if monitorCount % timeout == timeout - 1:
+                if self.isKettle:   self.calibrate_base()
+
+            if monitorCount % timeout == timeout - 9:
+                self.device_settings()
+
+            if monitorCount % timeout == timeout - 19:
+                self.device_history()
+            
+            self.dump = dump
+    
+            
 
     def connect(self):
         
@@ -166,8 +196,9 @@ class SmarterClient:
             self.host = Smarter.DirectHost
         try:
             networksocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            networksocket.settimeout(5)
+            networksocket.settimeout(10)
             networksocket.connect((self.host, self.port))
+            self.connected = True
             self.connectCount += 1
         except socket.error, msg:
             raise SmarterError("Could not connect to + " + self.host + " (" + msg[1] + ")")
@@ -179,7 +210,6 @@ class SmarterClient:
             self.monitor = threading.Thread(target=self.monitor_device)
             self.reading = False
             self.monitor.start()
-        self.connected = True
 
 
 
@@ -187,7 +217,8 @@ class SmarterClient:
         self.run = False
         if self.connected:
             try:
-                self.monitor.join()
+                if self.monitor:
+                    self.monitor.join()
                 self.socket.close()
             # FIX: Also except thread exceptions..
             except socket.error, msg:
@@ -321,7 +352,7 @@ class SmarterClient:
         from operator import itemgetter
     
         # most powerfull wifi on top
-        self.Wifi = sorted(w,key=itemgetter(1))
+        self.Wifi = sorted(w,key=itemgetter(1),reverse=True)
 
 
     def decode_ResponseCoffeeHistory(self,message):
@@ -331,7 +362,6 @@ class SmarterClient:
                 pass
         else:
             pass
-        print "Not yet implemented"
   
   
     def decode_ResponseKettleHistory(self,message):
@@ -352,15 +382,14 @@ class SmarterClient:
     
                 # CHECK THIS
                 
-                print str(self.historyHours) + ":" + str(self.historyMinutes)
-                print str(self.historyDay) + "-" + str(self.historyMonth) + "-" + str(self.historyYear)
+                #print str(self.historyHours) + ":" + str(self.historyMinutes)
+                #print str(self.historyDay) + "-" + str(self.historyMonth) + "-" + str(self.historyYear)
                 self.historySuccess = Smarter.raw_to_bool(message[i*32+13])
         else:
             self.historyTemperature = 0
             self.historyFormulaTemperature = 0
             self.historySuccess = False
             self.historyKeepWarmTime = 0
-        print "Not yet implemented"
 
 
 
@@ -394,9 +423,16 @@ class SmarterClient:
                 #print "[" + Smarter.raw_to_code(raw) + "]"
                 
                 i += 1
+            self.readBytesCount += i
             message += raw
             self.readMessage = message
             self.readCount += 1
+            
+            if id in self.responseCount:
+                self.responseCount[id] += 1
+            else:
+                self.responseCount[id] = 1
+        
             return message
 
         except socket.error, msg:
@@ -409,6 +445,7 @@ class SmarterClient:
     def read(self):
         message = self.read_message()
         id = Smarter.raw_to_number(message[0])
+        
         if   id == Smarter.ResponseKettleStatus:    self.decode_ResponseKettleStatus(message)
         elif id == Smarter.ResponseCoffeeStatus:    self.decode_ResponseCoffeeStatus(message)
         elif id == Smarter.ResponseCommandStatus:   self.decode_ResponseCommandStatus(message)
@@ -441,7 +478,15 @@ class SmarterClient:
         except socket.error, msg:
             raise SmarterError("Could not read message (" + msg[1] + ")")
 
+        self.sendBytesCount += len(message)
+
+        id = Smarter.raw_to_number(message[0])
         self.sendCount += 1
+        if id in self.commandCount:
+            self.commandCount[id] += 1
+        else:
+            self.commandCount[id] = 1
+
         self.sendMessage = message
         if self.dump:
             self.print_message_send(message)
@@ -461,6 +506,9 @@ class SmarterClient:
 
     @threadsafe_function
     def send(self,message):
+        while self.sending:
+            print "Waiting for send"
+            pass
         self.sending = True
         while self.reading:
             pass
@@ -788,28 +836,30 @@ class SmarterClient:
 
 
     def print_kettle_settings(self):
-        if self.isKettle:
-            print "Not yet implemented"
-            #print Smarter.temperature_to_string(self.defaultTemperature) + " "self.defaultFormula,Smarter.temperature_to_string(self.defaultFormulaTemperature),self.defaultKeepWarmTime)
-   
+        print Smarter.string_kettle_settings(self.defaultTemperature,self.defaultFormula, self.defaultFormulaTemperature,self.defaultKeepWarmTime)
 
-    def print_kettle_history(self):
-        self.print_history()
-    
-    def print_history(self):
-        # fix this
-        if self.historySuccess == -1:
+
+    def print_coffee_history(self):
+        if not self.historySuccess:
             print "No history available"
             return
-        s = ""
-        if not self.historySuccess:
-            s = "Failed to: "
+        print "Not yet implemented"
+
+
+    def print_history(self):
         if self.isKettle:
-            pass
+            self.print_kettle_history()
+        elif self.isCoffee:
+            self.print_coffee_history()
+
+
+    def print_kettle_history(self):
+        # fix this
+        if not self.historySuccess:
+            print "No history available"
+            return
+        print "Not yet implemented"
             #print s + Smarter.string_kettle_settings(self.historyTemperature, self.historyFormulaTemperature , self.historyFormulaTemperature,self.historyKeepWarmTime)
-        elif isCoffee:
-            print "Not yet implemented"
-            pass
 
 
     def print_short_kettle_status(self):

@@ -495,6 +495,10 @@ class VersionHandler(GenericAPIHandler):
                      'copyright'  : { 'year'   : '2016',
                                       'holder' : 'Tristan Crispijn'
                                     }
+                     #for client in clients:
+                     
+                     #'statistics' : { 'ip'     : s
+                     #               }
                     }
         self.setContentType()
         self.write(response)
@@ -513,12 +517,7 @@ class iBrewWeb(tornado.web.Application):
     def start(self):
         tornado.ioloop.IOLoop.instance().start()
     
-    def run(self):
-        import threading
-        t = threading.Thread(target=self.start)
-        t.start()
-
-
+    
     def kill(self):
     
         for ip in self.clients:
@@ -535,90 +534,101 @@ class iBrewWeb(tornado.web.Application):
                 io_loop.stop()
     
         stop_loop()
+        
+        self.thread.join()
+    
  
- 
-    def __init__(self,port,dump=False,host=""):
+    def run(self,port,dump=False,host=""):
         self.port = port
-        
-        devices = SmarterClient().find_devices()
-        self.clients = dict()
-        
-        for device in devices:
-            client = SmarterClient()
-            client.dump = dump
-            if dump:
-                client.dump_status = True
-            client.host = device[0]
-            client.init_default()
-            self.clients[device[0]] = client
-            print "iBrew Web Server: " + client.string_connect_status()
-        
-        if host != "":
-            ip = socket.gethostbyname(host)
-            print host
-            print ip
-            print self.application.clients
-            if not ip in self.application.clients:
-                client = SmarterClient()
-                client.host = host
-                client.dump = dump
-                if dump:
-                    client.dump_status = True
-                client.init_default()
-                self.clients[ip] = client
-                print "iBrew Web Server: " + client.string_connect_status()
-
+        self.isRunning = False
         try:
-            self.listen(self.port, no_keep_alive = True)
+            try:
+                self.listen(self.port, no_keep_alive = True)
+            except:
+                raise SmarterError("Web Server: Couldn't open socket on port" + str(self.port))
+                return
+            
+            devices = SmarterClient().find_devices()
+            self.clients = dict()
+            
+            for device in devices:
+                client = SmarterClient()
+                client.dump = dump
+                client.dump_status = dump
+                client.host = device[0]
+                client.init_default()
+                self.clients[device[0]] = client
+                print "iBrew Web Server: " + client.string_connect_status()
+            
+            if host != "":
+                ip = socket.gethostbyname(host)
+                print host
+                print ip
+                print self.application.clients
+                if not ip in self.application.clients:
+                    client = SmarterClient()
+                    client.host = host
+                    client.dump = dump
+                    client.dump_status = dump
+                    client.init_default()
+                    self.clients[ip] = client
+                    print "iBrew Web Server: " + client.string_connect_status()
+
+
+
+            settings = {
+                    "debug": True,
+                    "static_path": os.path.join(os.path.dirname(__file__), "web/static")
+                }
+
+            handlers = [
+                (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/status/?",DeviceHandler),
+                (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/calibrate/?",CalibrateHandler),
+                (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/calibrate/base/?",CalibrateBaseHandler),
+                (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/calibrate/base/([0-9]+)/?",CalibrateStoreBaseHandler),
+                
+                (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/carafe/?",CarafeHandler),
+                (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/singlecup/?",SingleCupHandler),
+                (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/hotplate/([0-9]+)/?",HotPlateHandler),
+                (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/cups/([0-9]+)/?",CupsHandler),
+                (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/grinder/?",GrinderHandler),
+                (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/strength/(weak|normal|strong)/?",StrengthHandler),
+                
+                (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/scan/?",WifiScanHandler),
+                (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/join/(.+)/(.*)/?",WifiJoinHandler),
+                (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/leave/?",WifiLeaveHandler),
+                
+                (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/start/?",StartHandler),
+                (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/stop/?",StopHandler),
+                (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/joke/?",JokeHandler),
+                
+                (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/?",SettingsHandler),
+                (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/default/?",SettingsDefaultHandler),
+                (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/([0-9]+)/([0-9]+)/([0-9]+)/([0-9]+)/?",StoreSettingsHandler),
+                
+                (r"/api/version/?",           VersionHandler),
+                (r"/api/devices/?",           DevicesHandler),
+                (r"/api/joke/?",              JokeHandler),
+                (r"/api/?",                   WebAPIHandler),
+                (r"/api/?.*",                 UnknownHandler),
+    #            (r"/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/?",WebSettingsHandler),
+       
+                (r"/",                        WebMainHandler),
+                     #(r"/login",             LoginHandler),
+                (r"/(.*)",                    GenericPageHandler),
+
+                
+            ]
+
+            tornado.web.Application.__init__(self, handlers, **settings)
         except:
-            print  "iBrew Web Server: Couldn't open socket on port" + str(self.port)
-        
+            raise SmarterError("Web Server: Couldn't start" + str(self.port))
 
-        settings = {
-                "debug": True,
-                "static_path": os.path.join(os.path.dirname(__file__), "web/static")
-            }
-
-        handlers = [
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/status/?",DeviceHandler),
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/calibrate/?",CalibrateHandler),
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/calibrate/base/?",CalibrateBaseHandler),
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/calibrate/base/([0-9]+)/?",CalibrateStoreBaseHandler),
-            
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/carafe/?",CarafeHandler),
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/singlecup/?",SingleCupHandler),
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/hotplate/([0-9]+)/?",HotPlateHandler),
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/cups/([0-9]+)/?",CupsHandler),
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/grinder/?",GrinderHandler),
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/strength/(weak|normal|strong)/?",StrengthHandler),
-            
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/scan/?",WifiScanHandler),
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/join/(.+)/(.*)/?",WifiJoinHandler),
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/leave/?",WifiLeaveHandler),
-            
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/start/?",StartHandler),
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/stop/?",StopHandler),
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/joke/?",JokeHandler),
-            
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/?",SettingsHandler),
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/default/?",SettingsDefaultHandler),
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/([0-9]+)/([0-9]+)/([0-9]+)/([0-9]+)/?",StoreSettingsHandler),
-            
-            (r"/api/version/?",           VersionHandler),
-            (r"/api/devices/?",           DevicesHandler),
-            (r"/api/joke/?",              JokeHandler),
-            (r"/api/?",                   WebAPIHandler),
-            (r"/api/?.*",                 UnknownHandler),
-#            (r"/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/?",WebSettingsHandler),
-   
-            (r"/",                        WebMainHandler),
-                 #(r"/login",             LoginHandler),
-            (r"/(.*)",                    GenericPageHandler),
-
-            
-        ]
-
-        tornado.web.Application.__init__(self, handlers, **settings)
-        
     #    bonjour = iBrewBonjourThread(self.port)
     #    bonjour.start()
+        try:
+            import threading
+            self.thread = threading.Thread(target=self.start)
+            self.thread.start()
+        except:
+            raise SmarterError("Web Server: Couldn't start" + str(self.port))
