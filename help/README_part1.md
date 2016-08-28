@@ -19,12 +19,15 @@ This means your machine is free! You can connect it yourself and do whatever you
  
 #### Upcoming   
  * Better error handling (sometimes it does not quit, and the exceptions are not handled :-)
- * Brew, heat, formula arguments (I have to figure out what is what, one cup at a time...)
+ * Brew, heat, formula arguments (I have to figure out what is what, one cup at a time... if you look closely the most basic functionality was/is not present, the network code is fixed ;-)
  * Time arguments (have not figured that out)
  * Auto-reconnect (pretty important)
  * Web interface & rest api (rest almost finished, web interface still have to create some pages) and introduce webroot & api key...
  * History message is not finished
  * Fahrenheid not finished, please to not use.
+ * can't start the web interface twice in console (i probably did not clean up)
+ * if you send a message with an if of a response as command it displays the response info
+ * and the threading code is still wrong, sometimes I get stuff twice... or it hangs on waiting to send...
  * v0.5 Missing Coffee Smarter codes (!)
  
  
