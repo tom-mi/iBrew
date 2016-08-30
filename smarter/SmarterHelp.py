@@ -148,10 +148,10 @@ class SmarterProtocolHelp:
             print
             print "  STATUSKETTLE"
             print "    00 Ready"
-            print "    01 Boiling"
-            print "    02 Keep Warm"
-            print "    03 Cycle Finished"
-            print "    04 Baby Cooling"
+            print "    01 Heating water"
+            print "    02 Keep warm"
+            print "    03 Cycle finished"
+            print "    04 Baby cooling"
             print
             print "  TEMPERATURE"
             print "    00..64  0..100ºC"
@@ -160,8 +160,8 @@ class SmarterProtocolHelp:
             print "  WATERSENSOR = WATERSENSORHIGHBITS * 256 + WATERSENSORLOWBITS  [0..4095]"
         
         elif id == Smarter.CommandHeat:
-            print "  if it's warming you have to send an off command to boil again"
-            print "  if it's not on temp it boils first before warming..."
+            print "  if it's warming you have to send an off command to heat again"
+            print "  if it's not on temp it heats first before warming..."
             print
             print "  Argument: <TEMPERATURE><KEEPWARMTIME>"
             print
@@ -178,7 +178,7 @@ class SmarterProtocolHelp:
             print "  Example: 16 7e"
             
         elif id == Smarter.CommandHeatFormula:
-            print "  Boil water to (default user temperature)"
+            print "  Heats water to (default user temperature)"
             print  " and cool until the formula temperature and then keep it warm."
             print
             print "  Arguments: <FORMULATEMPERATURE><KEEPWARMTIME>"
@@ -219,7 +219,7 @@ class SmarterProtocolHelp:
             print
             
         elif id == Smarter.Command20:
-            print "  This setting ignores the user setting and boils till 100C"
+            print "  This setting ignores the user setting and heats untill the tempeature is 100ºC"
             print
             print "  Example raw code: 20 7e"
             
@@ -258,9 +258,7 @@ class SmarterProtocolHelp:
             print "  Example: 46 7e"
         
         elif id == Smarter.ResponseCoffeeHistory:
-            print "  The payload is generated everytime the coffee machine brews. The actioncounter increases with every boil"
-            print "  Formula temperature is above 0 then it was boilded with formula temperature enabled. There seems to be some"
-            print "  packed time available."
+            print "  The payload is generated everytime the coffee machine brews. The actioncounter increases with every brewing?"
             print
             print "  Payload maximum is 8. So if 8 check again, if there is more history"
             print "  month checked only accepts value from 1..0c"
@@ -303,8 +301,8 @@ class SmarterProtocolHelp:
             print "                 01 00 00 0c 0c 00 19 00 01 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7d 7e"
            
         elif id == Smarter.ResponseKettleHistory:
-            print "  The payload is generated everytime the kettle stops boiling. The actioncounter increases with every boil"
-            print "  Formula temperature is above 0 then it was boilded with formula temperature enabled. There seems to be some"
+            print "  The payload is generated everytime the kettle stops heating. The actioncounter increases with every heating?"
+            print "  Formula temperature is above 0 then it was heated with formula temperature enabled. There seems to be some"
             print "  packed time available."
             print
             print "  Payload maximum is 8. So if 8 check again, if there is more history"
@@ -330,7 +328,7 @@ class SmarterProtocolHelp:
             print "    00..64  0..100ºC"
             print
             print "  ACTIONCOUNTER"
-            print "    00..ff  Amount of boils before off base"
+            print "    00..ff  Amount of heatings before off base"
             print
             print "  SECONDS"
             print "    00..3b"
@@ -558,10 +556,10 @@ class SmarterProtocolHelp:
             print
             print "  STATUSKETTLE"
             print "    00 Ready"
-            print "    01 Boiling"
-            print "    02 Keep Warm"
-            print "    03 Cycle Finished"
-            print "    04 Baby Cooling"
+            print "    01 Heating water"
+            print "    02 Keep warm"
+            print "    03 Cycle finished"
+            print "    04 Baby cooling"
             print
             print "  WATERSENSOR = WATERSENSORHIGHBITS * 256 + WATERSENSORLOWBITS"
             print
@@ -574,7 +572,7 @@ class SmarterProtocolHelp:
             print "    22 Beans, No carafe               #  00100010"
             print "    45 Filter, Done                   #  01000101 <-- from here actions"
             print "    47 Beans, Done                    #  01000111"
-            print "    53 Boiling                        #  01010011"
+            print "    53 Heating water                  #  01010011"
             print "    60 Filter, No carafe, Hotplate On #  01100000"
             print "    61 Filter, Hotplate On            #  01100001"
             print "    62 Beans, No carafe, Hotplate On  #  01100010"
@@ -593,7 +591,7 @@ class SmarterProtocolHelp:
             print "  BIT 0 = UNKNOWN/UNUSED?"
             print "  BIT 1 = ACTION???"
             print "  BIT 2 = HOTPLATE"
-            print "  BIT 3 = Boiling & Descaling (USES BIT 6)"
+            print "  BIT 3 = Heating & Descaling (USES BIT 6)"
             print "  BIT 4 = UNKNOWN/UNUSED?"
             print "  BIT 5 = READY/BUSY (OK TO START, FINISHED = 1 else 0)"
             print "  BIT 6 = FILTER/BEANS"
@@ -771,14 +769,14 @@ class SmarterProtocolHelp:
   Security:
 
     iKettle 2.0:
-         *  It will boil empty, making the lights bulbs to flikker.
+         *  It will heat up empty, making the lights bulbs to flikker.
          *  You can easily knock out it's connection to the wireless network,
             if it fails to connect it creates an default open unencrypted wifi access point 
             (check!, could be that wifi was not connecting, then this is rubbish ;-).
 
             Attack Vectors
             1. Repeat sending heat to 100ºC temperature commands, if we're lucky
-               there is no water and it will boil empty, if not it will take a while.
+               there is no water and it will heat up empty, if not it will take a while.
                plus the kettle will get warmer and warmer. If you do not expect that when touching.
             2. Alternating heat and stop commands.
             3. (Check) Wait until the owner of the kettle log in on the kettle, since its an
@@ -791,7 +789,7 @@ class SmarterProtocolHelp:
     atleast 500ms is recommended.
     
 
-  Water Boiling:
+  Water Heating:
   
     From smarter website the temperature that can be set is between 20 and 100. We still need to read lower 
     values for cold water in the kettle

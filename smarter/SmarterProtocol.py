@@ -1,5 +1,6 @@
 # -*- coding: utf8 -*-
 
+import traceback
 import struct
 
 #------------------------------------------------------
@@ -21,9 +22,52 @@ import struct
 #------------------------------------------------------
 
 
+KettleNoMachineHeat             = 30
+KettleNoMachineOff              = 31
+KettleNoMachineSettings         = 32
+KettleNoMachineStoreSettings    = 33
+KettleNoMachineHistory          = 34
+CoffeeNoMachineStrength         = 50
+CoffeeNoMachineGrinder          = 51
+CoffeeNoMachineCups             = 52
+CoffeeNoMachineHotplateOn       = 53
+CoffeeNoMachineHotplateOff      = 54
+CoffeeNoMachinesBrew            = 55
+CoffeeNoMachineOff              = 56
+CoffeeNoMachineSettings         = 57
+CoffeeNoMachineStoreSettings    = 58
+CoffeeNoMachineHistory          = 59
+CoffeeNoMachineSingleCupMode    = 60
+CoffeeNoMachineCarafe           = 61
+KettleFailedStoreSettings       = 70
+CoffeeFailedStoreSettings       = 90
+
+ConvertRawNumber                = 110
+ConvertNumberRaw                = 111
+ConvertCodeNumber               = 112
+ConvertNumberCode               = 113
+
+WebServerListen                 = 120
+WebServerStartFailed            = 121
+
+WebServerStopMonitor            = 122
+WebServerStopMonitorWeb         = 123
+WebServerStopWeb                = 124
+
+SmarterClientFailedStop         = 125
+SmarterClientFailedStopThread   = 126
+
+
 class SmarterError(Exception):
-    def __init__(self, arg):
-        self.msg = arg
+
+    def __init__(self, msg):
+        self.msg = msg
+        self.err = err
+
+
+class SmarterErrorOld(Exception):
+    def __init__(self, msg):
+        self.msg = msg
 
 
 #------------------------------------------------------
@@ -211,7 +255,7 @@ class SmarterProtocol:
         elif self.message_is_command(id):
             return self.CommandMessages[id][3]
         else:
-            return "Unknown Message"
+            return "Unknown message"
 
 
     def message_connection(self,id):
@@ -287,7 +331,7 @@ class SmarterProtocol:
 
 
     KettleReady               = 0x00
-    KettleBoiling             = 0x01
+    KettleHeating             = 0x01
     KettleKeepWarm            = 0x02
     KettleCycleFinished       = 0x03
     KettleBabyCooling         = 0x04
@@ -295,7 +339,7 @@ class SmarterProtocol:
 
     StatusKettle = {
         KettleReady             : "Ready",
-        KettleBoiling           : "Boiling",
+        KettleHeating           : "Heating",
         KettleKeepWarm          : "Keep Warm",
         KettleCycleFinished     : "Cycle Finished",
         KettleBabyCooling       : "Baby Cooling"
@@ -310,7 +354,7 @@ class SmarterProtocol:
 
 
     def string_kettle_settings(self, temperature,  formula, formulatemperature, keepwarmtime):
-        message = "Boil water to " + str(temperature) +  "ºC"
+        message = "Heat water to " + str(temperature) +  "ºC"
         if formula:
             sep = ""
             if keepwarmtime > 0:
@@ -326,7 +370,7 @@ class SmarterProtocol:
 
 
     CoffeeDescaling           = 0x51
-    CoffeeBoiling             = 0x53
+    CoffeeHeating             = 0x53
 
 
     StatusCoffee = {
@@ -338,7 +382,7 @@ class SmarterProtocol:
         0x22                   : "Beans, No carafe",
         0x45                   : "Filter, Done",
         0x47                   : "Beans, Done",
-        CoffeeBoiling          : "Boiling",
+        CoffeeHeating          : "Heating water",
         0x60                   : "Filter, No carafe, Hotplate On",
         0x61                   : "Filter, Hotplate On",
         0x62                   : "Beans, No carafe, Hotplate On",
@@ -393,21 +437,20 @@ class SmarterProtocol:
         try:
             return struct.unpack('B',raw)[0]
         except:
-            raise SmarterError("Could not convert raw data to number")
-
+            raise SmarterError(ConvertRawNumber,"Could not convert raw data to number")
 
     def number_to_raw(self,number):
         try:
             i = int(number)
         except:
-            raise SmarterError("Could not convert number to raw data")
+            raise SmarterError(ConvertNumberRaw,"Could not convert number to raw data")
         
         if number < 0 or number > 256:
-            raise SmarterError("Could not to convert number " + str(number) + " to raw data, because it is out of range [0..255]")
+            raise SmarterError(ConvertNumberRaw,"Could not to convert number " + str(number) + " to raw data, because it is out of range [0..255]")
         try:
             return struct.pack('B',number)
         except:
-            raise SmarterError("Could not convert number to raw data: " + str(number))
+            raise SmarterError(ConvertNumberRaw,"Could not convert number to raw data: " + str(number))
 
 
     def raw_to_code(self,raw):
@@ -422,14 +465,14 @@ class SmarterProtocol:
         try:
             return int(code,16)
         except:
-            raise SmarterError("Could not convert code to number")
+            raise SmarterError(ConvertCodeNumber,"Could not convert code to number: " + code )
 
 
     def number_to_code(self,number):
         try:
             code = hex(number)[2:4]
         except:
-            raise SmarterError("Could not convert number to code: " + str(number))
+            raise SmarterError(ConvertNumberCode,"Could not convert number to code: " + str(number))
         if number < 16:
             return '0' + code
         return code
@@ -464,7 +507,7 @@ class SmarterProtocol:
             try:
                 raw += self.raw_to_code(message[i])
             except:
-                raise SmarterError("Could not decode message at position: " + str(i))
+                raise SmarterErrorOld("Could not decode message at position: " + str(i))
             if space and i != len(message)-1:
                 raw += " "
         return raw
@@ -483,20 +526,20 @@ class SmarterProtocol:
                 try:
                     message += self.code_to_raw(code[i*2]+code[i*2+1])
                 except:
-                    print SmarterError("Could not encode code \'" + code + "\' at position: " + str(i*2+1))
+                    print SmarterErrorOld("Could not encode code \'" + code + "\' at position: " + str(i*2+1))
  
         elif len(code) % 3 == 2:
             for i in range(0,(len(code) / 3)+1):
                 if i > 0:
                     if code[i*3-1] != ' ':
-                        raise SmarterError("Expected space character in code  \'" + code + "\' at position: " + str(i*3)+1)
+                        raise SmarterErrorOld("Expected space character in code  \'" + code + "\' at position: " + str(i*3)+1)
                 try:
                     message += self.code_to_raw(code[i*3]+code[i*3+1])
                 except:
-                    raise SmarterError("Could not encode code \'" + code + "\' at position: " + str(i*3+1))
+                    raise SmarterErrorOld("Could not encode code \'" + code + "\' at position: " + str(i*3+1))
     
         else:
-            raise SmarterError("Missing character in code \'" + code + "\'  at position: " + str(len(code)+1))
+            raise SmarterErrorOld("Missing character in code \'" + code + "\'  at position: " + str(len(code)+1))
 
         return message
     
@@ -568,7 +611,7 @@ class SmarterProtocol:
         if strength == self.CoffeeMedium or strength == self.CoffeeStrong or strength == self.CoffeeWeak:
             return strength
         else:
-            raise SmarterError("Invalid coffee strength [weak, medium, strong]: " + strength)
+            raise SmarterErrorOld("Invalid coffee strength [weak, medium, strong]: " + strength)
 
     def strength_to_raw(self,strength):
         return self.number_to_raw(self.check_strength(strength))
@@ -590,7 +633,7 @@ class SmarterProtocol:
         elif strength.strip().lower() == "strong":
             raw = self.CoffeeStrong
         else:
-            raise SmarterError("Invalid coffee strength [weak, medium, strong]: " + strength)
+            raise SmarterErrorOld("Invalid coffee strength [weak, medium, strong]: " + strength)
 
 
 
@@ -621,9 +664,9 @@ class SmarterProtocol:
         # if self.Fahrenheid
         if temperature < 0 or temperature > 100 and not self.is_on_base(self.number_to_raw(temperature)):
             if self.Fahrenheid:
-                raise SmarterError("Temperature out of range ["+self.celsius_to_fahrenheid(0)+".."+self.celsius_to_fahrenheid(100)+"] ºK: " + str(temperature))
+                raise SmarterErrorOld("Temperature out of range ["+self.celsius_to_fahrenheid(0)+".."+self.celsius_to_fahrenheid(100)+"] ºK: " + str(temperature))
             else:
-                raise SmarterError("Temperature out of range [0..100] ºC: " + str(temperature))
+                raise SmarterErrorOld("Temperature out of range [0..100] ºC: " + str(temperature))
         return temperature
     
     
@@ -670,7 +713,7 @@ class SmarterProtocol:
             else:
                 return int(temperature)
         except:
-            raise SmarterError("Temperature is not a number: " + string)
+            raise SmarterErrorOld("Temperature is not a number: " + string)
 
 
 
@@ -683,11 +726,11 @@ class SmarterProtocol:
         try:
             return int(string)
         except:
-            raise SmarterError("Hotplate timer is not a number: " + string)
+            raise SmarterErrorOld("Hotplate timer is not a number: " + string)
 
     def check_hotplate(self,timer):
         if timer != 0 and (timer < 5 or timer > 40):
-            raise SmarterError("Hotplate timer out of range [0] or [5..40] minutes: " + str(timer))
+            raise SmarterErrorOld("Hotplate timer out of range [0] or [5..40] minutes: " + str(timer))
         return timer
 
 
@@ -707,12 +750,12 @@ class SmarterProtocol:
         try:
             return int(string)
         except:
-            raise SmarterError("Keepwarm timer is not a number: " + string)
+            raise SmarterErrorOld("Keepwarm timer is not a number: " + string)
 
 
     def check_keepwarm(self,timer):
         if timer != 0 and (timer < 5 or timer > 20):
-            raise SmarterError("Kettle keep warm timer out of range [0] or [5..20] minutes: " + str(timer))
+            raise SmarterErrorOld("Kettle keep warm timer out of range [0] or [5..20] minutes: " + str(timer))
         return timer
 
 
@@ -730,7 +773,7 @@ class SmarterProtocol:
 
     def check_watersensor(self, watersensor):
         if watersensor < 0 or watersensor > 4095:
-            raise SmarterError("Watersensor out of range [0..4095]")
+            raise SmarterErrorOld("Watersensor out of range [0..4095]")
         return watersensor
         
     def raw_to_watersensor(self,raw_low,raw_high):
@@ -744,7 +787,7 @@ class SmarterProtocol:
         try:
             watersensor = int(string)
         except:
-            raise SmarterError("Not a watersensor value")
+            raise SmarterErrorOld("Not a watersensor value")
         return self.check_watersensor(watersensor)
  
  
@@ -755,7 +798,7 @@ class SmarterProtocol:
     def raw_to_bool(self,raw):
         bool = self.raw_to_number(raw)
         if bool > 1:
-            raise SmarterError("Not a boolean value: " + str(int))
+            raise SmarterErrorOld("Not a boolean value: " + str(int))
         if bool == 1:
             return True
         return False
@@ -772,7 +815,7 @@ class SmarterProtocol:
     def check_cups(self,cups_raw):
         cups = cups_raw % 12
         if cups < 1 or cups > 12:
-            raise SmarterError("Unknown coffee cups [1..12]: " + str(cups))
+            raise SmarterErrorOld("Unknown coffee cups [1..12]: " + str(cups))
         return cups
 
 
@@ -788,7 +831,7 @@ class SmarterProtocol:
         try:
             cups = int(string)
         except:
-            raise SmarterError("Unknown coffee cups [1..12]: " + string)
+            raise SmarterErrorOld("Unknown coffee cups [1..12]: " + string)
         return self.check_cups(cups)
 
 
@@ -839,7 +882,7 @@ class SmarterProtocol:
             else:
                 return 2 * (dBm + 100)
         except:
-            raise SmarterError("Unknown Wifi signal (dBm) strength: " + str(dBm))
+            raise SmarterErrorOld("Unknown Wifi signal (dBm) strength: " + str(dBm))
 
     def bytes_to_human(self,size_bytes):
         

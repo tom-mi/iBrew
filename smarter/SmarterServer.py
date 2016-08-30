@@ -96,7 +96,7 @@ class SmarterServer:
             networksocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             networksocket.bind(("",self.port))
         except socket.error, msg:
-            raise SmarterError("Could not bind (" + msg[1] + ")")
+            raise SmarterErrorOld("Could not bind (" + msg[1] + ")")
         self.socket = networksocket
         self.running = True
 
@@ -107,7 +107,7 @@ class SmarterServer:
             try:
                 self.socket.close()
             except socket.error, msg:
-                raise SmarterError("Could not disconnect server (" + msg[1] + ")")
+                raise SmarterErrorOld("Could not disconnect server (" + msg[1] + ")")
 
 
     def run(self):
@@ -241,7 +241,7 @@ class SmarterServer:
 
 
     def decode_CommandBrew(self,message):
-        self.coffeeStatus = Smarter.CoffeeBoiling
+        self.coffeeStatus = Smarter.CoffeeHeating
         self.send_succes()
 
 
@@ -256,7 +256,7 @@ class SmarterServer:
 
 
     def decode_CommandBrewDefault(self,message):
-        self.coffeeStatus = Smarter.CoffeeBoiling
+        self.coffeeStatus = Smarter.CoffeeHeating
         self.send_succes()
 
 
@@ -277,17 +277,17 @@ class SmarterServer:
 
 
     def decode_CommandHeat(self,message):
-        self.kettleStatus = Smarter.KettleBoiling
+        self.kettleStatus = Smarter.KettleHeating
         self.send_succes()
 
 
     def decode_CommandHeatFormula(self,message):
-        self.kettleStatus = Smarter.KettleBoiling
+        self.kettleStatus = Smarter.KettleHeating
         self.send_succes()
 
 
     def decode_CommandHeatDefault(self,message):
-        self.kettleStatus = Smarter.KettleBoiling
+        self.kettleStatus = Smarter.KettleHeating
         self.send_succes()
 
 
@@ -379,7 +379,7 @@ class SmarterServer:
             return message
 
         except socket.error, msg:
-            raise SmarterError("Could not read message (" + msg[1] + ")")
+            raise SmarterErrorOld("Could not read message (" + msg[1] + ")")
 
 
     # MESSAGE READ PROTOCOL
@@ -436,9 +436,9 @@ class SmarterServer:
             elif len(message) > 0:
                 self.socket.send(message+Smarter.number_to_raw(Smarter.MessageTail))
             else:
-                raise SmarterError("Cannot send an empty message")
+                raise SmarterErrorOld("Cannot send an empty message")
                 return
         except socket.error, msg:
-            raise SmarterError("Could not read message (" + msg[1] + ")")
+            raise SmarterErrorOld("Could not read message (" + msg[1] + ")")
         else
             self.sendMessage = message

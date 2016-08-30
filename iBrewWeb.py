@@ -122,6 +122,7 @@ class DeviceHandler(GenericAPIHandler):
     def get(self, ip):
         if ip in self.application.clients:
             client = self.application.clients[ip]
+            respons = None
             if client.isKettle:
                 response = { 'device'      : encodeDevice(client.deviceId,client.version),
                              'firmware'    : encodeFirmware(client.deviceId,client.version),
@@ -518,24 +519,40 @@ class iBrewWeb(tornado.web.Application):
         tornado.ioloop.IOLoop.instance().start()
     
     
+    def __del__(self):
+        self.kill()
+    
+    
     def kill(self):
     
-        for ip in self.clients:
-            self.clients[ip].disconnect()
-        
+        try:
+            for ip in self.clients:
+                self.clients[ip].disconnect()
+        except:
+            SmarterError(WebServerStopMonitor,"Web Server: Could not stop monitors")
+
         deadline = time.time() + 3
-        io_loop = tornado.ioloop.IOLoop.instance()
+        try:
+            io_loop = tornado.ioloop.IOLoop.instance()
      
-        def stop_loop():
-            now = time.time()
-            if now < deadline and (io_loop._callbacks or io_loop._timeouts):
-                io_loop.add_timeout(now + 1, stop_loop)
-            else:
-                io_loop.stop()
-    
-        stop_loop()
+            def stop_loop():
+                now = time.time()
+                if now < deadline and (io_loop._callbacks or io_loop._timeouts):
+                    io_loop.add_timeout(now + 1, stop_loop)
+                else:
+                    io_loop.stop()
         
-        self.thread.join()
+            stop_loop()
+
+        except:
+            SmarterError(WebServerStopMonitorWeb,"Web Server: Could not stop webserver monitor")
+
+        print "kill"
+        try:
+            self.thread.join()
+        except:
+            SmarterError(WebServerStopWeb,"Web Server: Could not stop webserver")
+        
     
  
     def run(self,port,dump=False,host=""):
@@ -545,7 +562,7 @@ class iBrewWeb(tornado.web.Application):
             try:
                 self.listen(self.port, no_keep_alive = True)
             except:
-                raise SmarterError("Web Server: Couldn't open socket on port" + str(self.port))
+                raise SmarterError(WebServerListen,"Web Server: Couldn't open socket on port" + str(self.port))
                 return
             
             devices = SmarterClient().find_devices()
@@ -622,7 +639,7 @@ class iBrewWeb(tornado.web.Application):
 
             tornado.web.Application.__init__(self, handlers, **settings)
         except:
-            raise SmarterError("Web Server: Couldn't start" + str(self.port))
+            raise SmarterError(WebServerStartFailed,"Web Server: Couldn't start" + str(self.port))
 
     #    bonjour = iBrewBonjourThread(self.port)
     #    bonjour.start()
@@ -631,4 +648,4 @@ class iBrewWeb(tornado.web.Application):
             self.thread = threading.Thread(target=self.start)
             self.thread.start()
         except:
-            raise SmarterError("Web Server: Couldn't start" + str(self.port))
+            raise SmarterError(WebServerStartFailed,"Web Server: Couldn't start" + str(self.port))

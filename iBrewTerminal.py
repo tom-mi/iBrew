@@ -802,7 +802,7 @@ class iBrewTerminal:
         print "    start                  start the device"
         print "    status                 show status"
         print "    settings               show user settings"
-        print "    stop                   stop the appliance if its brewing or boiling"
+        print "    stop                   stop the appliance"
         print "    time [time]            set the device time"
         print
         print "  iKettle 2.0 Commands"
@@ -813,7 +813,7 @@ class iBrewTerminal:
         print "    fahrenheid             use fahrenheid ºF [console only]"
         print "    formula ()()           heat kettle in formula mode"
         print "    heat ()()              heat kettle"
-        print "    stop kettle            stops boiling"
+        print "    stop kettle            stops heating"
         print "    settings [keepwarm] [temperature] [formula] [formulatemperature] store kettle user settings"
         print
         print "  SmarterCoffee  Commands"
@@ -875,25 +875,25 @@ class iBrewTerminal:
     Kettle on base (motion device)
     Kettle status (text device)
     
-  Currently you have to create your boil, brew switches yourself (working on it), so:
+  Currently you have to create your heat, brew switches yourself (working on it), so:
   
     Place or link iBrew in your domoticz script folder or somewhere readable and reachable.
     Run iBrew in domoticz bridge mode to auto create the 'smarter' dummy hardware.
     Go to [SETUP] [HARDWARE] press 'create virtual sensors' on the dummy hardware called 'smarter'
-    Give it a name (e.g. Kettle Boil) and select sensor type is switch.
+    Give it a name (e.g. Kettle Heating) and select sensor type is switch.
     Go to [SWITCHES], scroll all the way down.
     Select 'edit' on your newly created device.
       Switch Icon, well heating is nice!
       On Action:  script://locationibrew/iBrew on kettleip
       Off Action: script://locationibrew/iBrew off kettleip
       
-    You now have a functional boil/stop switch... 
+    You now have a functional heat/stop switch... 
     
     If you do not want a switch you can also create two push (on/off) buttons
     and fill in the action.
   
   If you use homebridge for domoticz (https://www.domoticz.com/forum/viewtopic.php?t=10272) you can use
-  apple homekit with the kettle. You have to create extra virtual sensor (motion boil???) because the text sensor is not supported
+  apple homekit with the kettle. You have to create extra virtual sensor (motion heat???) because the text sensor is not supported
   by homekit, all the other are.
   
 
@@ -927,11 +927,11 @@ class iBrewTerminal:
     def examples(self):
         print
         print "  Example:"
-        print "    off            Stop boiling/brewing"
+        print "    off            Stop heating/brewing"
         print "    messages       Show all protocol messages"
         print "    message 3e     Show protocol message 3a, turn hotplate on"
         print "    167E           Send kettle raw stop"
-        print "    21 30 05 7e    Send kettle raw boil"
+        print "    21 30 05 7e    Send kettle raw heat"
         print "    strength weak  Set coffee strength to weak"
         print "    cups 3         Set number of cups to brew"
         print
