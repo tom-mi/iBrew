@@ -60,7 +60,7 @@ SmarterClientFailedStopThread   = 126
 
 class SmarterError(Exception):
 
-    def __init__(self, msg):
+    def __init__(self, err, msg):
         self.msg = msg
         self.err = err
 

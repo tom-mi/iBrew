@@ -23,24 +23,6 @@ from SmarterProtocol import *
 #------------------------------------------------------
 
 
-def threadsafe_function(fn):
-    """decorator making sure that the decorated function is thread safe"""
-    lock = threading.Lock()
-    def new(*args, **kwargs):
-        
-        pass
-        
-        lock.acquire()
-        try:
-            r = fn(*args, **kwargs)
-        except Exception as e:
-            raise e
-        finally:
-            lock.release()
-        return r
-    return new
-
-
 #------------------------------------------------------
 # CLIENT INTERFACE CLASS
 #------------------------------------------------------
@@ -177,6 +159,7 @@ class SmarterClient:
                         # ...else got one! yeah! print it!
                 except:
                     # do something?
+                    print(traceback.format_exc())
                     print "There was an error"
                     self.disconnect()
                     #raise SmarterErrorOld("Monitor Error")
@@ -222,7 +205,6 @@ class SmarterClient:
     # MESSAGE READ
 
 
-    @threadsafe_function 
     def read_message(self):
         try:
             if not self.connected:
@@ -269,7 +251,6 @@ class SmarterClient:
 
     # MESSAGE READ PROTOCOL
 
-    @threadsafe_function 
     def read(self):
         message = self.read_message()
         id = Smarter.raw_to_number(message[0])
@@ -391,21 +372,19 @@ class SmarterClient:
         
  
     def connect(self):
-        
         self.disconnect()
         self.init()
         if self.host == "":
             self.host = Smarter.DirectHost
         try:
-            networksocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            networksocket.settimeout(15)
-            networksocket.connect((self.host, self.port))
+            self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.socket.settimeout(15)
+            self.socket.connect((self.host, self.port))
             self.connected = True
             self.connectCount += 1
+            print "Connecting..." + self.host
         except socket.error, msg:
             raise SmarterErrorOld("Could not connect to + " + self.host + " (" + msg[1] + ")")
-    
-        self.socket = networksocket
 
         if not self.fast and not self.monitor:
             import threading
@@ -417,20 +396,22 @@ class SmarterClient:
     def disconnect(self):
         self.run = False
         if self.connected:
+            self.connected = False
             try:
                 if self.monitor:
                     self.monitor.join()
-                self.socket.close()
-            # FIX: Also except thread exceptions..
-            except socket.error, msg:
-                raise SmarterError(SmarterClientFailedStop,"Could not disconnect from + " + self.host + " (" + msg[1] + ")")
             except:
                 print "X"
                 self.reading = False
                 self.sending = False
                 self.monitor = None
-                raise SmarterError(SmarterClientFailedStopThread,"Could not disconnect from + " + self.host + " (" + msg[1] + ")")
-        self.connected = False
+                raise SmarterError(SmarterClientFailedStopThread,"Could not disconnect from " + self.host)
+            try:
+                if self.socket:
+                    self.socket.close()
+            # FIX: Also except thread exceptions..
+            except socket.error, msg:
+                raise SmarterError(SmarterClientFailedStop,"Could not disconnect from " + self.host + " (" + msg[1] + ")")
  
 
 
@@ -613,7 +594,6 @@ class SmarterClient:
         self.send_command(Smarter.CommandBase)
 
 
-    @threadsafe_function
     def calibrate_store_base(self,base = 1000):
         self.send_command(Smarter.CommandStoreBase,Smarter.watersensor_to_raw(base))
         self.waterSensorBase = base

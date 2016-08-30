@@ -729,7 +729,7 @@ class iBrewTerminal:
                                             except:
                                                 print "iBrew: Sending raw command message failed"
         except Exception,e:
-            self.quit = True
+            #self.quit = True
             print str(e)
             print(traceback.format_exc())
             print "iBrew: Command Failed"
