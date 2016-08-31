@@ -440,7 +440,7 @@ class SmarterClient:
         wireless = Wireless()
         wirelessname = wireless.current()
         if wirelessname is not None:
-            if wirelessname[0:6] == "Coffee" or wirelessname[0:10] == "iKettle2.0":
+            if wirelessname[0:14] == "Smarter Coffee" or wirelessname[0:10] == "iKettle2.0":
                 self.isDirect = True
                 self.host = Smarter.DirectHost
             else:

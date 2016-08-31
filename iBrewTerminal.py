@@ -361,7 +361,10 @@ class iBrewTerminal:
                                             else:
                                                 self.client.kettle_formula_heat()
             elif command == "default":      self.client.device_restore_default()
-            elif command == "calibrate":    self.client.calibrate()
+            elif command == "calibrate":
+                                            if self.client.OnBase:
+                                                print "Please remove kettle for accurate calibration"
+                                            self.client.calibrate()
             elif command == "base":
                                             if numarg == 0:
                                                 self.client.calibrate_base()
