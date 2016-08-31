@@ -78,6 +78,7 @@ class SmarterClient:
         # Wifi
         self.Wifi                       = []
         self.WifiFirmware               = "None"
+        isDirect                        = False
 
 
     def __init__(self):
@@ -431,8 +432,23 @@ class SmarterClient:
         
  
     def connect(self):
+        
         self.disconnect()
         self.init()
+        
+        from wireless import Wireless
+        wireless = Wireless()
+        wirelessname = wireless.current()
+        if wirelessname is not None:
+            if wirelessname[0:6] == "Coffee" or wirelessname[0:10] == "iKettle2.0":
+                self.isDirect = True
+                self.host = Smarter.DirectHost
+            else:
+                self.isDirect = False
+        else:
+            self.isDirect = False
+        
+
         if self.host == "":
             self.host = Smarter.DirectHost
         try:
