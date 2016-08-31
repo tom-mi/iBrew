@@ -102,7 +102,7 @@ class SmarterClient:
         self.host                       = Smarter.DirectHost
         self.dump_status                = True
         self.dump                       = False
-                #set this to try is you want to connect send receive and don't care about the new status or other messages the about the out come, its disconnect afterwards....
+        #set this to try is you want to connect send receive and don't care about the new status or other messages the about the out come, its disconnect afterwards....
         self.fast                       = False
         #set this to try is you want to connect send and really do not care about the about the out come, its disconnect afterwards....
         self.shout                      = False
@@ -117,13 +117,8 @@ class SmarterClient:
         self.responseCount              = dict()
         
         # Threading info
-        #self.sending                    = False
-        #self.sendingMonitor             = False
-        #self.reading                    = False
-        
         self.lock                       = threading.Lock()
         self.connected                  = False
-        
         self.monitor                    = None
         self.run                        = False
         
@@ -394,7 +389,6 @@ class SmarterClient:
             self.disconnect()
             self.lock.release()
             return
-        # read until right message.... no threaded read
         
         # Smarter.message_connection(raw_to_number(self.readMessage[0])[0]
         try:
@@ -421,7 +415,6 @@ class SmarterClient:
  
     @threadsafe_function
     def connect(self):
-        print "Called Connect"
         self.disconnect()
         self.init()
         
@@ -444,7 +437,6 @@ class SmarterClient:
         if self.host == "":
             self.host = Smarter.DirectHost
         try:
-            print "Connecting..." + self.host
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.socket.settimeout(10)
             self.socket.connect((self.host, self.port))
@@ -455,7 +447,6 @@ class SmarterClient:
 
         if not self.fast and (not self.monitor or self.monitor.isAlive()):
             import threading
-            print "fff"
             self.monitor = threading.Thread(target=self.monitor_device)
             self.reading = False
             self.monitor.start()
@@ -471,11 +462,9 @@ class SmarterClient:
             try:
                 if self.monitor.isAlive():
                     self.monitor.join()
-                    self.monitor = None
+                self.monitor = None
             except:
                 print "X"
-                self.reading = False
-                self.sending = False
                 self.monitor = None
                 raise SmarterError(SmarterClientFailedStopThread,"Could not disconnect from " + self.host)
             try:
