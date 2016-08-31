@@ -572,7 +572,8 @@ class iBrewWeb(tornado.web.Application):
 
         print "kill"
         try:
-            self.thread.join()
+            if self.thread.isAlive():
+                self.thread.join()
         except:
             SmarterError(WebServerStopWeb,"Web Server: Could not stop webserver")
         

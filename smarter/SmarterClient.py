@@ -24,6 +24,21 @@ from SmarterProtocol import *
 #------------------------------------------------------
 
 
+def threadsafe_function(fn):
+    """decorator making sure that the decorated function is thread safe"""
+    lock = threading.Lock()
+    def new(*args, **kwargs):
+        
+        lock.acquire()
+        try:
+            r = fn(*args, **kwargs)
+        except Exception as e:
+            raise e
+        finally:
+            lock.release()
+        return r
+    return new
+
 #------------------------------------------------------
 # CLIENT INTERFACE CLASS
 #------------------------------------------------------
@@ -31,6 +46,8 @@ from SmarterProtocol import *
 class SmarterClient:
     
     def init(self):
+    
+    
         # network
         self.port                       = Smarter.Port
         
@@ -100,13 +117,16 @@ class SmarterClient:
         self.responseCount              = dict()
         
         # Threading info
-        self.sending                    = False
-        self.sendingMonitor             = False
-        self.reading                    = False
+        #self.sending                    = False
+        #self.sendingMonitor             = False
+        #self.reading                    = False
+        
+        self.lock                       = threading.Lock()
         self.connected                  = False
+        
         self.monitor                    = None
         self.run                        = False
-  
+        
         self.init()
 
 
@@ -135,7 +155,6 @@ class SmarterClient:
 
 
     def monitor_device(self):
-        self.reading = False
         
         previousResponse = ""
         previousWaterSensor = self.waterSensor
@@ -150,20 +169,10 @@ class SmarterClient:
         monitorCount = 0
         self.run = True
    
-        #printsend = True
-        #printmonitor = True
         timeout = 40
         while self.run:
-            self.reading = True
-            if not self.sending:
-                
-                #if printmonitor:
-                #    print "Monitor Read"
-                
-                #printmonitor = False
-                
-                #printsend = True
-                
+ 
+                self.lock.acquire()
                 try:
                     response = self.read()
                     monitorCount += 1
@@ -172,34 +181,36 @@ class SmarterClient:
                         # call monitor function
                         # ...else got one! yeah! print it!
                 except:
-                    # do something?
-                    print(traceback.format_exc())
                     print "There was an error"
                     self.disconnect()
+                    time.sleep(4)
                     self.connect()
                     #raise SmarterErrorOld("Monitor Error")
+                finally:
+                    self.lock.release()
+                
                 
                 dump = self.dump
+                
                 
                 if self.dump_status:
                     self.dump = True;
                 else:
                     self.dump = False;
-                
+
+
                 if monitorCount % timeout == timeout - 1:
-                    if self.isKettle:   self.send_message(Smarter.number_to_raw(Smarter.CommandBase))
-                    if self.isCoffee:   self.send_message(Smarter.number_to_raw(Smarter.CommandSingleCupMode))
+                    if self.isKettle:   self.calibrate_base()
+                    if self.isCoffee:   self.coffee_carafe()
 
                 if monitorCount % timeout == timeout - 9:
-                    if self.isCoffee:   self.send_message(Smarter.number_to_raw(Smarter.CommandCarafe))
+                    if self.isCoffee:   self.coffee_single_cup_mode()
 
                 if monitorCount % timeout == timeout - 19:
-                    if self.isKettle:   self.send_message(Smarter.number_to_raw(Smarter.CommandKettleSettings))
-                    if self.isCoffee:   self.send_message(Smarter.number_to_raw(Smarter.CommandCoffeeSettings))
+                    self.device_settings()
 
                 if monitorCount % timeout == timeout - 29:
-                    if self.isKettle:   self.send_message(Smarter.number_to_raw(Smarter.CommandKettleHistory))
-                    if self.isCoffee:   self.send_message(Smarter.number_to_raw(Smarter.CommandCoffeeHistory))
+                    self.device_history()
 
                 self.dump = dump
 
@@ -216,14 +227,6 @@ class SmarterClient:
 
                 prevPreviousTemperature = previousTemperature
                 previousTemperature = self.temperature
-            #else:
-                #printmonitor = True
-                #if printsend:
-                #    print "Sending Message"
-                #printsend = False
-            else:
-                pass
-            self.reading = False
     
  
      #------------------------------------------------------
@@ -232,17 +235,17 @@ class SmarterClient:
 
 
     # MESSAGE READ
-
-
+    @threadsafe_function
     def read_message(self):
+        
         try:
+        
             if not self.connected:
                 self.connect()
+        
             message = ""
             raw = self.socket.recv(1)
             id = Smarter.raw_to_number(raw)
-            #r = random.random()
-            #print "read" + str(r)
             # debug
             #print "[" + Smarter.number_to_code(id) + "]"
             minlength = Smarter.message_response_length(id)
@@ -268,18 +271,19 @@ class SmarterClient:
             else:
                 self.responseCount[id] = 1
  
-            #print "readend" + str(r)
-       
+
             return message
 
         except socket.error, msg:
-            raise SmarterErrorOld("Could not read message (" + msg + ")")
+            raise SmarterErrorOld("Could not read message") # (" + msg + ")")
         except:
             raise SmarterErrorOld("Could not read message")
 
 
     # MESSAGE READ PROTOCOL
 
+
+    @threadsafe_function
     def read(self):
         message = self.read_message()
         id = Smarter.raw_to_number(message[0])
@@ -299,20 +303,19 @@ class SmarterClient:
         
         if self.dump:
             if self.dump_status:
-                #if id == Smarter.ResponseCoffeeStatus or id == Smarter.ResponseKettleStatus:
                 self.print_message_read(message)
-                #print "self dumo"
             else:
-                if self.sending and id != Smarter.ResponseCoffeeStatus and id != Smarter.ResponseKettleStatus:
+                #fix
+                if id != Smarter.ResponseCoffeeStatus and id != Smarter.ResponseKettleStatus:
                     self.print_message_read(message)
-                #print "dump"
 
         return message
 
 
     # MESSAGE SEND
     
-
+    
+    @threadsafe_function
     def send_message(self,message):
         try:
             if not self.connected:
@@ -343,6 +346,7 @@ class SmarterClient:
 
     # MESSAGE SEND PROTOCOL
 
+    @threadsafe_function
     def send_command(self,id,arguments=""):
         x = Smarter.message_connection(id)
         if len(x) != 0:
@@ -354,37 +358,20 @@ class SmarterClient:
         self.send(Smarter.number_to_raw(id) + arguments + Smarter.number_to_raw(Smarter.MessageTail))
 
 
+    @threadsafe_function
     def send(self,message):
-        
-        #if self.reading:
-        #    while self.sending:
-        #        print "Waiting for send"
-        #        pass
- 
-        if self.sending:
-            while self.sending:
-                pass
-        
-        self.sending = True
-        
-        if self.reading:
-            while self.reading and self.connected:
-                pass
-
-        #if not self.connected:
-        #    self.sending = False
-        #    return
+        self.lock.acquire()
         
         try:
             self.send_message(message)
         except:
-            self.sending = False
+            self.lock.release()
             self.disconnect()
             return
 
         
         if self.shout:
-            self.sending = False
+            self.lock.release()
             self.disconnect()
             return
 
@@ -395,7 +382,7 @@ class SmarterClient:
             try:
                 self.read()
             except:
-                self.sending = False
+                self.lock.release()
                 self.disconnect()
                 return
             
@@ -404,8 +391,8 @@ class SmarterClient:
         self.responseMessage = self.readMessage
 
         if self.fast:
-            self.sending = False
             self.disconnect()
+            self.lock.release()
             return
         # read until right message.... no threaded read
         
@@ -413,8 +400,8 @@ class SmarterClient:
         try:
             self.read()
         except:
-            self.sending = False
             self.disconnect()
+            self.lock.release()
             return
             
 
@@ -423,19 +410,23 @@ class SmarterClient:
             try:
                 self.read()
             except:
-                self.sending = False
                 self.disconnect()
+                self.lock.release()
                 return
             data = Smarter.raw_to_number(self.readMessage[0])
 
-        self.sending = False
+        self.lock.release()
         
         
  
+    @threadsafe_function
     def connect(self):
-        
+        print "Called Connect"
         self.disconnect()
         self.init()
+        
+        self.sending = False
+        self.reading = False
         
         from wireless import Wireless
         wireless = Wireless()
@@ -455,28 +446,32 @@ class SmarterClient:
         try:
             print "Connecting..." + self.host
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.socket.settimeout(30)
+            self.socket.settimeout(10)
             self.socket.connect((self.host, self.port))
             self.connected = True
             self.connectCount += 1
         except socket.error, msg:
             raise SmarterErrorOld("Could not connect to + " + self.host + " (" + msg[1] + ")")
 
-        if not self.fast and not self.monitor:
+        if not self.fast and (not self.monitor or self.monitor.isAlive()):
             import threading
+            print "fff"
             self.monitor = threading.Thread(target=self.monitor_device)
             self.reading = False
             self.monitor.start()
 
 
+    @threadsafe_function
     def disconnect(self):
+        print "Called Disconnect"
         self.run = False
         if self.connected:
             print "Disconnect..."+self.host
             self.connected = False
             try:
-                if self.monitor:
+                if self.monitor.isAlive():
                     self.monitor.join()
+                    self.monitor = None
             except:
                 print "X"
                 self.reading = False
