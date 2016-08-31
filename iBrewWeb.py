@@ -76,6 +76,12 @@ class WebMainHandler(BaseHandler):
         self.render(webroot+"index.html",clients = self.application.clients,joke = iBrewJokes().joke())
 
 
+class WifiMainHandler(BaseHandler):
+    #@tornado.web.authenticated
+    def get(self,ip):
+        self.render(webroot+"wifi.html",client = self.application.clients[ip],joke = iBrewJokes().joke())
+
+
 class WebAPIHandler(BaseHandler):
     #@tornado.web.authenticated
     def get(self):
@@ -127,14 +133,20 @@ class DeviceHandler(GenericAPIHandler):
                 response = { 'device'      : encodeDevice(client.deviceId,client.version),
                              'firmware'    : encodeFirmware(client.deviceId,client.version),
                              'connected'   : client.connected,
-                             'sensors'     : { 'water'       : { 'level'  : client.waterSensor,
+                             'sensors'     : { 'waterlevel'  : { 'raw'    : client.waterSensor,
+                                                                 'stable' : client.waterSensorStable,
                                                                  'base'   : client.waterSensorBase
                                                                },
                                                'base'        : Smarter.string_base_on_off(client.onBase),
 
-                                               'temperature' : { 'fahrenheid' : Smarter.celsius_to_fahrenheid(client.temperature),
-                                                                 'celsius'    : client.temperature
+                                               'temperature' : { 'raw'    : { 'fahrenheid' : Smarter.celsius_to_fahrenheid(client.temperature),
+                                                                              'celsius'    : client.temperature
+                                                                            },
+                                                                 'stable' : { 'fahrenheid' : Smarter.celsius_to_fahrenheid(client.temperatureStable),
+                                                                              'celsius'    : client.temperatureStable
+                                                                            }
                                                                }
+                                                               
                                              },
                              'status'      : { 'message' : Smarter.status_kettle_description(client.kettleStatus),
                                                'id'          : client.kettleStatus
@@ -270,7 +282,7 @@ class WifiScanHandler(GenericAPIHandler):
                                               'quality' : Smarter.dbm_to_quality(int(client.Wifi[i][1]))
                                             }
                                   } )
-            response = { 'networks ': networks }
+            response = networks
         else:
             response = { 'error': 'no device' }
         self.setContentType()
@@ -322,7 +334,18 @@ class SettingsHandler(GenericAPIHandler):
         if ip in self.application.clients:
             client = self.application.clients[ip]
             client.device_settings()
-            response = { 'command status'  : client.commandStatus }
+            response = { 'temperature' : { 'fahrenheid' : Smarter.celsius_to_fahrenheid(client.defaultTemperature),
+                                           'celsius'    : client.defaultTemperature,
+                                           'prefered'   : Smarter.temperature_metric_to_string()
+                                         },
+                         'keepwarm'    : client.defaultKeepWarmTime,
+                         'formula'     : { 'use'         : client.defaultFormula,
+                                           'temperature' : { 'fahrenheid' : Smarter.celsius_to_fahrenheid(client.defaultFormulaTemperature),
+                                                             'celsius'    : client.defaultFormulaTemperature
+                                                           }
+                                         }
+                        }
+
         else:
             response = { 'error': 'no device' }
         self.setContentType()
@@ -631,6 +654,7 @@ class iBrewWeb(tornado.web.Application):
     #            (r"/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/?",WebSettingsHandler),
        
                 (r"/",                        WebMainHandler),
+                (r"/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/wifi", WifiMainHandler),
                      #(r"/login",             LoginHandler),
                 (r"/(.*)",                    GenericPageHandler),
 

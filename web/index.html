@@ -14,9 +14,9 @@ function auto_joke()            { joke(); setTimeout(auto_joke, wait_joke);}
 function process_update_kettle(status) { if ( status.sensors.base == "On") {
                                            $('#kettle').attr('src','{{ static_url('icons/kettle/kettle.png')}}');
                                            if ( status.default.temperature.prefered == 'Celsius' ) {
-                                             $('#temperature').html( status.sensors.temperature.celsius + " ºC" ); }
+                                             $('#temperature').html( status.sensors.temperature.raw.celsius + " ºC" ); }
                                            else
-                                             $('#temperature').html( status.sensors.temperature.fahrenheid + " ºF" );
+                                             $('#temperature').html( status.sensors.temperature.raw.fahrenheid + " ºF" );
                                            $('#water').html( status.sensors.water.level-status.sensors.water.base );
                                            }
                                            else {
@@ -82,7 +82,7 @@ $(document).ready(              function() { setTimeout(auto_joke, wait_joke);
 {% end %}
 <a href="javascript:stop('{{ ip }}')"><img height="24px" src="{{ static_url('icons/commands/stop.png') }}"></a>
 <a href="javascript:start('{{ ip }}')"><img height="24px" src="{{ static_url('icons/commands/start.png') }}"></a>
-<a href="/wifi"><img height="24px" src="{{ static_url('icons/commands/wifi.png') }}"></a>
+<a href="{{ ip }}/wifi"><img height="24px" src="{{ static_url('icons/commands/wifi.png') }}"></a>
 <a href="/settings"><img height="24px" src="{{ static_url('icons/commands/settings.png') }}"></a>
 {% end %}
 

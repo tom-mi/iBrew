@@ -95,232 +95,6 @@ class iBrewTerminal:
         web.kill()
 
 
-
-    #------------------------------------------------------
-    # iBrew DOMOTICZ
-    #------------------------------------------------------
-    # See monitor
-
-
-    def domoticz_bridge(self, server, name, sleep = 0, secure=False):
-        if self.client.isKettle:
-            domoticz_bridge_kettle(server,name,sleep,secure)
-        elif self.client.isCoffee:
-            domoticz_bridge_coffee(server,name,sleep,secure)
-            
-
-    def domoticz_bridge_kettle(self, server, name, sleep = 0, secure=False):
-        
-        if not self.client.isKettle:
-            print "iBrew: SmarterCoffee not supported"
-            return
-        
-        domoticz = Domoticz(server,secure)
-        
-        if domoticz.use_virtual_hardware("Smarter"):
-
-            temp_name    = name + " Water Temperature"
-            temp_type    = domoticz.SensorTemperature
-            offbase_name = name + " Base"
-            offbase_type = domoticz.SensorSwitch
-            water_name   = name + " Water Height"
-            water_type   = domoticz.SensorCustom
-            
-            #default_temp_name = name + " Default Temperature"
-            #default_temp_type = domoticz.SensorSwitch
-            #default_temp_form_name = name + " Default Formula Temperature"
-            #default_temp_form_type = domoticz.SensorSwitch
-            
-
-            status_name = name + " Status"
-            status_type = domoticz.SensorSwitch
-            
-            water_idx   = domoticz.use_virtual_custom_water(water_name,"")
-            temp_idx    = domoticz.use_virtual_temperature(temp_name)
-            offbase_idx = domoticz.use_virtual_motion(offbase_name)
-            status_idx  = domoticz.use_virtual_text(status_name)
-            
-            #default_temp_idx = domoticz.use_virtual_heat_dimmer(default_temp_name)
-            #default_temp_form_idx = domoticz.use_virtual_heat_dimmer(default_temp_form_name)
-            
-            #if default_temp_form_idx == "None" or default_temp_idx == "None" or
-            if status_idx == "None" or offbase_idx == "None" or temp_idx == "None" or water_idx == "None":
-                print "iBrew: Failed to get Sensor IDX"
-                return
-            
-            print "iBrew: Using " + domoticz.print_type(temp_type) + " sensor ["+ temp_name + "] IDX " + str(temp_idx)
-            print "iBrew: Using " + domoticz.print_type(water_type) + " sensor ["+ water_name + "] IDX " + str(water_idx)
-            print "iBrew: Using " + domoticz.print_type(offbase_type) + " sensor ["+ offbase_name + "] IDX " + str(offbase_idx)
-            print "iBrew: Using " + domoticz.print_type(status_type) + " sensor ["+ status_name + "] IDX " + str(status_idx)
-            #print "iBrew: Using " + domoticz.print_type(default_temp_type) + " sensor ["+ default_temp_name + "] IDX " + str(default_temp_idx)
-            #print "iBrew: Using " + domoticz.print_type(default_temp_form_type) + " sensor ["+ default_temp_form_name + "] IDX " + str(default_temp_form_idx)
-        else:
-            print "iBrew: Could not find hardware"
-            return
-
-
-        print "iBrew: iKettle 2.0 Domoticz Bridge. Press ctrl-c to stop"
-
-        previousResponse = ""
-        previousWaterSensor = 0
-        previousStatus = "Unknown"
-        
-        prevPreviousTemperature = self.client.temperature
-        previousTemperature = self.client.temperature
-        previousAverage = self.client.temperature
-        
-        previousBase = False
-        previousBaseFirst = True
-
-        then = time.time()
-
-        update = 30
-        
-        while True:
-            try:
-                now = time.time()
-                stamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
-                print stamp + " ♨"
-
-                response = self.client.read()
-                #self.client.print_short_status()
-               
-                average = int(round(float((float(previousTemperature) + float(prevPreviousTemperature) + float(self.client.temperature))/3),0))
-
-                if int(now-then) > update:
-                    if domoticz.set_temperature(temp_idx,average,False):
-                        print stamp + " Water temperature: " + Smarter.temperature_to_string(average)
-                    if domoticz.set_custom(water_idx,self.client.waterSensor,False):
-                        print stamp + " Water height: " + str(self.client.waterSensor)
-       
-                if previousAverage != average:
-                    if domoticz.set_temperature(temp_idx,average):
-                        print stamp + " Water temperature: " + Smarter.temperature_to_string(average)
-                    previousAverage = average
-
-                prevPreviousTemperature = previousTemperature
-                previousTemperature = self.client.temperature
-
-                if previousResponse == response:
-                    if int(now-then) > update: then = now
-                    continue
-
-                previousResponse = response
-
-                if previousStatus != self.client.kettleStatus:
-                    status = Smarter.status_kettle_description(self.client.kettleStatus)
-                    if domoticz.set_text(status_idx,status):
-                        print stamp + " iKettle 2.0 is " + status.lower()
-                    previousStatus = self.client.kettleStatus
-            
-                if previousWaterSensor - 3 > self.client.waterSensor or previousWaterSensor + 3 < self.client.waterSensor or int(now-then) > update:
-                    if domoticz.set_custom(water_idx,self.client.waterSensor):
-                        print stamp + " Water height: " + str(self.client.waterSensor)
-                    previousWaterSensor = self.client.waterSensor
-                
-                if previousBaseFirst or (previousBase != self.client.onBase):
-                    if domoticz.set_motion(offbase_idx,self.client.onBase):
-                        if self.client.onBase:
-                            s = "on"
-                        else:
-                            s = "off"
-                        print stamp + " iKettle 2.0 is " + s + " base"
-                    previousBase = self.client.onBase
-                    previousBaseFirst = False
-
-                if int(now-then) > update: then = now
-
-            except:
-                break
-        
- 
- 
- 
-    def domoticz_bridge_coffee(self, server, name, sleep = 0, secure=False):
-        
-        if not self.client.isCoffee:
-            print "iBrew: iKettle 2.0 not supported"
-            return
-        
-        domoticz = Domoticz(server,secure)
-        
-        if domoticz.use_virtual_hardware("Smarter"):
-
-            water_name   = name + " Water Level"
-            water_type   = domoticz.SensorCustom
-            status_name = name + " Status"
-            status_type = domoticz.SensorSwitch
-            
-            water_idx   = domoticz.use_virtual_custom_water(water_name,"")
-            status_idx  = domoticz.use_virtual_text(status_name)
-
-            if status_idx == "None" or water_idx == "None":
-                print "iBrew: Failed to get Sensor IDX"
-                return
-            
-            print "iBrew: Using " + domoticz.print_type(water_type) + " sensor ["+ water_name + "] IDX " + str(water_idx)
-            print "iBrew: Using " + domoticz.print_type(status_type) + " sensor ["+ status_name + "] IDX " + str(status_idx)
-        else:
-            print "iBrew: Could not find hardware"
-            return
-
-
-        print "iBrew: SmarterCoffee Domoticz Bridge. Press ctrl-c to stop"
-
-        previousResponse = ""
-        previousWaterSensor = 0
-        previousStatus = "Unknown"
-
-        then = time.time()
-        update = 30
-        
-        while True:
-            try:
-                now = time.time()
-                stamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
-                print stamp + " ♨"
-
-                response = self.client.read()
-                #self.client.print_short_status()
-               
-                average = int(round(float((float(previousTemperature) + float(prevPreviousTemperature) + float(self.client.temperature))/3),0))
-
-                if int(now-then) > update:
-                    if domoticz.set_temperature(temp_idx,average,False):
-                        print stamp + " Water temperature: " + Smarter.temperature_to_string(average)
-                    if domoticz.set_custom(water_idx,self.client.waterSensor,False):
-                        print stamp + " Water height: " + str(self.client.waterLevel)
-       
-                if previousAverage != average:
-                    if domoticz.set_temperature(temp_idx,average):
-                        print stamp + " Water temperature: " + Smarter.temperature_to_string(average)
-                    previousAverage = average
-
-                prevPreviousTemperature = previousTemperature
-                previousTemperature = self.client.temperature
-
-                if previousResponse == response:
-                    if int(now-then) > update: then = now
-                    continue
-
-                previousResponse = response
-
-                if previousStatus != self.client.kettleStatus:
-                    status = Smarter.status_kettle_description(self.client.kettleStatus)
-                    if domoticz.set_text(status_idx,status):
-                        print stamp + " SmarterCoffee  is " + status.lower()
-                    previousStatus = self.client.kettleStatus
-            
-                if previousWaterSensor != self.client.waterLevel:
-                    if domoticz.set_custom(water_idx,self.client.waterLevel):
-                        print stamp + " Water level: " + str(self.client.waterLevel)
-                    previousWaterSensor = self.client.waterLevel
-
-                if int(now-then) > update: then = now
-
-            except:
-                break
-
     #------------------------------------------------------
     # iBrew SWEEP
     #------------------------------------------------------
@@ -331,10 +105,25 @@ class iBrewTerminal:
         if int(start) <= 0 or start > 256:
             print 'iBrew: sweep start out of range [00..ff]'
             return
-        print "iBrew: Press ctrl-c to stop"
- 
+
         dump = self.client.dump
         self.client.dump = True
+        self.client.dump_status = False
+        
+        print
+        print "DO NOT DO THIS IF YOU DO NOT KNOW WHAT YOU ARE DOING"
+        print
+        print "IT CAN RENDER THE " + Smarter.device_to_string(self.client.deviceId) + " COMPLETELY USELESS"
+        print
+        print "Are you really, really sure?"
+        try:
+            i = raw_input("Please enter YES if you are: ")
+            if i != "YES":
+                return
+        except:
+            return
+        print "iBrew: Press ctrl-c to stop"
+ 
 
         for id in range(int(start),256):
             try:
@@ -347,7 +136,7 @@ class iBrewTerminal:
                     print "iBrew: Testing Command: " + Smarter.number_to_code(id)
 
                     # button pressed quit...
-                    self.client.send(Smarter.number_to_raw(id))
+                    self.client.send_command(id)
 
                     # check if got also a ???status message... FIX
                     if self.client.commandStatus != Smarter.StatusInvalid:
@@ -646,8 +435,11 @@ class iBrewTerminal:
             elif command == "list":         self.print_devices_found(self.client.find_devices())
             elif command == "monitor":      self.monitor()
             elif command == "sweep":
-                                            if numarg > 1:
-                                                 self.sweep(id)
+                                            if numarg >= 1:
+                                                 print "ddddd"
+                                                 print arguments[0]
+                                                 print str(Smarter.code_to_number(arguments[0]))
+                                                 self.sweep(Smarter.code_to_number(arguments[0]))
                                             else:
                                                 self.sweep()
             elif command == "joke" or command == "quote":

@@ -9,10 +9,12 @@ body
 
 a:link, a:visited, a:active {
     color:  #E27400;
+    text-decoration: none;
 }
 
 a:hover {
     color: #FFA72B;
+    text-decoration: none;
 }
 
 /* #FFA72B */
@@ -99,6 +101,10 @@ a:hover {
     max-width: 256px;
 }
 
+#wifi {
+    font-family: 'Architects Daughter';
+    font-weight: bold;
+}
 
 
 

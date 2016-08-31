@@ -5,6 +5,7 @@ import os
 import sys
 import string
 import random
+import time
 
 import threading
 
@@ -42,6 +43,7 @@ class SmarterClient:
         
         # device info
         self.device                     = "None"
+        self.deviceId                   = 0
         self.version                    = 0
     
         # kettle
@@ -56,6 +58,8 @@ class SmarterClient:
         # watersensor
         self.waterSensorBase            = 0
         self.waterSensor                = 0
+        self.waterSensorStable          = 0
+        self.temperatureStable          = 0
         
         # coffee
         self.isCoffee                   = False
@@ -131,11 +135,20 @@ class SmarterClient:
 
     def monitor_device(self):
         self.reading = False
+        
         previousResponse = ""
-        self.run = True
+        previousWaterSensor = self.waterSensor
+        
+        prevPreviousTemperature = self.temperature
+        previousTemperature = self.temperature
+        previousAverage = self.temperature
+        
+        self.waterSensorStable  = self.waterSensor
+        self.temperatureStable  = self.temperature
         
         monitorCount = 0
-        
+        self.run = True
+   
         #printsend = True
         #printmonitor = True
         timeout = 40
@@ -185,15 +198,29 @@ class SmarterClient:
                 if monitorCount % timeout == timeout - 29:
                     if self.isKettle:   self.send_message(Smarter.number_to_raw(Smarter.CommandKettleHistory))
                     if self.isCoffee:   self.send_message(Smarter.number_to_raw(Smarter.CommandCoffeeHistory))
-                
+
                 self.dump = dump
+
+
+                if previousWaterSensor - 3 > self.waterSensor or previousWaterSensor + 3 < self.waterSensor:
+                    self.waterSensorStable = self.waterSensor
+                    previousWaterSensor = self.waterSensor
                 
+                average = int(round(float((float(previousTemperature) + float(prevPreviousTemperature) + float(self.temperature))/3),0))
+
+                if previousAverage != average:
+                    self.temperatureStable = average
+                    previousAverage = average
+
+                prevPreviousTemperature = previousTemperature
+                previousTemperature = self.temperature
             #else:
                 #printmonitor = True
                 #if printsend:
                 #    print "Sending Message"
                 #printsend = False
-
+            else:
+                pass
             self.reading = False
     
  
@@ -220,7 +247,7 @@ class SmarterClient:
 
             i = 1
             while raw != Smarter.number_to_raw(Smarter.MessageTail) or (minlength > 0 and raw == Smarter.number_to_raw(Smarter.MessageTail) and i < minlength):
-            
+                
             
                 message += raw
                 raw = self.socket.recv(1)
@@ -332,14 +359,28 @@ class SmarterClient:
         #        print "Waiting for send"
         #        pass
  
+        if self.sending:
+            while self.sending:
+                pass
+        
         self.sending = True
         
         if self.reading:
-            while self.reading:
+            while self.reading and self.connected:
                 pass
 
-        self.send_message(message)
+        #if not self.connected:
+        #    self.sending = False
+        #    return
+        
+        try:
+            self.send_message(message)
+        except:
+            self.sending = False
+            self.disconnect()
+            return
 
+        
         if self.shout:
             self.sending = False
             self.disconnect()
@@ -349,7 +390,13 @@ class SmarterClient:
         data = Smarter.raw_to_number(self.readMessage[0])
         
         while (data == Smarter.ResponseKettleStatus) or (data == Smarter.ResponseCoffeeStatus):
-            self.read()
+            try:
+                self.read()
+            except:
+                self.sending = False
+                self.disconnect()
+                return
+            
             data = Smarter.raw_to_number(self.readMessage[0])
          
         self.responseMessage = self.readMessage
@@ -361,10 +408,22 @@ class SmarterClient:
         # read until right message.... no threaded read
         
         # Smarter.message_connection(raw_to_number(self.readMessage[0])[0]
-        self.read()
+        try:
+            self.read()
+        except:
+            self.sending = False
+            self.disconnect()
+            return
+            
+
         data = Smarter.raw_to_number(self.readMessage[0])
         while (data != Smarter.ResponseKettleStatus) and (data != Smarter.ResponseCoffeeStatus):
-            self.read()
+            try:
+                self.read()
+            except:
+                self.sending = False
+                self.disconnect()
+                return
             data = Smarter.raw_to_number(self.readMessage[0])
 
         self.sending = False
@@ -377,12 +436,12 @@ class SmarterClient:
         if self.host == "":
             self.host = Smarter.DirectHost
         try:
+            print "Connecting..." + self.host
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.socket.settimeout(15)
             self.socket.connect((self.host, self.port))
             self.connected = True
             self.connectCount += 1
-            print "Connecting..." + self.host
         except socket.error, msg:
             raise SmarterErrorOld("Could not connect to + " + self.host + " (" + msg[1] + ")")
 
@@ -396,6 +455,7 @@ class SmarterClient:
     def disconnect(self):
         self.run = False
         if self.connected:
+            print "Disconnect..."+self.host
             self.connected = False
             try:
                 if self.monitor:
