@@ -47,7 +47,6 @@ class SmarterClient:
         self.version                    = 0
     
         # kettle
-        self.isKettle                   = False
         self.kettleStatus               = Smarter.KettleReady
         self.temperature                = 0
         self.onBase                     = False
@@ -62,7 +61,6 @@ class SmarterClient:
         self.temperatureStable          = 0
         
         # coffee
-        self.isCoffee                   = False
         self.coffeeStatus               = 0 # unknown
         self.cups                       = 1
         self.strength                   = Smarter.CoffeeMedium
@@ -82,6 +80,8 @@ class SmarterClient:
 
 
     def __init__(self):
+        self.isKettle                   = False
+        self.isCoffee                   = False
         self.host                       = Smarter.DirectHost
         self.dump_status                = True
         self.dump                       = False
@@ -176,6 +176,7 @@ class SmarterClient:
                     print(traceback.format_exc())
                     print "There was an error"
                     self.disconnect()
+                    self.connect()
                     #raise SmarterErrorOld("Monitor Error")
                 
                 dump = self.dump
@@ -272,7 +273,7 @@ class SmarterClient:
             return message
 
         except socket.error, msg:
-            raise SmarterErrorOld("Could not read message (" + msg[1] + ")")
+            raise SmarterErrorOld("Could not read message (" + msg + ")")
         except:
             raise SmarterErrorOld("Could not read message")
 
@@ -454,7 +455,7 @@ class SmarterClient:
         try:
             print "Connecting..." + self.host
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.socket.settimeout(15)
+            self.socket.settimeout(30)
             self.socket.connect((self.host, self.port))
             self.connected = True
             self.connectCount += 1

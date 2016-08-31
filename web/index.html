@@ -76,15 +76,29 @@ $(document).ready(              function() { setTimeout(auto_joke, wait_joke);
 {% if clients[ip].isKettle %}
 {% if clients[ip].onBase %}
 <img class="devices" id="kettle" src="{{ static_url('icons/kettle/kettle.png')}}"><br>
-<a href="javascript:calibrate('{{ ip }}')"><img height="24px" src="{{ static_url('icons/commands/calibrate.png') }}"></a>
 {% else %}
 <img  class="devices" id="kettle" src="{{ static_url('icons/kettle/offbase.png')}}">
+{% end %}
+<div class="tTable">
+<div id="defaults"  >
+<br>
+<div class="tRow"><div class="tCell">Temperature</div><div class="tCell"><input type="range" id="dt" min="0" value="{{ clients[ip].defaultTemperature }}" max="100" step="1"></div></div>
+<br>
+<div class="tRow"><div class="tCell">Keep warm</div><div class="tCell"><input type="range" id="dkwt" min="0" value="{{ clients[ip].defaultKeepWarmTime }}" max="100" step="1"></div></div>
+<br>
+<div class="tRow"><div class="tCell">Formula Mode</div><div class="tCell"><input type="checkbox" name="df" value="{{ clients[ip].defaultFormula }}"></div></div>
+<br>
+<div class="tRow"><div class="tCell">Formula Mode Temperature</div><div class="tCell"><input type="range" id="dft" min="0" value="{{ clients[ip].defaultFormulaTemperature }}" max="100" step="1"></div></div>
+</div>
+</div>
+{% end %}
+{% if clients[ip].onBase %}
+<a href="javascript:calibrate('{{ ip }}')"><img height="24px" src="{{ static_url('icons/commands/calibrate.png') }}"></a>
 {% end %}
 <a href="javascript:stop('{{ ip }}')"><img height="24px" src="{{ static_url('icons/commands/stop.png') }}"></a>
 <a href="javascript:start('{{ ip }}')"><img height="24px" src="{{ static_url('icons/commands/start.png') }}"></a>
 <a href="{{ ip }}/wifi"><img height="24px" src="{{ static_url('icons/commands/wifi.png') }}"></a>
 <a href="/settings"><img height="24px" src="{{ static_url('icons/commands/settings.png') }}"></a>
-{% end %}
 
 <br>
 {% if clients[ip].isKettle %}
