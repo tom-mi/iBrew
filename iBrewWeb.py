@@ -277,12 +277,13 @@ class WifiScanHandler(GenericAPIHandler):
             client.wifi_scan()
             networks = {}
             for i in range(0,len(client.Wifi)):
-                networks.update( { client.Wifi[i][0] :
-                                            { 'signal'  : str(client.Wifi[i][1]),
-                                              'quality' : Smarter.dbm_to_quality(int(client.Wifi[i][1]))
-                                            }
-                                  } )
-            response = networks
+                networks.update( { client.Wifi[i][0] : { 'signal'  : str(client.Wifi[i][1]),
+                                                         'quality' : Smarter.dbm_to_quality(int(client.Wifi[i][1]))
+                                                       }
+                                 })
+            response = { 'networks'   : networks,
+                         'directmode' : client.isDirect
+                       }
         else:
             response = { 'error': 'no device' }
         self.setContentType()

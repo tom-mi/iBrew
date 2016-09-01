@@ -425,7 +425,7 @@ class SmarterClient:
         wireless = Wireless()
         wirelessname = wireless.current()
         if wirelessname is not None:
-            if wirelessname[0:14] == "Smarter Coffee" or wirelessname[0:10] == "iKettle2.0":
+            if wirelessname[0:14] == "Smarter Coffee" or wirelessname[0:11] == "iKettle 2.0":
                 self.isDirect = True
                 self.host = Smarter.DirectHost
             else:
@@ -454,17 +454,14 @@ class SmarterClient:
 
     @threadsafe_function
     def disconnect(self):
-        print "Called Disconnect"
         self.run = False
         if self.connected:
-            print "Disconnect..."+self.host
             self.connected = False
             try:
                 if self.monitor.isAlive():
                     self.monitor.join()
                 self.monitor = None
             except:
-                print "X"
                 self.monitor = None
                 raise SmarterError(SmarterClientFailedStopThread,"Could not disconnect from " + self.host)
             try:

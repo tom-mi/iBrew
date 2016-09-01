@@ -17,7 +17,7 @@ function process_update_kettle(status) { if ( status.sensors.base == "On") {
                                              $('#temperature').html( status.sensors.temperature.raw.celsius + " ºC" ); }
                                            else
                                              $('#temperature').html( status.sensors.temperature.raw.fahrenheid + " ºF" );
-                                           $('#water').html( status.sensors.water.level-status.sensors.water.base );
+                                           $('#water').html( status.sensors.waterlevel.raw-status.sensors.waterlevel.base );
                                            }
                                            else {
                                                 $('#water').html( "" );
@@ -120,6 +120,17 @@ $(document).ready(              function() { setTimeout(auto_joke, wait_joke);
 
 {% end %}
 </div>
+
+<canvas width=100 height=50 id="g"></canvas>
+
+<script src="{{ static_url('js/gauge.min.js') }}"></script>
+<script>
+
+    selectGauge = new Gauge(document.getElementById("g"));
+    selectGauge.maxValue = 3000;
+    selectGauge.set(1552);
+    
+</script>
 
 {% include wrapper/foot.html %}
 

@@ -102,11 +102,31 @@ a:hover {
 }
 
 #wifi {
-    font-family: 'Architects Daughter';
+    font-family: 'Abel', sans-serif;
     font-weight: bold;
+    font-size: 120%;
+    display: table;
+    width: 260px;
 }
 
+.wirelessSignalCell {
+   	display: table-cell;
+    padding: 3px 10px;
+}
 
+.wirelessTitleCell {
+   	display: table-cell;
+    font-size: 135%;
+    width: 220px;
+    text-align: left;
+}
+
+.wirelessNameCell {
+   	display: table-cell;
+    padding: 3px 10px;
+    width: 220px;
+    text-align: left;
+}
 
 
 /* API TABLE */
