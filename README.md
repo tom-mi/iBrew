@@ -92,8 +92,6 @@ See the console section for the commands
 
   If you do not supply a host, it will try to connect to the first detected device
   Thus if you have more then one device supply a host (if its not in direct mode)
-Bye
-DISCONNECT
 
 ```
 
@@ -170,8 +168,6 @@ you can also use them on the command line as arguments:
     joke                   show joke
     quit                   quit console [console only]
 
-Bye
-DISCONNECT
 
 ```
 
@@ -188,8 +184,6 @@ DISCONNECT
     strength weak  Set coffee strength to weak
     cups 3         Set number of cups to brew
 
-Bye
-DISCONNECT
 
 ```
 
@@ -275,8 +269,6 @@ iKettle Devices in Domoticz
    
    
 ```
-Bye
-DISCONNECT
 
 ```
 
@@ -339,8 +331,6 @@ But you can change it to your normal copy, also change the working directory,dom
     so check the length of the response message!
     
               
-Bye
-DISCONNECT
 
 ```
 
@@ -420,8 +410,6 @@ DISCONNECT
       c SmarterCoffee 
 
 
-Bye
-DISCONNECT
 
 ```
 
@@ -1455,8 +1443,6 @@ DISCONNECT
   Example: 6d 7e
 
 
-Bye
-DISCONNECT
 
 ```
 
@@ -1559,8 +1545,6 @@ DISCONNECT
      
  
               
-Bye
-DISCONNECT
 
 ```              
 

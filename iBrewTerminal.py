@@ -79,7 +79,6 @@ class iBrewTerminal:
     def web(self,port=Smarter.Port+1):
  
         webs = None
-        print "ddd"
         try:
             if self.haveHost:
                 webs = iBrewWeb()
@@ -396,7 +395,6 @@ class iBrewTerminal:
                                                 self.web()
                                             else:
                                                 self.web(int(arguments[0]))
-                                            print "here"
 
             # Kettle
             elif not self.client.connected: return
@@ -559,7 +557,6 @@ class iBrewTerminal:
         except Exception,e:
             if not self.console:
                 self.quit = True
-                print "QUIT"
             print str(e)
             print(traceback.format_exc())
             print "iBrew: Command Failed"
@@ -584,7 +581,6 @@ class iBrewTerminal:
                 self.execute(raw_input(cursor).strip().split())
             except:
                 break
-        print "Bye"
         self.client.disconnect()
         
 #------------------------------------------------------

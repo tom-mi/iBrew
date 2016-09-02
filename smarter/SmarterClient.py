@@ -167,7 +167,7 @@ class SmarterClient:
 
     def monitor_device(self):
         
-        print "MONITOR"
+        #print "MONITOR"
         previousResponse = ""
         previousWaterSensor = self.waterSensor
         
@@ -453,7 +453,7 @@ class SmarterClient:
  
     @threadsafe_function
     def connect(self):
-        print "CONNECT"
+        #print "CONNECT"
         self.init()
         
         from wireless import Wireless
@@ -492,7 +492,7 @@ class SmarterClient:
 
     @threadsafe_function
     def disconnect(self):
-        print "DISCONNECT"
+        #print "DISCONNECT"
         self.run = False
         if self.connected:
             self.connected = False

@@ -589,7 +589,6 @@ class iBrewWeb(tornado.web.Application):
     
  
     def run(self,port,dump=False,host=""):
-        print "RUN"
         self.port = port
         self.isRunning = False
         try:
