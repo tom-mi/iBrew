@@ -78,21 +78,22 @@ class iBrewTerminal:
     # you can stop the sweep by pressing ctrl-c
     def web(self,port=Smarter.Port+1):
  
-        web = None
+        webs = None
+        print "ddd"
         try:
             if self.haveHost:
-                web = iBrewWeb()
-                web.run(port,self.client.dump,self.client.host)
+                webs = iBrewWeb()
+                webs.run(port,self.client.dump,self.client.host)
             else:
-                web = iBrewWeb()
-                web.run(port,self.client.dump)
+                webs = iBrewWeb()
+                webs.run(port,self.client.dump)
         except:
             print "iBrew: Failed to run Web Interface & REST API on port " + str(port)
             return
         print "iBrew: Starting Web Interface & REST API on port " + str(port) + ". Press ctrl-c to stop"
         self.monitor()
         print "iBrew: Stopped Web Interface & REST API on port " + str(port)
-        web.kill()
+        webs.kill()
 
 
     #------------------------------------------------------
@@ -197,7 +198,12 @@ class iBrewTerminal:
                 command = line[0].lower()
                 numarg = len(line) - 1
                 arguments = line[1:]
-            
+
+            if command == "exit" or command == "quit":
+                self.client.run = False
+                self.quit = True
+                return
+
             if command == "dump":
                 if numarg == 0 and not self.console:
                     print "iBrew: Do I look like a civet cat to you?"
@@ -298,27 +304,46 @@ class iBrewTerminal:
                         self.client.disconnect()
 
 
-            if not self.client.connected and not self.haveHost and command != "help" and command != "message" and command != "usage" and command != "commands" and command != "web" and command != "joke" and command != "protocol" and command != "structure" and command != "notes" and command != "examples" and command != "messages" and not (command == "domoticz" and numarg == 0):
+            if not self.client.connected and not self.haveHost and command != "help"  and command != "list" and command != "message" and command != "usage" and command != "commands" and command != "web" and command != "joke" and command != "protocol" and command != "structure" and command != "notes" and command != "examples" and command != "messages" and not (command == "domoticz" and numarg == 0):
+            
+            
 
                 devices = self.client.find_devices()
                 if self.client.dump:
                     self.print_devices_found(devices)
-                if len(devices) == 1:
+                if len(devices) >= 1:
                     self.client.host = devices[0][0]
                     self.haveHost = True
+                    
+                if command == "console" or command == "connect":
+                    self.console = True
+                    self.client.fast = False
+                    self.client.shout = False
+
+                try:
+                    self.client.connect()
+                    if self.console:
+                        self.client.init_default()
+                        self.client.print_connect_status()
+                        self.client.print_status()
+                except:
+                    print "Wel that failed"
 
 
             if command == "connect" or command == "console" or command == "sweep" or command == "monitor" or (command == "domoticz" and numarg != 0):
                 
                 if not self.console or command == "connect":
                     self.app_info()
-                    self.client.init_default()
+                    try:
+                        if self.client.connected:
+                            self.client.init_default()
+                    except:
+                        pass
                     self.joke()
                     self.client.print_connect_status()
                     self.client.print_status()
                     
-                if command == "console" or command == "connect":
-                    self.console = True
+                if (command == "console" or command == "connect") and command != "monitor":
                     self.client.dump_status = False
                     self.intro()
                     return
@@ -327,7 +352,6 @@ class iBrewTerminal:
             if command == "web":
                 self.app_info()
                 self.joke()
-
 
             if command == "help" or command == "?":
                                             self.usage()
@@ -348,8 +372,34 @@ class iBrewTerminal:
                                                 SmarterHelp.message(Smarter.code_to_number(arguments[0]))
                                             else:
                                                 print "iBrew: expected [00..FF]"
+            elif command == "list":         self.print_devices_found(self.client.find_devices())
+            elif command == "joke" or command == "quote":
+                                            print
+                                            self.joke()
+                                            print
+            elif command == "stats":
+                                            print
+                                            print "  " + str(self.client.connectCount).rjust(10, ' ') + "  Connected"
+                                            print "  " + str(self.client.sendCount).rjust(10, ' ')   + "  Commands ("  + Smarter.bytes_to_human(self.client.sendBytesCount) + ")"
+                                            print "  " + str(self.client.readCount).rjust(10, ' ')   + "  Responses (" + Smarter.bytes_to_human(self.client.readBytesCount) + ")"
+                                            print
+                                            
+                                            for id in sorted(self.client.commandCount):
+                                                print "  " + str(self.client.commandCount[id]).rjust(10, ' ') + "  [" + Smarter.number_to_code(id) + "] " + Smarter.message_description(id)
+                                            print
+                                            
+                                            for id in sorted(self.client.responseCount):
+                                                print "  " + str(self.client.responseCount[id]).rjust(10, ' ') + "  [" + Smarter.number_to_code(id) + "] "  + Smarter.message_description(id)
+                                            print
+            elif command == "web":
+                                            if numarg == 0:
+                                                self.web()
+                                            else:
+                                                self.web(int(arguments[0]))
+                                            print "here"
 
             # Kettle
+            elif not self.client.connected: return
             elif command == "heat":
                                             if numarg >= 1:
                                                 self.client.kettle_heat()
@@ -364,12 +414,12 @@ class iBrewTerminal:
             elif command == "calibrate":
                                             if self.client.OnBase:
                                                 print "Please remove kettle for accurate calibration"
-                                            self.client.calibrate()
+                                            self.client.kettle_calibrate()
             elif command == "base":
                                             if numarg == 0:
-                                                self.client.calibrate_base()
+                                                self.client.kettle_calibrate_base()
                                             if numarg >= 1:
-                                                self.client.calibrate_store_base(Smarter.string_to_watersensor(arguments[0]))
+                                                self.client.kettle_calibrate_store_base(Smarter.string_to_watersensor(arguments[0]))
                                                 if not self.client.dump: self.client.print_watersensor_base()
 
             # WiFi
@@ -405,7 +455,18 @@ class iBrewTerminal:
                                                 print "iBrew: hotplate missing [on/off]"
             elif command == "carafe":       self.client.coffee_carafe()
             elif command == "singlecup":    self.client.coffee_single_cup_mode()
-            elif command == "grinder":      self.client.coffee_grinder()
+            elif command == "grinder":
+                                            if self.client.useGrinder:
+                                                print "iBrew: Grinder already used"
+                                            else:
+                                                self.client.coffee_grinder()
+                                                print "iBrew: Grinder used"
+            elif command == "filter":
+                                            if not self.client.useGrinder:
+                                                print "iBrew: Filter already used"
+                                            else:
+                                                self.client.coffee_filter()
+                                                print "iBrew: Filter used"
             elif command == "brew":
                                             if numarg == 0:
                                                 self.client.coffee_brew()
@@ -417,17 +478,16 @@ class iBrewTerminal:
                                                 print "iBrew: specify strength [weak,medium,strong]"
                                             elif numarg >= 1:
                                                 self.client.coffee_strength(arguments[0])
+            elif command == "weak":         self.client.coffee_strength("weak")
+            elif command == "medium":       self.client.coffee_strength("medium")
+            elif command == "strong":       self.client.coffee_strength("strong")
             elif command == "cups":
                                             if numarg == 0:
                                                 print "iBrew: specify cups [1..12]"
                                             elif numarg >= 1:
-                                                self.client.coffee_cups(int(arguments[0]))
+                                                self.client.coffee_cups(Smarter.string_to_cups(arguments[0]))
 
               # Console Commands
-
-
-            elif command == "exit" or command == "quit":
-                                            self.quit = True
             elif command == "domoticz":
                                             if numarg >= 2:
                                                 self.domoticz_bridge(arguments[0],arguments[1])
@@ -435,39 +495,12 @@ class iBrewTerminal:
                                                 print "iBrew: missing Domoticz sensor base name"
                                             else:
                                                 self.domoticz()
-            elif command == "list":         self.print_devices_found(self.client.find_devices())
             elif command == "monitor":      self.monitor()
             elif command == "sweep":
                                             if numarg >= 1:
-                                                 print "ddddd"
-                                                 print arguments[0]
-                                                 print str(Smarter.code_to_number(arguments[0]))
                                                  self.sweep(Smarter.code_to_number(arguments[0]))
                                             else:
                                                 self.sweep()
-            elif command == "joke" or command == "quote":
-                                            print
-                                            self.joke()
-                                            print
-            elif command == "stats":
-                                            print
-                                            print "  " + str(self.client.connectCount).rjust(10, ' ') + "  Connected"
-                                            print "  " + str(self.client.sendCount).rjust(10, ' ')   + "  Commands ("  + Smarter.bytes_to_human(self.client.sendBytesCount) + ")"
-                                            print "  " + str(self.client.readCount).rjust(10, ' ')   + "  Responses (" + Smarter.bytes_to_human(self.client.readBytesCount) + ")"
-                                            print
-                                            
-                                            for id in sorted(self.client.commandCount):
-                                                print "  " + str(self.client.commandCount[id]).rjust(10, ' ') + "  [" + Smarter.number_to_code(id) + "] " + Smarter.message_description(id)
-                                            print
-                                            
-                                            for id in sorted(self.client.responseCount):
-                                                print "  " + str(self.client.responseCount[id]).rjust(10, ' ') + "  [" + Smarter.number_to_code(id) + "] "  + Smarter.message_description(id)
-                                            print
-            elif command == "web":
-                                            if numarg == 0:
-                                                self.web()
-                                            else:
-                                                self.web(int(arguments[0]))
             elif command == "settings":     # FAST fix need device...
                                             if numarg == 0:
                                                 self.client.device_settings()
@@ -524,7 +557,9 @@ class iBrewTerminal:
                                             except:
                                                 print "iBrew: Sending raw command message failed"
         except Exception,e:
-            #self.quit = True
+            if not self.console:
+                self.quit = True
+                print "QUIT"
             print str(e)
             print(traceback.format_exc())
             print "iBrew: Command Failed"
@@ -535,16 +570,21 @@ class iBrewTerminal:
         self.quit = True
         self.client = SmarterClient()
         self.client.fast = True
-        self.execute(arguments)
+        try:
+            self.execute(arguments)
+        except:
+            self.console = False
+  
         if self.console:
             self.quit = False
-            cursor = self.client.host + ":" + self.client.device + "$"
         while not self.quit:
             try:
                 # is should be threaded... since the kettle input is still comming as we wait for user input...
+                cursor = self.client.host + ":" + self.client.device + "$"
                 self.execute(raw_input(cursor).strip().split())
             except:
                 break
+        print "Bye"
         self.client.disconnect()
         
 #------------------------------------------------------
@@ -615,11 +655,12 @@ class iBrewTerminal:
         print "    brew ()                brew coffee"
         print "    carafe                 returns if carafe is required"
         print "    cups [number]          set number of cups [1..12]"
-        print "    grinder                toggle grinder"
+        print "    grinder                use grinder"
+        print "    filter                 use filter"
         print "    hotplate off           turn hotplate off"
         print "    hotplate on (minutes)  turn hotplate on (time in minutes)"
         print "    singlecup              return if singlecup mode is on"
-        print "    strength [strength]    set strength coffee [weak, medium or strong]"
+        print "    (strength) [strength]  set strength coffee [weak, medium or strong]"
         print "    stop coffee            stops brewing"
         print "    settings [cups] [strength] [grinder] [hotplate]   store user settings"
         print

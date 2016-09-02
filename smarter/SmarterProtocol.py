@@ -61,12 +61,16 @@ SmarterClientFailedStopThread   = 126
 class SmarterError(Exception):
 
     def __init__(self, err, msg):
+        print(traceback.format_exc())
+        print str(msg)
         self.msg = msg
         self.err = err
 
 
 class SmarterErrorOld(Exception):
     def __init__(self, msg):
+        print str(msg)
+        print(traceback.format_exc())
         self.msg = msg
 
 
@@ -178,67 +182,66 @@ class SmarterProtocol:
 
     # format kettle? coffee? response to command, description
     CommandMessages = {
-        CommandDeviceTime       : (True,None,[ResponseCommandStatus],"Set device time"),
-        CommandWifiNetwork      : (True,None,[ResponseCommandStatus],"Set wireless network name"),
-        CommandWifiPassword     : (True,None,[ResponseCommandStatus],"Set wireless network password"),
-        CommandWifiJoin         : (True,None,[],"Join wireless network"),
-        CommandWifiScan         : (True,None,[ResponseWirelessNetworks],"Scan for wireless networks"),
-        CommandWifiLeave        : (True,None,[],"Leave wireless network"),
-        CommandResetSettings    : (True,None,[ResponseCommandStatus],"Reset default user settings"),
-        CommandHeat             : (True,None,[ResponseCommandStatus],"Heat kettle"),
-        CommandKettleStop       : (True,None,[ResponseCommandStatus],"Stop heating kettle"),
-        CommandHeatFormula      : (True,None,[ResponseCommandStatus],"Heat kettle using formula mode"),
-        CommandKettleStoreSettings : (True,None,[ResponseCommandStatus],"Set kettle default user settings"),
-        Command20               : (True,None,[ResponseCommandStatus],"Working unknown command (turn on?)"),
-        CommandHeatDefault      : (True,None,[ResponseCommandStatus],"Working unknown command (turn on?)"),
-        Command22               : (True,None,[ResponseCommandStatus],"Working unknown command (turn on?)"),
-        Command23               : (True,None,[ResponseCommandStatus],"Working unknown command (turn on?)"),
-        CommandKettleHistory    : (True,None,[ResponseKettleHistory],"Get kettle history"),
-        CommandStoreBase        : (True,None,[],"Set water sensor base value"),
-        CommandBase             : (True,None,[ResponseBase,ResponseCommandStatus],"Get water sensor base value"),
-        CommandCalibrate        : (True,None,[ResponseBase,ResponseCommandStatus],"Calibrate water sensor"),
-        CommandKettleSettings   : (True,None,[ResponseKettleSettings],"Get default kettle user settings"),
-        Command30               : (True,None,[],"Working unknown command"),
-        CommandBrew             : (False,True,[],"Start coffee brewing"),
-        CommandCoffeeStop       : (False,True,[],"Stop coffee brewing"),
-        CommandStrength         : (False,True,[],"Set strength of the coffee to brew"),
-        CommandCups             : (False,True,[],"Set number of cups to brew"),
-        CommandBrewDefault      : (False,True,[],"Start coffee brewing using default"),
+        CommandDeviceTime       : (True,True,[ResponseCommandStatus],"Set device time"),
+        CommandWifiNetwork      : (True,True,[ResponseCommandStatus],"Set wireless network name"),
+        CommandWifiPassword     : (True,True,[ResponseCommandStatus],"Set wireless network password"),
+        CommandWifiJoin         : (True,True,[],"Join wireless network"),
+        CommandWifiScan         : (True,True,[ResponseWirelessNetworks],"Scan for wireless networks"),
+        CommandWifiLeave        : (True,True,[],"Leave wireless network"),
+        CommandResetSettings    : (True,True,[ResponseCommandStatus],"Reset default user settings"),
+        CommandHeat             : (True,False,[ResponseCommandStatus],"Heat kettle"),
+        CommandKettleStop       : (True,False,[ResponseCommandStatus],"Stop heating kettle"),
+        CommandHeatFormula      : (True,False,[ResponseCommandStatus],"Heat kettle using formula mode"),
+        CommandKettleStoreSettings : (True,False,[ResponseCommandStatus],"Set kettle default user settings"),
+        Command20               : (True,False,[ResponseCommandStatus],"Working unknown command (turn on?)"),
+        CommandHeatDefault      : (True,False,[ResponseCommandStatus],"Working unknown command (turn on?)"),
+        Command22               : (True,False,[ResponseCommandStatus],"Working unknown command (turn on?)"),
+        Command23               : (True,False,[ResponseCommandStatus],"Working unknown command (turn on?)"),
+        CommandKettleHistory    : (True,False,[ResponseKettleHistory],"Get kettle history"),
+        CommandStoreBase        : (True,False,[],"Set water sensor base value"),
+        CommandBase             : (True,False,[ResponseBase,ResponseCommandStatus],"Get water sensor base value"),
+        CommandCalibrate        : (True,False,[ResponseBase,ResponseCommandStatus],"Calibrate water sensor"),
+        CommandKettleSettings   : (True,False,[ResponseKettleSettings],"Get default kettle user settings"),
+        Command30               : (True,False,[ResponseCommandStatus],"Working unknown command"),
+        CommandBrew             : (False,True,[ResponseCommandStatus],"Start coffee brewing"),
+        CommandCoffeeStop       : (False,True,[ResponseCommandStatus],"Stop coffee brewing"),
+        CommandStrength         : (False,True,[ResponseCommandStatus],"Set strength of the coffee to brew"),
+        CommandCups             : (False,True,[ResponseCommandStatus],"Set number of cups to brew"),
+        CommandBrewDefault      : (False,True,[ResponseCommandStatus],"Start coffee brewing using machine settings"),
         CommandCoffeeStoreSettings : (False,True,[],"Set coffee machine default user settings"),
-        CommandGrinder          : (False,True,[],"Toggle grinder"),
-        CommandHotplateOn       : (False,True,[],"Turn on hotplate"),
-        CommandCarafe           : (False,True,[],"Get coffee carafe required"),
-        CommandSingleCupMode    : (False,True,[],"Get single coffee cup mode"),
-        Command40               : (False,None,[],"Working unknown command (schedule?)"),
-        Command41               : (False,None,[],"Working unknown command (schedule?)"),
-        Command43               : (False,None,[],"Working unknown command (schedule?)"),
+        CommandGrinder          : (False,True,[ResponseCommandStatus],"Toggle grinder"),
+        CommandHotplateOn       : (False,True,[ResponseCommandStatus],"Turn on hotplate"),
+        CommandCarafe           : (False,True,[ResponseCoffeeStatus,ResponseCommandStatus],"Get coffee carafe required"),
+        CommandSingleCupMode    : (False,True,[ResponseSingleCupMode,ResponseCommandStatus],"Get single coffee cup mode"),
+        Command40               : (False,True,[ResponseCommandStatus],"Working unknown command (schedule?)"),
+        Command41               : (False,True,[ResponseCommandStatus],"Working unknown command (schedule?)"),
+        Command43               : (False,True,[ResponseCommandStatus],"Working unknown command (schedule?)"),
         Command4b               : (False,True,[ResponseCommandStatus],"Working unknown command"),
         Command4e               : (False,True,[ResponseCommandStatus],"Working unknown command"),
-        CommandCoffeeSettings   : (False,True,[ResponseCoffeeSettings],"Get default coffee machine user settings"),
+        CommandCoffeeSettings   : (False,True,[ResponseCoffeeSettings,ResponseCommandStatus],"Get default coffee machine user settings"),
         CommandCoffeeHistory    : (False,True,[ResponseCoffeeHistory],"Get coffee machine history"),
-        CommandHotplateOff      : (False,True,[],"Turn off hotplate"),
+        CommandHotplateOff      : (False,True,[ResponseCommandStatus],"Turn off hotplate"),
         CommandDeviceInfo       : (True,True,[ResponseDeviceInfo],"Get device info"),
-        Command69               : (True,None,[ResponseCommandStatus],"Working unknown command"),
-        CommandWifiFirmware     : (True,None,[ResponseWifiFirmware],"Get wifi firmware info"),
-        CommandUpdate           : (True,None,[],"Device firmware update")
-
-    #
+        Command69               : (True,True,[ResponseCommandStatus],"Working unknown command"),
+        CommandWifiFirmware     : (True,True,[ResponseWifiFirmware],"Get wifi firmware info"),
+        CommandUpdate           : (True,True,[],"Device firmware update")
     }
 
 
     # format: kettle?, coffee? (None is unnknown), minimal length (0 = variable), response to command, description
     ResponseMessages = {
-        ResponseCommandStatus   : (True,True,3,[CommandDeviceTime,CommandWifiNetwork,CommandWifiPassword,CommandResetSettings,CommandHeat,CommandKettleStop,CommandHeatFormula,CommandKettleStoreSettings,Command20,CommandHeatDefault,Command22,Command23,CommandBase,CommandCalibrate,Command69,Command4b,Command4e],"Command status"),
-        ResponseWirelessNetworks: (True,None,0,[CommandWifiScan],"Wireless networks list"),
+        ResponseCommandStatus   : (True,True,3,[CommandDeviceTime,CommandWifiNetwork,CommandWifiPassword,CommandResetSettings,CommandHeat,CommandKettleStop,CommandHeatFormula,CommandKettleStoreSettings,Command20,CommandHeatDefault,Command22,Command23,CommandBase,CommandCalibrate,Command69,Command40,Command41,Command43,Command4b,Command4e],"Command status"),
+        ResponseWirelessNetworks: (True,True,0,[CommandWifiScan],"Wireless networks list"),
         ResponseKettleHistory   : (True,False,0,[CommandKettleHistory],"Kettle history"),
         ResponseCoffeeHistory   : (False,True,0,[CommandCoffeeHistory],"Coffee machine history"),
-        ResponseBase            : (True,None,4,[CommandBase,CommandCalibrate],"Water sensor base value"),
+        ResponseBase            : (True,False,4,[CommandBase,CommandCalibrate],"Water sensor base value"),
         ResponseKettleSettings  : (True,True,9,[CommandKettleSettings],"Default kettle user settings"),
         ResponseKettleStatus    : (True,True,7,[],"Kettle status"),
         ResponseDeviceInfo      : (True,True,4,[CommandDeviceInfo],"Device info"),
-        ResponseWifiFirmware    : (True,None,0,[CommandWifiFirmware],"Wifi firmware info"),
+        ResponseWifiFirmware    : (True,True,0,[CommandWifiFirmware],"Wifi firmware info"),
         ResponseCarafe          : (False,True,3,[CommandCarafe],"Carafe required"),
         ResponseCoffeeStatus    : (False,True,0,[],"Coffee machine status"),
+        ResponseCoffeeSettings  : (False,True,6,[CommandCoffeeSettings],"Get default coffee machine user settings"),
         ResponseSingleCupMode   : (False,True,3,[CommandSingleCupMode],"Single coffee cup mode"),
 
     }
@@ -365,6 +368,7 @@ class SmarterProtocol:
         if keepwarmtime > 0:
             message = message + " and keep it warm for " + str(keepwarmtime) + " minutes"
         return message
+
     def is_status_command(self,status):
         return self.StatusCommand.has_key(status)
 
@@ -396,6 +400,32 @@ class SmarterProtocol:
             return self.StatusCoffee[status]
         else:
             return "Unknown Coffee Status " + self.number_to_code(status)
+
+
+    def string_coffee_settings(self, cups, strength, grinder, hotplate):
+        s = ""
+        if hotplate >= 5 and hotplate <= 40:
+            s = " and keep warm for " + str(self.hotplate) + " minutes"
+        return "Brew " + self.cups_to_string(cups) + " of coffee, " + self.strength_to_string(strength) + " strength using the " + self.grinder_to_string(grinder) + s
+
+    def string_coffee_status(self,ready,working,heating,hotPlateOn,carafe,grinderOn):
+        s = ""
+        if working:
+            s += "working "
+        if heating:
+            s += "heating "
+        if hotPlateOn:
+            s += "hotplate warming "
+        if grinderOn:
+            s += "grinding "
+        if ready:
+            s += "ready "
+        if carafe:
+            s+= "carafe on base"
+        else:
+            s+= "no carafe"
+        return s
+
 
 
     StatusSucces              = 0x00
@@ -526,7 +556,7 @@ class SmarterProtocol:
                 try:
                     message += self.code_to_raw(code[i*2]+code[i*2+1])
                 except:
-                    print SmarterErrorOld("Could not encode code \'" + code + "\' at position: " + str(i*2+1))
+                    raise SmarterErrorOld("Could not encode code \'" + code + "\' at position: " + str(i*2+1))
  
         elif len(code) % 3 == 2:
             for i in range(0,(len(code) / 3)+1):
@@ -559,7 +589,7 @@ class SmarterProtocol:
 
 
     KettleFirmwareVerified    = [18,19]
-    CoffeeFirmwareVerified    = [22]
+    CoffeeFirmwareVerified    = [20,22]
 
 
     def is_kettle(self,device):
@@ -588,7 +618,7 @@ class SmarterProtocol:
         if self.is_kettle(device):
             return "iKettle 2.0"
         elif self.is_coffee(device):
-            return "SmarterCoffee "
+            return "SmarterCoffee"
         else:
             return "Unknown"
 
@@ -621,7 +651,13 @@ class SmarterProtocol:
         return self.check_strength(self.raw_to_number(raw))
     
     
-    def strength_to_string(self,raw):
+    def strength_to_string(self,number):
+        if self.CoffeeWeak == number:
+            return "weak"
+        elif self.CoffeeMedium == number:
+            return "normal"
+        elif self.CoffeeStrong == number:
+            return "strong"
         return self.StatusCoffeeStrength[self.check_strength(strength)]
 
 
@@ -629,12 +665,19 @@ class SmarterProtocol:
         if strength.strip().lower() == "weak":        
             return self.CoffeeWeak
         elif strength.strip().lower() == "medium":
-            return self.CoffeeWeak
+            return self.CoffeeMedium
         elif strength.strip().lower() == "strong":
-            raw = self.CoffeeStrong
+            return self.CoffeeStrong
         else:
             raise SmarterErrorOld("Invalid coffee strength [weak, medium, strong]: " + strength)
 
+
+
+    def grinder_to_string(self,grinder):
+        s = "filter"
+        if grinder:
+            s = "grinder"
+        return s
 
 
     #------------------------------------------------------
@@ -702,9 +745,9 @@ class SmarterProtocol:
 
     def temperature_metric_to_string(self):
         if self.Fahrenheid:
-            return "Fahrenheid"
+            return "fahrenheid"
         else:
-            return "Celsius"
+            return "celsius"
 
     def string_to_temperature(self,string):
         try:
@@ -813,7 +856,7 @@ class SmarterProtocol:
     #------------------------------------------------------
 
     def check_cups(self,cups_raw):
-        cups = cups_raw % 12
+        cups = cups_raw % 16
         if cups < 1 or cups > 12:
             raise SmarterErrorOld("Unknown coffee cups [1..12]: " + str(cups))
         return cups
@@ -839,7 +882,7 @@ class SmarterProtocol:
         if cups == 1:
             return "1 cup"
         else:
-            return str(self.cups) + " cups"
+            return str(cups) + " cups"
 
 
 

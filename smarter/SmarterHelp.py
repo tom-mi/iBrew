@@ -143,9 +143,6 @@ class SmarterProtocolHelp:
             print
             print "  Response iKettle: <STATUSKETTLE><TEMPERATURE><WATERSENSORBITSHIGH><WATERSENSORBITSLOW><??>"
             print
-            print "  Response SmarterCoffee : <STATUSCOFFEE><WATERLEVEL><WIFISTRENGTH???/WATERSENSORBITSLOW???>"
-            print "                           <STRENGTH><CUPS>"
-            print
             print "  STATUSKETTLE"
             print "    00 Ready"
             print "    01 Heating water"
@@ -462,6 +459,7 @@ class SmarterProtocolHelp:
             print "  Example: 36 03 7e"
             
         elif id == Smarter.CommandBrewDefault:
+            print "  Uses the settings not the default user settings"
             print "  Example: 37 7e"
             
         elif id == Smarter.CommandGrinder:
@@ -552,7 +550,7 @@ class SmarterProtocolHelp:
             print "  I do not have a smarter coffee, but I suspect that the WIFISTRENGTH is just"
             print "  the WATERSENSORBITSLOW part of the waterlevel sensor."
             print
-            print "  Response: <STATUSCOFFEE><WATERLEVEL><WIFISTRENGTH???/WATERSENSORBITSLOW???><STRENGTH><CUPS>"
+            print "  Response: <STATUSCOFFEE><WATERLEVEL><WIFISTRENGTH???/WATERSENSORBITSLOW???><STRENGTH><UNKNOWNANDCUPS>"
             print
             print "  STATUSKETTLE"
             print "    00 Ready"
@@ -578,24 +576,24 @@ class SmarterProtocolHelp:
             print "    62 Beans, No carafe, Hotplate On  #  01100010"
             print "    63 Beans, Hotplate On             #  01100011"
             print "    51 Descaling in progress          #  01010001"
-            print "                                           HB RBC"
-            print "                                           OO EEA"
-            print "                                           TI AAR"
-            print "                                           PL DNA"
-            print "                                           LI YSF"
-            print "                                           AN   E"
-            print "                                           TG"
-            print "                                           E"
+            print "                                          WHHGRBC"
+            print "                                          OOEREEA"
+            print "                                          RTAIAAR"
+            print "                                          KPTNDNA"
+            print "                                          ILIDYSF"
+            print "                                          NANI  E"
+            print "                                          GTGN"
+            print "                                           E G"
             print
             print "  These are guesses I do not own a smarter coffee..."
-            print "  BIT 0 = UNKNOWN/UNUSED?"
-            print "  BIT 1 = ACTION???"
-            print "  BIT 2 = HOTPLATE"
-            print "  BIT 3 = Heating & Descaling (USES BIT 6)"
-            print "  BIT 4 = UNKNOWN/UNUSED?"
-            print "  BIT 5 = READY/BUSY (OK TO START, FINISHED = 1 else 0)"
-            print "  BIT 6 = FILTER/BEANS"
-            print "  BIT 7 = CARAFE OFFBASE/ONBASE"
+            print "  BIT 7 = UNKNOWN/UNUSED?"
+            print "  BIT 6 = IDLE/WORKING"
+            print "  BIT 5 = Hot plate On/Off"
+            print "  BIT 4 = Heating On/Off"
+            print "  BIT 3 = Grinding"
+            print "  BIT 2 = READY/BUSY (OK TO START)"
+            print "  BIT 1 = FILTER/BEANS"
+            print "  BIT 0 = CARAFE OFFBASE/ONBASE"
             print 
             print "  WATERLEVEL"
             print "    00 Not enough water"
@@ -608,6 +606,10 @@ class SmarterProtocolHelp:
             print "    00 Weak"
             print "    01 Medium"
             print "    02 Strong"
+            print
+            print "  UNKNOWNANDCUPS"
+            print "    CUPS    4 lower bits"
+            print "    UNKNOWN 4 higher bits"
             print
             print "  CUPS"
             print "    00..0c"

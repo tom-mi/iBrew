@@ -33,22 +33,22 @@ for (i = 0; i < keys.length; i++) {
  
     icon = '{{  static_url('icons/wifi/') }}';
     if ( item.quality >= 0 && item.quality < 10) {
-        $('#wifi').append('<img height="24px" src="' + icon + 'signal0.png">')
+        $('#wifi').append('<img id="signal" src="' + icon + 'signal0.png">')
     }
     if ( item.quality >= 10 && item.quality < 30 ) {
-        $('#wifi').append('<img height="24px" src="' + icon + 'signal1.png">')
+        $('#wifi').append('<img class="signal" src="' + icon + 'signal1.png">')
     }
 
     if ( item.quality >= 30 && item.quality < 50 ) {
-        $('#wifi').append('<img height="24px" src="' + icon + 'signal2.png">')
+        $('#wifi').append('<img class="signal" src="' + icon + 'signal2.png">')
     }
 
     if ( item.quality >= 50 && item.quality < 70 ) {
-        $('#wifi').append('<img height="24px" src="' + icon + 'signal3.png">')
+        $('#wifi').append('<img id="signal" src="' + icon + 'signal3.png">')
     }
     
     if ( item.quality >= 70 && item.quality <= 100 ) {
-        $('#wifi').append('<img height="24px" src="' + icon + 'signal4.png">')
+        $('#wifi').append('<img class="signal" src="' + icon + 'signal4.png">')
     }
     
     $('#wifi').append('</div>');

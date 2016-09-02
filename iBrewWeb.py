@@ -274,16 +274,20 @@ class WifiScanHandler(GenericAPIHandler):
     def get(self,ip):
         if ip in self.application.clients:
             client = self.application.clients[ip]
-            client.wifi_scan()
-            networks = {}
-            for i in range(0,len(client.Wifi)):
-                networks.update( { client.Wifi[i][0] : { 'signal'  : str(client.Wifi[i][1]),
-                                                         'quality' : Smarter.dbm_to_quality(int(client.Wifi[i][1]))
-                                                       }
-                                 })
-            response = { 'networks'   : networks,
-                         'directmode' : client.isDirect
-                       }
+            try:
+                client.wifi_scan()
+        
+                networks = {}
+                for i in range(0,len(client.Wifi)):
+                    networks.update( { client.Wifi[i][0] : { 'signal'  : str(client.Wifi[i][1]),
+                                                             'quality' : Smarter.dbm_to_quality(int(client.Wifi[i][1]))
+                                                           }
+                                     })
+                response = { 'networks'   : networks,
+                             'directmode' : client.isDirect
+                           }
+            except:
+                response = { 'error': 'no communication' }
         else:
             response = { 'error': 'no device' }
         self.setContentType()
@@ -544,17 +548,21 @@ class iBrewWeb(tornado.web.Application):
     
     
     def __del__(self):
+        print "fd"
         self.kill()
     
     
     def kill(self):
-    
+        print "dssdsd"
         try:
-            for ip in self.clients:
-                self.clients[ip].disconnect()
+            if self.clients:
+                for ip in self.clients:
+                    print "dsdsdsdsdsdsds"
+                    self.clients[ip].disconnect()
         except:
             SmarterError(WebServerStopMonitor,"Web Server: Could not stop monitors")
 
+        print "dsds"
         deadline = time.time() + 3
         try:
             io_loop = tornado.ioloop.IOLoop.instance()
@@ -581,6 +589,7 @@ class iBrewWeb(tornado.web.Application):
     
  
     def run(self,port,dump=False,host=""):
+        print "RUN"
         self.port = port
         self.isRunning = False
         try:
@@ -595,11 +604,14 @@ class iBrewWeb(tornado.web.Application):
             
             for device in devices:
                 client = SmarterClient()
+                
                 client.dump = dump
                 client.dump_status = dump
                 client.host = device[0]
-                client.init_default()
                 self.clients[device[0]] = client
+
+                client.connect()
+                client.init_default()
                 print "iBrew Web Server: " + client.string_connect_status()
             
             if host != "":
@@ -612,8 +624,9 @@ class iBrewWeb(tornado.web.Application):
                     client.host = host
                     client.dump = dump
                     client.dump_status = dump
-                    client.init_default()
                     self.clients[ip] = client
+                    client.connect()
+                    client.init_default()
                     print "iBrew Web Server: " + client.string_connect_status()
 
 

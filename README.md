@@ -19,12 +19,15 @@ This means your machine is free! You can connect it yourself and do whatever you
  
 #### Upcoming   
  * Better error handling (sometimes it does not quit, and the exceptions are not handled :-)
- * Brew, heat, formula arguments (I have to figure out what is what, one cup at a time...)
+ * Brew, heat, formula arguments (I have to figure out what is what, one cup at a time... if you look closely the most basic functionality was/is not present, the network code is fixed ;-)
  * Time arguments (have not figured that out)
  * Auto-reconnect (pretty important)
  * Web interface & rest api (rest almost finished, web interface still have to create some pages) and introduce webroot & api key...
  * History message is not finished
  * Fahrenheid not finished, please to not use.
+ * can't start the web interface twice in console (i probably did not clean up)
+ * if you send a message with an if of a response as command it displays the response info
+ * and the threading code is still wrong, sometimes I get stuff twice... or it hangs on waiting to send...
  * v0.5 Missing Coffee Smarter codes (!)
  
  
@@ -89,6 +92,8 @@ See the console section for the commands
 
   If you do not supply a host, it will try to connect to the first detected device
   Thus if you have more then one device supply a host (if its not in direct mode)
+Bye
+DISCONNECT
 
 ```
 
@@ -107,7 +112,7 @@ you can also use them on the command line as arguments:
     start                  start the device
     status                 show status
     settings               show user settings
-    stop                   stop the appliance if its brewing or boiling
+    stop                   stop the appliance
     time [time]            set the device time
 
   iKettle 2.0 Commands
@@ -118,18 +123,19 @@ you can also use them on the command line as arguments:
     fahrenheid             use fahrenheid ºF [console only]
     formula ()()           heat kettle in formula mode
     heat ()()              heat kettle
-    stop kettle            stops boiling
+    stop kettle            stops heating
     settings [keepwarm] [temperature] [formula] [formulatemperature] store kettle user settings
 
   SmarterCoffee  Commands
     brew ()                brew coffee
     carafe                 returns if carafe is required
     cups [number]          set number of cups [1..12]
-    grinder                toggle grinder
+    grinder                use grinder
+    filter                 use filter
     hotplate off           turn hotplate off
     hotplate on (minutes)  turn hotplate on (time in minutes)
     singlecup              return if singlecup mode is on
-    strength [strength]    set strength coffee [weak, medium or strong]
+    (strength) [strength]  set strength coffee [weak, medium or strong]
     stop coffee            stops brewing
     settings [cups] [strength] [grinder] [hotplate]   store user settings
 
@@ -164,6 +170,8 @@ you can also use them on the command line as arguments:
     joke                   show joke
     quit                   quit console [console only]
 
+Bye
+DISCONNECT
 
 ```
 
@@ -172,14 +180,16 @@ you can also use them on the command line as arguments:
 ```
 
   Example:
-    off            Stop boiling/brewing
+    off            Stop heating/brewing
     messages       Show all protocol messages
     message 3e     Show protocol message 3a, turn hotplate on
     167E           Send kettle raw stop
-    21 30 05 7e    Send kettle raw boil
+    21 30 05 7e    Send kettle raw heat
     strength weak  Set coffee strength to weak
     cups 3         Set number of cups to brew
 
+Bye
+DISCONNECT
 
 ```
 
@@ -265,68 +275,8 @@ iKettle Devices in Domoticz
    
    
 ```
-
-
-  Domoticz Bridge
-  _______________
-
-
-  Bridge between iKettle 2.0 and domoticz. Its auto-creates 4 devices in domoticz, if not yet created,
-  and monitors the kettle and update the domoticz devices accordingly.
-  
-    Water Temperature in ºC (temperature device)
-    Water Height (custom device)
-    Kettle on base (motion device)
-    Kettle status (text device)
-    
-  Currently you have to create your boil, brew switches yourself (working on it), so:
-  
-    Place or link iBrew in your domoticz script folder or somewhere readable and reachable.
-    Run iBrew in domoticz bridge mode to auto create the 'smarter' dummy hardware.
-    Go to [SETUP] [HARDWARE] press 'create virtual sensors' on the dummy hardware called 'smarter'
-    Give it a name (e.g. Kettle Boil) and select sensor type is switch.
-    Go to [SWITCHES], scroll all the way down.
-    Select 'edit' on your newly created device.
-      Switch Icon, well heating is nice!
-      On Action:  script://locationibrew/iBrew on kettleip
-      Off Action: script://locationibrew/iBrew off kettleip
-      
-    You now have a functional boil/stop switch... 
-    
-    If you do not want a switch you can also create two push (on/off) buttons
-    and fill in the action.
-  
-  If you use homebridge for domoticz (https://www.domoticz.com/forum/viewtopic.php?t=10272) you can use
-  apple homekit with the kettle. You have to create extra virtual sensor (motion boil???) because the text sensor is not supported
-  by homekit, all the other are.
-  
-
-  Usage:
-
-    domoticz [domoticz] [basename] [kettle]
-
-  Where:
-  
-    domoticz        Connection string to domoticz, [host:port] or [username:password@host:port]
-    basename        Base name of your kettle devices in domoticz. The name may contain spaces.
-    kettle          Connection string to iKettle 2.0, [host]
-    host            Format: ip4, ip6, fqdn
-    
-
-  Notes:
-  
-    It will auto-create the devices in Domoticz
-    Tested on Domoticz v3.52
-    *** Currently iKettle 2.0 Only ***
-  
-  Examples:
-  
-    iBrew domoticz sofia:$ecrit@localhost:8080 Kettle Kitchen 192.168.4.1
-    iBrew domoticz 10.0.0.1:9001 Kettle Office 192.168.10.13
-    iBrew dump domoticz 10.0.0.1:9001 Kettle Office 192.168.10.13
-    iBrew domoticz localhost:8080 Kettle 
-  
-              
+Bye
+DISCONNECT
 
 ```
 
@@ -389,6 +339,8 @@ But you can change it to your normal copy, also change the working directory,dom
     so check the length of the response message!
     
               
+Bye
+DISCONNECT
 
 ```
 
@@ -403,38 +355,38 @@ But you can change it to your normal copy, also change the working directory,dom
 
     k c ID Command Message
     ___________________________________________
-    ✓ ? 02 Set device time
-    ✓ ? 05 Set wireless network name
-    ✓ ? 07 Set wireless network password
-    ✓ ? 0c Join wireless network
-    ✓ ? 0d Scan for wireless networks
-    ✓ ? 0f Leave wireless network
-    ✓ ? 10 Reset default user settings
-    ✓ ? 15 Heat kettle
-    ✓ ? 16 Stop heating kettle
-    ✓ ? 19 Heat kettle using formula mode
-    ✓ ? 1f Set kettle default user settings
-    ✓ ? 20 Working unknown command (turn on?)
-    ✓ ? 21 Working unknown command (turn on?)
-    ✓ ? 22 Working unknown command (turn on?)
-    ✓ ? 23 Working unknown command (turn on?)
-    ✓ ? 28 Get kettle history
-    ✓ ? 2a Set water sensor base value
-    ✓ ? 2b Get water sensor base value
-    ✓ ? 2c Calibrate water sensor
-    ✓ ? 2e Get default kettle user settings
-    ✓ ? 30 Working unknown command
+    ✓ ✓ 02 Set device time
+    ✓ ✓ 05 Set wireless network name
+    ✓ ✓ 07 Set wireless network password
+    ✓ ✓ 0c Join wireless network
+    ✓ ✓ 0d Scan for wireless networks
+    ✓ ✓ 0f Leave wireless network
+    ✓ ✓ 10 Reset default user settings
+    ✓ ✕ 15 Heat kettle
+    ✓ ✕ 16 Stop heating kettle
+    ✓ ✕ 19 Heat kettle using formula mode
+    ✓ ✕ 1f Set kettle default user settings
+    ✓ ✕ 20 Working unknown command (turn on?)
+    ✓ ✕ 21 Working unknown command (turn on?)
+    ✓ ✕ 22 Working unknown command (turn on?)
+    ✓ ✕ 23 Working unknown command (turn on?)
+    ✓ ✕ 28 Get kettle history
+    ✓ ✕ 2a Set water sensor base value
+    ✓ ✕ 2b Get water sensor base value
+    ✓ ✕ 2c Calibrate water sensor
+    ✓ ✕ 2e Get default kettle user settings
+    ✓ ✕ 30 Working unknown command
     ✕ ✓ 33 Start coffee brewing
     ✕ ✓ 34 Stop coffee brewing
     ✕ ✓ 35 Set strength of the coffee to brew
     ✕ ✓ 36 Set number of cups to brew
-    ✕ ✓ 37 Start coffee brewing using default
+    ✕ ✓ 37 Start coffee brewing using machine settings
     ✕ ✓ 38 Set coffee machine default user settings
     ✕ ✓ 3c Toggle grinder
     ✕ ✓ 3e Turn on hotplate
-    ✕ ? 40 Working unknown command (schedule?)
-    ✕ ? 41 Working unknown command (schedule?)
-    ✕ ? 43 Working unknown command (schedule?)
+    ✕ ✓ 40 Working unknown command (schedule?)
+    ✕ ✓ 41 Working unknown command (schedule?)
+    ✕ ✓ 43 Working unknown command (schedule?)
     ✕ ✓ 46 Get coffee machine history
     ✕ ✓ 48 Get default coffee machine user settings
     ✕ ✓ 4a Turn off hotplate
@@ -443,30 +395,33 @@ But you can change it to your normal copy, also change the working directory,dom
     ✕ ✓ 4e Working unknown command
     ✕ ✓ 4f Get single coffee cup mode
     ✓ ✓ 64 Get device info
-    ✓ ? 69 Working unknown command
-    ✓ ? 6a Get wifi firmware info
-    ✓ ? 6d Device firmware update
+    ✓ ✓ 69 Working unknown command
+    ✓ ✓ 6a Get wifi firmware info
+    ✓ ✓ 6d Device firmware update
 
     k c ID Response Message
     _______________________________
     ✓ ✓ 03 Command status
-    ✓ ? 0e Wireless networks list
+    ✓ ✓ 0e Wireless networks list
     ✓ ✓ 14 Kettle status
     ✓ ✕ 29 Kettle history
-    ✓ ? 2d Water sensor base value
+    ✓ ✕ 2d Water sensor base value
     ✓ ✓ 2f Default kettle user settings
     ✕ ✓ 32 Coffee machine status
     ✕ ✓ 47 Coffee machine history
+    ✕ ✓ 49 Get default coffee machine user settings
     ✕ ✓ 4d Carafe required
     ✕ ✓ 50 Single coffee cup mode
     ✓ ✓ 65 Device info
-    ✓ ? 6b Wifi firmware info
+    ✓ ✓ 6b Wifi firmware info
 
     Legend:
       k iKettle 2
       c SmarterCoffee 
 
 
+Bye
+DISCONNECT
 
 ```
 
@@ -479,7 +434,7 @@ But you can change it to your normal copy, also change the working directory,dom
   ─────────────────────────────────────────────────────────────────────────
   Response message: [03,Command status] 
 
-  ✓ iKettle 2.0   ? SmarterCoffee 
+  ✓ iKettle 2.0   ✓ SmarterCoffee 
 
   Set the time on the device, is used in history reply messages.
   Unknown is Day of week index?
@@ -514,7 +469,7 @@ But you can change it to your normal copy, also change the working directory,dom
 
   Response Message 03: Command status
   ─────────────────────────────────────────────────────────────────────────
-  In response to command message: [02,Set device time] [05,Set wireless network name] [07,Set wireless network password] [10,Reset default user settings] [15,Heat kettle] [16,Stop heating kettle] [19,Heat kettle using formula mode] [1f,Set kettle default user settings] [20,Working unknown command (turn on?)] [21,Working unknown command (turn on?)] [22,Working unknown command (turn on?)] [23,Working unknown command (turn on?)] [2b,Get water sensor base value] [2c,Calibrate water sensor] [69,Working unknown command] [4b,Working unknown command] [4e,Working unknown command] 
+  In response to command message: [02,Set device time] [05,Set wireless network name] [07,Set wireless network password] [10,Reset default user settings] [15,Heat kettle] [16,Stop heating kettle] [19,Heat kettle using formula mode] [1f,Set kettle default user settings] [20,Working unknown command (turn on?)] [21,Working unknown command (turn on?)] [22,Working unknown command (turn on?)] [23,Working unknown command (turn on?)] [2b,Get water sensor base value] [2c,Calibrate water sensor] [69,Working unknown command] [40,Working unknown command (schedule?)] [41,Working unknown command (schedule?)] [43,Working unknown command (schedule?)] [4b,Working unknown command] [4e,Working unknown command] 
   Message Size: 3 bytes
 
   ✓ iKettle 2.0   ✓ SmarterCoffee 
@@ -540,7 +495,7 @@ But you can change it to your normal copy, also change the working directory,dom
   ─────────────────────────────────────────────────────────────────────────
   Response message: [03,Command status] 
 
-  ✓ iKettle 2.0   ? SmarterCoffee 
+  ✓ iKettle 2.0   ✓ SmarterCoffee 
 
   Argument: <SSID>{0,32}
   Just normal ascii
@@ -552,7 +507,7 @@ But you can change it to your normal copy, also change the working directory,dom
   ─────────────────────────────────────────────────────────────────────────
   Response message: [03,Command status] 
 
-  ✓ iKettle 2.0   ? SmarterCoffee 
+  ✓ iKettle 2.0   ✓ SmarterCoffee 
 
   Argument: <PASSWORD>{0,32}
   Just normal ascii
@@ -563,7 +518,7 @@ But you can change it to your normal copy, also change the working directory,dom
   Command Message 0c: Join wireless network
   ─────────────────────────────────────────────────────────────────────────
 
-  ✓ iKettle 2.0   ? SmarterCoffee 
+  ✓ iKettle 2.0   ✓ SmarterCoffee 
 
   Sending this command without previous SSID/password messages will reset the wifi
   to factory settings.
@@ -584,7 +539,7 @@ But you can change it to your normal copy, also change the working directory,dom
   ─────────────────────────────────────────────────────────────────────────
   Response message: [0e,Wireless networks list] 
 
-  ✓ iKettle 2.0   ? SmarterCoffee 
+  ✓ iKettle 2.0   ✓ SmarterCoffee 
 
   Example raw code: 0d 7e
 
@@ -595,7 +550,7 @@ But you can change it to your normal copy, also change the working directory,dom
   ─────────────────────────────────────────────────────────────────────────
   In response to command message: [0d,Scan for wireless networks] 
 
-  ✓ iKettle 2.0   ? SmarterCoffee 
+  ✓ iKettle 2.0   ✓ SmarterCoffee 
 
   DB is the signal strength in dBm format.
 
@@ -610,7 +565,7 @@ But you can change it to your normal copy, also change the working directory,dom
   Command Message 0f: Leave wireless network
   ─────────────────────────────────────────────────────────────────────────
 
-  ✓ iKettle 2.0   ? SmarterCoffee 
+  ✓ iKettle 2.0   ✓ SmarterCoffee 
 
   Leaves wireless network and reset wifi to default
 
@@ -624,7 +579,7 @@ But you can change it to your normal copy, also change the working directory,dom
   ─────────────────────────────────────────────────────────────────────────
   Response message: [03,Command status] 
 
-  ✓ iKettle 2.0   ? SmarterCoffee 
+  ✓ iKettle 2.0   ✓ SmarterCoffee 
 
   For the kettle these are the default user settings:
   keepwarm 0 minutes (0x00), temperature 100ºC (0x64)
@@ -648,15 +603,12 @@ But you can change it to your normal copy, also change the working directory,dom
 
   Response iKettle: <STATUSKETTLE><TEMPERATURE><WATERSENSORBITSHIGH><WATERSENSORBITSLOW><??>
 
-  Response SmarterCoffee : <STATUSCOFFEE><WATERLEVEL><WIFISTRENGTH???/WATERSENSORBITSLOW???>
-                           <STRENGTH><CUPS>
-
   STATUSKETTLE
     00 Ready
-    01 Boiling
-    02 Keep Warm
-    03 Cycle Finished
-    04 Baby Cooling
+    01 Heating water
+    02 Keep warm
+    03 Cycle finished
+    04 Baby cooling
 
   TEMPERATURE
     00..64  0..100ºC
@@ -671,10 +623,10 @@ But you can change it to your normal copy, also change the working directory,dom
   ─────────────────────────────────────────────────────────────────────────
   Response message: [03,Command status] 
 
-  ✓ iKettle 2.0   ? SmarterCoffee 
+  ✓ iKettle 2.0   ✕ SmarterCoffee 
 
-  if it's warming you have to send an off command to boil again
-  if it's not on temp it boils first before warming...
+  if it's warming you have to send an off command to heat again
+  if it's not on temp it heats first before warming...
 
   Argument: <TEMPERATURE><KEEPWARMTIME>
 
@@ -694,7 +646,7 @@ But you can change it to your normal copy, also change the working directory,dom
   ─────────────────────────────────────────────────────────────────────────
   Response message: [03,Command status] 
 
-  ✓ iKettle 2.0   ? SmarterCoffee 
+  ✓ iKettle 2.0   ✕ SmarterCoffee 
 
   Example: 16 7e
 
@@ -705,9 +657,9 @@ But you can change it to your normal copy, also change the working directory,dom
   ─────────────────────────────────────────────────────────────────────────
   Response message: [03,Command status] 
 
-  ✓ iKettle 2.0   ? SmarterCoffee 
+  ✓ iKettle 2.0   ✕ SmarterCoffee 
 
-  Boil water to (default user temperature)
+  Heats water to (default user temperature)
  and cool until the formula temperature and then keep it warm.
 
   Arguments: <FORMULATEMPERATURE><KEEPWARMTIME>
@@ -731,7 +683,7 @@ But you can change it to your normal copy, also change the working directory,dom
   ─────────────────────────────────────────────────────────────────────────
   Response message: [03,Command status] 
 
-  ✓ iKettle 2.0   ? SmarterCoffee 
+  ✓ iKettle 2.0   ✕ SmarterCoffee 
 
   Default user defaults message is 1f 00 64 00 4b 7e
 
@@ -762,9 +714,9 @@ But you can change it to your normal copy, also change the working directory,dom
   ─────────────────────────────────────────────────────────────────────────
   Response message: [03,Command status] 
 
-  ✓ iKettle 2.0   ? SmarterCoffee 
+  ✓ iKettle 2.0   ✕ SmarterCoffee 
 
-  This setting ignores the user setting and boils till 100C
+  This setting ignores the user setting and heats untill the tempeature is 100ºC
 
   Example raw code: 20 7e
 
@@ -775,7 +727,7 @@ But you can change it to your normal copy, also change the working directory,dom
   ─────────────────────────────────────────────────────────────────────────
   Response message: [03,Command status] 
 
-  ✓ iKettle 2.0   ? SmarterCoffee 
+  ✓ iKettle 2.0   ✕ SmarterCoffee 
 
   No information available on message: 21
 
@@ -786,7 +738,7 @@ But you can change it to your normal copy, also change the working directory,dom
   ─────────────────────────────────────────────────────────────────────────
   Response message: [03,Command status] 
 
-  ✓ iKettle 2.0   ? SmarterCoffee 
+  ✓ iKettle 2.0   ✕ SmarterCoffee 
 
   Example: 22 7e
 
@@ -797,7 +749,7 @@ But you can change it to your normal copy, also change the working directory,dom
   ─────────────────────────────────────────────────────────────────────────
   Response message: [03,Command status] 
 
-  ✓ iKettle 2.0   ? SmarterCoffee 
+  ✓ iKettle 2.0   ✕ SmarterCoffee 
 
   Example: 23 7e
 
@@ -808,7 +760,7 @@ But you can change it to your normal copy, also change the working directory,dom
   ─────────────────────────────────────────────────────────────────────────
   Response message: [29,Kettle history] 
 
-  ✓ iKettle 2.0   ? SmarterCoffee 
+  ✓ iKettle 2.0   ✕ SmarterCoffee 
 
   When called will erase this history.
 
@@ -823,8 +775,8 @@ But you can change it to your normal copy, also change the working directory,dom
 
   ✓ iKettle 2.0   ✕ SmarterCoffee 
 
-  The payload is generated everytime the kettle stops boiling. The actioncounter increases with every boil
-  Formula temperature is above 0 then it was boilded with formula temperature enabled. There seems to be some
+  The payload is generated everytime the kettle stops heating. The actioncounter increases with every heating?
+  Formula temperature is above 0 then it was heated with formula temperature enabled. There seems to be some
   packed time available.
 
   Payload maximum is 8. So if 8 check again, if there is more history
@@ -850,7 +802,7 @@ But you can change it to your normal copy, also change the working directory,dom
     00..64  0..100ºC
 
   ACTIONCOUNTER
-    00..ff  Amount of boils before off base
+    00..ff  Amount of heatings before off base
 
   SECONDS
     00..3b
@@ -883,7 +835,7 @@ But you can change it to your normal copy, also change the working directory,dom
   Command Message 2a: Set water sensor base value
   ─────────────────────────────────────────────────────────────────────────
 
-  ✓ iKettle 2.0   ? SmarterCoffee 
+  ✓ iKettle 2.0   ✕ SmarterCoffee 
 
   Arguments: <BASELHIGHBITS><BASELOWBITS>
 
@@ -899,7 +851,7 @@ But you can change it to your normal copy, also change the working directory,dom
   ─────────────────────────────────────────────────────────────────────────
   Response message: [2d,Water sensor base value] [03,Command status] 
 
-  ✓ iKettle 2.0   ? SmarterCoffee 
+  ✓ iKettle 2.0   ✕ SmarterCoffee 
 
   Example: 2b 7e
 
@@ -910,7 +862,7 @@ But you can change it to your normal copy, also change the working directory,dom
   ─────────────────────────────────────────────────────────────────────────
   Response message: [2d,Water sensor base value] [03,Command status] 
 
-  ✓ iKettle 2.0   ? SmarterCoffee 
+  ✓ iKettle 2.0   ✕ SmarterCoffee 
 
   Example: 2c 7e
 
@@ -924,7 +876,7 @@ But you can change it to your normal copy, also change the working directory,dom
   In response to command message: [2b,Get water sensor base value] [2c,Calibrate water sensor] 
   Message Size: 4 bytes
 
-  ✓ iKettle 2.0   ? SmarterCoffee 
+  ✓ iKettle 2.0   ✕ SmarterCoffee 
 
   Response: <BASELHIGHBITS><BASELOWBITS>
 
@@ -939,7 +891,7 @@ But you can change it to your normal copy, also change the working directory,dom
   ─────────────────────────────────────────────────────────────────────────
   Response message: [2f,Default kettle user settings] 
 
-  ✓ iKettle 2.0   ? SmarterCoffee 
+  ✓ iKettle 2.0   ✕ SmarterCoffee 
 
   Also return 00 message in an unconfigured state.??? CHECK
 
@@ -972,8 +924,9 @@ But you can change it to your normal copy, also change the working directory,dom
 
   Command Message 30: Working unknown command
   ─────────────────────────────────────────────────────────────────────────
+  Response message: [03,Command status] 
 
-  ✓ iKettle 2.0   ? SmarterCoffee 
+  ✓ iKettle 2.0   ✕ SmarterCoffee 
 
   Arguments: <[UNKNOWN]>{?}
 
@@ -990,14 +943,14 @@ But you can change it to your normal copy, also change the working directory,dom
   I do not have a smarter coffee, but I suspect that the WIFISTRENGTH is just
   the WATERSENSORBITSLOW part of the waterlevel sensor.
 
-  Response: <STATUSCOFFEE><WATERLEVEL><WIFISTRENGTH???/WATERSENSORBITSLOW???><STRENGTH><CUPS>
+  Response: <STATUSCOFFEE><WATERLEVEL><WIFISTRENGTH???/WATERSENSORBITSLOW???><STRENGTH><UNKNOWNANDCUPS>
 
   STATUSKETTLE
     00 Ready
-    01 Boiling
-    02 Keep Warm
-    03 Cycle Finished
-    04 Baby Cooling
+    01 Heating water
+    02 Keep warm
+    03 Cycle finished
+    04 Baby cooling
 
   WATERSENSOR = WATERSENSORHIGHBITS * 256 + WATERSENSORLOWBITS
 
@@ -1010,30 +963,30 @@ But you can change it to your normal copy, also change the working directory,dom
     22 Beans, No carafe               #  00100010
     45 Filter, Done                   #  01000101 <-- from here actions
     47 Beans, Done                    #  01000111
-    53 Boiling                        #  01010011
+    53 Heating water                  #  01010011
     60 Filter, No carafe, Hotplate On #  01100000
     61 Filter, Hotplate On            #  01100001
     62 Beans, No carafe, Hotplate On  #  01100010
     63 Beans, Hotplate On             #  01100011
     51 Descaling in progress          #  01010001
-                                           HB RBC
-                                           OO EEA
-                                           TI AAR
-                                           PL DNA
-                                           LI YSF
-                                           AN   E
-                                           TG
-                                           E
+                                          WHHGRBC
+                                          OOEREEA
+                                          RTAIAAR
+                                          KPTNDNA
+                                          ILIDYSF
+                                          NANI  E
+                                          GTGN
+                                           E G
 
   These are guesses I do not own a smarter coffee...
-  BIT 0 = UNKNOWN/UNUSED?
-  BIT 1 = ACTION???
-  BIT 2 = HOTPLATE
-  BIT 3 = Boiling & Descaling (USES BIT 6)
-  BIT 4 = UNKNOWN/UNUSED?
-  BIT 5 = READY/BUSY (OK TO START, FINISHED = 1 else 0)
-  BIT 6 = FILTER/BEANS
-  BIT 7 = CARAFE OFFBASE/ONBASE
+  BIT 7 = UNKNOWN/UNUSED?
+  BIT 6 = IDLE/WORKING
+  BIT 5 = Hot plate On/Off
+  BIT 4 = Heating On/Off
+  BIT 3 = Grinding
+  BIT 2 = READY/BUSY (OK TO START)
+  BIT 1 = FILTER/BEANS
+  BIT 0 = CARAFE OFFBASE/ONBASE
 
   WATERLEVEL
     00 Not enough water
@@ -1047,6 +1000,10 @@ But you can change it to your normal copy, also change the working directory,dom
     01 Medium
     02 Strong
 
+  UNKNOWNANDCUPS
+    CUPS    4 lower bits
+    UNKNOWN 4 higher bits
+
   CUPS
     00..0c
 
@@ -1055,6 +1012,7 @@ But you can change it to your normal copy, also change the working directory,dom
 
   Command Message 33: Start coffee brewing
   ─────────────────────────────────────────────────────────────────────────
+  Response message: [03,Command status] 
 
   ✕ iKettle 2.0   ✓ SmarterCoffee 
 
@@ -1065,6 +1023,7 @@ But you can change it to your normal copy, also change the working directory,dom
 
   Command Message 34: Stop coffee brewing
   ─────────────────────────────────────────────────────────────────────────
+  Response message: [03,Command status] 
 
   ✕ iKettle 2.0   ✓ SmarterCoffee 
 
@@ -1075,6 +1034,7 @@ But you can change it to your normal copy, also change the working directory,dom
 
   Command Message 35: Set strength of the coffee to brew
   ─────────────────────────────────────────────────────────────────────────
+  Response message: [03,Command status] 
 
   ✕ iKettle 2.0   ✓ SmarterCoffee 
 
@@ -1093,6 +1053,7 @@ But you can change it to your normal copy, also change the working directory,dom
 
   Command Message 36: Set number of cups to brew
   ─────────────────────────────────────────────────────────────────────────
+  Response message: [03,Command status] 
 
   ✕ iKettle 2.0   ✓ SmarterCoffee 
 
@@ -1109,11 +1070,13 @@ But you can change it to your normal copy, also change the working directory,dom
 
 
 
-  Command Message 37: Start coffee brewing using default
+  Command Message 37: Start coffee brewing using machine settings
   ─────────────────────────────────────────────────────────────────────────
+  Response message: [03,Command status] 
 
   ✕ iKettle 2.0   ✓ SmarterCoffee 
 
+  Uses the settings not the default user settings
   Example: 37 7e
 
 
@@ -1146,6 +1109,7 @@ But you can change it to your normal copy, also change the working directory,dom
 
   Command Message 3c: Toggle grinder
   ─────────────────────────────────────────────────────────────────────────
+  Response message: [03,Command status] 
 
   ✕ iKettle 2.0   ✓ SmarterCoffee 
 
@@ -1156,6 +1120,7 @@ But you can change it to your normal copy, also change the working directory,dom
 
   Command Message 3e: Turn on hotplate
   ─────────────────────────────────────────────────────────────────────────
+  Response message: [03,Command status] 
 
   ✕ iKettle 2.0   ✓ SmarterCoffee 
 
@@ -1175,8 +1140,9 @@ But you can change it to your normal copy, also change the working directory,dom
 
   Command Message 40: Working unknown command (schedule?)
   ─────────────────────────────────────────────────────────────────────────
+  Response message: [03,Command status] 
 
-  ✕ iKettle 2.0   ? SmarterCoffee 
+  ✕ iKettle 2.0   ✓ SmarterCoffee 
 
   Updating schedules
   No information available on message
@@ -1186,8 +1152,9 @@ But you can change it to your normal copy, also change the working directory,dom
 
   Command Message 41: Working unknown command (schedule?)
   ─────────────────────────────────────────────────────────────────────────
+  Response message: [03,Command status] 
 
-  ✕ iKettle 2.0   ? SmarterCoffee 
+  ✕ iKettle 2.0   ✓ SmarterCoffee 
 
   Requesting schedules
   No information available on message
@@ -1197,8 +1164,9 @@ But you can change it to your normal copy, also change the working directory,dom
 
   Command Message 43: Working unknown command (schedule?)
   ─────────────────────────────────────────────────────────────────────────
+  Response message: [03,Command status] 
 
-  ✕ iKettle 2.0   ? SmarterCoffee 
+  ✕ iKettle 2.0   ✓ SmarterCoffee 
 
   Schedules
   No information available on message
@@ -1225,9 +1193,7 @@ But you can change it to your normal copy, also change the working directory,dom
 
   ✕ iKettle 2.0   ✓ SmarterCoffee 
 
-  The payload is generated everytime the coffee machine brews. The actioncounter increases with every boil
-  Formula temperature is above 0 then it was boilded with formula temperature enabled. There seems to be some
-  packed time available.
+  The payload is generated everytime the coffee machine brews. The actioncounter increases with every brewing?
 
   Payload maximum is 8. So if 8 check again, if there is more history
   month checked only accepts value from 1..0c
@@ -1274,7 +1240,7 @@ But you can change it to your normal copy, also change the working directory,dom
 
   Command Message 48: Get default coffee machine user settings
   ─────────────────────────────────────────────────────────────────────────
-  Response message: [49,Unknown Message] 
+  Response message: [49,Get default coffee machine user settings] [03,Command status] 
 
   ✕ iKettle 2.0   ✓ SmarterCoffee 
 
@@ -1285,8 +1251,36 @@ But you can change it to your normal copy, also change the working directory,dom
 
 
 
+  Response Message 49: Get default coffee machine user settings
+  ─────────────────────────────────────────────────────────────────────────
+  In response to command message: [48,Get default coffee machine user settings] 
+  Message Size: 6 bytes
+
+  ✕ iKettle 2.0   ✓ SmarterCoffee 
+
+  Response: <CUPS><STRENGTH><GRINDER><HOTPLATE>
+
+  CUPS
+    00..0c
+
+  STRENGTH
+    00 Weak
+    01 Medium
+    02 Strong
+
+  GRINDER <BOOLEAN>
+
+  HOTPLATE
+    05..28 5 .. 40 minutes
+    05     5 Minutes (Default)
+
+
+
+
+
   Command Message 4a: Turn off hotplate
   ─────────────────────────────────────────────────────────────────────────
+  Response message: [03,Command status] 
 
   ✕ iKettle 2.0   ✓ SmarterCoffee 
 
@@ -1310,6 +1304,7 @@ But you can change it to your normal copy, also change the working directory,dom
 
   Command Message 4c: Get coffee carafe required
   ─────────────────────────────────────────────────────────────────────────
+  Response message: [32,Coffee machine status] [03,Command status] 
 
   ✕ iKettle 2.0   ✓ SmarterCoffee 
 
@@ -1345,6 +1340,7 @@ But you can change it to your normal copy, also change the working directory,dom
 
   Command Message 4f: Get single coffee cup mode
   ─────────────────────────────────────────────────────────────────────────
+  Response message: [50,Single coffee cup mode] [03,Command status] 
 
   ✕ iKettle 2.0   ✓ SmarterCoffee 
 
@@ -1405,7 +1401,7 @@ But you can change it to your normal copy, also change the working directory,dom
   ─────────────────────────────────────────────────────────────────────────
   Response message: [03,Command status] 
 
-  ✓ iKettle 2.0   ? SmarterCoffee 
+  ✓ iKettle 2.0   ✓ SmarterCoffee 
 
   Without argumens it returns failed otherwise it returns success.
 
@@ -1420,7 +1416,7 @@ But you can change it to your normal copy, also change the working directory,dom
   ─────────────────────────────────────────────────────────────────────────
   Response message: [6b,Wifi firmware info] 
 
-  ✓ iKettle 2.0   ? SmarterCoffee 
+  ✓ iKettle 2.0   ✓ SmarterCoffee 
 
   Example: 6a 7e
 
@@ -1431,7 +1427,7 @@ But you can change it to your normal copy, also change the working directory,dom
   ─────────────────────────────────────────────────────────────────────────
   In response to command message: [6a,Get wifi firmware info] 
 
-  ✓ iKettle 2.0   ? SmarterCoffee 
+  ✓ iKettle 2.0   ✓ SmarterCoffee 
 
   The firmware of the wifi module in text with control chars as new line.
   The iKettle 2.0 returns (without control chars):
@@ -1450,7 +1446,7 @@ But you can change it to your normal copy, also change the working directory,dom
   Command Message 6d: Device firmware update
   ─────────────────────────────────────────────────────────────────────────
 
-  ✓ iKettle 2.0   ? SmarterCoffee 
+  ✓ iKettle 2.0   ✓ SmarterCoffee 
 
   Disables wifi and creates a 'iKettle Update' wireless network and opens port 6000.
   A hard device reset (hold power button for 10 seconds) is sometimes required to fix this state,
@@ -1459,6 +1455,8 @@ But you can change it to your normal copy, also change the working directory,dom
   Example: 6d 7e
 
 
+Bye
+DISCONNECT
 
 ```
 
@@ -1534,14 +1532,14 @@ But you can change it to your normal copy, also change the working directory,dom
   Security:
 
     iKettle 2.0:
-         *  It will boil empty, making the lights bulbs to flikker.
+         *  It will heat up empty, making the lights bulbs to flikker.
          *  You can easily knock out it's connection to the wireless network,
             if it fails to connect it creates an default open unencrypted wifi access point 
             (check!, could be that wifi was not connecting, then this is rubbish ;-).
 
             Attack Vectors
             1. Repeat sending heat to 100ºC temperature commands, if we're lucky
-               there is no water and it will boil empty, if not it will take a while.
+               there is no water and it will heat up empty, if not it will take a while.
                plus the kettle will get warmer and warmer. If you do not expect that when touching.
             2. Alternating heat and stop commands.
             3. (Check) Wait until the owner of the kettle log in on the kettle, since its an
@@ -1554,13 +1552,15 @@ But you can change it to your normal copy, also change the working directory,dom
     atleast 500ms is recommended.
     
 
-  Water Boiling:
+  Water Heating:
   
     From smarter website the temperature that can be set is between 20 and 100. We still need to read lower 
     values for cold water in the kettle
      
  
               
+Bye
+DISCONNECT
 
 ```              
 

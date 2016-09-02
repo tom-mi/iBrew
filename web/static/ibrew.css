@@ -114,15 +114,21 @@ a:hover {
     padding: 3px 10px;
 }
 
+#wifi img {
+    height: 24px;
+}
+
 .wirelessTitleCell {
    	display: table-cell;
-    font-size: 135%;
+    font-size: 130%;
     width: 220px;
     text-align: left;
 }
 
 .wirelessNameCell {
    	display: table-cell;
+    text-shadow: 0 1px 10px rgba(0, 0, 0, 0.4);
+
     padding: 3px 10px;
     width: 220px;
     text-align: left;
