@@ -30,6 +30,7 @@ This means your machine is free! You can connect it yourself and do whatever you
  * can't start the web interface twice in console (i probably did not clean up)
  * if you send a message with an if of a response as command it displays the response infoiting to send...
  * v0.5 Missing Coffee Smarter codes (!)
+ * I broke domoticz :-)
  
  
  iBrew v0.5: Dumb Dump Limited Collector Edition
