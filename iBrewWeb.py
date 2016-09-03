@@ -7,6 +7,7 @@ import tornado.ioloop
 import tornado.web
 import socket
 import time
+import threading
 
 import os
 from smarter.SmarterClient import *
@@ -274,6 +275,7 @@ class WifiScanHandler(GenericAPIHandler):
     def get(self,ip):
         if ip in self.application.clients:
             client = self.application.clients[ip]
+            #if client.connected:
             try:
                 client.wifi_scan()
         
@@ -541,149 +543,182 @@ class VersionHandler(GenericAPIHandler):
 
 class iBrewWeb(tornado.web.Application):
 
-    version = '0.2'
+    version = '0.3'
     
     def start(self):
         tornado.ioloop.IOLoop.instance().start()
-    
-    
+
+
+    def autoconnect(self):
+
+        devices = SmarterClient().find_devices()
+        SmarterClient().print_devices_found(devices)
+        
+        for device in devices:
+            if device[0] not in self.clients:
+                try:
+                    if self.dump:
+                        print "[" + device[0] + "] Adding Web Device"
+                    client = SmarterClient()
+                    client.dump = self.dump
+                    client.dump_status = self.dump
+                    client.host = device[0]
+                    client.connect()
+                    client.init_default()
+                    self.clients[device[0]] = client
+                    print "iBrew Web Server: " + client.string_connect_status()
+                except:
+                    client.disconnect()
+                    pass #raise SmarterError(WebServerListen,"Web Server: Couldn't open socket on port" + str(self.port))
+            else:
+                client = self.clients[device[0]]
+                if not client.connected:
+                    client.connect()
+
+        
+        if self.host != "":
+            ip = socket.gethostbyname(self.host)
+            if ip not in self.clients:
+                try:
+                    if self.dump:
+                        print "[" + ip + "] Adding Web Device"
+                    client = SmarterClient()
+                    client.host = self.host
+                    client.dump = self.dump
+                    client.dump_status = self.dump
+                    client.connect()
+                    client.init_default()
+                    self.clients[ip] = client
+                    print "iBrew Web Server: " + client.string_connect_status()
+                except:
+                    client.disconnect()
+                    pass # raise SmarterError(WebServerListen,"Web Server: Couldn't open socket on port" + str(self.port))
+
+        self.threadAutoConnect = threading.Timer(15, self.autoconnect)
+        self.threadAutoConnect.start()
+
+
+    def __init__(self):
+        self.isRunning = False
+
+
     def __del__(self):
-        print "fd"
         self.kill()
     
     
     def kill(self):
-        print "dssdsd"
-        try:
-            if self.clients:
-                for ip in self.clients:
-                    print "dsdsdsdsdsdsds"
-                    self.clients[ip].disconnect()
-        except:
-            SmarterError(WebServerStopMonitor,"Web Server: Could not stop monitors")
+        if self.isRunning:
+            self.isRunning = False
+            deadline = time.time() + 3
+            try:
+                io_loop = tornado.ioloop.IOLoop.instance()
+         
+                def stop_loop():
+                    now = time.time()
+                    if now < deadline and (io_loop._callbacks or io_loop._timeouts):
+                        io_loop.add_timeout(now + 1, stop_loop)
+                    else:
+                        io_loop.stop()
+            
+                stop_loop()
 
-        print "dsds"
-        deadline = time.time() + 3
-        try:
-            io_loop = tornado.ioloop.IOLoop.instance()
-     
-            def stop_loop():
-                now = time.time()
-                if now < deadline and (io_loop._callbacks or io_loop._timeouts):
-                    io_loop.add_timeout(now + 1, stop_loop)
-                else:
-                    io_loop.stop()
-        
-            stop_loop()
+            except:
+                raise SmarterError(WebServerStopMonitorWeb,"Web Server: Could not stop webserver monitor")
 
-        except:
-            SmarterError(WebServerStopMonitorWeb,"Web Server: Could not stop webserver monitor")
-
-        print "kill"
-        try:
-            if self.thread.isAlive():
-                self.thread.join()
-        except:
-            SmarterError(WebServerStopWeb,"Web Server: Could not stop webserver")
-        
+            try:
+                if self.thread.isAlive():
+                    self.thread.join()
+            except:
+                raise SmarterError(WebServerStopWeb,"Web Server: Could not stop webserver")
     
+        self.threadAutoConnect.cancel()
+        self.kill_clients()
  
+
+    def kill_clients(self):
+        try:
+            #if self.clients:
+            for ip in self.clients:
+                self.clients[ip].disconnect()
+        except:
+            raise SmarterError(WebServerStopMonitor,"Web Server: Could not stop monitors")
+
     def run(self,port,dump=False,host=""):
         self.port = port
         self.isRunning = False
+        self.dump = dump
+        self.host = host
+        
         try:
-            try:
-                self.listen(self.port, no_keep_alive = True)
-            except:
-                raise SmarterError(WebServerListen,"Web Server: Couldn't open socket on port" + str(self.port))
-                return
+            self.listen(self.port, no_keep_alive = True)
+        except:
+            raise SmarterError(WebServerListen,"Web Server: Couldn't open socket on port" + str(self.port))
+            return
+    
+        self.clients = dict()
             
-            devices = SmarterClient().find_devices()
-            self.clients = dict()
+        self.autoconnect()
             
-            for device in devices:
-                client = SmarterClient()
-                
-                client.dump = dump
-                client.dump_status = dump
-                client.host = device[0]
-                self.clients[device[0]] = client
+        settings = {
+                "debug": True,
+                "static_path": os.path.join(os.path.dirname(__file__), "web/static")
+            }
 
-                client.connect()
-                client.init_default()
-                print "iBrew Web Server: " + client.string_connect_status()
+        handlers = [
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/status/?",DeviceHandler),
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/calibrate/?",CalibrateHandler),
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/calibrate/base/?",CalibrateBaseHandler),
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/calibrate/base/([0-9]+)/?",CalibrateStoreBaseHandler),
             
-            if host != "":
-                ip = socket.gethostbyname(host)
-                print host
-                print ip
-                print self.application.clients
-                if not ip in self.application.clients:
-                    client = SmarterClient()
-                    client.host = host
-                    client.dump = dump
-                    client.dump_status = dump
-                    self.clients[ip] = client
-                    client.connect()
-                    client.init_default()
-                    print "iBrew Web Server: " + client.string_connect_status()
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/carafe/?",CarafeHandler),
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/singlecup/?",SingleCupHandler),
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/hotplate/([0-9]+)/?",HotPlateHandler),
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/cups/([0-9]+)/?",CupsHandler),
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/grinder/?",GrinderHandler),
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/strength/(weak|normal|strong)/?",StrengthHandler),
+            
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/scan/?",WifiScanHandler),
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/join/(.+)/(.*)/?",WifiJoinHandler),
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/leave/?",WifiLeaveHandler),
+            
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/start/?",StartHandler),
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/stop/?",StopHandler),
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/joke/?",JokeHandler),
+            
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/?",SettingsHandler),
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/default/?",SettingsDefaultHandler),
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/([0-9]+)/([0-9]+)/([0-9]+)/([0-9]+)/?",StoreSettingsHandler),
+            
+            (r"/api/version/?",           VersionHandler),
+            (r"/api/devices/?",           DevicesHandler),
+            (r"/api/joke/?",              JokeHandler),
+            (r"/api/?",                   WebAPIHandler),
+            (r"/api/?.*",                 UnknownHandler),
+#            (r"/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/?",WebSettingsHandler),
+   
+            (r"/",                        WebMainHandler),
+            (r"/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/wifi", WifiMainHandler),
+                 #(r"/login",             LoginHandler),
+            (r"/(.*)",                    GenericPageHandler),
 
+            
+        ]
 
-
-            settings = {
-                    "debug": True,
-                    "static_path": os.path.join(os.path.dirname(__file__), "web/static")
-                }
-
-            handlers = [
-                (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/status/?",DeviceHandler),
-                (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/calibrate/?",CalibrateHandler),
-                (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/calibrate/base/?",CalibrateBaseHandler),
-                (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/calibrate/base/([0-9]+)/?",CalibrateStoreBaseHandler),
-                
-                (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/carafe/?",CarafeHandler),
-                (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/singlecup/?",SingleCupHandler),
-                (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/hotplate/([0-9]+)/?",HotPlateHandler),
-                (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/cups/([0-9]+)/?",CupsHandler),
-                (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/grinder/?",GrinderHandler),
-                (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/strength/(weak|normal|strong)/?",StrengthHandler),
-                
-                (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/scan/?",WifiScanHandler),
-                (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/join/(.+)/(.*)/?",WifiJoinHandler),
-                (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/leave/?",WifiLeaveHandler),
-                
-                (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/start/?",StartHandler),
-                (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/stop/?",StopHandler),
-                (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/joke/?",JokeHandler),
-                
-                (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/?",SettingsHandler),
-                (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/default/?",SettingsDefaultHandler),
-                (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/([0-9]+)/([0-9]+)/([0-9]+)/([0-9]+)/?",StoreSettingsHandler),
-                
-                (r"/api/version/?",           VersionHandler),
-                (r"/api/devices/?",           DevicesHandler),
-                (r"/api/joke/?",              JokeHandler),
-                (r"/api/?",                   WebAPIHandler),
-                (r"/api/?.*",                 UnknownHandler),
-    #            (r"/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/?",WebSettingsHandler),
-       
-                (r"/",                        WebMainHandler),
-                (r"/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/wifi", WifiMainHandler),
-                     #(r"/login",             LoginHandler),
-                (r"/(.*)",                    GenericPageHandler),
-
-                
-            ]
-
+        try:
             tornado.web.Application.__init__(self, handlers, **settings)
         except:
             raise SmarterError(WebServerStartFailed,"Web Server: Couldn't start" + str(self.port))
+            return
 
-    #    bonjour = iBrewBonjourThread(self.port)
-    #    bonjour.start()
+        bonjour = iBrewBonjourThread(self.port)
+        bonjour.start()
+
         try:
-            import threading
             self.thread = threading.Thread(target=self.start)
             self.thread.start()
         except:
+            self.kill_clients()
             raise SmarterError(WebServerStartFailed,"Web Server: Couldn't start" + str(self.port))
+
+
+        self.isRunning = True

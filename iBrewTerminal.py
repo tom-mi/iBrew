@@ -86,14 +86,15 @@ class iBrewTerminal:
             else:
                 webs = iBrewWeb()
                 webs.run(port,self.client.dump)
-        except:
+        except Exception, e:
+            print str(e)
             print "iBrew: Failed to run Web Interface & REST API on port " + str(port)
             return
         print "iBrew: Starting Web Interface & REST API on port " + str(port) + ". Press ctrl-c to stop"
         self.monitor()
-        print "iBrew: Stopped Web Interface & REST API on port " + str(port)
         webs.kill()
-
+        print "iBrew: Stopped Web Interface & REST API on port " + str(port)
+ 
 
     #------------------------------------------------------
     # iBrew SWEEP
@@ -174,12 +175,7 @@ class iBrewTerminal:
         except socket.error:  # not a valid address
             return False
         return True
-
-
-    def print_devices_found(self,devices):
-        for i in range(0,len(devices)):
-            print "iBrew: Found " + Smarter.device_info(devices[i][1],devices[i][2]) + " [" + devices[i][0] + "]"
-
+        
 
     def execute(self,line):
         try:
@@ -293,64 +289,60 @@ class iBrewTerminal:
 
 
             self.haveHost = False
+            
             if numarg > 0:
                 if self.is_valid_ipv4_address(arguments[numarg-1]) or self.is_valid_ipv6_address(arguments[numarg-1]):
                     self.client.host = arguments[numarg-1]
                     self.haveHost = True
                     numarg -= 1
                     arguments = arguments[0:numarg]
-                    if self.client:
-                        self.client.disconnect()
-
-
-            if not self.client.connected and not self.haveHost and command != "help"  and command != "list" and command != "message" and command != "usage" and command != "commands" and command != "web" and command != "joke" and command != "protocol" and command != "structure" and command != "notes" and command != "examples" and command != "messages" and not (command == "domoticz" and numarg == 0):
+                    self.client.disconnect()
+                    # still wong...
             
-            
+            if command == "console" or command == "connect":
+                self.client.disconnect()
 
-                devices = self.client.find_devices()
-                if self.client.dump:
-                    self.print_devices_found(devices)
-                if len(devices) >= 1:
-                    self.client.host = devices[0][0]
-                    self.haveHost = True
-                    
+            if (not self.client.connected or self.haveHost) and command != "help" and command != "list" and command != "message" and command != "usage" and command != "commands" and command != "web" and command != "joke" and command != "protocol" and command != "structure" and command != "notes" and command != "examples" and command != "messages" and not (command == "domoticz" and numarg == 0):
+
+                if not self.haveHost:
+                    devices = self.client.find_devices()
+                    if self.client.dump:
+                        self.client.print_devices_found(devices)
+            
+                    if len(devices) == 1:
+                        self.client.host = devices[0][0]
+            
                 if command == "console" or command == "connect":
+                    self.client.dump_status = False
                     self.console = True
                     self.client.fast = False
                     self.client.shout = False
 
                 try:
                     self.client.connect()
-                    if self.console:
-                        self.client.init_default()
-                        self.client.print_connect_status()
-                        self.client.print_status()
                 except:
-                    print "Wel that failed"
-
-
-            if command == "connect" or command == "console" or command == "sweep" or command == "monitor" or (command == "domoticz" and numarg != 0):
-                
-                if not self.console or command == "connect":
-                    self.app_info()
-                    try:
-                        if self.client.connected:
-                            self.client.init_default()
-                    except:
-                        pass
-                    self.joke()
-                    self.client.print_connect_status()
-                    self.client.print_status()
-                    
-                if (command == "console" or command == "connect") and command != "monitor":
-                    self.client.dump_status = False
-                    self.intro()
+                    print "iBrew: Could not not connect to [" + self.client.host + "]"
                     return
-            
 
-            if command == "web":
+            if command == "connect" or command == "console" or ((command == "sweep" or command == "monitor" or (command == "domoticz" and numarg != 0)) and not self.console):
+                try:
+                    self.client.init_default()
+                except:
+                    print "iBrew: Could not init values"
+                    return
                 self.app_info()
                 self.joke()
+                self.client.print_connect_status()
+                self.client.print_status()
+                
+            if command == "console" or command == "connect":
+                self.intro()
+                return
+
+            if not self.console and command == "web":
+                self.app_info()
+                self.joke()
+
 
             if command == "help" or command == "?":
                                             self.usage()
@@ -371,7 +363,7 @@ class iBrewTerminal:
                                                 SmarterHelp.message(Smarter.code_to_number(arguments[0]))
                                             else:
                                                 print "iBrew: expected [00..FF]"
-            elif command == "list":         self.print_devices_found(self.client.find_devices())
+            elif command == "list":         self.client.print_devices_found(self.client.find_devices())
             elif command == "joke" or command == "quote":
                                             print
                                             self.joke()
@@ -454,13 +446,13 @@ class iBrewTerminal:
             elif command == "carafe":       self.client.coffee_carafe()
             elif command == "singlecup":    self.client.coffee_single_cup_mode()
             elif command == "grinder":
-                                            if self.client.useGrinder:
+                                            if self.client.grinder:
                                                 print "iBrew: Grinder already used"
                                             else:
                                                 self.client.coffee_grinder()
                                                 print "iBrew: Grinder used"
             elif command == "filter":
-                                            if not self.client.useGrinder:
+                                            if not self.client.grinder:
                                                 print "iBrew: Filter already used"
                                             else:
                                                 self.client.coffee_filter()
@@ -557,8 +549,8 @@ class iBrewTerminal:
         except Exception,e:
             if not self.console:
                 self.quit = True
-            print str(e)
-            print(traceback.format_exc())
+            #print str(e)
+            #print(traceback.format_exc())
             print "iBrew: Command Failed"
             
         

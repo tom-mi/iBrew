@@ -61,16 +61,16 @@ SmarterClientFailedStopThread   = 126
 class SmarterError(Exception):
 
     def __init__(self, err, msg):
-        print(traceback.format_exc())
-        print str(msg)
+        #print(traceback.format_exc())
+        #print str(msg)
         self.msg = msg
         self.err = err
 
 
 class SmarterErrorOld(Exception):
     def __init__(self, msg):
-        print str(msg)
-        print(traceback.format_exc())
+        #print str(msg)
+        #print(traceback.format_exc())
         self.msg = msg
 
 
@@ -312,156 +312,9 @@ class SmarterProtocol:
             return self.message_supported(self.ResponseMessages[id][1])
 
 
-   
-    #------------------------------------------------------
-    # STATUS INFO
-    #------------------------------------------------------
-
-
-    WaterLevel = {
-        0x00 : "Empty",
-        0x00 : "Low",
-        0x02 : "Half",
-        0x03 : "Full",
-    }
-
-
-    def water_level(self,level):
-        if self.WaterLevel.has_key(level):
-            return self.WaterLevel[level]
-        else:
-            return "Unknown water level " + self.number_to_code(level)
-
-
-    KettleReady               = 0x00
-    KettleHeating             = 0x01
-    KettleKeepWarm            = 0x02
-    KettleCycleFinished       = 0x03
-    KettleBabyCooling         = 0x04
-
-
-    StatusKettle = {
-        KettleReady             : "Ready",
-        KettleHeating           : "Heating",
-        KettleKeepWarm          : "Keep Warm",
-        KettleCycleFinished     : "Cycle Finished",
-        KettleBabyCooling       : "Baby Cooling"
-    }
-
-
-    def status_kettle_description(self,status):
-        if self.StatusKettle.has_key(status):
-            return self.StatusKettle[status]
-        else:
-            return "Unknown Kettle Status " + self.number_to_code(status)
-
-
-    def string_kettle_settings(self, temperature,  formula, formulatemperature, keepwarmtime):
-        message = "Heat water to " + str(temperature) +  "ºC"
-        if formula:
-            sep = ""
-            if keepwarmtime > 0:
-                sep = ","
-            else:
-                sep = " and"
-            message = message + sep + " let it cool down to " + Smarter.temperature_to_string(formulatemperature)
-        if keepwarmtime > 0:
-            message = message + " and keep it warm for " + str(keepwarmtime) + " minutes"
-        return message
-
-    def is_status_command(self,status):
-        return self.StatusCommand.has_key(status)
-
-
-    CoffeeDescaling           = 0x51
-    CoffeeHeating             = 0x53
-
-
-    StatusCoffee = {
-        0x04                   : "Filter, ?",
-        0x05                   : "Filter, OK to start",
-        0x06                   : "Filter, OK to start",
-        0x07                   : "Beans, OK to start",
-        0x20                   : "Filter, No carafe",
-        0x22                   : "Beans, No carafe",
-        0x45                   : "Filter, Done",
-        0x47                   : "Beans, Done",
-        CoffeeHeating          : "Heating water",
-        0x60                   : "Filter, No carafe, Hotplate On",
-        0x61                   : "Filter, Hotplate On",
-        0x62                   : "Beans, No carafe, Hotplate On",
-        0x63                   : "Beans, Hotplate On",
-        CoffeeDescaling        : "Descaling in progress"
-    }
-
-
-    def status_coffee_description(self,status):
-        if self.StatusCoffee.has_key(status):
-            return self.StatusCoffee[status]
-        else:
-            return "Unknown Coffee Status " + self.number_to_code(status)
-
-
-    def string_coffee_settings(self, cups, strength, grinder, hotplate):
-        s = ""
-        if hotplate >= 5 and hotplate <= 40:
-            s = " and keep warm for " + str(self.hotplate) + " minutes"
-        return "Brew " + self.cups_to_string(cups) + " of coffee, " + self.strength_to_string(strength) + " strength using the " + self.grinder_to_string(grinder) + s
-
-    def string_coffee_status(self,ready,working,heating,hotPlateOn,carafe,grinderOn):
-        s = ""
-        if working:
-            s += "working "
-        if heating:
-            s += "heating "
-        if hotPlateOn:
-            s += "hotplate warming "
-        if grinderOn:
-            s += "grinding "
-        if ready:
-            s += "ready "
-        if carafe:
-            s+= "carafe on base"
-        else:
-            s+= "no carafe"
-        return s
-
-
-
-    StatusSucces              = 0x00
-    StatusBusy                = 0x01
-    StatusNoCarafe            = 0x02
-    StatusNoWater             = 0x03
-    StatusFailed              = 0x04
-    StatusNoCarafeUnknown     = 0x05
-    StatusNoWaterUnknown      = 0x06
-    StatusInvalid             = 0x69
-
-
-    StatusCommand = {
-        StatusSucces           : "Success",
-        StatusBusy             : "Busy",
-        StatusNoCarafe         : "No Carafe",
-        StatusNoWater          : "No Water",
-        StatusFailed           : "Failed",
-        StatusNoCarafeUnknown  : "No Carafe",  # which one?
-        StatusNoWaterUnknown   : "No Water",   # which one?
-        StatusInvalid          : "Invalid Command"
-    }
-
-
-    def status_command(self,status):
-        if self.is_status_command(status):
-            return self.StatusCommand[status]
-        else:
-            return "Unknown Command Status " + self.number_to_code(status)
-
-
-
     #------------------------------------------------------
     # RAW <-> BASIC TYPE
     #------------------------------------------------------
-
 
     def raw_to_number(self,raw):
         try:
@@ -524,11 +377,9 @@ class SmarterProtocol:
         return raw
 
 
-
     #------------------------------------------------------
     # RAW HEX STRING <-> RAW
     #------------------------------------------------------
-
 
     # Convert raw data to hex string without 0x seperated by spaces
     def message_to_codes(self,message,space = False):
@@ -573,7 +424,6 @@ class SmarterProtocol:
 
         return message
     
-
 
     #------------------------------------------------------
     # RAW <-> TYPE
@@ -631,7 +481,6 @@ class SmarterProtocol:
     # STRENGTH ARGUMENT WRAPPER
     #------------------------------------------------------
 
-
     CoffeeWeak                = 0x00
     CoffeeMedium              = 0x01
     CoffeeStrong              = 0x02
@@ -642,6 +491,7 @@ class SmarterProtocol:
             return strength
         else:
             raise SmarterErrorOld("Invalid coffee strength [weak, medium, strong]: " + strength)
+
 
     def strength_to_raw(self,strength):
         return self.number_to_raw(self.check_strength(strength))
@@ -670,14 +520,6 @@ class SmarterProtocol:
             return self.CoffeeStrong
         else:
             raise SmarterErrorOld("Invalid coffee strength [weak, medium, strong]: " + strength)
-
-
-
-    def grinder_to_string(self,grinder):
-        s = "filter"
-        if grinder:
-            s = "grinder"
-        return s
 
 
     #------------------------------------------------------
@@ -759,11 +601,9 @@ class SmarterProtocol:
             raise SmarterErrorOld("Temperature is not a number: " + string)
 
 
-
     #------------------------------------------------------
     # HOTPLATE KEEPWARM ARGUMENT WRAPPER
     #------------------------------------------------------
-
 
     def string_to_hotplate(self,string):
         try:
@@ -862,6 +702,10 @@ class SmarterProtocol:
         return cups
 
 
+    def raw_to_cups_bit(self,cups_raw):
+        return self.raw_to_number(cups_raw) / 16
+
+
     def raw_to_cups(self,raw):
         return self.check_cups(self.raw_to_number(raw))
 
@@ -880,16 +724,192 @@ class SmarterProtocol:
 
     def cups_to_string(self,cups):
         if cups == 1:
-            return "1 cup"
+            return "a cup"
         else:
             return str(cups) + " cups"
 
+
+    #------------------------------------------------------
+    # WATERLEVEL ARGUMENT WRAPPER
+    #------------------------------------------------------
+
+    WaterLevel = {
+        0x00 : "empty",
+        0x01 : "low",
+        0x02 : "half",
+        0x03 : "full",
+    }
+
+    def waterlevel(self,level):
+        if self.WaterLevel.has_key(level):
+            return self.WaterLevel[level]
+        else:
+            return "unknown water level " + self.number_to_code(level)
+
+
+    def check_waterlevel(self,waterlevel_raw):
+        water = waterlevel_raw % 16
+        if water < 0 or water > 3:
+            raise SmarterErrorOld("Unknown waterlevel [0..3]: " + str(water))
+        return water
+
+
+    def raw_to_waterlevel(self,raw):
+        return self.check_waterlevel(self.raw_to_number(raw))
+
+
+    def raw_to_waterlevel_bit(self,raw):
+        return self.raw_to_number(raw) / 16
+
+   
+    #------------------------------------------------------
+    # COMMAND STATUS INFO WRAPPER
+    #------------------------------------------------------
+
+    StatusSucces              = 0x00
+    StatusBusy                = 0x01
+    StatusNoCarafe            = 0x02
+    StatusNoWater             = 0x03
+    StatusFailed              = 0x04
+    StatusNoCarafeUnknown     = 0x05
+    StatusNoWaterUnknown      = 0x06
+    StatusNoWaterAborted      = 0x07 # i got low water for 3 cups... it gave this...
+    StatusInvalid             = 0x69
+
+
+    StatusCommand = {
+        StatusSucces           : "Success",
+        StatusBusy             : "Busy",
+        StatusNoCarafe         : "No Carafe",
+        StatusNoWater          : "No Water",
+        StatusFailed           : "Failed",
+        StatusNoCarafeUnknown  : "No Carafe",  # which one?
+        StatusNoWaterUnknown   : "No Water",   # which one?
+        StatusNoWaterAborted   : "Low Water could not finish",
+        StatusInvalid          : "Invalid Command"
+    }
+
+
+    def status_command(self,status):
+        if self.is_status_command(status):
+            return self.StatusCommand[status]
+        else:
+            return "Unknown Command Status " + self.number_to_code(status)
+
+
+    #------------------------------------------------------
+    # KETTLE STATUS INFO WRAPPER
+    #------------------------------------------------------
+
+    KettleReady               = 0x00
+    KettleHeating             = 0x01
+    KettleKeepWarm            = 0x02
+    KettleCycleFinished       = 0x03
+    KettleBabyCooling         = 0x04
+
+
+    StatusKettle = {
+        KettleReady             : "Ready",
+        KettleHeating           : "Heating",
+        KettleKeepWarm          : "Keep Warm",
+        KettleCycleFinished     : "Cycle Finished",
+        KettleBabyCooling       : "Baby Cooling"
+    }
+
+
+    def status_kettle_description(self,status):
+        if self.StatusKettle.has_key(status):
+            return self.StatusKettle[status]
+        else:
+            return "Unknown Kettle Status " + self.number_to_code(status)
+
+
+    def string_kettle_settings(self, temperature,  formula, formulatemperature, keepwarmtime):
+        message = "Heat water to " + str(temperature) +  "ºC"
+        if formula:
+            sep = ""
+            if keepwarmtime > 0:
+                sep = ","
+            else:
+                sep = " and"
+            message = message + sep + " let it cool down to " + Smarter.temperature_to_string(formulatemperature)
+        if keepwarmtime > 0:
+            message = message + " and keep it warm for " + str(keepwarmtime) + " minutes"
+        return message
+
+    def is_status_command(self,status):
+        return self.StatusCommand.has_key(status)
+
+
+    #------------------------------------------------------
+    # COFFEE STATUS INFO WRAPPER
+    #------------------------------------------------------
+
+    CoffeeDescaling           = 0x51
+    CoffeeHeating             = 0x53
+
+
+    StatusCoffee = {
+        0x04                   : "Filter, ?",
+        0x05                   : "Filter, OK to start",
+        0x06                   : "Filter, OK to start",
+        0x07                   : "Beans, OK to start",
+        0x20                   : "Filter, No carafe",
+        0x22                   : "Beans, No carafe",
+        0x45                   : "Filter, Done",
+        0x47                   : "Beans, Done",
+        CoffeeHeating          : "Heating water",
+        0x60                   : "Filter, No carafe, Hotplate On",
+        0x61                   : "Filter, Hotplate On",
+        0x62                   : "Beans, No carafe, Hotplate On",
+        0x63                   : "Beans, Hotplate On",
+        CoffeeDescaling        : "Descaling in progress"
+    }
+
+
+    def status_coffee_description(self,status):
+        if self.StatusCoffee.has_key(status):
+            return self.StatusCoffee[status]
+        else:
+            return "Unknown Coffee Status " + self.number_to_code(status)
+
+
+    def grinder_to_string(self,grinder):
+        s = "filter"
+        if grinder:
+            s = "grinder"
+        return s
+
+
+    def string_coffee_settings(self, cups, strength, grinder, hotplate):
+        s = ""
+        if hotplate >= 5 and hotplate <= 40:
+            s = " and keep warm for " + str(self.hotplate) + " minutes"
+        return "Brew " + self.cups_to_string(cups) + " of coffee, " + self.strength_to_string(strength) + " strength using the " + self.grinder_to_string(grinder) + s
+
+
+    def string_coffee_status(self,ready,working,heating,hotPlateOn,carafe,grinderOn):
+        s = ""
+        if working:
+            s += "working "
+        if heating:
+            s += "heating "
+        if hotPlateOn:
+            s += "hotplate warming "
+        if grinderOn:
+            s += "grinding "
+        if ready:
+            s += "ready "
+        if carafe:
+            s+= "carafe on base"
+        else:
+            s+= "no carafe"
+        return s
 
 
     #------------------------------------------------------
     # TYPE -> TYPE
     #------------------------------------------------------
-
 
     def watersensor_to_level(self,watersensor):
         # Fix Check value's
@@ -927,6 +947,7 @@ class SmarterProtocol:
         except:
             raise SmarterErrorOld("Unknown Wifi signal (dBm) strength: " + str(dBm))
 
+
     def bytes_to_human(self,size_bytes):
         
         # format a size in bytes into a 'human' file size, e.g. bytes, KB, MB, GB, TB, PB
@@ -951,5 +972,7 @@ class SmarterProtocol:
             formatted_size = str(round(num, ndigits=precision))
 
         return "%s %s" % (formatted_size, suffix)
+
+
 
 Smarter = SmarterProtocol()

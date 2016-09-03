@@ -434,7 +434,19 @@ class SmarterProtocolHelp:
             print "  Example: 4e ?? 7e"
         
         elif id == Smarter.CommandBrew:
-            print "  Example: 33 .. .. .. 7e"
+            print "  Arguments: <CUPS> <STRENGTH> <GRINDER>"
+            print
+            print "  CUPS"
+            print "    00..0c"
+            print
+            print "  STRENGTH"
+            print "    00 Weak"
+            print "    01 Medium"
+            print "    02 Strong"
+            print
+            print "  GRINDER <BOOLEAN>"
+            print
+            print "  Example: 33 04 02 00 7e"
             
         elif id == Smarter.CommandStrength:
             print "  Sets the strength of the coffee to be brewed. Use command 37 to brew"

@@ -36,16 +36,17 @@
 </ul>
 <h4 id="upcoming">Upcoming</h4>
 <ul>
-<li>Better error handling (sometimes it does not quit, and the exceptions are not handled :-)</li>
-<li>Brew, heat, formula arguments (I have to figure out what is what, one cup at a time... if you look closely the most basic functionality was/is not present, the network code is fixed ;-)</li>
+<li>Better error handling (sometimes it does not quit :-)</li>
+<li>it also hangs if you scan wifi too much (luckily it reconnects)</li>
+<li>Connecting in console mode... fails sometimes, and after reconnect is had strange data... stupid threads... missing...</li>
+<li>Brew, heat, formula arguments (I have to figure out what is what, one cup at a time...</li>
 <li>Time arguments (have not figured that out)</li>
-<li>Auto-reconnect (pretty important)</li>
 <li>Web interface &amp; rest api (rest almost finished, web interface still have to create some pages) and introduce webroot &amp; api key...</li>
 <li>History message is not finished</li>
+<li>web does not reconnect added devices (if scanning for kettle &amp; cofee machine does not work)</li>
 <li>Fahrenheid not finished, please to not use.</li>
 <li>can't start the web interface twice in console (i probably did not clean up)</li>
-<li>if you send a message with an if of a response as command it displays the response info</li>
-<li>and the threading code is still wrong, sometimes I get stuff twice... or it hangs on waiting to send...</li>
+<li>if you send a message with an if of a response as command it displays the response infoiting to send...</li>
 <li>v0.5 Missing Coffee Smarter codes (!)</li>
 </ul>
 <p>iBrew v0.5: Dumb Dump Limited Collector Edition<br />
@@ -935,7 +936,19 @@ But you can change it to your normal copy, also change the working directory,dom
 
   ✕ iKettle 2.0   ✓ SmarterCoffee 
 
-  Example: 33 .. .. .. 7e
+  Arguments: &lt;CUPS&gt; &lt;STRENGTH&gt; &lt;GRINDER&gt;
+
+  CUPS
+    00..0c
+
+  STRENGTH
+    00 Weak
+    01 Medium
+    02 Strong
+
+  GRINDER &lt;BOOLEAN&gt;
+
+  Example: 33 04 02 00 7e
 
 
 
