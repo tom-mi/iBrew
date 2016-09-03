@@ -13,7 +13,7 @@ from domoticz.Domoticz import *
 from iBrewWeb import *
 from iBrewJokes import *
 
-import traceback
+#import traceback
 
 #------------------------------------------------------
 # iBrew

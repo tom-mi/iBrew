@@ -15,6 +15,8 @@ from smarter.SmarterClient import *
 from iBrewBonjour import *
 from iBrewJokes import *
 
+#import traceback
+
 #------------------------------------------------------
 # SMARTER PROTOCOL INTERFACE REST API
 #
@@ -547,13 +549,48 @@ class iBrewWeb(tornado.web.Application):
     
     def start(self):
         tornado.ioloop.IOLoop.instance().start()
-
-
+    
+    
     def autoconnect(self):
 
+        #if not self.isRunning:
+        #    return
         devices = SmarterClient().find_devices()
         SmarterClient().print_devices_found(devices)
         
+        
+        reconnect = 7
+        
+        for ip in self.clients.keys():
+            client = self.clients[ip]
+            #print "Checking " + ip
+            if not client.connected:
+                if self.reconnect_count[ip] < 7:
+                    #print "Trying " + ip
+                    self.reconnect_count[ip] += 1
+                    try:
+                        if self.dump:
+                            if self.reconnect_count[ip] == 1:
+                                print "[" + ip + "] Auto-connect attempt " + str(self.reconnect_count[ip])
+                            else:
+                                print "[" + ip + "] Auto-connect attempt " + str(self.reconnect_count[ip])
+                        client.connect()
+                        try:
+                            threading.Thread(target=client.init_default)
+                        except:
+                            pass
+                    except:
+                        client.disconnect()
+                else:
+                    client.disconnect()
+                    if self.dump:
+                        print "[" + ip + "] Auto-connect tried " + str(reconnect) + " attempts, removing"
+                    del self.clients[ip]
+                    del self.reconnect_count[ip]
+            else:
+                self.reconnect_count[ip] = 0
+
+
         for device in devices:
             if device[0] not in self.clients:
                 try:
@@ -564,8 +601,9 @@ class iBrewWeb(tornado.web.Application):
                     client.dump_status = self.dump
                     client.host = device[0]
                     client.connect()
-                    client.init_default()
                     self.clients[device[0]] = client
+                    threading.Thread(target=client.init_default)
+                    self.reconnect_count[device[0]] = 0
                     print "iBrew Web Server: " + client.string_connect_status()
                 except:
                     client.disconnect()
@@ -573,6 +611,7 @@ class iBrewWeb(tornado.web.Application):
             else:
                 client = self.clients[device[0]]
                 if not client.connected:
+                    self.reconnect_count[device[0]] += 1
                     client.connect()
 
         
@@ -587,12 +626,14 @@ class iBrewWeb(tornado.web.Application):
                     client.dump = self.dump
                     client.dump_status = self.dump
                     client.connect()
-                    client.init_default()
                     self.clients[ip] = client
+                    client.init_default()
+                    self.reconnect_count[ip] = 0
                     print "iBrew Web Server: " + client.string_connect_status()
                 except:
                     client.disconnect()
                     pass # raise SmarterError(WebServerListen,"Web Server: Couldn't open socket on port" + str(self.port))
+
 
         self.threadAutoConnect = threading.Timer(15, self.autoconnect)
         self.threadAutoConnect.start()
@@ -656,7 +697,8 @@ class iBrewWeb(tornado.web.Application):
             return
     
         self.clients = dict()
-            
+        self.reconnect_count = dict()
+        
         self.autoconnect()
             
         settings = {
