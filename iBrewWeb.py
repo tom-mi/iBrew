@@ -177,7 +177,7 @@ class DeviceHandler(GenericAPIHandler):
                              'sensors'     : { 'cups'       : client.cups,
                                                'strength'   : client.strength,
                                                'grinder'    : client.grinder,
-                                               'hotplate'   : client.hotplate,
+                                               'hotplate'   : client.hotPlate,
                                                'singlecup'  : client.singlecup,
                                                'carafe'     : client.carafe,
                                                'waterlevel' : client.waterLevel

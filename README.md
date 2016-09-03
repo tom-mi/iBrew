@@ -1005,7 +1005,7 @@ But you can change it to your normal copy, also change the working directory,dom
 
   ✕ iKettle 2.0   ✓ SmarterCoffee 
 
-  Arguments: <CUPS> <STRENGTH> <GRINDER>
+  Arguments: <CUPS><STRENGTH><HOTPLATE><GRINDER>
 
   CUPS
     00..0c
@@ -1014,6 +1014,10 @@ But you can change it to your normal copy, also change the working directory,dom
     00 Weak
     01 Medium
     02 Strong
+
+  HOTPLATE TIMER
+    05..28 5 .. 40 minutes
+    05     5 Minutes (Default)
 
   GRINDER <BOOLEAN>
 
@@ -1259,7 +1263,7 @@ But you can change it to your normal copy, also change the working directory,dom
 
   ✕ iKettle 2.0   ✓ SmarterCoffee 
 
-  Response: <CUPS><STRENGTH><GRINDER><HOTPLATE>
+  Response: <STRENGTH><CUPS><GRINDER><HOTPLATE>
 
   CUPS
     00..0c

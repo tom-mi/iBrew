@@ -388,7 +388,7 @@ class SmarterProtocolHelp:
 
 
         elif id == Smarter.ResponseCoffeeSettings:
-            print "  Response: <CUPS><STRENGTH><GRINDER><HOTPLATE>"
+            print "  Response: <STRENGTH><CUPS><GRINDER><HOTPLATE>"
             print
             print "  CUPS"
             print "    00..0c"
@@ -434,7 +434,7 @@ class SmarterProtocolHelp:
             print "  Example: 4e ?? 7e"
         
         elif id == Smarter.CommandBrew:
-            print "  Arguments: <CUPS> <STRENGTH> <GRINDER>"
+            print "  Arguments: <CUPS><STRENGTH><HOTPLATE><GRINDER>"
             print
             print "  CUPS"
             print "    00..0c"
@@ -443,6 +443,10 @@ class SmarterProtocolHelp:
             print "    00 Weak"
             print "    01 Medium"
             print "    02 Strong"
+            print
+            print "  HOTPLATE TIMER"
+            print "    05..28 5 .. 40 minutes"
+            print "    05     5 Minutes (Default)"
             print
             print "  GRINDER <BOOLEAN>"
             print

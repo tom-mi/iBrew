@@ -484,6 +484,10 @@ class SmarterProtocol:
     CoffeeWeak                = 0x00
     CoffeeMedium              = 0x01
     CoffeeStrong              = 0x02
+    
+    CoffeeGramsStrong         = 200
+    CoffeeGramsMedium         = 150 #???
+    CoffeeGramsWeak           = 100 #???
 
 
     def check_strength(self,strength):
