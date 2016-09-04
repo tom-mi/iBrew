@@ -1,6 +1,0 @@
-
-```
-
-### Messages Index
-
-```

@@ -1,6 +1,0 @@
-
-```
-
-### Message Information
-
-```

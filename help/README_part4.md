@@ -73,9 +73,5 @@ Coffee Machine
 
 Look up the the possible arguments in the console commands.
    
-## Protocol
-
-### Structure
-
-```
+### LICENSE
 
