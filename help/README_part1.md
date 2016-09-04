@@ -19,7 +19,7 @@ This means your machine is free! You can connect it yourself and do whatever you
  * v0.5 Dumb Dump Limited Collector Edition (numbered, signed by author)
  * v1.0 Out of order! (the final cut)
  
-#### Upcoming   
+#### Upcoming for the last 3 versions  
  * Better error handling (sometimes it does not quit :-)
  * it also hangs if you scan wifi too much (luckily it reconnects)
  * Connecting in console mode... fails sometimes, and after reconnect is had strange data... stupid threads... missing...
