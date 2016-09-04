@@ -120,7 +120,7 @@ def encodeFirmware(device,version):
 
 
 def encodeDevice(client):
-    return { 'id'          : device,
+    return { 'id'          : client.deviceId,
              'type'        : Smarter.device_to_string(client.deviceId),
              'directmode'  : client.isDirect,
              'host'        : client.host,
