@@ -17,7 +17,7 @@ This means your machine is free! You can connect it yourself and do whatever you
  * v0.3 Kettle Rattle <-- CURRENT VERSION
  * v0.4 Brewing on the 7th day (web interface) 
  * v0.5 Dumb Dump Limited Collector Edition (numbered, signed by author)
- * v1.0 Out of order! (the final cut)
+ * v1.0 Out of order! (the final cut!)
  
 #### Upcoming for the last 3 versions  
  * Better error handling (sometimes it does not quit :-)
