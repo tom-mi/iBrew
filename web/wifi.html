@@ -1,4 +1,4 @@
-{% set title = "Devices" %} {% include wrapper/head.html %}
+{% set title = "Wifi " + client.host %} {% include wrapper/head.html %}
 {% from smarter.SmarterProtocol import * %}
 
 <script type="text/javascript" language="javascript" charset="utf-8">
@@ -13,8 +13,6 @@ function auto_joke()            { joke(); setTimeout(auto_joke, wait_joke); }
 
 
 function process_update_scan(wirelessnetworks) {
-
-
 
 x = wirelessnetworks.networks
 

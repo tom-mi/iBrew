@@ -551,7 +551,7 @@ class VersionHandler(GenericAPIHandler):
 
 class iBrewWeb(tornado.web.Application):
 
-    version = '0.3'
+    version = '0.4'
     
     def start(self):
         tornado.ioloop.IOLoop.instance().start()
@@ -699,7 +699,7 @@ class iBrewWeb(tornado.web.Application):
         try:
             self.listen(self.port, no_keep_alive = True)
         except:
-            raise SmarterError(WebServerListen,"Web Server: Couldn't open socket on port" + str(self.port))
+            raise SmarterError(WebServerListen,"Web Server: Couldn't open socket on port " + str(self.port))
             return
     
         self.clients = dict()
@@ -755,7 +755,7 @@ class iBrewWeb(tornado.web.Application):
         try:
             tornado.web.Application.__init__(self, handlers, **settings)
         except:
-            raise SmarterError(WebServerStartFailed,"Web Server: Couldn't start" + str(self.port))
+            raise SmarterError(WebServerStartFailed,"Web Server: Couldn't start on port " + str(self.port))
             return
 
         bonjour = iBrewBonjourThread(self.port)
@@ -766,7 +766,7 @@ class iBrewWeb(tornado.web.Application):
             self.thread.start()
         except:
             self.kill_clients()
-            raise SmarterError(WebServerStartFailed,"Web Server: Couldn't start" + str(self.port))
+            raise SmarterError(WebServerStartFailed,"Web Server: Couldn't start on port " + str(self.port))
 
 
         self.isRunning = True

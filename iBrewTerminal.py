@@ -33,7 +33,7 @@ from iBrewJokes import *
 
 
 iBrewApp          = "iBrew: iKettle 2.0 & SmarterCoffee Interface"
-iBrewInfo         = "iBrew: Kettle Rattle © 2016 Tristan (@monkeycat.nl)"
+iBrewInfo         = "iBrew: Out of order! © 2016 Tristan (@monkeycat.nl)"
 iBrewContribute   = "Please contribute any discoveries on https://github.com/Tristan79/iBrew/issues"
 
 
@@ -353,15 +353,16 @@ class iBrewTerminal:
             elif command == "notes":        SmarterHelp.notes()
             elif command == "examples":     self.examples()
             elif command == "messages":
-                                            if numarg >= 1:
-                                                if arguments[0].lower() == "all":   SmarterHelp.all()
-                                                else:                       print "iBrew: Expected \'all\' got " + arguments[0]
-                                            else:                           SmarterHelp.messages()
+                                            if numarg >= 1 or not self.console:
+                                                SmarterHelp.messages()
+                                            else:
+                                                print str(self.client.isCoffee) + " " + str(self.client.isKettle)
+                                                SmarterHelp.messages(self.client.isCoffee,self.client.isKettle)
             elif command == "message":
                                             if numarg >= 1:
                                                 SmarterHelp.message(Smarter.code_to_number(arguments[0]))
                                             else:
-                                                print "iBrew: expected [00..FF]"
+                                                SmarterHelp.all()
             elif command == "list":         self.client.print_devices_found(self.client.find_devices())
             elif command == "joke" or command == "quote":
                                             print
@@ -450,6 +451,14 @@ class iBrewTerminal:
                                                     self.client.coffee_carafe_on()
                                             else:
                                                 self.client.coffee_carafe()
+            elif command == "timer":        self.client.coffee_timers()
+            elif command == "time":
+                                            if numarg >= 1:
+                                                print "iBrew: Not yet implemented"
+                                                #self.client.coffee_timer()
+                                            
+                                            else:
+                                                print "iBrew: timer needs time"
             elif command == "singlecup":
                                             if numarg >= 1:
                                                 if arguments[0].lower() == "off":
@@ -458,15 +467,15 @@ class iBrewTerminal:
                                                     self.client.coffee_single_cup_mode_on()
                                             else:
                                                 self.client.coffee_single_cup_mode()
-            elif command == "grinder":
-                                            if self.client.grinder:
-                                                print "iBrew: Grinder already used"
+            elif command == "beans":
+                                            if self.client.grind:
+                                                print "iBrew: Beans already selected"
                                             else:
-                                                self.client.coffee_grinder()
-                                                print "iBrew: Grinder used"
+                                                self.client.coffee_beans()
+                                                print "iBrew: Beans used"
             elif command == "filter":
-                                            if not self.client.grinder:
-                                                print "iBrew: Filter already used"
+                                            if not self.client.grind:
+                                                print "iBrew: Filter already selected"
                                             else:
                                                 self.client.coffee_filter()
                                                 print "iBrew: Filter used"
@@ -555,8 +564,8 @@ class iBrewTerminal:
         except Exception,e:
             if not self.console:
                 self.quit = True
-            #print str(e)
-            #print(traceback.format_exc())
+            print str(e)
+            print(traceback.format_exc())
             print "iBrew: Command Failed"
             
         
@@ -650,27 +659,22 @@ class iBrewTerminal:
         print "    carafe                 returns if carafe is required"
         print "    carafe [state]         set carafe is required [on or off]"
         print "    cups [number]          set number of cups [1..12]"
-        print "    grinder                use grinder"
-        print "    filter                 use filter"
+        print "    beans                  use beans as grinded source"
+        print "    filter                 use filter as grinded source"
         print "    hotplate off           turn hotplate off"
         print "    hotplate on (minutes)  turn hotplate on (time in minutes)"
         print "    singlecup              return single coffee cup mode"
         print "    singlecup [state]      set single coffee cup mode [on or off]"
         print "    (strength) [strength]  set strength coffee [weak, medium or strong]"
         print "    stop coffee            stops brewing"
-        print "    settings [cups] [strength] [grinder] [hotplate]   store user settings"
+        print "    settings [cups] [hotplate] [grind] [strength] store user settings"
+        print "    timer [time]           add timer"
+        print "    timers                 show timers"
         print
         print "  Wireless Network Commands"
         print "    join [net] [pass]      connect to wireless network"
         print "    leave                  disconnect (and open direct mode)"
         print "    scan                   scan wireless networks"
-        print
-        print "  Protocol Help Commands"
-        print "    examples               show examples of commands"
-        print "    messages               show all known protocol messages"
-        print "    message [id]           show protocol message detail of message [id]"
-        print "    notes                  show developer notes on the devices"
-        print "    structure              show protocol structure information"
         print
         print "  Bridge Commands"
         print "    web (port)             start web interface & rest api on port [default 2082]"
@@ -685,6 +689,13 @@ class iBrewTerminal:
         print "    protocol               show all protocol information available"
         print "    stats                  show traffic statistics"
         print "    sweep (id)             [developer only] try (all or start with id) unknown command codes"
+        print
+        print "  Debug Protocol Help Commands"
+        print "    examples               show examples of commands"
+        print "    messages               show all known protocol messages"
+        print "    message [id]           show protocol message detail of message [id]"
+        print "    notes                  show developer notes on the devices"
+        print "    structure              show protocol structure information"
         print
         print "  Console Commands"
         print "    joke                   show joke"

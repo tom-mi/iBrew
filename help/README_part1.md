@@ -17,9 +17,10 @@ This means your machine is free! You can connect it yourself and do whatever you
  * v0.3 Kettle Rattle <-- CURRENT VERSION
  * v0.4 Brewing on the 7th day (web interface) 
  * v0.5 Dumb Dump Limited Collector Edition (numbered, signed by author)
- * v1.0 Out of order! (the final cut)
+ * v1.0 Out of order! (the final cut) <-- 2017 VERSION
  
 #### Upcoming for the last 3 versions  
+ * Timers protocol
  * Better error handling (sometimes it does not quit :-)
  * it also hangs if you scan wifi too much (luckily it reconnects)
  * Connecting in console mode... fails sometimes, and after reconnect is had strange data... stupid threads... missing...
@@ -34,14 +35,16 @@ This means your machine is free! You can connect it yourself and do whatever you
  * messages everywhere from the monitor...
  * I broke domoticz, i decided I do not needed it anymore :-)
  * fix wireless with the same name
- 
- 
+ * wireshark the kettlesettings again (where do they store the formula temperature... and it seems i can store an identifier there?)
+ * watersensor to something usefull
+ * process what you get back... (03 responses)
  
 #### Contact
 [Bugs or issues](https://github.com/Tristan79/iBrew/issues). Donations & other questions <tristan@monkeycat.nl>
 If you have jokes on coffee, tea, hot chocolade, coffee machines or kettles, please post in the issues.
 
-Still no coffee machine (so no web for that)! I could like to thank Ju4ia for letting me access his coffee machine remotely, so I could test the client code.
+Still no coffee machine (so no web for that)! I could like to thank Ju4ia for letting me access his coffee machine remotely, so I could test the client code and helping me
+get more SmarterCoffee missing protocol stuff.
 
 
 ## Installation

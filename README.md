@@ -17,9 +17,10 @@ This means your machine is free! You can connect it yourself and do whatever you
  * v0.3 Kettle Rattle <-- CURRENT VERSION
  * v0.4 Brewing on the 7th day (web interface) 
  * v0.5 Dumb Dump Limited Collector Edition (numbered, signed by author)
- * v1.0 Out of order! (the final cut!)
+ * v1.0 Out of order! (the final cut) <-- 2017 VERSION
  
 #### Upcoming for the last 3 versions  
+ * Timers protocol
  * Better error handling (sometimes it does not quit :-)
  * it also hangs if you scan wifi too much (luckily it reconnects)
  * Connecting in console mode... fails sometimes, and after reconnect is had strange data... stupid threads... missing...
@@ -34,14 +35,16 @@ This means your machine is free! You can connect it yourself and do whatever you
  * messages everywhere from the monitor...
  * I broke domoticz, i decided I do not needed it anymore :-)
  * fix wireless with the same name
- 
- 
+ * wireshark the kettlesettings again (where do they store the formula temperature... and it seems i can store an identifier there?)
+ * watersensor to something usefull
+ * process what you get back... (03 responses)
  
 #### Contact
 [Bugs or issues](https://github.com/Tristan79/iBrew/issues). Donations & other questions <tristan@monkeycat.nl>
 If you have jokes on coffee, tea, hot chocolade, coffee machines or kettles, please post in the issues.
 
-Still no coffee machine (so no web for that)! I could like to thank Ju4ia for letting me access his coffee machine remotely, so I could test the client code.
+Still no coffee machine (so no web for that)! I could like to thank Ju4ia for letting me access his coffee machine remotely, so I could test the client code and helping me
+get more SmarterCoffee missing protocol stuff.
 
 
 ## Installation
@@ -135,27 +138,22 @@ you can also use them on the command line as arguments:
     carafe                 returns if carafe is required
     carafe [state]         set carafe is required [on or off]
     cups [number]          set number of cups [1..12]
-    grinder                use grinder
-    filter                 use filter
+    beans                  use beans as grinded source
+    filter                 use filter as grinded source
     hotplate off           turn hotplate off
     hotplate on (minutes)  turn hotplate on (time in minutes)
     singlecup              return single coffee cup mode
     singlecup [state]      set single coffee cup mode [on or off]
     (strength) [strength]  set strength coffee [weak, medium or strong]
     stop coffee            stops brewing
-    settings [cups] [strength] [grinder] [hotplate]   store user settings
+    settings [cups] [hotplate] [grind] [strength] store user settings
+    timer [time]           add timer
+    timers                 show timers
 
   Wireless Network Commands
     join [net] [pass]      connect to wireless network
     leave                  disconnect (and open direct mode)
     scan                   scan wireless networks
-
-  Protocol Help Commands
-    examples               show examples of commands
-    messages               show all known protocol messages
-    message [id]           show protocol message detail of message [id]
-    notes                  show developer notes on the devices
-    structure              show protocol structure information
 
   Bridge Commands
     web (port)             start web interface & rest api on port [default 2082]
@@ -170,6 +168,13 @@ you can also use them on the command line as arguments:
     protocol               show all protocol information available
     stats                  show traffic statistics
     sweep (id)             [developer only] try (all or start with id) unknown command codes
+
+  Debug Protocol Help Commands
+    examples               show examples of commands
+    messages               show all known protocol messages
+    message [id]           show protocol message detail of message [id]
+    notes                  show developer notes on the devices
+    structure              show protocol structure information
 
   Console Commands
     joke                   show joke
