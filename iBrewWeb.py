@@ -119,11 +119,14 @@ def encodeFirmware(device,version):
     return { 'version'   : version, 'certified' : Smarter.firmware_verified(device,version) }
 
 
-def encodeDevice(device,version):
+def encodeDevice(client):
     return { 'id'          : device,
-             'type'        : Smarter.device_to_string(device),
+             'type'        : Smarter.device_to_string(client.deviceId),
+             'directmode'  : client.isDirect,
+             'host'        : client.host,
+             'connected'   : client.connected,
+             'firmware'    : encodeFirmware(client.deviceId,client.version)
             }
-
 
 class DeviceHandler(GenericAPIHandler):
 
@@ -133,15 +136,13 @@ class DeviceHandler(GenericAPIHandler):
             client = self.application.clients[ip]
             respons = None
             if client.isKettle:
-                response = { 'device'      : encodeDevice(client.deviceId,client.version),
-                             'firmware'    : encodeFirmware(client.deviceId,client.version),
-                             'connected'   : client.connected,
+                response = { 'device'      : encodeDevice(client),
                              'sensors'     : { 'waterlevel'  : { 'raw'    : client.waterSensor,
                                                                  'stable' : client.waterSensorStable,
                                                                  'base'   : client.waterSensorBase
                                                                },
                                                'base'        : Smarter.string_base_on_off(client.onBase),
-
+                                               'status'      : Smarter.status_kettle_description(client.kettleStatus),
                                                'temperature' : { 'raw'    : { 'fahrenheid' : Smarter.celsius_to_fahrenheid(client.temperature),
                                                                               'celsius'    : client.temperature
                                                                             },
@@ -151,9 +152,7 @@ class DeviceHandler(GenericAPIHandler):
                                                                }
                                                                
                                              },
-                             'status'      : { 'message' : Smarter.status_kettle_description(client.kettleStatus),
-                                               'id'          : client.kettleStatus
-                                             },
+                             
                              'default'     : { 'temperature' : { 'fahrenheid' : Smarter.celsius_to_fahrenheid(client.defaultTemperature),
                                                                  'celsius'    : client.defaultTemperature,
                                                                  'prefered'   : Smarter.temperature_metric_to_string()
@@ -168,25 +167,29 @@ class DeviceHandler(GenericAPIHandler):
                                              }
                             }
             elif client.isCoffee:
-                response = { 'device'      : encodeDevice(client.deviceId,client.version),
-                             'firmware'    : encodeFirmware(client.deviceId,client.version),
-                             'connected'   : client.connected,
-                             'status'      : { 'message' : Smarter.status_coffee_description(client.coffeeStatus),
-                                               'id'          : client.kettleStatus
+                response = { 'device'      : encodeDevice(client),
+                             'sensors'     : { 'singlecupmode'  : client.singlecup,
+                                               'carafe'         : client.carafe,
+                                               'carafemode'     : client.carafeMode,
+                                               'waterlevel'     : client.waterLevel,
+                                               'status'         : { 'hotplate'   : client.hotPlateOn,
+                                                                    'heater'     : client.heaterOn,
+                                                                    'grinder'    : client.grinderOn,
+                                                                    'working'    : client.working,
+                                                                    'ready'      : client.ready
+                                                                  },
                                              },
-                             'sensors'     : { 'cups'       : client.cups,
-                                               'strength'   : client.strength,
-                                               'grinder'    : client.grinder,
-                                               'hotplate'   : client.hotPlate,
-                                               'singlecup'  : client.singlecup,
-                                               'carafe'     : client.carafe,
-                                               'waterlevel' : client.waterLevel
+                             'settings'    : { 'default'       : { 'cups'       : client.defaultCups,
+                                                                   'strength'   : Smarter.strength_to_string(client.defaultStrength),
+                                                                   'source'     : Smarter.grind_to_string(client.defaultGrind),
+                                                                   'hotplate'   : client.defaultHotPlate
+                                                                 },
+                                               'current'       : { 'cups'       : client.cups,
+                                                                   'strength'   : Smarter.strength_to_string(client.strength),
+                                                                   'source'     : Smarter.grind_to_string(client.grind),
+                                                                   'hotplate'   : client.hotPlate
+                                                                 }
                                              },
-                             'default'     : { 'cups'       : client.defaultCups,
-                                               'strength'   : client.defaultStrength,
-                                               'grinder'    : client.defaultGrinder,
-                                               'hotplate'   : client.defaultHotplate
-                                              }
                             }
 
 
@@ -201,7 +204,10 @@ class DevicesHandler(GenericAPIHandler):
         devices = SmarterClient().find_devices()
         response = {}
         for device in devices:
-            response[device[0]] = encodeDevice(device[1],device[2])
+            response[device[0]] = { 'id'          : device,
+                                    'type'        : Smarter.device_to_string(client.deviceId),
+                                    'firmware'    : encodeFirmware(client.deviceId,client.version)
+                                  }
         self.setContentType()
         self.write(response)
 

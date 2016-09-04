@@ -1,38 +1,81 @@
 
 ```
 
-Example keepalive LaunchAgent for macOS/OSX, i soft linked /usr/local/bin/ibrew to iBrew.
-But you can change it to your normal copy, also change the working directory,domoticz ip and kettle ip.
+
+### Web Interface
+
+This is a build in progress, please contribute!
 
 ```
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-	<key>Disabled</key>
-	<false/>
-	<key>KeepAlive</key>
-	<true/>
-	<key>Label</key>
-	<string>com.domoticz.ikettle</string>
-	<key>ProgramArguments</key>
-	<array>
-		<string>/usr/local/bin/ibrew</string>
-		<string>domoticz</string>
-		<string>10.0.0.1:8090</string>
-		<string>Kettle</string>
-		<string>10.0.0.99</string>
-	</array>
-	<key>RunAtLoad</key>
-	<true/>
-	<key>WorkingDirectory</key>
-	<string>/Users/Tristan/Smarthome/domoticz/scripts</string>
-</dict>
-</plist>
+http://ip:port/
 ```
 
+![devices](https://raw.githubusercontent.com/Tristan79/iBrew/master/help/devices.png)
+
+![api](https://raw.githubusercontent.com/Tristan79/iBrew/master/help/api.png)
+
+![info](https://raw.githubusercontent.com/Tristan79/iBrew/master/help/info.png)
+
+
+
+### REST API
+
+Start the web interface.
+
+
+```
+http://ip:port/api
+```
+
+The following links are available
+
+```
+/version
+/devices
+/joke
+```
+
+Which contains the ip which you can use to monitor or control individual devices.
+
+```
+http://ip:port/api/ip
+```
+
+The following links are available
+
+```
+/start
+/stop
+/join/name/(password)
+/leave
+/scan
+/joke
+/default
+/settings/(v1/v2/v3/v4/)
+/status
+```
+
+Kettle
+```
+/calibrate
+/calibrate/base/(value)
+```
+
+Coffee Machine
+```
+/carafe
+/singlecup
+/hotplate/value
+/grinder/bool
+/cups/value
+/strength/value
+```
+
+Look up the the possible arguments in the console commands.
+   
 ## Protocol
 
 ### Structure
 
 ```
+

@@ -86,9 +86,10 @@ class SmarterProtocolHelp:
             print "    04 Failed"
             print "    05 No Carafe"
             print "    06 No Water"
+            print "    07 Aborted with no water"
             print "    69 Invalid Command"
             print
-            print "  The response status of the coffee can be bit encoded (see response 14)"
+            print "  The response status of the coffee can be bit encoded (see response 32)"
             
         elif id == Smarter.CommandWifiNetwork:
             print "  Argument: <SSID>{0,32}"
@@ -388,7 +389,7 @@ class SmarterProtocolHelp:
 
 
         elif id == Smarter.ResponseCoffeeSettings:
-            print "  Response: <STRENGTH><CUPS><GRINDER><HOTPLATE>"
+            print "  Response: <STRENGTH><CUPS><GRIND><HOTPLATE>"
             print
             print "  CUPS"
             print "    00..0c"
@@ -398,7 +399,9 @@ class SmarterProtocolHelp:
             print "    01 Medium"
             print "    02 Strong"
             print
-            print "  GRINDER <BOOLEAN>"
+            print "  GRIND"
+            print "    00 Filter"
+            print "    01 Beans"
             print
             print "  HOTPLATE"
             print "    05..28 5 .. 40 minutes"
@@ -434,7 +437,7 @@ class SmarterProtocolHelp:
             print "  Example: 4e ?? 7e"
         
         elif id == Smarter.CommandBrew:
-            print "  Arguments: <CUPS><STRENGTH><HOTPLATE><GRINDER>"
+            print "  Arguments: <CUPS><STRENGTH><HOTPLATE><GRIND>"
             print
             print "  CUPS"
             print "    00..0c"
@@ -448,7 +451,9 @@ class SmarterProtocolHelp:
             print "    05..28 5 .. 40 minutes"
             print "    05     5 Minutes (Default)"
             print
-            print "  GRINDER <BOOLEAN>"
+            print "  GRIND"
+            print "    00 Filter"
+            print "    01 Beans"
             print
             print "  Example: 33 04 02 00 7e"
             
@@ -557,66 +562,63 @@ class SmarterProtocolHelp:
             print "  Example: 6d 7e"
 
         elif id == Smarter.ResponseCarafe:
-            print "  Response: <BOOLEAN>"
-
+            print "  Arguments: <REQUIRED>"
+            print
+            print "  REQUIRED"
+            print "    00 Off"
+            print "    01 On"
+        
         elif id == Smarter.ResponseSingleCupMode:
-            print "  Response: <BOOLEAN>"
+            print "  Arguments: <MODE>"
+            print
+            print "  MODE"
+            print "    00 Off"
+            print "    01 On"
 
         elif id == Smarter.ResponseCoffeeStatus:
-            print "  I do not have a smarter coffee, but I suspect that the WIFISTRENGTH is just"
-            print "  the WATERSENSORBITSLOW part of the waterlevel sensor."
+            print "  It can be working and ready (example hotplate)"
             print
-            print "  Response: <STATUSCOFFEE><WATERLEVEL><WIFISTRENGTH???/WATERSENSORBITSLOW???><STRENGTH><UNKNOWNANDCUPS>"
+            print "  Response: <STATUSCOFFEE><UNKNOWNANDWATERLEVEL><??><STRENGTH><UNKNOWNANDCUPS>"
             print
-            print "  STATUSKETTLE"
-            print "    00 Ready"
-            print "    01 Heating water"
-            print "    02 Keep warm"
-            print "    03 Cycle finished"
-            print "    04 Baby cooling"
+            print "  STATUSCOFFEE  'CARAFE' 'GRIND' 'READY' 'GRINDER' 'HEATER' 'HOTPLATE' 'WORKING' '??'"
             print
-            print "  WATERSENSOR = WATERSENSORHIGHBITS * 256 + WATERSENSORLOWBITS"
+            print "  CARAFE (BIT 0)"
+            print "    00 Carafe not present or door filter open"
+            print "    01 Door filter closed and carafe present"
             print
-            print "  STATUSCOFFEE (unverified)"
-            print "    04 Filter, ?                      #  00000100"
-            print "    05 Filter, OK to start            #  00000101"
-            print "    06 Filter, OK to start            #  00000110"
-            print "    07 Beans, OK to start             #  00000111"
-            print "    20 Filter, No carafe              #  00100000"
-            print "    22 Beans, No carafe               #  00100010"
-            print "    45 Filter, Done                   #  01000101 <-- from here actions"
-            print "    47 Beans, Done                    #  01000111"
-            print "    53 Heating water                  #  01010011"
-            print "    60 Filter, No carafe, Hotplate On #  01100000"
-            print "    61 Filter, Hotplate On            #  01100001"
-            print "    62 Beans, No carafe, Hotplate On  #  01100010"
-            print "    63 Beans, Hotplate On             #  01100011"
-            print "    51 Descaling in progress          #  01010001"
-            print "                                          WHHGRBC"
-            print "                                          OOEREEA"
-            print "                                          RTAIAAR"
-            print "                                          KPTNDNA"
-            print "                                          ILIDYSF"
-            print "                                          NANI  E"
-            print "                                          GTGN"
-            print "                                           E G"
+            print "  GRIND (BIT 1)"
+            print "    00 Filter"
+            print "    01 Beans"
             print
-            print "  These are guesses I do not own a smarter coffee..."
-            print "  BIT 7 = UNKNOWN/UNUSED?"
-            print "  BIT 6 = IDLE/WORKING"
-            print "  BIT 5 = Hot plate On/Off"
-            print "  BIT 4 = Heating On/Off"
-            print "  BIT 3 = Grinding"
-            print "  BIT 2 = READY/BUSY (OK TO START)"
-            print "  BIT 1 = FILTER/BEANS"
-            print "  BIT 0 = CARAFE OFFBASE/ONBASE"
-            print 
+            print "  READY (BIT 2)"
+            print "    00 Brew not possible"
+            print "    01 Can brew"
+            print
+            print "  GRINDER (BIT 3)"
+            print "    00 Off"
+            print "    01 On"
+            print
+            print "  HEATER (BIT 4)"
+            print "    00 Off"
+            print "    01 On"
+            print
+            print "  HOTPLATE (BIT 5)"
+            print "    00 Off"
+            print "    01 On"
+            print
+            print "  WORKING (BIT 6)"
+            print "    00 Idle"
+            print "    01 Working"
+            print
+            print "  UNKNOWNANDWATERLEVEL"
+            print "    WATERLEVEL   4 lower bits"
+            print "    UNKNOWN      4 higher bits (it toggles from 0/1)"
+            print
             print "  WATERLEVEL"
             print "    00 Not enough water"
             print "    01 Low"
             print "    02 Half"
-            print "    12 Half"
-            print "    13 Full"
+            print "    03 Full"
             print
             print "  STRENGTH"
             print "    00 Weak"
@@ -625,22 +627,36 @@ class SmarterProtocolHelp:
             print
             print "  UNKNOWNANDCUPS"
             print "    CUPS    4 lower bits"
-            print "    UNKNOWN 4 higher bits"
+            print "    CUPSBIT 4 higher bits (it toggles from 0/1)"
             print
             print "  CUPS"
             print "    00..0c"
 
         elif id == Smarter.CommandCarafe:
-            print " NEW"
+            print "  Unknown"
+
+        elif id == Smarter.CommandSetCarafe:
+            print "  Arguments: <REQUIRED>"
+            print
+            print "  REQUIRED"
+            print "    00 Off"
+            print "    01 On"
 
         elif id == Smarter.CommandSingleCupMode:
-            print " NEW"
+            print "  Unknown"
+
+        elif id == Smarter.CommandSetSingleCupMode:
+            print "  Arguments: <MODE>"
+            print
+            print "  MODE"
+            print "    00 Off"
+            print "    01 On"
 
         elif id == Smarter.CommandCoffeeStop:
             print "  Example 33 7e "
 
         elif id == Smarter.CommandCoffeeStoreSettings:
-            print "  Arguments: <STRENGTH><CUPS><GRINDER><HOTPLATE>"
+            print "  Arguments: <STRENGTH><CUPS><GRIND><HOTPLATE>"
             print
             print "  STRENGTH"
             print "    00 Weak"
@@ -650,7 +666,9 @@ class SmarterProtocolHelp:
             print "  CUPS"
             print "    00..0c"
             print
-            print "  GRINDER <BOOLEAN>"
+            print "  GRIND"
+            print "    00 Filter"
+            print "    01 Beans"
             print
             print "  HOTPLATE"
             print "    05..28 5 .. 40 minutes"

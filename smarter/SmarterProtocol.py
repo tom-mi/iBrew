@@ -127,7 +127,9 @@ class SmarterProtocol:
     CommandCoffeeHistory      = 0x46
     CommandHotplateOff        = 0x4a
     CommandCarafe             = 0x4c
+    CommandSetCarafe          = 0x4b
     CommandSingleCupMode      = 0x4f
+    CommandSetSingleCupMode   = 0x4e
 
     # kettle
     CommandHeat               = 0x15
@@ -153,8 +155,6 @@ class SmarterProtocol:
     Command40                 = 0x40
     Command41                 = 0x41
     Command43                 = 0x43
-    Command4b                 = 0x4b
-    Command4e                 = 0x4e
     
     # ?
     Command69                 = 0x69
@@ -216,8 +216,8 @@ class SmarterProtocol:
         Command40               : (False,True,[ResponseCommandStatus],"Working unknown command (schedule?)"),
         Command41               : (False,True,[ResponseCommandStatus],"Working unknown command (schedule?)"),
         Command43               : (False,True,[ResponseCommandStatus],"Working unknown command (schedule?)"),
-        Command4b               : (False,True,[ResponseCommandStatus],"Working unknown command"),
-        Command4e               : (False,True,[ResponseCommandStatus],"Working unknown command"),
+        CommandSetCarafe        : (False,True,[ResponseCommandStatus],"Set coffee carafe required"),
+        CommandSetSingleCupMode : (False,True,[ResponseCommandStatus],"Set single coffee cup mode"),
         CommandCoffeeSettings   : (False,True,[ResponseCoffeeSettings,ResponseCommandStatus],"Get default coffee machine user settings"),
         CommandCoffeeHistory    : (False,True,[ResponseCoffeeHistory],"Get coffee machine history"),
         CommandHotplateOff      : (False,True,[ResponseCommandStatus],"Turn off hotplate"),
@@ -230,7 +230,8 @@ class SmarterProtocol:
 
     # format: kettle?, coffee? (None is unnknown), minimal length (0 = variable), response to command, description
     ResponseMessages = {
-        ResponseCommandStatus   : (True,True,3,[CommandDeviceTime,CommandWifiNetwork,CommandWifiPassword,CommandResetSettings,CommandHeat,CommandKettleStop,CommandHeatFormula,CommandKettleStoreSettings,Command20,CommandHeatDefault,Command22,Command23,CommandBase,CommandCalibrate,Command69,Command40,Command41,Command43,Command4b,Command4e],"Command status"),
+        #incomplete? ... chech the first one...
+        ResponseCommandStatus   : (True,True,3,[CommandDeviceTime,CommandWifiNetwork,CommandWifiPassword,CommandResetSettings,CommandHeat,CommandKettleStop,CommandHeatFormula,CommandKettleStoreSettings,Command20,CommandHeatDefault,Command22,Command23,CommandBase,CommandCalibrate,Command69,Command40,Command41,Command43,Command30,CommandSetCarafe,CommandSetSingleCupMode,CommandStrength,CommandCups,CommandGrinder,CommandHotplateOn,CommandSingleCupMode,CommandCarafe,CommandHotplateOff,CommandCoffeeSettings,CommandBrew,CommandCoffeeStop,CommandBrewDefault],"Command status"),
         ResponseWirelessNetworks: (True,True,0,[CommandWifiScan],"Wireless networks list"),
         ResponseKettleHistory   : (True,False,0,[CommandKettleHistory],"Kettle history"),
         ResponseCoffeeHistory   : (False,True,0,[CommandCoffeeHistory],"Coffee machine history"),
@@ -748,7 +749,7 @@ class SmarterProtocol:
         if self.WaterLevel.has_key(level):
             return self.WaterLevel[level]
         else:
-            return "unknown water level " + self.number_to_code(level)
+            return "unknown water level [0..3]: " + self.number_to_code(level)
 
 
     def check_waterlevel(self,waterlevel_raw):
@@ -782,15 +783,15 @@ class SmarterProtocol:
 
 
     StatusCommand = {
-        StatusSucces           : "Success",
-        StatusBusy             : "Busy",
-        StatusNoCarafe         : "No Carafe",
-        StatusNoWater          : "No Water",
-        StatusFailed           : "Failed",
-        StatusNoCarafeUnknown  : "No Carafe",  # which one?
-        StatusNoWaterUnknown   : "No Water",   # which one?
-        StatusNoWaterAborted   : "Low Water could not finish",
-        StatusInvalid          : "Invalid Command"
+        StatusSucces           : "success",
+        StatusBusy             : "busy",
+        StatusNoCarafe         : "no carafe",
+        StatusNoWater          : "no water",
+        StatusFailed           : "failed",
+        StatusNoCarafeUnknown  : "no carafe",  # which one?
+        StatusNoWaterUnknown   : "no water",   # which one?
+        StatusNoWaterAborted   : "low water could not finish",
+        StatusInvalid          : "invalid command"
     }
 
 
@@ -813,11 +814,11 @@ class SmarterProtocol:
 
 
     StatusKettle = {
-        KettleReady             : "Ready",
-        KettleHeating           : "Heating",
-        KettleKeepWarm          : "Keep Warm",
-        KettleCycleFinished     : "Cycle Finished",
-        KettleBabyCooling       : "Baby Cooling"
+        KettleReady             : "ready",
+        KettleHeating           : "heating",
+        KettleKeepWarm          : "keep warm",
+        KettleCycleFinished     : "cycle finished",
+        KettleBabyCooling       : "baby cooling"
     }
 
 
@@ -878,18 +879,24 @@ class SmarterProtocol:
             return "Unknown Coffee Status " + self.number_to_code(status)
 
 
-    def grinder_to_string(self,grinder):
+    def grind_to_string(self,grind):
         s = "filter"
-        if grinder:
-            s = "grinder"
+        if grind:
+            s = "beans"
         return s
 
 
-    def string_coffee_settings(self, cups, strength, grinder, hotplate):
+    def string_coffee_settings(self, cups, strength, grind, hotplate):
         s = ""
         if hotplate >= 5 and hotplate <= 40:
             s = " and keep warm for " + str(self.hotplate) + " minutes"
-        return "Brew " + self.cups_to_string(cups) + " of coffee, " + self.strength_to_string(strength) + " strength using the " + self.grinder_to_string(grinder) + s
+        t = self.grind_to_string(grind)
+        if grind:
+            t = self.strength_to_string(strength) + " coffee using grinded beans"
+        else:
+            t += " coffee"
+        
+        return "Brew " + self.cups_to_string(cups) + " of " + t + s
 
 
     def string_coffee_status(self,ready,working,heating,hotPlateOn,carafe,grinderOn):

@@ -31,6 +31,7 @@ This means your machine is free! You can connect it yourself and do whatever you
  * if you send a message with an if of a response as command it displays the response infoiting to send...
  * v0.5 Missing Coffee Smarter codes (!)
  * I broke domoticz :-)
+ * fix wireless with the same name
  
  
  iBrew v0.5: Dumb Dump Limited Collector Edition
@@ -129,12 +130,14 @@ you can also use them on the command line as arguments:
   SmarterCoffee  Commands
     brew ()                brew coffee
     carafe                 returns if carafe is required
+    carafe [state]         set carafe is required [on or off]
     cups [number]          set number of cups [1..12]
     grinder                use grinder
     filter                 use filter
     hotplate off           turn hotplate off
     hotplate on (minutes)  turn hotplate on (time in minutes)
-    singlecup              return if singlecup mode is on
+    singlecup              return single coffee cup mode
+    singlecup [state]      set single coffee cup mode [on or off]
     (strength) [strength]  set strength coffee [weak, medium or strong]
     stop coffee            stops brewing
     settings [cups] [strength] [grinder] [hotplate]   store user settings
@@ -152,7 +155,6 @@ you can also use them on the command line as arguments:
     structure              show protocol structure information
 
   Bridge Commands
-    domoticz               show domoticz bridge help
     web (port)             start web interface & rest api on port [default 2082]
 
   Debug Commands
@@ -164,7 +166,7 @@ you can also use them on the command line as arguments:
     monitor                monitor incomming traffic
     protocol               show all protocol information available
     stats                  show traffic statistics
-    sweep (id)             try (all or start with id) unknown command codes
+    sweep (id)             [developer only] try (all or start with id) unknown command codes
 
   Console Commands
     joke                   show joke
@@ -260,55 +262,13 @@ Coffee Machine
 ```
 
 Look up the the possible arguments in the console commands.
-
-
-### Domoticz Bridge
-
-Bridge to [Domoticz](http://domoticz.com)!
-
-iKettle Devices in Domoticz
-![domoticz v3.52](https://raw.githubusercontent.com/Tristan79/iBrew/master/help/domoticz.png)
    
-   
-```
-
-```
-
-Example keepalive LaunchAgent for macOS/OSX, i soft linked /usr/local/bin/ibrew to iBrew.
-But you can change it to your normal copy, also change the working directory,domoticz ip and kettle ip.
-
-```
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-	<key>Disabled</key>
-	<false/>
-	<key>KeepAlive</key>
-	<true/>
-	<key>Label</key>
-	<string>com.domoticz.ikettle</string>
-	<key>ProgramArguments</key>
-	<array>
-		<string>/usr/local/bin/ibrew</string>
-		<string>domoticz</string>
-		<string>10.0.0.1:8090</string>
-		<string>Kettle</string>
-		<string>10.0.0.99</string>
-	</array>
-	<key>RunAtLoad</key>
-	<true/>
-	<key>WorkingDirectory</key>
-	<string>/Users/Tristan/Smarthome/domoticz/scripts</string>
-</dict>
-</plist>
-```
-
 ## Protocol
 
 ### Structure
 
 ```
+
 
        
        
@@ -382,9 +342,9 @@ But you can change it to your normal copy, also change the working directory,dom
     ✕ ✓ 46 Get coffee machine history
     ✕ ✓ 48 Get default coffee machine user settings
     ✕ ✓ 4a Turn off hotplate
-    ✕ ✓ 4b Working unknown command
+    ✕ ✓ 4b Set coffee carafe required
     ✕ ✓ 4c Get coffee carafe required
-    ✕ ✓ 4e Working unknown command
+    ✕ ✓ 4e Set single coffee cup mode
     ✕ ✓ 4f Get single coffee cup mode
     ✓ ✓ 64 Get device info
     ✓ ✓ 69 Working unknown command
@@ -459,7 +419,7 @@ But you can change it to your normal copy, also change the working directory,dom
 
   Response Message 03: Command status
   ─────────────────────────────────────────────────────────────────────────
-  In response to command message: [02,Set device time] [05,Set wireless network name] [07,Set wireless network password] [10,Reset default user settings] [15,Heat kettle] [16,Stop heating kettle] [19,Heat kettle using formula mode] [1f,Set kettle default user settings] [20,Working unknown command (turn on?)] [21,Working unknown command (turn on?)] [22,Working unknown command (turn on?)] [23,Working unknown command (turn on?)] [2b,Get water sensor base value] [2c,Calibrate water sensor] [69,Working unknown command] [40,Working unknown command (schedule?)] [41,Working unknown command (schedule?)] [43,Working unknown command (schedule?)] [4b,Working unknown command] [4e,Working unknown command] 
+  In response to command message: [02,Set device time] [05,Set wireless network name] [07,Set wireless network password] [10,Reset default user settings] [15,Heat kettle] [16,Stop heating kettle] [19,Heat kettle using formula mode] [1f,Set kettle default user settings] [20,Working unknown command (turn on?)] [21,Working unknown command (turn on?)] [22,Working unknown command (turn on?)] [23,Working unknown command (turn on?)] [2b,Get water sensor base value] [2c,Calibrate water sensor] [69,Working unknown command] [40,Working unknown command (schedule?)] [41,Working unknown command (schedule?)] [43,Working unknown command (schedule?)] [30,Working unknown command] [4b,Set coffee carafe required] [4e,Set single coffee cup mode] [35,Set strength of the coffee to brew] [36,Set number of cups to brew] [3c,Toggle grinder] [3e,Turn on hotplate] [4f,Get single coffee cup mode] [4c,Get coffee carafe required] [4a,Turn off hotplate] [48,Get default coffee machine user settings] [33,Start coffee brewing] [34,Stop coffee brewing] [37,Start coffee brewing using machine settings] 
   Message Size: 3 bytes
 
   ✓ iKettle 2.0   ✓ SmarterCoffee 
@@ -474,9 +434,10 @@ But you can change it to your normal copy, also change the working directory,dom
     04 Failed
     05 No Carafe
     06 No Water
+    07 Aborted with no water
     69 Invalid Command
 
-  The response status of the coffee can be bit encoded (see response 14)
+  The response status of the coffee can be bit encoded (see response 32)
 
 
 
@@ -719,748 +680,7 @@ But you can change it to your normal copy, also change the working directory,dom
 
   ✓ iKettle 2.0   ✕ SmarterCoffee 
 
-  No information available on message: 21
-
-
-
-
-  Command Message 22: Working unknown command (turn on?)
-  ─────────────────────────────────────────────────────────────────────────
-  Response message: [03,Command status] 
-
-  ✓ iKettle 2.0   ✕ SmarterCoffee 
-
-  Example: 22 7e
-
-
-
-
-  Command Message 23: Working unknown command (turn on?)
-  ─────────────────────────────────────────────────────────────────────────
-  Response message: [03,Command status] 
-
-  ✓ iKettle 2.0   ✕ SmarterCoffee 
-
-  Example: 23 7e
-
-
-
-
-  Command Message 28: Get kettle history
-  ─────────────────────────────────────────────────────────────────────────
-  Response message: [29,Kettle history] 
-
-  ✓ iKettle 2.0   ✕ SmarterCoffee 
-
-  When called will erase this history.
-
-  Example: 28 7e
-
-
-
-
-  Response Message 29: Kettle history
-  ─────────────────────────────────────────────────────────────────────────
-  In response to command message: [28,Get kettle history] 
-
-  ✓ iKettle 2.0   ✕ SmarterCoffee 
-
-  The payload is generated everytime the kettle stops heating. The actioncounter increases with every heating?
-  Formula temperature is above 0 then it was heated with formula temperature enabled. There seems to be some
-  packed time available.
-
-  Payload maximum is 8. So if 8 check again, if there is more history
-  month checked only accepts value from 1..0c
-
-  Response: <COUNTER> [<PAYLOAD>{COUNTER}]
-
-  PAYLOAD
-    <??><TEMPERATURE><KEEPWARMTIME><FORMULATEMPERATURE><ACTIONCOUNTER>
-    <SECONDS??><HOURS?><MINUTES?><DAY?><MONTH><YEAR80?><STATE><??>{19}
-
-  COUNTER
-    00..08
-
-  TEMPERATURE
-    00..64  0..100ºC
-
-  KEEPWARMTIME
-    00      Default off
-    05..1e  Keep Warm in Minutes
-
-  FORMULATEMPERATURE
-    00..64  0..100ºC
-
-  ACTIONCOUNTER
-    00..ff  Amount of heatings before off base
-
-  SECONDS
-    00..3b
-
-  MINUTES
-    00..3b
-
-  HOURS
-    00..17
-
-  DAY
-    00..1e
-
-  MONTH
-    00..0b
-
-  YEAR80
-    00..FF  YEAR = YEAR80 + 1980
-
-  STATE
-    00 Stopped
-    01 Success
-
-  Example: 29 02 01 5f 00 00 0f 00 09 03 15 0a 19 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7d
-                 01 64 19 32 10 00 09 0e 15 0a 19 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7d 7e
-
-
-
-
-  Command Message 2a: Set water sensor base value
-  ─────────────────────────────────────────────────────────────────────────
-
-  ✓ iKettle 2.0   ✕ SmarterCoffee 
-
-  Arguments: <BASELHIGHBITS><BASELOWBITS>
-
-  BASE = BASELHIGHBITS * 256 + BASELOWBITS [0..4095]
-  Example: 2a 04 03
-
-  This can contain the tail 7e, so check for length here!
-
-
-
-
-  Command Message 2b: Get water sensor base value
-  ─────────────────────────────────────────────────────────────────────────
-  Response message: [2d,Water sensor base value] [03,Command status] 
-
-  ✓ iKettle 2.0   ✕ SmarterCoffee 
-
-  Example: 2b 7e
-
-
-
-
-  Command Message 2c: Calibrate water sensor
-  ─────────────────────────────────────────────────────────────────────────
-  Response message: [2d,Water sensor base value] [03,Command status] 
-
-  ✓ iKettle 2.0   ✕ SmarterCoffee 
-
-  Example: 2c 7e
-
-  Returns also a command success response message after the base repsonse message
-
-
-
-
-  Response Message 2d: Water sensor base value
-  ─────────────────────────────────────────────────────────────────────────
-  In response to command message: [2b,Get water sensor base value] [2c,Calibrate water sensor] 
-  Message Size: 4 bytes
-
-  ✓ iKettle 2.0   ✕ SmarterCoffee 
-
-  Response: <BASELHIGHBITS><BASELOWBITS>
-
-  BASE = BASELHIGHBITS * 256 + BASELOWBITS [0..4095]
-
-  This can contain the tail 7e, so check for length here!
-
-
-
-
-  Command Message 2e: Get default kettle user settings
-  ─────────────────────────────────────────────────────────────────────────
-  Response message: [2f,Default kettle user settings] 
-
-  ✓ iKettle 2.0   ✕ SmarterCoffee 
-
-  Also return 00 message in an unconfigured state.??? CHECK
-
-  Example: 2e 7e
-
-
-
-
-  Response Message 2f: Default kettle user settings
-  ─────────────────────────────────────────────────────────────────────────
-  In response to command message: [2e,Get default kettle user settings] 
-  Message Size: 9 bytes
-
-  ✓ iKettle 2.0   ✓ SmarterCoffee 
-
-  Response: <TEMPERATURE><KEEPWARMTIME><FORMULATEMPERATURE>
-
-  KEEPWARMTIME
-    00      Default off
-    05..1e  Keep Warm in Minutes
-
-  TEMPERATURE
-    00..64  0..100ºC
-
-  FORMULATEMPERATURE
-    00..64  0..100ºC
-
-
-
-
-  Command Message 30: Working unknown command
-  ─────────────────────────────────────────────────────────────────────────
-  Response message: [03,Command status] 
-
-  ✓ iKettle 2.0   ✕ SmarterCoffee 
-
-  Arguments: <[UNKNOWN]>{?}
-
-  Example: 30 7e
-
-
-
-
-  Response Message 32: Coffee machine status
-  ─────────────────────────────────────────────────────────────────────────
-
-  ✕ iKettle 2.0   ✓ SmarterCoffee 
-
-  I do not have a smarter coffee, but I suspect that the WIFISTRENGTH is just
-  the WATERSENSORBITSLOW part of the waterlevel sensor.
-
-  Response: <STATUSCOFFEE><WATERLEVEL><WIFISTRENGTH???/WATERSENSORBITSLOW???><STRENGTH><UNKNOWNANDCUPS>
-
-  STATUSKETTLE
-    00 Ready
-    01 Heating water
-    02 Keep warm
-    03 Cycle finished
-    04 Baby cooling
-
-  WATERSENSOR = WATERSENSORHIGHBITS * 256 + WATERSENSORLOWBITS
-
-  STATUSCOFFEE (unverified)
-    04 Filter, ?                      #  00000100
-    05 Filter, OK to start            #  00000101
-    06 Filter, OK to start            #  00000110
-    07 Beans, OK to start             #  00000111
-    20 Filter, No carafe              #  00100000
-    22 Beans, No carafe               #  00100010
-    45 Filter, Done                   #  01000101 <-- from here actions
-    47 Beans, Done                    #  01000111
-    53 Heating water                  #  01010011
-    60 Filter, No carafe, Hotplate On #  01100000
-    61 Filter, Hotplate On            #  01100001
-    62 Beans, No carafe, Hotplate On  #  01100010
-    63 Beans, Hotplate On             #  01100011
-    51 Descaling in progress          #  01010001
-                                          WHHGRBC
-                                          OOEREEA
-                                          RTAIAAR
-                                          KPTNDNA
-                                          ILIDYSF
-                                          NANI  E
-                                          GTGN
-                                           E G
-
-  These are guesses I do not own a smarter coffee...
-  BIT 7 = UNKNOWN/UNUSED?
-  BIT 6 = IDLE/WORKING
-  BIT 5 = Hot plate On/Off
-  BIT 4 = Heating On/Off
-  BIT 3 = Grinding
-  BIT 2 = READY/BUSY (OK TO START)
-  BIT 1 = FILTER/BEANS
-  BIT 0 = CARAFE OFFBASE/ONBASE
-
-  WATERLEVEL
-    00 Not enough water
-    01 Low
-    02 Half
-    12 Half
-    13 Full
-
-  STRENGTH
-    00 Weak
-    01 Medium
-    02 Strong
-
-  UNKNOWNANDCUPS
-    CUPS    4 lower bits
-    UNKNOWN 4 higher bits
-
-  CUPS
-    00..0c
-
-
-
-
-  Command Message 33: Start coffee brewing
-  ─────────────────────────────────────────────────────────────────────────
-  Response message: [03,Command status] 
-
-  ✕ iKettle 2.0   ✓ SmarterCoffee 
-
-  Arguments: <CUPS><STRENGTH><HOTPLATE><GRINDER>
-
-  CUPS
-    00..0c
-
-  STRENGTH
-    00 Weak
-    01 Medium
-    02 Strong
-
-  HOTPLATE TIMER
-    05..28 5 .. 40 minutes
-    05     5 Minutes (Default)
-
-  GRINDER <BOOLEAN>
-
-  Example: 33 04 02 00 7e
-
-
-
-
-  Command Message 34: Stop coffee brewing
-  ─────────────────────────────────────────────────────────────────────────
-  Response message: [03,Command status] 
-
-  ✕ iKettle 2.0   ✓ SmarterCoffee 
-
-  Example 33 7e 
-
-
-
-
-  Command Message 35: Set strength of the coffee to brew
-  ─────────────────────────────────────────────────────────────────────────
-  Response message: [03,Command status] 
-
-  ✕ iKettle 2.0   ✓ SmarterCoffee 
-
-  Sets the strength of the coffee to be brewed. Use command 37 to brew
-  Argument: <STRENGTH>
-
-  STRENGTH
-    00 Weak
-    01 Medium
-    02 Strong
-
-  Example: 35 01 7e
-
-
-
-
-  Command Message 36: Set number of cups to brew
-  ─────────────────────────────────────────────────────────────────────────
-  Response message: [03,Command status] 
-
-  ✕ iKettle 2.0   ✓ SmarterCoffee 
-
-  Sets the number of cups to be brewed, range between 1 and 12.
-  Use command 37 to brew
-
-  Argument: <CUPS>
-
-  CUPS
-    00..0c
-
-  Example: 36 03 7e
-
-
-
-
-  Command Message 37: Start coffee brewing using machine settings
-  ─────────────────────────────────────────────────────────────────────────
-  Response message: [03,Command status] 
-
-  ✕ iKettle 2.0   ✓ SmarterCoffee 
-
-  Uses the settings not the default user settings
-  Example: 37 7e
-
-
-
-
-  Command Message 38: Set coffee machine default user settings
-  ─────────────────────────────────────────────────────────────────────────
-
-  ✕ iKettle 2.0   ✓ SmarterCoffee 
-
-  Arguments: <STRENGTH><CUPS><GRINDER><HOTPLATE>
-
-  STRENGTH
-    00 Weak
-    01 Medium
-    02 Strong
-
-  CUPS
-    00..0c
-
-  GRINDER <BOOLEAN>
-
-  HOTPLATE
-    05..28 5 .. 40 minutes
-    05     5 Minutes (Default)
-
-
-
-
-
-  Command Message 3c: Toggle grinder
-  ─────────────────────────────────────────────────────────────────────────
-  Response message: [03,Command status] 
-
-  ✕ iKettle 2.0   ✓ SmarterCoffee 
-
-  Example: 3c 7e
-
-
-
-
-  Command Message 3e: Turn on hotplate
-  ─────────────────────────────────────────────────────────────────────────
-  Response message: [03,Command status] 
-
-  ✕ iKettle 2.0   ✓ SmarterCoffee 
-
-  Sets on the hotplate, you can specify how many minutes before it switch off.
-  Range between 5 and 40, the app sends 5 on default
-
-  Argument: <[KEEPWARMTIME]>
-
-  KEEPWARMTIME
-    05..28 5 .. 40 minutes
-    05     5 Minutes (Default)
-
-  Example: 3e 05 7e
-
-
-
-
-  Command Message 40: Working unknown command (schedule?)
-  ─────────────────────────────────────────────────────────────────────────
-  Response message: [03,Command status] 
-
-  ✕ iKettle 2.0   ✓ SmarterCoffee 
-
-  Updating schedules
-  No information available on message
-
-
-
-
-  Command Message 41: Working unknown command (schedule?)
-  ─────────────────────────────────────────────────────────────────────────
-  Response message: [03,Command status] 
-
-  ✕ iKettle 2.0   ✓ SmarterCoffee 
-
-  Requesting schedules
-  No information available on message
-
-
-
-
-  Command Message 43: Working unknown command (schedule?)
-  ─────────────────────────────────────────────────────────────────────────
-  Response message: [03,Command status] 
-
-  ✕ iKettle 2.0   ✓ SmarterCoffee 
-
-  Schedules
-  No information available on message
-
-
-
-
-  Command Message 46: Get coffee machine history
-  ─────────────────────────────────────────────────────────────────────────
-  Response message: [47,Coffee machine history] 
-
-  ✕ iKettle 2.0   ✓ SmarterCoffee 
-
-  When called will erase this history.
-
-  Example: 46 7e
-
-
-
-
-  Response Message 47: Coffee machine history
-  ─────────────────────────────────────────────────────────────────────────
-  In response to command message: [46,Get coffee machine history] 
-
-  ✕ iKettle 2.0   ✓ SmarterCoffee 
-
-  The payload is generated everytime the coffee machine brews. The actioncounter increases with every brewing?
-
-  Payload maximum is 8. So if 8 check again, if there is more history
-  month checked only accepts value from 1..0c
-
-  Response: <COUNTER> [<PAYLOAD>{COUNTER}]
-
-  COUNTER
-    00..08
-
-  PAYLOAD
-    <??><??><??><DEFAULT/CUPS?><DEFAULT/CUPS?><SECONDS??>
-    <HOURS???><MINUTES???><DAY??><MONTH><YEAR80???><STATE><??>{19}
-
-  CUPS
-    00..0c
-
-  SECONDS
-    00..3b
-
-  MINUTES
-    00..3b
-
-  HOURS
-    00..17
-
-  DAY
-    00..1e
-
-  MONTH
-    00..0b
-
-  YEAR80
-    00..FF  YEAR = YEAR80 + 1980
-
-  STATE
-    00 Stopped
-    01 Success
-
-  Example: 47 02 01 00 00 02 02 00 19 00 01 01 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7d
-                 01 00 00 0c 0c 00 19 00 01 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7d 7e
-
-
-
-
-  Command Message 48: Get default coffee machine user settings
-  ─────────────────────────────────────────────────────────────────────────
-  Response message: [49,Get default coffee machine user settings] [03,Command status] 
-
-  ✕ iKettle 2.0   ✓ SmarterCoffee 
-
-  Also return 00 message in an unconfigured state.???? CHECK
-
-  Example: 48 7e
-
-
-
-
-  Response Message 49: Get default coffee machine user settings
-  ─────────────────────────────────────────────────────────────────────────
-  In response to command message: [48,Get default coffee machine user settings] 
-  Message Size: 6 bytes
-
-  ✕ iKettle 2.0   ✓ SmarterCoffee 
-
-  Response: <STRENGTH><CUPS><GRINDER><HOTPLATE>
-
-  CUPS
-    00..0c
-
-  STRENGTH
-    00 Weak
-    01 Medium
-    02 Strong
-
-  GRINDER <BOOLEAN>
-
-  HOTPLATE
-    05..28 5 .. 40 minutes
-    05     5 Minutes (Default)
-
-
-
-
-
-  Command Message 4a: Turn off hotplate
-  ─────────────────────────────────────────────────────────────────────────
-  Response message: [03,Command status] 
-
-  ✕ iKettle 2.0   ✓ SmarterCoffee 
-
-  Example: 4a 7e
-
-
-
-
-  Command Message 4b: Working unknown command
-  ─────────────────────────────────────────────────────────────────────────
-  Response message: [03,Command status] 
-
-  ✕ iKettle 2.0   ✓ SmarterCoffee 
-
-  Arguments: <[UNKNOWN]>{?}
-
-  Example: 4b ?? 7e
-
-
-
-
-  Command Message 4c: Get coffee carafe required
-  ─────────────────────────────────────────────────────────────────────────
-  Response message: [32,Coffee machine status] [03,Command status] 
-
-  ✕ iKettle 2.0   ✓ SmarterCoffee 
-
- NEW
-
-
-
-
-  Response Message 4d: Carafe required
-  ─────────────────────────────────────────────────────────────────────────
-  In response to command message: [4c,Get coffee carafe required] 
-  Message Size: 3 bytes
-
-  ✕ iKettle 2.0   ✓ SmarterCoffee 
-
-  Response: <BOOLEAN>
-
-
-
-
-  Command Message 4e: Working unknown command
-  ─────────────────────────────────────────────────────────────────────────
-  Response message: [03,Command status] 
-
-  ✕ iKettle 2.0   ✓ SmarterCoffee 
-
-  Arguments: <[UNKNOWN]>{?}
-
-  Example: 4e ?? 7e
-
-
-
-
-  Command Message 4f: Get single coffee cup mode
-  ─────────────────────────────────────────────────────────────────────────
-  Response message: [50,Single coffee cup mode] [03,Command status] 
-
-  ✕ iKettle 2.0   ✓ SmarterCoffee 
-
- NEW
-
-
-
-
-  Response Message 50: Single coffee cup mode
-  ─────────────────────────────────────────────────────────────────────────
-  In response to command message: [4f,Get single coffee cup mode] 
-  Message Size: 3 bytes
-
-  ✕ iKettle 2.0   ✓ SmarterCoffee 
-
-  Response: <BOOLEAN>
-
-
-
-
-  Command Message 64: Get device info
-  ─────────────────────────────────────────────────────────────────────────
-  Response message: [65,Device info] 
-
-  ✓ iKettle 2.0   ✓ SmarterCoffee 
-
-  Get the type of the device connected to and it's firmware. It is used for
-  auto discovery over UDP broadcast (after device setup is complete?)
-  This fails on some routers, which don't propagate UDP broadcasts
-
-  Example: 64 7e
-
-
-
-
-  Response Message 65: Device info
-  ─────────────────────────────────────────────────────────────────────────
-  In response to command message: [64,Get device info] 
-  Message Size: 4 bytes
-
-  ✓ iKettle 2.0   ✓ SmarterCoffee 
-
-  Response: <TYPE><VERSION>
-
-  TYPE:
-    01 iKettle 2.0
-    02 SmarterCoffee 
-
-  VERSION:
-    13 Firmware v19 of iKettle 2.0
-
-  Example: 65 01 13 7e
-
-
-
-
-  Command Message 69: Working unknown command
-  ─────────────────────────────────────────────────────────────────────────
-  Response message: [03,Command status] 
-
-  ✓ iKettle 2.0   ✓ SmarterCoffee 
-
-  Without argumens it returns failed otherwise it returns success.
-
-  Arguments: <UNKNOWN>{?}
-
-  Example: 69 7e
-
-
-
-
-  Command Message 6a: Get wifi firmware info
-  ─────────────────────────────────────────────────────────────────────────
-  Response message: [6b,Wifi firmware info] 
-
-  ✓ iKettle 2.0   ✓ SmarterCoffee 
-
-  Example: 6a 7e
-
-
-
-
-  Response Message 6b: Wifi firmware info
-  ─────────────────────────────────────────────────────────────────────────
-  In response to command message: [6a,Get wifi firmware info] 
-
-  ✓ iKettle 2.0   ✓ SmarterCoffee 
-
-  The firmware of the wifi module in text with control chars as new line.
-  The iKettle 2.0 returns (without control chars):
-
-  Response: <FIRMWARE>{?}
-
-  AT+GMR
-  AT version:0.40.0.0(Aug  8 2015 14:45:58)
-  SDK version:1.3.0
-  compile time:Aug  8 2015 17:19:38
-  OK
-
-
-
-
-  Command Message 6d: Device firmware update
-  ─────────────────────────────────────────────────────────────────────────
-
-  ✓ iKettle 2.0   ✓ SmarterCoffee 
-
-  Disables wifi and creates a 'iKettle Update' wireless network and opens port 6000.
-  A hard device reset (hold power button for 10 seconds) is sometimes required to fix this state,
-  or just unplug the power for a moment.
-
-  Example: 6d 7e
-
-
+iBrew: Command Failed
 
 ```
 
@@ -1590,9 +810,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #### Smart Kettles & Coffee Machines
   *    http://smarter.am/
 
-#### Smarthome Controller
-  *    https://domoticz.com/  
-      
 #### References
   *    https://github.com/Jamstah/libsmarteram2/
   *    https://github.com/ian-kent/ikettle2/
@@ -1602,4 +819,3 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
   *    https://github.com/Half-Shot/Smarter-Coffee-NET
   *    https://github.com/jkellerer/fhem-smarter-coffee/
   *    https://github.com/krsandvik/IFTTT-SmarterCoffee
-  *    https://www.pentestpartners.com/blog/hacking-a-wi-fi-coffee-machine-part-1/

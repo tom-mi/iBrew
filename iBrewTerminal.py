@@ -8,8 +8,6 @@ from smarter.SmarterClient import *
 from smarter.SmarterProtocol import *
 from smarter.SmarterHelp import *
 
-from domoticz.Domoticz import *
-
 from iBrewWeb import *
 from iBrewJokes import *
 
@@ -302,7 +300,7 @@ class iBrewTerminal:
             if command == "console" or command == "connect":
                 self.client.disconnect()
 
-            if (not self.client.connected or self.haveHost) and command != "help" and command != "list" and command != "message" and command != "usage" and command != "commands" and command != "web" and command != "joke" and command != "protocol" and command != "structure" and command != "notes" and command != "examples" and command != "messages" and not (command == "domoticz" and numarg == 0):
+            if (not self.client.connected or self.haveHost) and command != "help" and command != "list" and command != "message" and command != "usage" and command != "commands" and command != "web" and command != "joke" and command != "protocol" and command != "structure" and command != "notes" and command != "examples" and command != "messages":
 
                 if not self.haveHost:
                     devices = self.client.find_devices()
@@ -324,10 +322,11 @@ class iBrewTerminal:
                     print "iBrew: Could not not connect to [" + self.client.host + "]"
                     return
 
-            if command == "connect" or command == "console" or ((command == "sweep" or command == "monitor" or (command == "domoticz" and numarg != 0)) and not self.console):
+            if command == "connect" or command == "console" or ((command == "sweep" or command == "monitor") and not self.console):
                 try:
                     self.client.init_default()
                 except:
+                    #print(traceback.format_exc())
                     print "iBrew: Could not init values"
                     return
                 self.app_info()
@@ -443,8 +442,22 @@ class iBrewTerminal:
                                                     print "iBrew: hotplate missing [on/off] got " + arguments[0]
                                             else:
                                                 print "iBrew: hotplate missing [on/off]"
-            elif command == "carafe":       self.client.coffee_carafe()
-            elif command == "singlecup":    self.client.coffee_single_cup_mode()
+            elif command == "carafe":
+                                            if numarg >= 1:
+                                                if arguments[0].lower() == "off":
+                                                    self.client.coffee_carafe_off()
+                                                elif arguments[0].lower() == "on":
+                                                    self.client.coffee_carafe_on()
+                                            else:
+                                                self.client.coffee_carafe()
+            elif command == "singlecup":
+                                            if numarg >= 1:
+                                                if arguments[0].lower() == "off":
+                                                    self.client.coffee_single_cup_mode_off()
+                                                elif arguments[0].lower() == "on":
+                                                    self.client.coffee_single_cup_mode_on()
+                                            else:
+                                                self.client.coffee_single_cup_mode()
             elif command == "grinder":
                                             if self.client.grinder:
                                                 print "iBrew: Grinder already used"
@@ -478,13 +491,6 @@ class iBrewTerminal:
                                                 self.client.coffee_cups(Smarter.string_to_cups(arguments[0]))
 
               # Console Commands
-            elif command == "domoticz":
-                                            if numarg >= 2:
-                                                self.domoticz_bridge(arguments[0],arguments[1])
-                                            elif numarg == 1:
-                                                print "iBrew: missing Domoticz sensor base name"
-                                            else:
-                                                self.domoticz()
             elif command == "monitor":      self.monitor()
             elif command == "sweep":
                                             if numarg >= 1:
@@ -642,12 +648,14 @@ class iBrewTerminal:
         print "  SmarterCoffee  Commands"
         print "    brew ()                brew coffee"
         print "    carafe                 returns if carafe is required"
+        print "    carafe [state]         set carafe is required [on or off]"
         print "    cups [number]          set number of cups [1..12]"
         print "    grinder                use grinder"
         print "    filter                 use filter"
         print "    hotplate off           turn hotplate off"
         print "    hotplate on (minutes)  turn hotplate on (time in minutes)"
-        print "    singlecup              return if singlecup mode is on"
+        print "    singlecup              return single coffee cup mode"
+        print "    singlecup [state]      set single coffee cup mode [on or off]"
         print "    (strength) [strength]  set strength coffee [weak, medium or strong]"
         print "    stop coffee            stops brewing"
         print "    settings [cups] [strength] [grinder] [hotplate]   store user settings"
@@ -665,7 +673,6 @@ class iBrewTerminal:
         print "    structure              show protocol structure information"
         print
         print "  Bridge Commands"
-        print "    domoticz               show domoticz bridge help"
         print "    web (port)             start web interface & rest api on port [default 2082]"
         print
         print "  Debug Commands"
@@ -677,76 +684,13 @@ class iBrewTerminal:
         print "    monitor                monitor incomming traffic"
         print "    protocol               show all protocol information available"
         print "    stats                  show traffic statistics"
-        print "    sweep (id)             try (all or start with id) unknown command codes"
+        print "    sweep (id)             [developer only] try (all or start with id) unknown command codes"
         print
         print "  Console Commands"
         print "    joke                   show joke"
         print "    quit                   quit console [console only]"
         print
 
-    def domoticz(self):
-        print """
-
-  Domoticz Bridge
-  _______________
-
-
-  Bridge between iKettle 2.0 and domoticz. Its auto-creates 4 devices in domoticz, if not yet created,
-  and monitors the kettle and update the domoticz devices accordingly.
-  
-    Water Temperature in ºC (temperature device)
-    Water Height (custom device)
-    Kettle on base (motion device)
-    Kettle status (text device)
-    
-  Currently you have to create your heat, brew switches yourself (working on it), so:
-  
-    Place or link iBrew in your domoticz script folder or somewhere readable and reachable.
-    Run iBrew in domoticz bridge mode to auto create the 'smarter' dummy hardware.
-    Go to [SETUP] [HARDWARE] press 'create virtual sensors' on the dummy hardware called 'smarter'
-    Give it a name (e.g. Kettle Heating) and select sensor type is switch.
-    Go to [SWITCHES], scroll all the way down.
-    Select 'edit' on your newly created device.
-      Switch Icon, well heating is nice!
-      On Action:  script://locationibrew/iBrew on kettleip
-      Off Action: script://locationibrew/iBrew off kettleip
-      
-    You now have a functional heat/stop switch... 
-    
-    If you do not want a switch you can also create two push (on/off) buttons
-    and fill in the action.
-  
-  If you use homebridge for domoticz (https://www.domoticz.com/forum/viewtopic.php?t=10272) you can use
-  apple homekit with the kettle. You have to create extra virtual sensor (motion heat???) because the text sensor is not supported
-  by homekit, all the other are.
-  
-
-  Usage:
-
-    domoticz [domoticz] [basename] [kettle]
-
-  Where:
-  
-    domoticz        Connection string to domoticz, [host:port] or [username:password@host:port]
-    basename        Base name of your kettle devices in domoticz. The name may contain spaces.
-    kettle          Connection string to iKettle 2.0, [host]
-    host            Format: ip4, ip6, fqdn
-    
-
-  Notes:
-  
-    It will auto-create the devices in Domoticz
-    Tested on Domoticz v3.52
-    *** Currently iKettle 2.0 Only ***
-  
-  Examples:
-  
-    iBrew domoticz sofia:$ecrit@localhost:8080 Kettle Kitchen 192.168.4.1
-    iBrew domoticz 10.0.0.1:9001 Kettle Office 192.168.10.13
-    iBrew dump domoticz 10.0.0.1:9001 Kettle Office 192.168.10.13
-    iBrew domoticz localhost:8080 Kettle 
-  
-              """
 
     def examples(self):
         print
