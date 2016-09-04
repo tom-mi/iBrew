@@ -1,9 +1,10 @@
-body
-{
-/*    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-position: center;
-    background-image: url('watermark/both.png'); */
+/*****************
+*
+* General
+*
+******************/
+
+body {
     font-family: Arial;
 }
 
@@ -17,27 +18,9 @@ a:hover {
     text-decoration: none;
 }
 
-/* #FFA72B */
-
-#title, #icon {
-    position: block;
-    font-size: 300%;
-    font-weight: bold;
-}
-
-#icon img {
-    vertical-align: center;
-    margin-top: 10px;
-    margin-left: 10px;
-    width: 32px;
-
-}
-
 #content {
     margin-top: 12vw;
 }
-
-/* #00B0FB */
 
 #menu
 {
@@ -71,35 +54,68 @@ a:hover {
     color: #FFE6D0;
     text-shadow: 0 1px 5px rgba(0, 0, 0, 0.6), 0px 2px 2px rgba(255, 226, 185, 1);
 }
+
+
+.tRow {
+   	display: table-row;
 }
 
-.devices
-{
+.tTable {
+    display: table;
+   
+}
+
+/*****************
+*
+* Info Page
+*
+******************/
+
+.TitleInfo {
+    font-size: 10vw;
+    font-weight: bold;
     font-family: 'Architects Daughter';
-    font-size: 120%;
-    text-shadow: 0 1px 10px rgba(0, 0, 0, 0.4);
-    z-index: 101;
-    width: 600px;
 }
 
-.devices img {
-	max-width: 100%;
-	height: auto;
-	width: auto\9; /* IE8 */
+.IconInfo {
+    vertical-align: center;
+    margin-top: 10px;
+    margin-left: 10px;
+    width: 30vw;
+
+}
+
+/*****************
+*
+* API Page
+*
+******************/
+
+
+.IconApi {
+    width: 64px;
+}
+
+.CellApiDesc {
+   	display: table-cell;
+    padding: 3px 10px;
+    width: 250px;
+    text-align: left;
+}
+
+.CellApi {
+   	display: table-cell;
+    padding: 3px 10px;
+    width: 150px;
+    text-align: right;
 }
 
 
-#icon {
-    font-family: 'Architects Daughter';
-}
-
-#largeicon img {
-    margin-top: 1vw;
-    margin-left: 1vw;
-    height:20vw;
-  /*  min-width: 64px; */
-    max-width: 256px;
-}
+/*****************
+*
+* Wifi Page
+*
+******************/
 
 #wifi {
     font-family: 'Abel', sans-serif;
@@ -135,20 +151,31 @@ a:hover {
 }
 
 
-/* API TABLE */
-
-.tTable {
-    display: table;
-    width: 400px;
-}
-
-.tRow {
-   	display: table-row;
-}
+/*****************
+*
+* Index Page
+*
+******************/
 
 .tCell {
    	display: table-cell;
     padding: 3px 10px;
-    width: 200px;
+    width: 250px;
     text-align: left;
 }
+
+.devices
+{
+    font-family: 'Architects Daughter';
+    font-size: 120%;
+    text-shadow: 0 1px 10px rgba(0, 0, 0, 0.4);
+    z-index: 101;
+    width: 600px;
+	max-width: 64px;
+}
+
+
+
+
+
+
