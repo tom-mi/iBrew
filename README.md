@@ -50,9 +50,11 @@ get more SmarterCoffee missing protocol stuff.
 ## Installation
 
 #### Software Requirements 
+
 * python 2.7
+* python package: wireless
 * python (optional) package: tornado 
-* python (optional) package: pybonjour)
+* python (optional) package: pybonjour
 
 #### Download
 You can download and unpack the [source](https://github.com/Tristan79/iBrew/archive/master.zip) or download it from github using [Github Desktop](https://desktop.github.com) or manually:
@@ -60,6 +62,10 @@ You can download and unpack the [source](https://github.com/Tristan79/iBrew/arch
 ```
 git clone https://github.com/Tristan79/iBrew.git
 ```
+
+#### Setup
+
+Run ```make``` or ```pip install -r requirements.txt``` to fetch missing python packages...
 
 ## Usage
 
