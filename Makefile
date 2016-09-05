@@ -12,8 +12,5 @@ all:
 
 	@cat help/README_part1.md web/static/info/usage.txt help/README_part2.md web/static/info/console.txt help/README_part3.md web/static/info/examples.txt help/README_part4.md LICENSE > README.md
 
-	@echo iBrew: Generating manual
-	@pandoc --from markdown_github --to html -s --toc README.md > manual.html
-
 	@echo iBrew: Cleaning up
 	@rm -f *.pyc domoticz/*.pyc smarter/*.pyc

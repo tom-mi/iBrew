@@ -8,7 +8,7 @@ iBrew is a (python) interface to iKettle 2.0 and Smarter Coffee devices. It incl
 
 This means your machine is free! You can connect it yourself and do whatever you want with it. Like interface it with your favorite smarthome controller!
 
-   Signed TRiXWooD
+   Signed Me!
 
 #### Versions
  * v0.0 Bean Grinder Pack
@@ -17,7 +17,7 @@ This means your machine is free! You can connect it yourself and do whatever you
  * v0.3 Kettle Rattle <-- CURRENT VERSION
  * v0.4 Brewing on the 7th day (web interface) 
  * v0.5 Dumb Dump Limited Collector Edition (numbered, signed by author)
- * v1.0 Out of order! (the final cut) <-- 2017 VERSION
+ * v1.0 Out of order! (the final cut) <-- 2017 NEVER TOUCH THE CODE AGAIN VERSION
  
 #### Upcoming for the last 3 versions  
  * Timers protocol
@@ -53,35 +53,13 @@ get more SmarterCoffee missing protocol stuff.
 * python 2.7
 * python (optional) package: tornado 
 * python (optional) package: pybonjour)
-* pandoc (optional, development only)
 
 #### Download
-You can download and unpack the [source](https://github.com/Tristan79/iBrew/archive/master.zip) or download it from github using
+You can download and unpack the [source](https://github.com/Tristan79/iBrew/archive/master.zip) or download it from github using [Github Desktop](https://desktop.github.com) or manually:
 
 ```
 git clone https://github.com/Tristan79/iBrew.git
 ```
-
-
-## Contributing
-
-Use the fork button in the upper right corner of [iBrew](https://github.com/Tristan79/iBrew/) and [Github Desktop](https://desktop.github.com) 
-or fork it manually. Run the following commands in the root if the iBrew folder to do so.
-
-Create your feature branch 
-
-```git checkout -b my-new-feature-or-fix```
-
-Commit your changes 
-
-```git commit -am 'Add some feature-or-fix```
-
-Push to the branch 
-
-```git push origin my-new-feature-or-fix```
-
-Create new Pull Request
-
 
 ## Usage
 
