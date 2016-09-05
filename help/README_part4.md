@@ -14,7 +14,7 @@ http://ip:port/
 
 #### REST API
 
-You can fin the rest api under:
+You can find information on the rest api under:
 
 ```
 http://ip:port/info/api
