@@ -677,10 +677,14 @@ class SmarterProtocol:
             raise SmarterErrorOld("Hotplate timer is not a number: " + string)
 
     def check_hotplate(self,timer):
-        if timer != 0 and (timer < 5 or timer > 40):
+        #if timer != 0 and (timer < 5 or timer > 40):
+        if timer != 0 and (timer < 1 or timer > 40):
             raise SmarterErrorOld("Hotplate timer out of range [0] or [5..40] minutes: " + str(timer))
         return timer
 
+    def check_hotplate_on(self,timer):
+        if timer > 0: return True
+        else: return False
 
     def raw_to_hotplate(self,raw):
         return self.check_hotplate(self.raw_to_number(raw))
@@ -702,11 +706,17 @@ class SmarterProtocol:
 
 
     def check_keepwarm(self,timer):
-        if timer != 0 and (timer < 5 or timer > 20):
+        if timer != 0 and (timer < 1 or timer > 20):
+        #if timer != 0 and (timer < 5 or timer > 20):
             raise SmarterErrorOld("Kettle keep warm timer out of range [0] or [5..20] minutes: " + str(timer))
         return timer
 
 
+    def check_keepwarm_on(self,timer):
+        if timer > 0: return True
+        else: return False
+    
+    
     def raw_to_keepwarm(self,raw):
         return self.check_hotplate(self.raw_to_number(raw))
 
@@ -948,6 +958,8 @@ class SmarterProtocol:
         else:
             return "Unknown Coffee Status " + self.number_to_code(status)
 
+    CoffeeBean   = True
+    CoffeeFilter = False
 
     def grind_to_string(self,grind):
         s = "filter"
@@ -964,7 +976,7 @@ class SmarterProtocol:
             return False
         else:
            raise SmarterErrorOld("Unknown grind [beans/filter] " + grind)
-           
+
 
     def string_coffee_settings(self, cups, strength, grind, hotplate):
         s = ""

@@ -63,8 +63,7 @@ class SmarterClient:
         self.historySuccess             = 0
         
         # device info
-        self.device                     = "None"
-        self.deviceId                   = 0
+
         self.version                    = 0
     
         # kettle
@@ -103,7 +102,7 @@ class SmarterClient:
         
         self.defaultCups                = 1
         self.defaultStrength            = 1
-        self.defaultGrind             = False
+        self.defaultGrind               = False
         self.defaultHotPlate            = 0
         
         self.waterLevel                 = 0
@@ -132,6 +131,8 @@ class SmarterClient:
         #set this to try is you want to connect send and really do not care about the about the out come, its disconnect afterwards....
         self.shout                      = False
         
+        self.device                     = "None"
+        self.deviceId                   = 0
         
         self.sendCount                  = 0
         self.readCount                  = 0
@@ -571,20 +572,43 @@ class SmarterClient:
 
 
     def decode_ResponseKettleSettings(self,message):
+        self.switch_kettle_device()
         self.defaultKeepWarmTime  = Smarter.raw_to_number(message[2])
         self.defaultTemperature   = Smarter.raw_to_temperature(message[1])
         self.defaultFormulaTemperature = Smarter.raw_to_number(message[3])
 
 
     def decode_ResponseCoffeeSettings(self,message):
+        self.switch_coffee_device()
         self.defaultCups          = Smarter.raw_to_cups(message[1])
         self.defaultStrength      = Smarter.raw_to_strength(message[2])
         self.defaultGrind         = Smarter.raw_to_bool(message[3])
         self.defaultHotPlate      = Smarter.raw_to_hotplate(message[4])
 
 
+    def switch_kettle_device(self):
+        self.isKettle = True
+        self.isCoffee = False
+        if self.deviceId != Smarter.DeviceKettle:
+            self.deviceId = 0
+            self.device = "None"
+        else:
+            self.deviceId = Smarter.DeviceKettle
+            self.device = Smarter.device_to_string(Smarter.DeviceKettle)
+
+
+    def switch_coffee_device(self):
+        self.isKettle = False
+        self.isCoffee = True
+        if self.deviceId != Smarter.DeviceCoffee:
+            self.deviceId = 0
+            self.device = "None"
+        else:
+            self.deviceId = Smarter.DeviceCoffee
+            self.device = Smarter.device_to_string(Smarter.DeviceCoffee)
+
     def decode_ResponseKettleStatus(self,message):
-        isKettle = True
+        self.switch_kettle_device()
         self.statusMessage       = message
         self.kettleStatus        = Smarter.raw_to_number(message[1])
         self.temperature         = Smarter.raw_to_temperature(message[2])
@@ -594,7 +618,8 @@ class SmarterClient:
 
 
     def decode_ResponseCoffeeStatus(self,message):
-    
+        self.switch_coffee_device()
+        
         def is_set(x, n):
             return x & 2**n != 0
         
@@ -620,32 +645,33 @@ class SmarterClient:
 
 
     def decode_ResponseDeviceInfo(self,message):
-#        self.isCoffee = False
-#        self.isKettle = False
+        self.isCoffee = False
+        self.isKettle = False
         
         self.deviceId = Smarter.raw_to_number(message[1])
         self.version = Smarter.raw_to_number(message[2])
 
         if self.deviceId == Smarter.DeviceKettle:
             self.isKettle = True
-            self.device = "iKettle 2.0"
+            self.device = Smarter.device_to_string(self.deviceId)
         
         if self.deviceId == Smarter.DeviceCoffee:
             self.isCoffee = True
-            self.device = "SmarterCoffee"
+            self.device = Smarter.device_to_string(self.deviceId)
 
 
     def decode_ResponseBase(self,message):
+        self.switch_kettle_device()
         self.waterSensorBase = Smarter.raw_to_watersensor(message[1],message[2])
 
 
     def decode_ResponseCarafe(self,message):
-        isCoffee = True
+        self.switch_coffee_device()
         self.carafeMode = Smarter.raw_to_number(message[1])
 
 
     def decode_ResponseSingleCupMode(self,message):
-        isCoffee = True
+        self.switch_coffee_device()
         self.singlecup  = Smarter.raw_to_bool(message[1])
 
 
@@ -663,6 +689,7 @@ class SmarterClient:
 
 
     def decode_ResponseTimers(self,message):
+        self.switch_coffee_device()
         pass
 
 
@@ -692,6 +719,7 @@ class SmarterClient:
 
 
     def decode_ResponseCoffeeHistory(self,message):
+        self.switch_coffee_device()
         counter = Smarter.raw_to_number(message[1])
         if counter > 0:
             for i in range(0,counter):
@@ -701,6 +729,8 @@ class SmarterClient:
   
   
     def decode_ResponseKettleHistory(self,message):
+        self.switch_kettle_device()
+        
         counter = Smarter.raw_to_number(message[1])
         if counter > 0:
             for i in range(0,counter):

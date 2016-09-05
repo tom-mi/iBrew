@@ -136,12 +136,12 @@ class MessagePageHandler(BaseHandler):
         self.render(webroot+"info/message.html", id = mid)
 
 
-class SettingsWebHandler(BaseHandler):
+class SettingsPageHandler(BaseHandler):
     #@tornado.web.authenticated
     def get(self,ip):
         if ip in self.application.clients:
             c = self.application.clients[ip]
-            self.render(webroot+"settings.html",client = c, server_time =  int(time.mktime(datetime.utcnow().timetuple()) * 1000))
+            self.render(webroot+"settings.html",client = c)
         else:
             self.render(webroot+"somethingwrong.html")
 
@@ -858,6 +858,7 @@ class iBrewWeb(tornado.web.Application):
                 (r"/",MainPageHandler),
                 (r"/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/wifi/?", WifiPageHandler),
                 (r"/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/stats/?", StatsPageHandler),
+                (r"/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/?", SettingsPageHandler),
                 (r"/server/?",ServerPageHandler),
                 (r"/info/rest/?",APIPageHandler),
                 (r"/info/messages/?",MessagesPageHandler),

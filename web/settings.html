@@ -3,10 +3,92 @@
 
 <center>
 
+<script type="text/javascript" language="javascript" charset="utf-8">
+
+function calibrate(ip)          { $.getJSON( '/api/' + ip + '/calibrate'); }
+
+</script>
+
 <div class="Title">Settings</div>
 
+{% if client.isKettle %}
+<div class="tTable">
+<div id="defaults">
+<br>
+<div class="tRow"><div class="tCell">Temperature</div><div class="tCell"><input type="range" id="dt" min="1" value="{{ client.defaultTemperature }}" max="100" step="1"></div></div>
+<br>
+<div class="tRow"><div class="tCell">Keep warm</div><div class="tCell"><input type="checkbox" name="df" value="{{ Smarter.check_keepwarm_on(client.defaultKeepWarmTime)  }}"><input type="range" id="dkwt" min="1" value="{{ client.defaultKeepWarmTime }}" max="25" step="1"></div></div>
+<br>
+<div class="tRow"><div class="tCell">Formula Mode</div><div class="tCell"><input type="checkbox" name="df" value="{{ client.defaultFormula }}"><input type="range" id="dft" min="1" value="{{ client.defaultFormulaTemperature }}" max="100" step="1"></div></div>
+</div>
+</div>
+{% if client.onBase %}
+<a href="javascript:calibrate('{{ client.host }}')"><img height="24px" src="{{ static_url('icons/kettle/base.png') }}"></a>
+{% end %}
+{% end %}
+
+{% if client.isCoffee %}
+<div class="tTable">
+<div id="defaults">
+<br>
+<div class="tRow"><div class="tCell">Cups</div><div class="tCell">
+
+{% for i in range(0,12) %}
+{% if i >= client.defaultCups %}
+<img width="24px" src="{{ static_url('icons/coffee/cups/none.png') }}">
+{% else %}
+<img width="24px" src="{{ static_url('icons/coffee/cups/one.png') }}">
+{% end %}
+{% if i == 5 %}
+<br>
+{% end %}
+
+{% end %}
+</div></div>
+<br>
+<div class="tRow"><div class="tCell">Hotplate</div><div class="tCell"><input type="checkbox" name="df" value="{{ Smarter.check_keepwarm_on(client.defaultHotPlate)  }}"><input  {% if not Smarter.check_keepwarm_on(client.defaultHotPlate)  %}style="display: none;"{% end %} type="range" id="dkwt" min="1" value="{{ client.defaultHotPlate }}" max="40" step="1"></div></div>
+<br>
+<div class="tRow"><div class="tCell">Grind Source</div><div class="tCell">
+
+<input type="radio" name="grind" value="beans" checked="{{ client.defaultGrind == Smarter.CoffeeBean }}"><img width="24px" src="{{ static_url('icons/coffee/beans.png') }}">
+<input type="radio" name="grind" value="filter" checked={{ client.defaultGrind == Smarter.CoffeeFilter }}"><img width="24px" src="{{ static_url('icons/coffee/filter.png') }}">
+
+
+</div></div>
+<br>
+<div class="tRow" {% if client.defaultGrind == Smarter.CoffeeFilter %}style="display: none;"{% end %}><div class="tCell">Grind Beans Strength</div><div class="tCell">
+
+  <input type="radio" name="strength" value="weak" checked="{{ client.defaultStrength == Smarter.CoffeeWeak }}">Weak<br>
+  <input type="radio" name="strength" value="medium" checked="{{ client.defaultStrength == Smarter.CoffeeMedium }}">Medium<br>
+  <input type="radio" name="strength" value="strong" checked="{{ client.defaultStrength == Smarter.CoffeeStrong }}">Strong<br>
+  </div></div>
+</div>
+{% end %}
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<div class="Title">Wireless Network</div>
+<div>
+    <a href="/{{ client.host }}/wifi"><img class="IconInfo" src="{{ static_url('icons/wifi/wifi.png') }}"></a>
 </div>
 
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<div class="Title">Stats</div>
+
+<a href="/{{ client.host }}/stats"><img class="IconInfo" src="{{ static_url('icons/device/stats.png') }}"></a>
 
 </center>
 

@@ -70,6 +70,7 @@ $(document).ready(              function() { setTimeout(auto_joke, wait_joke);
 <div align="center">
 {% for ip in clients %}
 
+<a href="{{ ip }}/settings">
 {% if clients[ip].isCoffee %}
 {% if clients[ip].carafe %}
 <img class="devices" id="coffee" src="{{ static_url('icons/coffee/coffee.png')}}"><br>
@@ -87,27 +88,12 @@ $(document).ready(              function() { setTimeout(auto_joke, wait_joke);
   {% else %}
 <img  class="devices" id="kettle" src="{{ static_url('icons/kettle/offbase.png')}}">
   {% end %}
-<div class="tTable">
-<div id="defaults"  style="display: none;">
-<br>
-<div class="tRow"><div class="tCell">Temperature</div><div class="tCell"><input type="range" id="dt" min="0" value="{{ clients[ip].defaultTemperature }}" max="100" step="1"></div></div>
-<br>
-<div class="tRow"><div class="tCell">Keep warm</div><div class="tCell"><input type="range" id="dkwt" min="0" value="{{ clients[ip].defaultKeepWarmTime }}" max="100" step="1"></div></div>
-<br>
-<div class="tRow"><div class="tCell">Formula Mode</div><div class="tCell"><input type="checkbox" name="df" value="{{ clients[ip].defaultFormula }}"></div></div>
-<br>
-<div class="tRow"><div class="tCell">Formula Mode Temperature</div><div class="tCell"><input type="range" id="dft" min="0" value="{{ clients[ip].defaultFormulaTemperature }}" max="100" step="1"></div></div>
-</div>
-</div>
+</a>
+
 {% end %}
-{% if clients[ip].onBase %}
-<a href="javascript:calibrate('{{ ip }}')"><img height="24px" src="{{ static_url('icons/kettle/base.png') }}"></a>
-{% end %}
+
 <a href="javascript:stop('{{ ip }}')"><img height="24px" src="{{ static_url('icons/device/stop.png') }}"></a>
 <a href="javascript:start('{{ ip }}')"><img height="24px" src="{{ static_url('icons/device/start.png') }}"></a>
-<a href="{{ ip }}/wifi"><img height="24px" src="{{ static_url('icons/wifi/wifi.png') }}"></a>
-<a href="{{ ip }}/stats"><img height="24px" src="{{ static_url('icons/device/stats.png') }}"></a>
-<a href="/settings"><img height="24px" src="{{ static_url('icons/device/settings.png') }}"></a>
 
 <br>
 {% if clients[ip].isKettle %}
