@@ -62,7 +62,6 @@ a:hover {
 
 .tTable {
     display: table;
-   
 }
 
 /*****************
@@ -109,6 +108,90 @@ a:hover {
     width: 150px;
     text-align: right;
 }
+
+
+/*****************
+*
+* Message Page
+*
+******************/
+
+
+.IconMessages {
+    width: 64px;
+}
+
+.CellMessagesID {
+    font-family: 'Abel', sans-serif;
+   	display: table-cell;
+    padding: 3px;
+    width: 20px;
+}
+
+.CellMessagesDevice {
+   	display: table-cell;
+    padding: 3px;
+    width: 16px;
+}
+
+.CellMessagesDesc {
+    font-family: 'Abel', sans-serif;
+   	display: table-cell;
+    padding: 3px;
+    text-align: left;
+    width: 350px;
+}
+
+.TitleMessage {
+    font-size: 300%;
+    font-weight: bold;
+    font-family: 'Architects Daughter';
+}
+
+.TitleMessageSub {
+    font-size: 150%;
+    font-weight: bold;
+    font-family: 'Architects Daughter';
+}
+
+/*****************
+*
+* Message Page
+*
+******************/
+
+
+.IconMessage {
+    width: 64px;
+}
+
+.CellMessagesID {
+    font-family: 'Abel', sans-serif;
+   	display: table-cell;
+    padding: 3px;
+    width: 20px;
+}
+
+.CellMessagesDevice {
+   	display: table-cell;
+    padding: 3px;
+    width: 16px;
+}
+
+.CellMessagesDesc {
+    font-family: 'Abel', sans-serif;
+   	display: table-cell;
+    padding: 3px;
+    text-align: left;
+    width: 350px;
+}
+
+.TitleMessages {
+    font-size: 200%;
+    font-weight: bold;
+    font-family: 'Architects Daughter';
+}
+
 
 
 /*****************

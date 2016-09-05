@@ -222,6 +222,40 @@ class SmarterProtocol:
     }
 
 
+
+    def __con(self,coffee,kettle):
+        if coffee and kettle:
+            return [self.DeviceKettle,self.DeviceCoffee]
+        if coffee and not kettle:
+            return [self.DeviceCoffee]
+        if not coffee and kettle:
+            return [self.DeviceKettle]
+        else:
+            return []
+
+
+    def CommandToJSON(self):
+        json = dict()
+        for command in self.CommandMessages:
+            message = self.CommandMessages[command]
+            json[command] = { 'device' : self.__con(message[0],message[1]), 'description' : self.message_description(command) }
+        return json
+
+    def ResponseToJSON(self):
+        json = dict()
+        for response in self.ResponseMessages:
+            if self.message_is_response(response):
+                message = self.ResponseMessages[response]
+                json[response] = { 'device' : self.__con(message[0],message[1]), 'description' : self.message_description(response) }
+        return json
+
+
+    def StatusToJSON(self):
+        return { self.ResponseKettleStatus : { 'device' : [Smarter.DeviceKettle], 'description' : self.message_description(self.ResponseKettleStatus) },
+                 self.ResponseCoffeeStatus : { 'device' : [Smarter.DeviceCoffee], 'description' : self.message_description(self.ResponseCoffeeStatus) }
+                }
+
+
     # format: kettle?, coffee? (None is unnknown), minimal length (0 = variable), response to command, description
     ResponseMessages = {
         #incomplete? ... chech the first one...
@@ -248,8 +282,9 @@ class SmarterProtocol:
             return self.ResponseMessages[id][2]
         return 0
     
+    
     def message_description(self,id):
-        if self.message_is_response(id):
+        if self.message_is_response(id) or self.message_is_status(id):
             return self.ResponseMessages[id][4]
         elif self.message_is_command(id):
             return self.CommandMessages[id][3]
@@ -259,19 +294,31 @@ class SmarterProtocol:
 
     def message_connection(self,id):
         if self.message_is_response(id):
-            return self.ResponseMessages[id][3]
+            x = self.ResponseMessages[id][3]
+            if x: x.sort()
+            return x
         elif self.message_is_command(id):
-            return self.CommandMessages[id][2]
+            x = self.CommandMessages[id][2].sort()
+            if x: x.sort()
+            return x
         else:
             return []
 
 
     def message_is_known(self,id):
-        return self.message_is_response(id) or self.message_is_command(id)
+        return self.message_is_response(id) or self.message_is_command(id) or self.message_is_status(id)
 
 
     def message_is_response(self,id):
-        return self.ResponseMessages.has_key(id)
+        if id != self.ResponseKettleStatus and id != self.ResponseCoffeeStatus:
+            return self.ResponseMessages.has_key(id)
+        return False
+
+
+    def message_is_status(self,id):
+        if id == self.ResponseKettleStatus or id == self.ResponseCoffeeStatus:
+            return True
+        return False
 
 
     def message_is_command(self,id):
@@ -281,6 +328,8 @@ class SmarterProtocol:
     def message_is_type(self,id):
         if self.message_is_command(id):
             return "Command"
+        elif id == self.ResponseKettleStatus or id == self.ResponseCoffeeStatus:
+            return "Status"
         else:
             return "Response"
 
@@ -297,7 +346,7 @@ class SmarterProtocol:
     def message_kettle(self,id):
         if self.message_is_command(id):
             return self.CommandMessages[id][0]
-        if self.message_is_response(id):
+        if self.message_is_response(id) or self.message_is_status(id):
             return self.ResponseMessages[id][0]
 
 
@@ -312,7 +361,7 @@ class SmarterProtocol:
     def message_coffee(self,id):
         if self.message_is_command(id):
             return self.CommandMessages[id][1]
-        if self.message_is_response(id):
+        if self.message_is_response(id) or self.message_is_status(id):
             return self.ResponseMessages[id][1]
 
 

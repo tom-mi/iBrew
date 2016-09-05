@@ -124,9 +124,9 @@ class SmarterProtocolHelp:
                 s = s + "[" + Smarter.number_to_code(iid) + "," + Smarter.message_description(iid) + "] "
             if Smarter.message_connection(id):
                 if Smarter.message_is_response(id):
-                    print "  In response to command message: " + s
+                    print "  Response to command messages: " + s
                 elif Smarter.message_is_command(id):
-                    print "  Response message: " + s
+                    print "  Response messages: " + s
             if Smarter.message_is_response(id):
                 length = Smarter.message_response_length(id)
                 if length > 0:
@@ -662,6 +662,13 @@ class SmarterProtocolHelp:
                 if Smarter.message_is_response(id) and Smarter.message_coffee(id): # and not Smarter.message_kettle(id):
                     print "    " + Smarter.number_to_code(id) + " " + Smarter.message_description(id)
 
+            print
+            print "    ID Coffee Machine Status Message"
+            print "    ___________________________________________"
+            for id in range(0,255):
+                if Smarter.message_is_status(id) and Smarter.message_coffee(id):
+                    print "    " + Smarter.number_to_code(id) + " " + Smarter.message_description(id)
+
         if kettle:
             print
             print
@@ -676,6 +683,13 @@ class SmarterProtocolHelp:
             print "    ___________________________________________"
             for id in range(0,255):
                 if Smarter.message_is_response(id) and Smarter.message_kettle(id):
+                    print "    " + Smarter.number_to_code(id) + " " + Smarter.message_description(id)
+
+            print
+            print "    ID Kettle Status Message"
+            print "    ___________________________________________"
+            for id in range(0,255):
+                if Smarter.message_is_status(id) and Smarter.message_kettle(id):
                     print "    " + Smarter.number_to_code(id) + " " + Smarter.message_description(id)
 
         print

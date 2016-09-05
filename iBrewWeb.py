@@ -73,29 +73,45 @@ class GenericPageHandler(BaseHandler):
             self.render(webroot+"somethingwrong.html")
 
 
-class WebMainHandler(BaseHandler):
+class MainPageHandler(BaseHandler):
     #@tornado.web.authenticated
     def get(self):
         self.render(webroot+"index.html",clients = self.application.clients,joke = iBrewJokes().joke())
 
 
-class WifiMainHandler(BaseHandler):
+class WifiPageHandler(BaseHandler):
     #@tornado.web.authenticated
     def get(self,ip):
         self.render(webroot+"wifi.html",client = self.application.clients[ip],joke = iBrewJokes().joke())
 
 
-class WebAPIHandler(BaseHandler):
+class APIPageHandler(BaseHandler):
     #@tornado.web.authenticated
     def get(self):
         d = dict()
         for ip in self.application.clients:
             client = self.application.clients[ip]
             d.update({client.host : Smarter.device_to_string(client.deviceId)})
-        self.render(webroot+"api.html",devices = d,joke = iBrewJokes().joke())
+        self.render(webroot+"help/api.html",devices = d,joke = iBrewJokes().joke())
 
 
-class WebSettingsHandler(BaseHandler):
+class MessagesPageHandler(BaseHandler):
+    #@tornado.web.authenticated
+    def get(self):
+              self.render(webroot+"help/messages.html",status = Smarter.StatusToJSON(),commands = Smarter.CommandToJSON(), responses = Smarter.ResponseToJSON())
+
+
+class MessagePageHandler(BaseHandler):
+    #@tornado.web.authenticated
+    def get(self,message):
+        try:
+            mid = Smarter.code_to_number(message)
+        except:
+            self.render(webroot+"somethingwrong.html")
+        self.render(webroot+"help/message.html", id = mid)
+
+
+class SettingsWebHandler(BaseHandler):
     #@tornado.web.authenticated
     def get(self,ip):
         if ip in self.application.clients:
@@ -204,9 +220,9 @@ class DevicesHandler(GenericAPIHandler):
         devices = SmarterClient().find_devices()
         response = {}
         for device in devices:
-            response[device[0]] = { 'id'          : device,
-                                    'type'        : Smarter.device_to_string(client.deviceId),
-                                    'firmware'    : encodeFirmware(client.deviceId,client.version)
+            response[device[0]] = { 'id'          : device[1],
+                                    'type'        : Smarter.device_to_string(device[1]),
+                                    'firmware'    : encodeFirmware(device[1],device[2])
                                   }
         self.setContentType()
         self.write(response)
@@ -475,6 +491,35 @@ class SingleCupHandler(GenericAPIHandler):
         self.write(response)
 
 
+class BeansHandler(GenericAPIHandler):
+    def get(self,ip):
+        if ip in self.application.clients:
+            client = self.application.clients[ip]
+            if client.isCoffee:
+                client.coffee_beans()
+                response = { 'error'      : 'none' },
+            else:
+                response = { 'error': 'need coffee machine' }
+        else:
+            response = { 'error': 'no device' }
+        self.setContentType()
+        self.write(response)
+
+
+class FilterHandler(GenericAPIHandler):
+    def get(self,ip):
+        if ip in self.application.clients:
+            client = self.application.clients[ip]
+            if client.isCoffee:
+                client.coffee_filter()
+                response = { 'error'      : 'none' },
+            else:
+                response = { 'error': 'need coffee machine' }
+        else:
+            response = { 'error': 'no device' }
+        self.setContentType()
+        self.write(response)
+
 
 #------------------------------------------------------
 # STOP START COMMANDS
@@ -526,6 +571,41 @@ class JokeHandler(GenericAPIHandler):
         self.write(response)
 
 
+class StatsHandler(GenericAPIHandler):
+    def get(self,ip=""):
+        if ip in self.application.clients:
+            client = self.application.clients[ip]
+            response = { 'messages' : { 'send'      : client.sendCount,
+                                        'read'      : client.readCount,
+                                        'client'    : client.commandCount,
+                                        'server'    : client.responseCount
+                                       },
+                         'bytes'    : { 'send'      : client.sendBytesCount,
+                                        'read'      : client.readBytesCount
+                                      },
+                         'reconnect' : client.connectCount
+                        }
+        
+        else:
+            response = { 'error': 'no device' }
+        self.setContentType()
+        self.write(response)
+
+
+
+class MessagesHandler(GenericAPIHandler):
+    def get(self):
+       
+        response = { 'status'  : Smarter.StatusToJSON(),
+                     'commands'  : Smarter.CommandToJSON(),
+                     'responses' : Smarter.ResponseToJSON()
+                    }
+
+        self.setContentType()
+        self.write(response)
+
+
+
 
 class VersionHandler(GenericAPIHandler):
     def get(self):
@@ -551,7 +631,7 @@ class VersionHandler(GenericAPIHandler):
 
 class iBrewWeb(tornado.web.Application):
 
-    version = '0.4'
+    version = '0.5'
     
     def start(self):
         tornado.ioloop.IOLoop.instance().start()
@@ -717,13 +797,15 @@ class iBrewWeb(tornado.web.Application):
             (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/calibrate/?",CalibrateHandler),
             (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/calibrate/base/?",CalibrateBaseHandler),
             (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/calibrate/base/([0-9]+)/?",CalibrateStoreBaseHandler),
-            
+
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/beans/?",BeansHandler),
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/filter/?",FilterHandler),
             (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/carafe/?",CarafeHandler),
             (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/singlecup/?",SingleCupHandler),
             (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/hotplate/([0-9]+)/?",HotPlateHandler),
             (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/cups/([0-9]+)/?",CupsHandler),
             (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/grinder/?",GrinderHandler),
-            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/strength/(weak|normal|strong)/?",StrengthHandler),
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/(weak|normal|strong)/?",StrengthHandler),
             
             (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/scan/?",WifiScanHandler),
             (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/join/(.+)/(.*)/?",WifiJoinHandler),
@@ -732,22 +814,25 @@ class iBrewWeb(tornado.web.Application):
             (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/start/?",StartHandler),
             (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/stop/?",StopHandler),
             (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/joke/?",JokeHandler),
+            (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/stats/?",StatsHandler),
             
             (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/?",SettingsHandler),
             (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/default/?",SettingsDefaultHandler),
             (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/([0-9]+)/([0-9]+)/([0-9]+)/([0-9]+)/?",StoreSettingsHandler),
             
-            (r"/api/version/?",           VersionHandler),
-            (r"/api/devices/?",           DevicesHandler),
-            (r"/api/joke/?",              JokeHandler),
-            (r"/api/?",                   WebAPIHandler),
-            (r"/api/?.*",                 UnknownHandler),
-#            (r"/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/?",WebSettingsHandler),
-   
-            (r"/",                        WebMainHandler),
-            (r"/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/wifi", WifiMainHandler),
-                 #(r"/login",             LoginHandler),
-            (r"/(.*)",                    GenericPageHandler),
+            (r"/api/version/?",VersionHandler),
+            (r"/api/devices/?",DevicesHandler),
+            (r"/api/joke/?",JokeHandler),
+            (r"/api/messages/?",MessagesHandler),
+            (r"/api/?.*",UnknownHandler),
+            
+            # WEB PAGES
+            (r"/",MainPageHandler),
+            (r"/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/wifi/?", WifiPageHandler),
+            (r"/help/api/?",APIPageHandler),
+            (r"/help/messages/?",MessagesPageHandler),
+            (r"/help/message/([0-9,A-F,a-f][0-9,A-F,a-f])/?",MessagePageHandler),
+            (r"/(.*)",GenericPageHandler)
 
             
         ]

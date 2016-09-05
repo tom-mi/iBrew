@@ -1,4 +1,4 @@
-{% set title = "About" %} {% include wrapper/head.html %}
+{% set title = "API" %} {% include wrapper/head.html %}
 
 
 <br>
@@ -84,10 +84,20 @@
         <div class="CellApi"><a href="/api/{{ escape(ip) }}/beans">/beans</a></div>
     </div>
         <div class="tRow">
-        <div class="CellApiDesc">Set strength</div>
-        <div class="CellApi"><a href="/api/{{ escape(ip) }}/strength">/strength</a></div>
+        <div class="CellApiDesc">Set strength weak</div>
+        <div class="CellApi"><a href="/api/{{ escape(ip) }}/weak">/weak</a></div>
     </div>
-    <div class="tRow">
+    </div>
+        <div class="tRow">
+        <div class="CellApiDesc">Set strength medium</div>
+        <div class="CellApi"><a href="/api/{{ escape(ip) }}/medium">/medium</a></div>
+    </div>
+    </div>
+        <div class="tRow">
+        <div class="CellApiDesc">Set strength strong</div>
+        <div class="CellApi"><a href="/api/{{ escape(ip) }}/strong">/strong</a></div>
+    </div>
+        <div class="tRow">
         <div class="CellApiDesc">Set cups</div>
         <div class="CellApi"><a href="/api/{{ escape(ip) }}/cups">/cups</a></div>
     </div>
@@ -146,7 +156,7 @@
     
     <div class="tRow">
         <div class="CellApiDesc">Statistics {{ devices[ip] }} </div>
-        <div class="CellApi"><a href="api/status">/stats</a></div>
+        <div class="CellApi"><a href="api/{{ escape(ip) }}/stats">/stats</a></div>
     </div>
     
     <div class="tRow">
