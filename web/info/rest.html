@@ -1,13 +1,20 @@
-{% set title = "API" %} {% include wrapper/head.html %}
+{% set title = "REST Interface" %} {% include ../wrapper/head.html %}
 
-
-<br>
-<br>
 
 <center>
 
-<div id="icon">API</div>
+<div class="TitleApi">REST</div>
 
+<img class="IconInfo" src="{{ static_url('icons/info/rest.png') }}">
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
 
 <div class="tTable">
     <div class="tRow">
@@ -15,7 +22,7 @@
         <div class="CellApi"></div>
     </div>
     <div class="tRow">
-        <div class="CellApiDesc">API version</div>
+        <div class="CellApiDesc">Version</div>
         <div class="CellApi"><a href="api/version">/version</a></div>
     </div>
     <div class="tRow">
@@ -83,21 +90,19 @@
         <div class="CellApiDesc">Set beans</div>
         <div class="CellApi"><a href="/api/{{ escape(ip) }}/beans">/beans</a></div>
     </div>
-        <div class="tRow">
+    <div class="tRow">
         <div class="CellApiDesc">Set strength weak</div>
         <div class="CellApi"><a href="/api/{{ escape(ip) }}/weak">/weak</a></div>
     </div>
-    </div>
-        <div class="tRow">
+    <div class="tRow">
         <div class="CellApiDesc">Set strength medium</div>
         <div class="CellApi"><a href="/api/{{ escape(ip) }}/medium">/medium</a></div>
     </div>
-    </div>
-        <div class="tRow">
+    <div class="tRow">
         <div class="CellApiDesc">Set strength strong</div>
         <div class="CellApi"><a href="/api/{{ escape(ip) }}/strong">/strong</a></div>
     </div>
-        <div class="tRow">
+    <div class="tRow">
         <div class="CellApiDesc">Set cups</div>
         <div class="CellApi"><a href="/api/{{ escape(ip) }}/cups">/cups</a></div>
     </div>
@@ -156,7 +161,7 @@
     
     <div class="tRow">
         <div class="CellApiDesc">Statistics {{ devices[ip] }} </div>
-        <div class="CellApi"><a href="api/{{ escape(ip) }}/stats">/stats</a></div>
+        <div class="CellApi"><a href="/api/{{ escape(ip) }}/stats">/stats</a></div>
     </div>
     
     <div class="tRow">
@@ -190,4 +195,4 @@
 
 <center>
 
-{% include wrapper/foot.html %}
+{% include ../wrapper/foot.html %}

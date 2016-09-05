@@ -108,6 +108,9 @@ class SmarterClient:
         
         self.waterLevel                 = 0
         
+        self.isCoffee = False;
+        self.isKettle = False;
+        
  
         # Wifi
         self.Wifi                       = []
@@ -617,8 +620,8 @@ class SmarterClient:
 
 
     def decode_ResponseDeviceInfo(self,message):
-        self.isCoffee = False
-        self.isKettle = False
+#        self.isCoffee = False
+#        self.isKettle = False
         
         self.deviceId = Smarter.raw_to_number(message[1])
         self.version = Smarter.raw_to_number(message[2])

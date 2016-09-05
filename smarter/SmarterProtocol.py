@@ -292,13 +292,21 @@ class SmarterProtocol:
             return "Unknown message"
 
 
+    def message_connection_type(self,id):
+        if self.message_is_response(id):
+            return "Command"
+        elif self.message_is_command(id):
+            return "Response"
+        else:
+            return ""
+
     def message_connection(self,id):
         if self.message_is_response(id):
             x = self.ResponseMessages[id][3]
             if x: x.sort()
             return x
         elif self.message_is_command(id):
-            x = self.CommandMessages[id][2].sort()
+            x = self.CommandMessages[id][2]
             if x: x.sort()
             return x
         else:

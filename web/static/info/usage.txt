@@ -1,0 +1,11 @@
+
+  Usage: iBrew (dump) (shout|coffee|kettle) (fahrenheid) [command] (host)
+
+    fahrenheid             use fahrenheid
+    dump                   dump message enabled
+    host                   host address (format: ip4, ip6, fqdn)
+    shout                  sends commands and quits not waiting for a reply
+    command                action to take!
+
+  If you do not supply a host, it will try to connect to the first detected device
+  Thus if you have more then one device supply a host (if its not in direct mode)

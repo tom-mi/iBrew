@@ -1,0 +1,80 @@
+{% set title = "Statistics " + client.host %} {% include wrapper/head.html %}
+{% from smarter.SmarterProtocol import * %}
+
+<center>
+
+<div class="Title">Stats</div>
+
+<div class="tTable">
+    <div class="tRow">
+        <div class="CellStatsTitle">Send</div>
+        <div class="CellStats">{{ client.sendCount }} messages ({{ Smarter.bytes_to_human(client.sendBytesCount) }})</div>
+    </div>
+    
+    {% for id in sorted(client.commandCount) %}
+    <div class="tRow">
+        <div class="CellStatsDesc">
+            <div class="tRow">
+                <div class="CellMessagesDevice">
+                {% if Smarter.message_coffee(id) %}
+                <a href="/info/message/{{ Smarter.number_to_code(id) }}"><img class="DeviceIconSmall" src="{{ static_url('icons/coffee/coffee.png')}}"></a>
+                {% end %}
+                </div><div class="CellMessagesDevice">
+                {% if Smarter.message_kettle(id) %}
+                <a href="/info/message/{{ Smarter.number_to_code(id) }}"><img class="DeviceIconSmall" src="{{ static_url('icons/kettle/kettle.png')}}"></a>
+                {% end %}
+                </div>
+                <div class="CellMessagesID">{{ Smarter.number_to_code(id) }}</div>
+                <div class="CellMessagesDesc">{{ Smarter.message_description(id) }}</div>
+            </div>
+        </div>
+        <div class="CellStats">{{ client.commandCount[id] }} messages</div>
+    </div>
+    {% end %}
+    
+    <div class="tRow">
+        <div class="CellStatsTitle">Read</div>
+        <div class="CellStats">{{ client.readCount }} messages ({{ Smarter.bytes_to_human(client.readBytesCount) }})</div>
+    </div>
+
+    {% for id in sorted(client.responseCount) %}
+    <div class="tRow">
+        <div class="CellStatsDesc">
+            <div class="tRowMes">
+                <div class="CellMessagesDevice">
+                {% if Smarter.message_coffee(id) %}
+                <a href="/info/message/{{ Smarter.number_to_code(id) }}"><img class="DeviceIconSmall" src="{{ static_url('icons/coffee/coffee.png')}}"></a>
+                {% end %}
+                </div><div class="CellMessagesDevice">
+                {% if Smarter.message_kettle(id) %}
+                <a href="/info/message/{{ Smarter.number_to_code(id) }}"><img class="DeviceIconSmall" src="{{ static_url('icons/kettle/kettle.png')}}"></a>
+                {% end %}
+                </div>
+                <div class="CellMessagesID">{{ Smarter.number_to_code(id) }}</div>
+                <div class="CellMessagesDesc">{{ Smarter.message_description(id) }}</div>
+            </div>
+        </div>
+        <div class="CellStats">{{ client.responseCount[id] }} messages</div>
+    </div>
+    {% end %}
+    <div class="tRow">
+        <div class="CellStatsTitle"></div>
+        <div class="CellStats"></div>
+    </div>
+
+
+    {% if client.connectCount > 1 %}
+    <div class="tRow">
+        <div class="CellStatsTitle"><b>Auto<br>Connect</b></div>
+        <div class="CellStats"> {{ client.connectCount - 1 }}</div>
+    </div>
+    {% end %}
+
+</div>
+
+
+</center>
+
+
+{% include wrapper/foot.html %}
+

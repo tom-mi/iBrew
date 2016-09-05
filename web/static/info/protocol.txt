@@ -1,0 +1,30 @@
+
+       
+       
+  Smarter iKettle 2.0 & SmarterCoffee  Protocol
+  _____________________________________________
+
+    Smarter uses a binary message protocol
+
+    Messages use the syntax:
+
+     <ID>[ARGUMENTS]<TAIL>
+
+    Payloads use the syntax
+    
+      ([ARGUMENTS]<PAYLOADTAIL>){0..*}
+
+    Arguments use this syntax:
+
+      <ARGUMENT>     is a single mandatory byte
+      <[ARGUMENT]>   is a single optional byte
+      <ARGUMENT>{x}  is mandatory, between 1 and x bytes
+      ''             is a single bit
+      
+    The tail is always 7e or ~ in ASCII, everything else are ASCII literals
+    The tail payload is always 7d or } in ASCII, everything else are ASCII literals
+    
+    There are some value's like the watersensor that can contains the tail
+    so check the length of the response message!
+    
+              
