@@ -1,0 +1,25 @@
+{% set title = "Statistics iBrew Server" %} {% include wrapper/head.html %}
+{% from smarter.SmarterProtocol import * %}
+
+<center>
+{% for ip in clients %}
+
+
+{% if clients[ip].isCoffee %}
+<img class="l" id="coffee" src="{{ static_url('icons/coffee/coffee.png')}}"><br>
+{% elif clients[ip].isKettle%}
+<img class="l" id="kettle" src="{{ static_url('icons/kettle/kettle.png')}}"><br>
+{% end %}
+
+<div class="Title">{{ clients[ip].host }}</div>
+
+
+{% module Template('stats.html',client=clients[ip]) %}
+<br>
+<br>
+<br>
+{% end %}
+
+</center>
+
+{% include wrapper/foot.html %}

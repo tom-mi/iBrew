@@ -76,6 +76,12 @@ class MainPageHandler(BaseHandler):
         self.render(webroot+"index.html",clients = self.application.clients,joke = iBrewJokes().joke())
 
 
+class ServerPageHandler(BaseHandler):
+    #@tornado.web.authenticated
+    def get(self):
+        self.render(webroot+"server.html",clients = self.application.clients)
+
+
 class InfoPageHandler(BaseHandler):
     #@tornado.web.authenticated
     def get(self):
@@ -85,7 +91,7 @@ class InfoPageHandler(BaseHandler):
 class WifiPageHandler(BaseHandler):
     #@tornado.web.authenticated
     def get(self,ip):
-        self.render(webroot+"wifi.html",client = self.application.clients[ip],joke = iBrewJokes().joke())
+        self.render(webroot+"wifi.html",client = self.application.clients[ip])
 
 class ShowTextFilePageHandler(BaseHandler):
     #@tornado.web.authenticated
@@ -275,7 +281,7 @@ class CalibrateHandler(GenericAPIHandler):
         if ip in self.application.clients:
             client = self.application.clients[ip]
             if client.isKettle:
-                client.calibrate()
+                client.kettle_calibrate()
                 response = { 'base'            : client.waterSensorBase,
                              'command status'  : client.commandStatus }
             else:
@@ -291,7 +297,7 @@ class CalibrateBaseHandler(GenericAPIHandler):
         if ip in self.application.clients:
             client = self.application.clients[ip]
             if client.isKettle:
-                client.calibrate_base()
+                client.kettle_calibrate_base()
                 response = { 'base'            : client.waterSensorBase,
                              'command status'  : client.commandStatus }
             else:
@@ -852,6 +858,7 @@ class iBrewWeb(tornado.web.Application):
                 (r"/",MainPageHandler),
                 (r"/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/wifi/?", WifiPageHandler),
                 (r"/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/stats/?", StatsPageHandler),
+                (r"/server/?",ServerPageHandler),
                 (r"/info/rest/?",APIPageHandler),
                 (r"/info/messages/?",MessagesPageHandler),
                 (r"/info/message/([0-9,A-F,a-f][0-9,A-F,a-f])/?",MessagePageHandler),

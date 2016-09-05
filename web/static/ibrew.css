@@ -115,6 +115,11 @@ a:hover {
 /**** STATS 
 */
 
+
+.tRowMes {
+    display: table-row;
+}
+
 .CellStatsDesc {
    	display: table-cell;
     padding: 3px 10px;
@@ -126,7 +131,6 @@ a:hover {
 
 
 .CellStatsTitle {
-    transform: rotate(20deg);
 
     display: table-cell;
     padding: 3px 10px;
@@ -197,7 +201,7 @@ a:hover {
 .TitleMessageSub {
     font-size: 5vw;
     font-weight: bold;
-    font-family: 'Architects Daughter';
+    font-family: 'Abel', sans-serif;
 }
 
 

@@ -24,8 +24,8 @@
                 <a href="/info/message/{{ Smarter.number_to_code(id) }}"><img class="DeviceIconSmall" src="{{ static_url('icons/kettle/kettle.png')}}"></a>
                 {% end %}
                 </div>
-                <div class="CellMessagesID">{{ Smarter.number_to_code(id) }}</div>
-                <div class="CellMessagesDesc">{{ Smarter.message_description(id) }}</div>
+                <div class="CellMessagesID"><a href="/info/message/{{ Smarter.number_to_code(id) }}">{{ Smarter.number_to_code(id) }}</a></div>
+                <div class="CellMessagesDesc"><a href="/info/message/{{ Smarter.number_to_code(id) }}">{{ Smarter.message_description(id) }}</a></div>
             </div>
         </div>
         <div class="CellStats">{{ client.commandCount[id] }} messages</div>
@@ -50,8 +50,8 @@
                 <a href="/info/message/{{ Smarter.number_to_code(id) }}"><img class="DeviceIconSmall" src="{{ static_url('icons/kettle/kettle.png')}}"></a>
                 {% end %}
                 </div>
-                <div class="CellMessagesID">{{ Smarter.number_to_code(id) }}</div>
-                <div class="CellMessagesDesc">{{ Smarter.message_description(id) }}</div>
+                <div class="CellMessagesID"><a href="/info/message/{{ Smarter.number_to_code(id) }}">{{ Smarter.number_to_code(id) }}</a></div>
+                <div class="CellMessagesDesc"><a href="/info/message/{{ Smarter.number_to_code(id) }}">{{ Smarter.message_description(id) }}</a></div>
             </div>
         </div>
         <div class="CellStats">{{ client.responseCount[id] }} messages</div>
@@ -66,7 +66,7 @@
     {% if client.connectCount > 1 %}
     <div class="tRow">
         <div class="CellStatsTitle"><b>Auto<br>Connect</b></div>
-        <div class="CellStats"> {{ client.connectCount - 1 }}</div>
+        <div class="CellStats"> {{ client.connectCount - 1 }}x</div>
     </div>
     {% end %}
 

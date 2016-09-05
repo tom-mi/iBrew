@@ -101,12 +101,13 @@ $(document).ready(              function() { setTimeout(auto_joke, wait_joke);
 </div>
 {% end %}
 {% if clients[ip].onBase %}
-<a href="javascript:calibrate('{{ ip }}')"><img height="24px" src="{{ static_url('icons/commands/calibrate.png') }}"></a>
+<a href="javascript:calibrate('{{ ip }}')"><img height="24px" src="{{ static_url('icons/kettle/base.png') }}"></a>
 {% end %}
-<a href="javascript:stop('{{ ip }}')"><img height="24px" src="{{ static_url('icons/commands/stop.png') }}"></a>
-<a href="javascript:start('{{ ip }}')"><img height="24px" src="{{ static_url('icons/commands/start.png') }}"></a>
-<a href="{{ ip }}/wifi"><img height="24px" src="{{ static_url('icons/commands/wifi.png') }}"></a>
-<a href="/settings"><img height="24px" src="{{ static_url('icons/commands/settings.png') }}"></a>
+<a href="javascript:stop('{{ ip }}')"><img height="24px" src="{{ static_url('icons/device/stop.png') }}"></a>
+<a href="javascript:start('{{ ip }}')"><img height="24px" src="{{ static_url('icons/device/start.png') }}"></a>
+<a href="{{ ip }}/wifi"><img height="24px" src="{{ static_url('icons/wifi/wifi.png') }}"></a>
+<a href="{{ ip }}/stats"><img height="24px" src="{{ static_url('icons/device/stats.png') }}"></a>
+<a href="/settings"><img height="24px" src="{{ static_url('icons/device/settings.png') }}"></a>
 
 <br>
 {% if clients[ip].isKettle %}
