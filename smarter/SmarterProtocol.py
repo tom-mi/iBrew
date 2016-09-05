@@ -133,7 +133,7 @@ class SmarterProtocol:
     CommandSetSingleCupMode   = 0x4e
     CommandStoreTimer         = 0x40
     CommandTimers             = 0x41
-    CommandTimerHandled       = 0x43
+    CommandDisableTimer       = 0x43
  
     # kettle
     CommandHeat               = 0x15
@@ -209,7 +209,7 @@ class SmarterProtocol:
         CommandSingleCupMode    : (False,True,[ResponseSingleCupMode,ResponseCommandStatus],"Get single coffee cup mode"),
         CommandStoreTimer       : (False,True,[ResponseCommandStatus],"Store timer"),
         CommandTimers           : (False,True,[ResponseTimers,ResponseCommandStatus],"Get timers"),
-        CommandTimerHandled     : (False,True,[ResponseCommandStatus],"Timer event handled"),
+        CommandDisableTimer     : (False,True,[ResponseCommandStatus],"Timer event handled"),
         CommandSetCarafe        : (False,True,[ResponseCommandStatus],"Set coffee carafe required"),
         CommandSetSingleCupMode : (False,True,[ResponseCommandStatus],"Set single coffee cup mode"),
         CommandCoffeeSettings   : (False,True,[ResponseCoffeeSettings,ResponseCommandStatus],"Get default coffee machine user settings"),
@@ -225,7 +225,7 @@ class SmarterProtocol:
     # format: kettle?, coffee? (None is unnknown), minimal length (0 = variable), response to command, description
     ResponseMessages = {
         #incomplete? ... chech the first one...
-        ResponseCommandStatus   : (True,True,3,[CommandDeviceTime,CommandWifiNetwork,CommandWifiPassword,CommandResetSettings,CommandHeat,CommandKettleStop,CommandHeatFormula,CommandKettleStoreSettings,Command20,CommandHeatDefault,Command22,Command23,CommandBase,CommandCalibrate,Command69,CommandStoreTimer,CommandTimers,CommandTimerHandled,Command30,CommandSetCarafe,CommandSetSingleCupMode,CommandStrength,CommandCups,CommandGrinder,CommandHotplateOn,CommandSingleCupMode,CommandCarafe,CommandHotplateOff,CommandCoffeeSettings,CommandBrew,CommandCoffeeStop,CommandBrewDefault],"Command status"),
+        ResponseCommandStatus   : (True,True,3,[CommandDeviceTime,CommandWifiNetwork,CommandWifiPassword,CommandResetSettings,CommandHeat,CommandKettleStop,CommandHeatFormula,CommandKettleStoreSettings,Command20,CommandHeatDefault,Command22,Command23,CommandBase,CommandCalibrate,Command69,CommandStoreTimer,CommandTimers,CommandDisableTimer,Command30,CommandSetCarafe,CommandSetSingleCupMode,CommandStrength,CommandCups,CommandGrinder,CommandHotplateOn,CommandSingleCupMode,CommandCarafe,CommandHotplateOff,CommandCoffeeSettings,CommandBrew,CommandCoffeeStop,CommandBrewDefault],"Command status"),
         ResponseWirelessNetworks: (True,True,0,[CommandWifiScan],"Wireless networks list"),
         ResponseKettleHistory   : (True,False,0,[CommandKettleHistory],"Kettle history"),
         ResponseCoffeeHistory   : (False,True,0,[CommandCoffeeHistory],"Coffee machine history"),

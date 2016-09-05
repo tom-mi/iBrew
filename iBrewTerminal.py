@@ -451,14 +451,19 @@ class iBrewTerminal:
                                                     self.client.coffee_carafe_on()
                                             else:
                                                 self.client.coffee_carafe()
-            elif command == "timer":        self.client.coffee_timers()
-            elif command == "time":
-                                            if numarg >= 1:
+            elif command == "timers":        self.client.coffee_timers()
+            elif command == "timer":
+                                            if numarg >= 2:
+                                                if arguments[0].lower() == "delete":
+                                                    self.client.coffee_timer_disable(Smarter.string_to_number(arguments[1]))
+                                                else:
+                                                    self.client.coffee_timer_store(Smarter.string_to_number(arguments[1]))
+ 
                                                 print "iBrew: Not yet implemented"
                                                 #self.client.coffee_timer()
                                             
                                             else:
-                                                print "iBrew: timer needs time"
+                                                print "iBrew: timer needs index (time or delete)"
             elif command == "singlecup":
                                             if numarg >= 1:
                                                 if arguments[0].lower() == "off":

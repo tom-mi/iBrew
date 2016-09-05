@@ -795,7 +795,8 @@ class SmarterClient:
         defaultFormula = 0
         defaultKeepWarmTime = 0
         defaultTemperature = 100
-    
+   
+     
     def device_update(self):
         self.send_command(Smarter.CommandUpdate)
 
@@ -1057,19 +1058,19 @@ class SmarterClient:
         if self.isCoffee and self.grind:
             self.send_command(Smarter.CommandTimers)
         else:
-            raise SmarterError(CoffeeNoMachineGrinder,"You need a coffee machine to use the filter")
+            raise SmarterError(CoffeeNoMachineGrinder,"You need a coffee machine to use timers")
 
 
-    def coffee_timer_handled(self,index=0,time=None):
+    def coffee_timer_disable(self,index=0):
         if self.isCoffee and self.grind:
-            pass #self.send_command(Smarter.CommandTimer)
+            pass #self.send_command(Smarter.CommandDisableTimer)
         else:
             raise SmarterError(CoffeeNoMachineGrinder,"You need a coffee machine to use timers")
 
 
-    def coffee_timer_handled(self,time=None):
+    def coffee_timer_store(self,index=0,time=None):
         if self.isCoffee and self.grind:
-            pass #self.send_command(Smarter.CommandTimer)
+            pass #self.send_command(Smarter.CommandStoreTimer)
         else:
             raise SmarterError(CoffeeNoMachineGrinder,"You need a coffee machine to use timers")
 

@@ -463,8 +463,9 @@ class SmarterProtocolHelp:
             print "  41 00 Gets all 4 timers"
             print "  41 01 Gets first timer"
 
-        elif id == Smarter.CommandTimerHandled:
+        elif id == Smarter.CommandDisableTimer:
             print "  Clear time event bit in timers schedule??? It beeps that's all"
+            print "  Then it brews, it needs investigating..."
             print
             print "  Arguments: <INDEX>"
             print
