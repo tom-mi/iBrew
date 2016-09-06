@@ -610,15 +610,31 @@ class StatsHandler(GenericAPIHandler):
     def get(self,ip=""):
         if ip in self.application.clients:
             client = self.application.clients[ip]
-            response = { 'messages' : { 'send'      : client.sendCount,
-                                        'read'      : client.readCount,
-                                        'client'    : client.commandCount,
-                                        'server'    : client.responseCount
-                                       },
-                         'bytes'    : { 'send'      : client.sendBytesCount,
-                                        'read'      : client.readBytesCount
-                                      },
-                         'reconnect' : client.connectCount - 1
+            
+            if client.isKettle:
+                device = { 'heater'     : client.countHeater,
+                           'keepwarm'   : client.countKeepWarm,
+                           'removed'    : client.countKettleRemoved
+                        }
+            elif client.isCoffee:
+                device = { 'heater'     : client.countHeater,
+                           'grinder'    : client.countGrinderOn,
+                           'hotplate'   : client.countHotPlateOn,
+                           'removed'    : client.countCarafeRemoved
+                         }
+            else:
+                device = {}
+            
+            response = { 'messages'         : { 'send'      : client.sendCount,
+                                                'read'      : client.readCount,
+                                                'client'    : client.commandCount,
+                                                'server'    : client.responseCount
+                                            },
+                         'bytes'            : { 'send'      : client.sendBytesCount,
+                                                'read'      : client.readBytesCount
+                                            },
+                         'reconnect'        : client.connectCount - 1,
+                         client.deviceId    : device
                         }
         
         else:

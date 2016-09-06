@@ -61,15 +61,43 @@
         <div class="CellStatsTitle"></div>
         <div class="CellStats"></div>
     </div>
-
-
     {% if client.connectCount > 1 %}
     <div class="tRow">
-        <div class="CellStatsTitle"><b>Auto<br>Connect</b></div>
+        <div class="CellStatsTitle">Auto<br>Connect</div>
         <div class="CellStats"> {{ client.connectCount - 1 }}x</div>
     </div>
     {% end %}
+    
+    <div class="tRow">
+        <div class="CellStatsTitle">Heater</b></div>
+        <div class="CellStats"> {{ client.countHeater }}x</div>
+    </div>
 
+    {% if client.isKettle %}
+    <div class="tRow">
+        <div class="CellStatsTitle">Kettle Removed</b></div>
+        <div class="CellStats"> {{ client.countKettleRemoved }}x</div>
+    </div>
+    <div class="tRow">
+        <div class="CellStatsTitle">Kept Warm</b></div>
+        <div class="CellStats"> {{ client.countKeepWarm }}x</div>
+    </div>
+    {% elif client.isCoffee %}
+    <div class="tRow">
+        <div class="CellStatsTitle">Carafe Removed</b></div>
+        <div class="CellStats"> {{ client.countCarafeRemoved }}x</div>
+    </div>
+    <div class="tRow">
+        <div class="CellStatsTitle">Grinder</b></div>
+        <div class="CellStats"> {{ client.countGrinderOn }}x</div>
+    </div>
+    <div class="tRow">
+        <div class="CellStatsTitle">Hotplate</b></div>
+        <div class="CellStats"> {{ client.countHotPlateOn }}x</div>
+    </div>
+
+    {% end %}
+      
 </div>
 
 

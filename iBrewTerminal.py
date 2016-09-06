@@ -319,6 +319,7 @@ class iBrewTerminal:
                 try:
                     self.client.connect()
                 except:
+                    print(traceback.format_exc())
                     print "iBrew: Could not not connect to [" + self.client.host + "]"
                     return
 
@@ -382,24 +383,44 @@ class iBrewTerminal:
                                             for id in sorted(self.client.responseCount):
                                                 print "  " + str(self.client.responseCount[id]).rjust(10, ' ') + "  [" + Smarter.number_to_code(id) + "] "  + Smarter.message_description(id)
                                             print
+                                            if self.client.isCoffee:
+                                                print "  " + str(self.client.countCarafeRemoved).rjust(10, ' ') + "x Carafe removed"
+                                                print "  " + str(self.client.countHeater).rjust(10, ' ') + "x Heater on"
+                                                print "  " + str(self.client.countHotPlateOn).rjust(10, ' ') + "x Hotplate on"
+                                                print "  " + str(self.client.countGrinderOn).rjust(10, ' ') + "x Grinder on"
+                                            elif self.client.isKettle:
+                                                print "  " + str(self.client.countKettleRemoved).rjust(10, ' ') + "x Kettle removed"
+                                                print "  " + str(self.client.countHeater).rjust(10, ' ') + "x Heater on"
+                                                print "  " + str(self.client.countKeepWarm).rjust(10, ' ') + "x Kept warm"
+                                            
+                                            
+                                            print
             elif command == "web":
-                                            if numarg == 0:
-                                                self.web()
+                                            if not self.console:
+                                                if numarg == 0:
+                                                    self.web()
+                                                else:
+                                                    self.web(int(arguments[0]))
                                             else:
-                                                self.web(int(arguments[0]))
+                                                print "iBrew: Not in console"
 
             # Kettle
             elif not self.client.connected: return
             elif command == "heat":
-                                            if numarg >= 1:
-                                                self.client.kettle_heat()
+                                            if numarg >= 2:
+                                                self.client.kettle_heat(Smarter.string_to_temperature(arguments[0]),Smarter.string_to_keepwarm(arguments[0]))
+                                            elif numarg == 1:
+                                                self.client.kettle_heat(Smarter.string_to_temperature(arguments[0]),self.client.defaultKeepWarmTime)
                                             else:
-                                                self.client.kettle_heat()
+                                                self.client.kettle_heat_default()
             elif command == "formula":
-                                            if numarg >= 1:
-                                                self.client.kettle_formula_heat()
+                                            if numarg >= 2:
+                                                self.client.kettle_formula_heat(Smarter.string_to_temperature(arguments[0]),Smarter.string_to_keepwarm(arguments[0]))
+                                            elif numarg == 1:
+                                                self.client.kettle_formula_heat(Smarter.string_to_temperature(arguments[0]),self.client.defaultKeepWarmTime)
                                             else:
-                                                self.client.kettle_formula_heat()
+                                                self.client.kettle_formula_heat_default(self.client.defaultFormulaTemperature,self.client.defaultKeepWarmTime)
+
             elif command == "default":      self.client.device_restore_default()
             elif command == "calibrate":
                                             if self.client.OnBase:
@@ -486,10 +507,15 @@ class iBrewTerminal:
                                                 print "iBrew: Filter used"
             elif command == "brew":
                                             if numarg == 0:
-                                                self.client.coffee_brew()
-                                            elif numarg >= 1:
-                                                print "Not yet implemented"
-                                                # imclient.coffee_cups(arguments[1])
+                                                self.client.coffee_brew_default()
+                                            elif numarg == 1:
+                                                self.client.coffee_brew(Smarter.string_to_cups(arguments[0]),self.client.defaultHotPlate,self.client.defaultGrind,self.client.defaultStrength)
+                                            elif numarg == 2:
+                                                self.client.coffee_brew(Smarter.string_to_cups(arguments[0]),Smarter.string_to_hotplate(arguments[1]),self.client.defaultGrind,self.client.defaultStrength)
+                                            elif numarg == 3:
+                                                self.client.coffee_brew(Smarter.string_to_cups(arguments[0]),Smarter.string_to_hotplate(arguments[1]),Smarter.string_to_grind(arguments[2]),self.client.defaultStrength)
+                                            elif numarg >= 4:
+                                                self.client.coffee_brew(Smarter.string_to_cups(arguments[0]),Smarter.string_to_hotplate(arguments[1]),Smarter.string_to_grind(arguments[2]),Smarter.string_to_strength(arguments[3]))
             elif command == "strength":
                                             if numarg == 0:
                                                 print "iBrew: specify strength [weak,medium,strong]"
@@ -511,7 +537,7 @@ class iBrewTerminal:
                                                  self.sweep(Smarter.code_to_number(arguments[0]))
                                             else:
                                                 self.sweep()
-            elif command == "settings":     # FAST fix need device...
+            elif command == "settings":     # FAST fix need device... could default...
                                             if numarg == 0:
                                                 self.client.device_settings()
                                                 if not self.client.dump: self.client.print_settings()
@@ -682,7 +708,7 @@ class iBrewTerminal:
         print "    scan                   scan wireless networks"
         print
         print "  Bridge Commands"
-        print "    web (port)             start web interface & rest api on port [default 2082]"
+        print "    web (port)             start web interface & rest api on port [default 2082] [command line only]"
         print
         print "  Debug Commands"
         print "    [hexdata]              send raw data to device (e.g. \'64 7e\')"

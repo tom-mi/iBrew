@@ -573,13 +573,13 @@ class SmarterProtocolHelp:
             print "    00 Off"
             print "    01 On"
             print
-            print "  HOTPLATE (BIT 5)"
-            print "    00 Off"
-            print "    01 On"
-            print
-            print "  WORKING (BIT 6)"
+            print "  WORKING??? (BIT 5)"
             print "    00 Idle"
             print "    01 Working"
+            print
+            print "  HOTPLATE (BIT 6)"
+            print "    00 Off"
+            print "    01 On"
             print
             print "  TIMER (BIT 7)"
             print "    00 No Timer"
@@ -587,7 +587,7 @@ class SmarterProtocolHelp:
             print
             print "  CANBREWANDWATERLEVEL"
             print "    WATERLEVEL   4 lower bits"
-            print "    BREW         4 higher bits"
+            print "    BREW         4 higher bits (WATERLEVEL*0.25*2)/cups"
             print
             print "  WATERLEVEL"
             print "    00 Not enough water"

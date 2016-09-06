@@ -61,16 +61,16 @@ SmarterClientFailedStopThread   = 126
 class SmarterError(Exception):
 
     def __init__(self, err, msg):
-        #print(traceback.format_exc())
-        #print str(msg)
+        print(traceback.format_exc())
+        print str(msg)
         self.msg = msg
         self.err = err
 
 
 class SmarterErrorOld(Exception):
     def __init__(self, msg):
-        #print str(msg)
-        #print(traceback.format_exc())
+        print str(msg)
+        print(traceback.format_exc())
         self.msg = msg
 
 
@@ -677,8 +677,7 @@ class SmarterProtocol:
             raise SmarterErrorOld("Hotplate timer is not a number: " + string)
 
     def check_hotplate(self,timer):
-        #if timer != 0 and (timer < 5 or timer > 40):
-        if timer != 0 and (timer < 1 or timer > 40):
+        if timer != 0 and (timer < 5 or timer > 40):
             raise SmarterErrorOld("Hotplate timer out of range [0] or [5..40] minutes: " + str(timer))
         return timer
 
@@ -707,7 +706,6 @@ class SmarterProtocol:
 
     def check_keepwarm(self,timer):
         if timer != 0 and (timer < 1 or timer > 20):
-        #if timer != 0 and (timer < 5 or timer > 20):
             raise SmarterErrorOld("Kettle keep warm timer out of range [0] or [5..20] minutes: " + str(timer))
         return timer
 
