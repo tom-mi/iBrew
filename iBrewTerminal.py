@@ -408,14 +408,14 @@ class iBrewTerminal:
             elif not self.client.connected: return
             elif command == "heat":
                                             if numarg >= 2:
-                                                self.client.kettle_heat(Smarter.string_to_temperature(arguments[0]),Smarter.string_to_keepwarm(arguments[0]))
+                                                self.client.kettle_heat(Smarter.string_to_temperature(arguments[0]),Smarter.string_to_keepwarm(arguments[1]))
                                             elif numarg == 1:
                                                 self.client.kettle_heat(Smarter.string_to_temperature(arguments[0]),self.client.defaultKeepWarmTime)
                                             else:
                                                 self.client.kettle_heat_default()
             elif command == "formula":
                                             if numarg >= 2:
-                                                self.client.kettle_formula_heat(Smarter.string_to_temperature(arguments[0]),Smarter.string_to_keepwarm(arguments[0]))
+                                                self.client.kettle_formula_heat(Smarter.string_to_temperature(arguments[0]),Smarter.string_to_keepwarm(arguments[1]))
                                             elif numarg == 1:
                                                 self.client.kettle_formula_heat(Smarter.string_to_temperature(arguments[0]),self.client.defaultKeepWarmTime)
                                             else:
@@ -481,8 +481,6 @@ class iBrewTerminal:
                                                     self.client.coffee_timer_store(Smarter.string_to_number(arguments[1]))
  
                                                 print "iBrew: Not yet implemented"
-                                                #self.client.coffee_timer()
-                                            
                                             else:
                                                 print "iBrew: timer needs index (time or delete)"
             elif command == "singlecup":
@@ -507,13 +505,15 @@ class iBrewTerminal:
                                                 print "iBrew: Filter used"
             elif command == "brew":
                                             if numarg == 0:
+                                                self.client.coffee_brew_settings()
+                                            elif numarg == 1 and arguments[0].lower() == "default":
                                                 self.client.coffee_brew_default()
                                             elif numarg == 1:
-                                                self.client.coffee_brew(Smarter.string_to_cups(arguments[0]),self.client.defaultHotPlate,self.client.defaultGrind,self.client.defaultStrength)
+                                                self.client.coffee_brew(Smarter.string_to_cups(arguments[0]),self.client.hotPlate,self.client.grind,self.client.strength)
                                             elif numarg == 2:
-                                                self.client.coffee_brew(Smarter.string_to_cups(arguments[0]),Smarter.string_to_hotplate(arguments[1]),self.client.defaultGrind,self.client.defaultStrength)
+                                                self.client.coffee_brew(Smarter.string_to_cups(arguments[0]),Smarter.string_to_hotplate(arguments[1]),self.client.grind,self.client.strength)
                                             elif numarg == 3:
-                                                self.client.coffee_brew(Smarter.string_to_cups(arguments[0]),Smarter.string_to_hotplate(arguments[1]),Smarter.string_to_grind(arguments[2]),self.client.defaultStrength)
+                                                self.client.coffee_brew(Smarter.string_to_cups(arguments[0]),Smarter.string_to_hotplate(arguments[1]),Smarter.string_to_grind(arguments[2]),self.client.strength)
                                             elif numarg >= 4:
                                                 self.client.coffee_brew(Smarter.string_to_cups(arguments[0]),Smarter.string_to_hotplate(arguments[1]),Smarter.string_to_grind(arguments[2]),Smarter.string_to_strength(arguments[3]))
             elif command == "strength":
@@ -560,7 +560,6 @@ class iBrewTerminal:
                                                 elif arguments[0].lower() == "coffee":
                                                     self.client.coffee_stop()
                                                 else:
-                                                    print "iBrew: Unknown device: "  + arguments[0]
                                                     self.client.device_stop()
                                         
             elif command == "on" or command == "start":
@@ -570,9 +569,9 @@ class iBrewTerminal:
                                                 if arguments[0].lower() == "kettle":
                                                     self.client.kettle_heat()
                                                 elif arguments[0].lower() == "coffee":
-                                                    self.client.coffee_brew()
+                                                    self.client.coffee_brew_settings()
                                                 else:
-                                                    print "iBrew: Unknown device: "  + arguments[0]
+                                                    self.client.device_start()
                                                     
 
             elif command == "reset":        self.client.device_reset()
@@ -680,13 +679,14 @@ class iBrewTerminal:
         print "    calibrate              calibrates watersensor"
         print "    celsius                use celsius ºC [console only]"
         print "    fahrenheid             use fahrenheid ºF [console only]"
-        print "    formula ()()           heat kettle in formula mode"
-        print "    heat ()()              heat kettle"
+        print "    formula (temperature (keepwarm))] heat kettle in formula mode"
+        print "    heat (temperature)(keepwarm))    heat kettle"
         print "    stop kettle            stops heating"
-        print "    settings [keepwarm] [temperature] [formula] [formulatemperature] store kettle user settings"
+        print "    settings [temperature] [keepwarm] [formula] [formulatemperature] store kettle user settings"
         print
         print "  SmarterCoffee  Commands"
-        print "    brew ()                brew coffee"
+        print "    brew (cups (hotplate (grind (strength)))) brew coffee"
+        print "    brew default           brew coffee with default settings"
         print "    carafe                 returns if carafe is required"
         print "    carafe [state]         set carafe is required [on or off]"
         print "    cups [number]          set number of cups [1..12]"

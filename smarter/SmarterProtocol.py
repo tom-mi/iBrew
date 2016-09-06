@@ -854,8 +854,8 @@ class SmarterProtocol:
     StatusFailed              = 0x04
     StatusNoCarafeUnknown     = 0x05
     StatusNoWaterUnknown      = 0x06
-    StatusNoWaterAborted      = 0x07 # i got low water for 3 cups... it gave this...
-    StatusUnknown0d           = 0x0d
+    StatusNoWaterAborted      = 0x07
+    StatusInvalidTimer        = 0x0d
     StatusInvalid             = 0x69
 
 
@@ -868,7 +868,7 @@ class SmarterProtocol:
         StatusNoCarafeUnknown  : "no carafe",  # which one?
         StatusNoWaterUnknown   : "no water",   # which one?
         StatusNoWaterAborted   : "low water could not finish",
-        StatusUnknown0d        : "response to 40 01",
+        StatusInvalidTimer     : "invalid timer time",
         StatusInvalid          : "invalid command"
     }
 
@@ -928,6 +928,12 @@ class SmarterProtocol:
     # COFFEE STATUS INFO WRAPPER
     #------------------------------------------------------
 
+
+    # REMOVE REMOVE REMOVE
+    # REMOVE REMOVE REMOVE
+    # REMOVE REMOVE REMOVE
+    # REMOVE REMOVE REMOVE
+    
     CoffeeDescaling           = 0x51
     CoffeeHeating             = 0x53
 
@@ -956,6 +962,13 @@ class SmarterProtocol:
         else:
             return "Unknown Coffee Status " + self.number_to_code(status)
 
+    # REMOVE REMOVE REMOVE
+    # REMOVE REMOVE REMOVE
+    # REMOVE REMOVE REMOVE
+    # REMOVE REMOVE REMOVE
+
+
+
     CoffeeBean   = True
     CoffeeFilter = False
 
@@ -982,8 +995,8 @@ class SmarterProtocol:
             s = " and keep hotplate warm for " + str(hotplate) + " minutes"
         t = " " + self.grind_to_string(grind) + " coffee"
         if grind:
-            t = self.strength_to_string(strength) + t
-        return "Brew " + self.cups_to_string(cups) + " of " + t + s
+            t = " " + self.strength_to_string(strength) + t
+        return "brew " + self.cups_to_string(cups) + " of" + t + s
 
 
     def string_coffee_status(self,ready,working,heating,hotPlateOn,carafe,grinderOn):
