@@ -34,6 +34,8 @@ This means your machine is free! You can connect it yourself and do whatever you
  * watersensor to something usefull
  * process what you get back... (03 responses)
  * Currently the default values in fast mode are not initalized use slow or give all values
+ * filter out wrong responses... of know commands??? or atleast acknowledge them
+ * have not looked at single cup... needs a remote coffee machine session ;-)
  
 #### Contact
 [Bugs or issues](https://github.com/Tristan79/iBrew/issues). Donations & other questions <tristan@monkeycat.nl>

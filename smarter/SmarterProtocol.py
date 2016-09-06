@@ -677,8 +677,8 @@ class SmarterProtocol:
             raise SmarterErrorOld("Hotplate timer is not a number: " + string)
 
     def check_hotplate(self,timer):
-        if timer != 0 and (timer < 5 or timer > 40):
-            raise SmarterErrorOld("Hotplate timer out of range [0] or [5..40] minutes: " + str(timer))
+        if timer != 0 and (timer < 5 or timer > 35):
+            raise SmarterErrorOld("Hotplate timer out of range [0=Off] or [5..35] minutes: " + str(timer))
         return timer
 
     def check_hotplate_on(self,timer):
@@ -705,8 +705,8 @@ class SmarterProtocol:
 
 
     def check_keepwarm(self,timer):
-        if timer != 0 and (timer < 1 or timer > 20):
-            raise SmarterErrorOld("Kettle keep warm timer out of range [0] or [5..20] minutes: " + str(timer))
+        if timer != 0 and (timer < 1 or timer > 30):
+            raise SmarterErrorOld("Kettle keep warm timer out of range [0] or [5..30] minutes: " + str(timer))
         return timer
 
 
