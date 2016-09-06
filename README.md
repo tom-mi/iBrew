@@ -21,21 +21,16 @@ This means your machine is free! You can connect it yourself and do whatever you
  
 #### Upcoming for the last 3 versions  
  * Timers protocol
+ * Time arguments (have not figured that out)
  * Better error handling (sometimes it does not quit :-)
  * it also hangs if you scan wifi too much (luckily it reconnects)
  * Connecting in console mode... fails sometimes, and after reconnect is had strange data... stupid threads... missing...
- * Brew, heat, formula arguments (I have to figure out what is what, one cup at a time... 
- * Time arguments (have not figured that out)
  * Web interface & rest api (rest almost finished, web interface still have to create some pages) and introduce webroot & api key,...,...
  * History message is not finished
  * Fahrenheid not finished, please to not use.
- * can't start the web interface twice in console (i probably did not clean up)
- * if you send a message with an ..something was here...
  * v0.5 Missing Coffee Smarter codes (!)
  * messages everywhere from the monitor...
- * I broke domoticz, i decided I do not needed it anymore :-)
  * fix wireless with the same name
- * wireshark the kettlesettings again (where do they store the formula temperature... and it seems i can store an identifier there?)
  * watersensor to something usefull
  * process what you get back... (03 responses)
  
