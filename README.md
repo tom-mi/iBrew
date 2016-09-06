@@ -71,6 +71,16 @@ See the console section for the commands
  
 ```
 
+  iBrew Web Server
+
+  Usage: iBrew (dump) (fahrenheid) web (port) (host)
+
+    web                    start web interface & rest api
+    port                   optional port number, default 2082
+
+
+  iBrew Command Line
+
   Usage: iBrew (dump) (shout|slow) (coffee|kettle) (fahrenheid) [command] (host)
 
     dump                   dump message enabled
@@ -84,6 +94,7 @@ See the console section for the commands
 
   If you do not supply a host, it will try to connect to the first detected device
   Thus if you have more then one device supply a host (if its not in direct mode)
+
 
 ```
 
@@ -135,12 +146,10 @@ you can also use them on the command line as arguments:
     timers                 show timers
 
   Wireless Network Commands
+    direct                 enable direct mode access
     join [net] [pass]      connect to wireless network
-    leave                  disconnect (and open direct mode)
+    rejoin                 rejoins current wireless network [not in direct mode]
     scan                   scan wireless networks
-
-  Bridge Commands
-    web (port)             start web interface & rest api on port [default 2082] [command line only]
 
   Debug Commands
     [hexdata]              send raw data to device (e.g. '64 7e')

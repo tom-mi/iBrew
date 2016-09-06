@@ -915,7 +915,11 @@ class SmarterClient:
         self.send_command(Smarter.CommandWifiLeave)
 
 
-    def wifi_join(self,network,password):
+    def wifi_connect(self):
+        self.send_command(Smarter.CommandWifiJoin)
+
+
+    def wifi_join(self,network,password=""):
         self.fast = False
         self.send_command(Smarter.CommandWifiNetwork,Smarter.text_to_raw(network))
         self.send_command(Smarter.CommandWifiPassword,Smarter.text_to_raw(password))
@@ -1305,10 +1309,6 @@ class SmarterClient:
             self.print_short_coffee_status()
 
 
-    def print_short_coffee_status(self):
-        print Smarter.string_coffee_status(self.ready, self.working, self.heaterOn, self.hotPlateOn, self.carafe, self.grinderOn) + ", water " + Smarter.waterlevel(self.waterLevel) + ", setting: " + Smarter.string_coffee_settings(self.cups, self.strength, self.grind, self.hotPlate) + self.string_coffee_bits()
-
-
     def print_kettle_status(self):
         if self.onBase:
             print "Status           " + Smarter.status_kettle_description(self.kettleStatus)
@@ -1317,6 +1317,7 @@ class SmarterClient:
         else:
             print "Status           Off base"
         print "Default heating  " + Smarter.string_kettle_settings(self.defaultTemperature,self.defaultFormula, self.defaultFormulaTemperature,self.defaultKeepWarmTime)
+
 
     def string_coffee_bits(self):
         s = ""
@@ -1333,12 +1334,16 @@ class SmarterClient:
         s += " [cups:" + str(self.cupsBit) + "]"
         return s
 
+
+    def print_short_coffee_status(self):
+        print Smarter.string_coffee_status(self.ready, self.working, self.heaterOn, self.hotPlateOn, self.carafe, self.grinderOn) + ", water " + Smarter.waterlevel(self.waterLevel) + ", setting: " + Smarter.string_coffee_settings(self.cups, self.strength, self.grind, self.hotPlate) + self.string_coffee_bits()
+
+
     def print_coffee_status(self):
         print "Status           " + Smarter.string_coffee_status(self.ready, self.working, self.heaterOn, self.hotPlateOn, self.carafe, self.grinderOn) + self.string_coffee_bits()
         print "Water level      " + Smarter.waterlevel(self.waterLevel)
         print "Setting          " + Smarter.string_coffee_settings(self.cups, self.strength, self.grind, self.hotPlate)
         print "Default brewing  " + Smarter.string_coffee_settings(self.defaultCups, self.defaultStrength, self.defaultGrind, self.defaultHotPlate)
-
 
 
     def print_status(self):

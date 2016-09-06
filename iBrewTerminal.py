@@ -450,7 +450,7 @@ class iBrewTerminal:
             elif command == "firmware":
                                             self.client.wifi_firmware()
                                             if not self.client.dump: self.client.print_wifi_firmware()
-            elif command == "leave":        self.client.wifi_leave()
+            elif command == "direct":        self.client.wifi_leave()
             elif command == "scan":
                                             self.client.wifi_scan()
                                             if not self.client.dump: self.client.print_wireless_networks()
@@ -462,7 +462,13 @@ class iBrewTerminal:
                                                     password = arguments[1]
                                                 self.client.wifi_join(network,password)
                                             else:
-                                                print "iBrew: no wireless network name"
+                                                print "iBrew: Need at least a wireless network name"
+            elif command == "rejoin":
+                                            if self.client.isDirect:
+                                                print "iBrew: Can not rejoin if connected directly"
+                                            else:
+                                                self.client.wifi_connect()
+
             # Coffee
             elif command == "hotplate":
                                             if numarg >= 1:
@@ -661,6 +667,16 @@ class iBrewTerminal:
 
     def usage(self):
         print
+        print "  iBrew Web Server"
+        print
+        print "  Usage: iBrew (dump) (fahrenheid) web (port) (host)"
+        print
+        print "    web                    start web interface & rest api"
+        print "    port                   optional port number, default 2082"
+        print
+        print
+        print "  iBrew Command Line"
+        print
         print "  Usage: iBrew (dump) (shout|slow) (coffee|kettle) (fahrenheid) [command] (host)"
         print
         print "    dump                   dump message enabled"
@@ -674,7 +690,8 @@ class iBrewTerminal:
         print
         print "  If you do not supply a host, it will try to connect to the first detected device"
         print "  Thus if you have more then one device supply a host (if its not in direct mode)"
-
+        print
+    
     def commands(self):
         print
         print "  iKettle 2.0 & SmarterCoffee  Commands"
@@ -719,12 +736,10 @@ class iBrewTerminal:
         print "    timers                 show timers"
         print
         print "  Wireless Network Commands"
+        print "    direct                 enable direct mode access"
         print "    join [net] [pass]      connect to wireless network"
-        print "    leave                  disconnect (and open direct mode)"
+        print "    rejoin                 rejoins current wireless network [not in direct mode]"
         print "    scan                   scan wireless networks"
-        print
-        print "  Bridge Commands"
-        print "    web (port)             start web interface & rest api on port [default 2082] [command line only]"
         print
         print "  Debug Commands"
         print "    [hexdata]              send raw data to device (e.g. \'64 7e\')"

@@ -181,7 +181,7 @@ class SmarterProtocol:
         CommandWifiPassword     : (True,True,[ResponseCommandStatus],"Set wireless network password"),
         CommandWifiJoin         : (True,True,[],"Join wireless network"),
         CommandWifiScan         : (True,True,[ResponseWirelessNetworks],"Scan for wireless networks"),
-        CommandWifiLeave        : (True,True,[],"Leave wireless network"),
+        CommandWifiLeave        : (True,True,[],"Wireless network direct mode"),
         CommandResetSettings    : (True,True,[ResponseCommandStatus],"Reset default user settings"),
         CommandHeat             : (True,False,[ResponseCommandStatus],"Heat kettle"),
         CommandKettleStop       : (True,False,[ResponseCommandStatus],"Stop heating kettle"),

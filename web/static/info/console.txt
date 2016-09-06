@@ -41,12 +41,10 @@
     timers                 show timers
 
   Wireless Network Commands
+    direct                 enable direct mode access
     join [net] [pass]      connect to wireless network
-    leave                  disconnect (and open direct mode)
+    rejoin                 rejoins current wireless network [not in direct mode]
     scan                   scan wireless networks
-
-  Bridge Commands
-    web (port)             start web interface & rest api on port [default 2082] [command line only]
 
   Debug Commands
     [hexdata]              send raw data to device (e.g. '64 7e')
