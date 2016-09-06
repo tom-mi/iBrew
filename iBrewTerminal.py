@@ -259,6 +259,19 @@ class iBrewTerminal:
                     print "iBrew: \'kettle\' not available in the console"
 
 
+            if command == "slow":
+                if self.console or numarg == 0:
+                    print "iBrew: As you command, but it can take a while..."
+                    return
+                command = arguments[0].lower()
+                arguments = arguments[1:]
+                numarg -= 1
+                if not self.console:
+                    self.client.fast   = False
+                else:
+                    print "iBrew: \'kettle\' not available in the console"
+
+
 
             if command == "fahrenheid":
                 if numarg == 0 and not self.console:
@@ -300,7 +313,7 @@ class iBrewTerminal:
             if command == "console" or command == "connect":
                 self.client.disconnect()
 
-            if (not self.client.connected or self.haveHost) and command != "help" and command != "list" and command != "message" and command != "usage" and command != "commands" and command != "web" and command != "joke" and command != "protocol" and command != "structure" and command != "notes" and command != "examples" and command != "messages":
+            if (not self.client.connected or self.haveHost) and command != "help" and command != "?" and command != "list" and command != "message" and command != "usage" and command != "commands" and command != "web" and command != "joke" and command != "protocol" and command != "structure" and command != "notes" and command != "examples" and command != "messages":
 
                 if not self.haveHost:
                     devices = self.client.find_devices()
@@ -648,13 +661,16 @@ class iBrewTerminal:
 
     def usage(self):
         print
-        print "  Usage: iBrew (dump) (shout|coffee|kettle) (fahrenheid) [command] (host)"
+        print "  Usage: iBrew (dump) (shout|slow) (coffee|kettle) (fahrenheid) [command] (host)"
         print
-        print "    fahrenheid             use fahrenheid"
         print "    dump                   dump message enabled"
-        print "    host                   host address (format: ip4, ip6, fqdn)"
         print "    shout                  sends commands and quits not waiting for a reply"
+        print "    slow                   fully inits everything before action"
+        print "    coffee                 assumes coffee machine"
+        print "    kettle                 assumes kettle"
         print "    command                action to take!"
+        print "    fahrenheid             use fahrenheid"
+        print "    host                   host address (format: ip4, ip6, fqdn)"
         print
         print "  If you do not supply a host, it will try to connect to the first detected device"
         print "  Thus if you have more then one device supply a host (if its not in direct mode)"

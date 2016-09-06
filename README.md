@@ -33,6 +33,7 @@ This means your machine is free! You can connect it yourself and do whatever you
  * fix wireless with the same name
  * watersensor to something usefull
  * process what you get back... (03 responses)
+ * Currently the default values in fast mode are not initalized use slow or give all values
  
 #### Contact
 [Bugs or issues](https://github.com/Tristan79/iBrew/issues). Donations & other questions <tristan@monkeycat.nl>
@@ -70,13 +71,16 @@ See the console section for the commands
  
 ```
 
-  Usage: iBrew (dump) (shout|coffee|kettle) (fahrenheid) [command] (host)
+  Usage: iBrew (dump) (shout|slow) (coffee|kettle) (fahrenheid) [command] (host)
 
-    fahrenheid             use fahrenheid
     dump                   dump message enabled
-    host                   host address (format: ip4, ip6, fqdn)
     shout                  sends commands and quits not waiting for a reply
+    slow                   fully inits everything before action
+    coffee                 assumes coffee machine
+    kettle                 assumes kettle
     command                action to take!
+    fahrenheid             use fahrenheid
+    host                   host address (format: ip4, ip6, fqdn)
 
   If you do not supply a host, it will try to connect to the first detected device
   Thus if you have more then one device supply a host (if its not in direct mode)
@@ -107,13 +111,14 @@ you can also use them on the command line as arguments:
     calibrate              calibrates watersensor
     celsius                use celsius ºC [console only]
     fahrenheid             use fahrenheid ºF [console only]
-    formula ()()           heat kettle in formula mode
-    heat ()()              heat kettle
+    formula (temperature (keepwarm))] heat kettle in formula mode
+    heat (temperature)(keepwarm))    heat kettle
     stop kettle            stops heating
-    settings [keepwarm] [temperature] [formula] [formulatemperature] store kettle user settings
+    settings [temperature] [keepwarm] [formula] [formulatemperature] store kettle user settings
 
   SmarterCoffee  Commands
-    brew ()                brew coffee
+    brew (cups (hotplate (grind (strength)))) brew coffee
+    brew default           brew coffee with default settings
     carafe                 returns if carafe is required
     carafe [state]         set carafe is required [on or off]
     cups [number]          set number of cups [1..12]
