@@ -672,22 +672,22 @@ class SmarterClient:
         self.coffeeStatus        = Smarter.raw_to_number(message[1])
         
         if self.carafe != is_set(self.coffeeStatus,0):
-            if self.carafe:
+            if not self.carafe:
                  self.countCarafeRemoved += 1
             self.carafe = is_set(self.coffeeStatus,0)
         
         if self.heaterOn != is_set(self.coffeeStatus,4):
-            if self.heaterOn:
+            if not self.heaterOn:
                 self.countHeater += 1
             self.heaterOn = is_set(self.coffeeStatus,4)
 
         if self.hotPlateOn != is_set(self.coffeeStatus,6):
-            if self.hotPlateOn:
+            if not self.hotPlateOn:
                 self.countHotPlateOn += 1
             self.hotPlateOn = is_set(self.coffeeStatus,6)
         
         if self.grinderOn != is_set(self.coffeeStatus,3):
-            if self.grinderOn:
+            if not self.grinderOn:
                 self.countGrinderOn += 1
             self.grinderOn = is_set(self.coffeeStatus,3)
     

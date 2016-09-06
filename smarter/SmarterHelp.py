@@ -88,10 +88,15 @@ class SmarterProtocolHelp:
          
         def Hotplate():
             print "  HOTPLATE"
-            print "    05..28 5 .. 40 minutes"
-            print "    05     5 Minutes (Default)"
+            print "    00     Off"
+            print "    05..23 5 .. 35 minutes"
             print
-            
+
+        def Hotplate_receive():
+            print "  HOTPLATE"
+            print "    05..23 5 .. 35 minutes"
+            print
+        
         def Cups():
             print "  CUPS"
             print "    00..0c"
@@ -106,7 +111,7 @@ class SmarterProtocolHelp:
         def Keepwarm():
             print "  KEEPWARMTIME"
             print "    00      Default off"
-            print "    05..1e  Keep Warm in Minutes"
+            print "    05..1e  5 .. 30 Keep Warm in Minutes"
             print
 
         def Formula():
@@ -443,11 +448,11 @@ class SmarterProtocolHelp:
             
         elif id == Smarter.CommandHotplateOn:
             print "  Sets on the hotplate, you can specify how many minutes before it switch off."
-            print "  Range between 5 and 40, the app sends 5 on default"
+            print "  Range between 5 and 35, the app sends 5 on default"
             print
             print "  Argument: <[HOTPLATE]>"
             print
-            Hotplate()
+            Hotplate_receive()
             print "  Example: 3e 05 7e"
             
         elif id == Smarter.CommandStoreTimer:
@@ -552,7 +557,7 @@ class SmarterProtocolHelp:
         elif id == Smarter.ResponseCoffeeStatus:
             print "  It can be working and ready (example hotplate)"
             print
-            print "  Response: <STATUSCOFFEE><CANBREWANDWATERLEVEL><??><STRENGTH><UNKNOWNANDCUPS>"
+            print "  Response: <STATUSCOFFEE><CANBREWANDWATERLEVEL><??><STRENGTH><CUPSBREWCUPSSET>"
             print
             print "  STATUSCOFFEE  'CARAFE' 'GRIND' 'READY' 'GRINDER' 'HEATER' 'HOTPLATE' 'WORKING' '??'"
             print
@@ -600,9 +605,9 @@ class SmarterProtocolHelp:
             print "    01 Enough water"
             print
             Strength()
-            print "  UNKNOWNANDCUPS"
-            print "    CUPS    4 lower bits (seen it from 0..6)"
-            print "    CUPSBIT 4 higher bits (it toggles from 0/1)"
+            print "  CUPSBREWCUPSSET"
+            print "    CUPS 4 lower bits   Current selection"
+            print "    CUPS 4 higher bits  Brewing or last brewed"
             print
             Cups()
 
