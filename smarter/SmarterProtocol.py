@@ -332,6 +332,7 @@ class SmarterProtocol:
     
     # ArgIndex needs combines with 0 index...???
     
+    
     ArgType = {
         ResponseWirelessNetworks    : ('PROTOCOL',[],"",""),
         ResponseKettleHistory       : ('PROTOCOL',[ArgPayloadKettleHistory],"",""),
@@ -503,13 +504,22 @@ class SmarterProtocol:
     }
     
 
+    def message_example(self,id):
+        return self.number_to_code(id) + self.ArgType[id][2] + self.number_to_code(self.MessageTail)
+
+    def message_notes(self,id):
+        return self.ArgType[id][3]
+
     # nice printab;e protocol info...
     
     def message_arguments(self,id):
-        a = ""
+        a = list()
         for b in self.ArgType[id][1]:
-            a += "<" + self.ArgType[b][1].upper() + ">"
+            a += [(b,self.ArgType[b][1].upper())]
         return a
+
+
+    # nice printab;e protocol info...
 
     def string_int(self,argument):
         s = ""

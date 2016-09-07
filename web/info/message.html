@@ -2,7 +2,6 @@
 {% from smarter.SmarterProtocol import * %}
 
 <br>
-<br>
 
 <center>
 
@@ -12,9 +11,6 @@
 {{ Smarter.number_to_code(id) }}</div></a>
 <br>
 <div class="TitleMessage">{{ Smarter.message_description(id) }}</div>
-<br>
-<br>
-<br>
 <br>
 {% if Smarter.message_coffee(id) %}
 <img class="IconMessage" src="{{ static_url('icons/coffee/coffee.png')}}">
@@ -26,26 +22,37 @@
 <br>
 <br>
 <br>
+{{ Smarter.message_notes(id) }}
 
-<div class="TitleMessageSub">Arguments</div>
-{{  Smarter.message_arguments(id) }}
+{% if Smarter.message_arguments(id) != [] %}
+<br>
+<br>
 
-<pre>
-{{ Smarter.string_argument(id) }}
-</pre>
+<b>Arguments</b>
+{% for x in Smarter.message_arguments(id) %}
+&lt;<a href="/info/arguments#{{x[0]}}">{{ x[1] }}</a>&gt;
+{% end %}
+<br>
+<br>
+{% for x in Smarter.message_arguments(id) %}
+&lt;<a href="/info/arguments#{{x[0]}}">{{ x[1] }}</a>&gt;
+{{ Smarter.string_argument(x[0]) }}
+{% end %}
+{% end %}
+<br>
+<br>
+<b>Example</b> [{{ Smarter.message_example(id) }}]
+<br>
+<br>
 
-
-<div class="TitleMessageSub">
+<b>
 {% if Smarter.message_connection(id) and Smarter.message_is_response(id) %}
 <a href="/info/messages#command">Command messages</a>
 {% elif Smarter.message_connection(id) %}
 <a href="/info/messages#response">Response messages</a>
 {% end %}
-</div>
+</b>
 
-
-<br>
-<br>
 
 <div class="tTable">
 {% for i, iid in enumerate(Smarter.message_connection(id)) %}

@@ -5,7 +5,9 @@
 ******************/
 
 body {
-    font-family: Arial;
+    font-family: 'Abel', sans-serif;
+    font-size: 140%
+
 }
 
 a:link, a:visited, a:active {
