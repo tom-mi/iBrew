@@ -207,6 +207,11 @@ a:hover {
     font-family: 'Abel', sans-serif;
 }
 
+.TitleMessageSubSub {
+    font-size: 2.5vw;
+    font-weight: bold;
+    font-family: 'Architects Daughter';
+}
 
 .TitleMessages {
     font-size: 7vw;
@@ -214,6 +219,14 @@ a:hover {
     font-family: 'Architects Daughter';
 }
 
+
+
+.Args {
+    text-align: left;
+    font-size: 100%;
+    min-width: 400px;
+    max-width: 40vw;
+  }
 
 
 /*****************

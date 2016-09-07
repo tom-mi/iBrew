@@ -334,11 +334,11 @@ class SmarterProtocol:
     
     
     ArgType = {
-        ResponseWirelessNetworks    : ('PROTOCOL',[],"",""),
+        ResponseWirelessNetworks    : ('PROTOCOL',[],"","List containing the wireless networks found with scanning"),
         ResponseKettleHistory       : ('PROTOCOL',[ArgPayloadKettleHistory],"",""),
         ResponseTimers              : ('PROTOCOL',[ArgCounter,ArgPayloadTimer],"",""),
         ResponseCoffeeHistory       : ('PROTOCOL',[ArgCounter,ArgPayloadCoffeeHistory],"",""),
-        ResponseBase                : ('PROTOCOL',[],"",""),
+        ResponseBase                : ('PROTOCOL',[],"","Calibration base value, the base value in relation to the watersensor and temperature is unknown"),
 
         ArgPayloadTimer             : ('PAYLOAD',""),
         ArgPayloadCoffeeHistory     : ('PAYLOAD',""),
@@ -527,14 +527,14 @@ class SmarterProtocol:
         s += self.ArgType[argument[3]][1].upper() + ">"  + "\n\n"
         s += self.string_argument(argument[2]) + "\n"
         s +=  self.string_argument(argument[3])
-        return s
+        return s + ""
 
 
     def string_option(self,argument):
         s = ""
         for (x,y) in argument[2]:
                 s += "  " + self.number_to_code(x).rjust(4, ' ') + "        " + y + "\n"
-        return s
+        return s + ""
     
     def string_combined(self,argument):
         s = ""
@@ -554,8 +554,8 @@ class SmarterProtocol:
         s += ("    Merged byte <" + self.ArgType[argument[2]][1].upper() + ">").ljust(15, ' ')  + "<"
         s += self.ArgType[argument[3]][1].upper() + ">"  + "\n\n"
         s += self.string_argument(argument[2]) + "\n"
-        s +=  self.string_argument(argument[3])
-        return s
+        s += self.string_argument(argument[3])
+        return s + "\n"
  
     def string_text(self,argument):
             return "    TEXT      " + argument[2] + "\n"
@@ -609,8 +609,10 @@ class SmarterProtocol:
             a = self.ArgType[argument]
             if a[0] == 'PROTOCOL':
                 return self.string_protocol(a,argument)
+        
             s += "  " + a[1].upper() + "\n"
             if a[0] == 'OPTION':
+                s += ""
                 s += self.string_option(a)
             elif a[0] == 'TEXT':
                 s += self.string_text(a)
@@ -622,6 +624,8 @@ class SmarterProtocol:
                 s += self.string_int(a)
             elif a[0] == 'RANGE':
                 s += self.string_range(a)
+            else:
+                print "AAAAARRGGHHH"
         else:
             s = "No information on: " + self.number_to_code(argument)
         return s

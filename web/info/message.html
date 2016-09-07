@@ -28,30 +28,37 @@
 <br>
 <br>
 
-<b>Arguments</b>
+
+<div class="TitleMessageSubSub">Arguments</div>
 {% for x in Smarter.message_arguments(id) %}
-&lt;<a href="/info/arguments#{{x[0]}}">{{ x[1] }}</a>&gt;
+<span style"color:#FF0000">&lt;{{ x[1] }}&gt;</span>
 {% end %}
-<br>
-<br>
+<br><br>
+<div class="Args">
 {% for x in Smarter.message_arguments(id) %}
-&lt;<a href="/info/arguments#{{x[0]}}">{{ x[1] }}</a>&gt;
-{{ Smarter.string_argument(x[0]) }}
+{% raw (((Smarter.string_argument(x[0])).replace('<', '&lt&lt')).replace('>', '&gt&gt')).replace('\n', '<br>').replace('\r', '<br>').replace(' ', '&nbsp') %}
 {% end %}
+</div>
 {% end %}
+
 <br>
 <br>
-<b>Example</b> [{{ Smarter.message_example(id) }}]
+<div class="TitleMessageSubSub">Example</div>
+
+[{{ Smarter.message_example(id) }}]
+
 <br>
 <br>
 
-<b>
+
+<div class="TitleMessageSubSub">
 {% if Smarter.message_connection(id) and Smarter.message_is_response(id) %}
 <a href="/info/messages#command">Command messages</a>
 {% elif Smarter.message_connection(id) %}
 <a href="/info/messages#response">Response messages</a>
 {% end %}
-</b>
+</div>
+
 
 
 <div class="tTable">
