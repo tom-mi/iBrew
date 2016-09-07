@@ -8,6 +8,7 @@ from smarter.SmarterClient import *
 from smarter.SmarterProtocol import *
 from iBrewWeb import *
 from iBrewJokes import *
+import re
 
 #import traceback
 
@@ -31,7 +32,7 @@ from iBrewJokes import *
 
 
 iBrewApp          = "iBrew: iKettle 2.0 & Smarter Coffee Interface"
-iBrewInfo         = "iBrew: Out of order! © 2016 Tristan (@monkeycat.nl)"
+iBrewInfo         = "iBrew: Rest on the 7th day © 2016 Tristan (@monkeycat.nl)"
 iBrewContribute   = "Please contribute any discoveries on https://github.com/Tristan79/iBrew/issues"
 
 
@@ -311,6 +312,10 @@ class iBrewTerminal:
             if command == "console" or command == "connect":
                 self.client.disconnect()
 
+            if command == "connect" or command == "console" or ((command == "sweep" or command == "monitor" or command == "web") and not self.console):
+                self.app_info()
+                self.joke()
+
             if (not self.client.connected or self.haveHost) and command != "help" and command != "?" and command != "list" and command != "message" and command != "usage" and command != "commands" and command != "web" and command != "joke" and command != "license" and command != "protocol" and command != "structure" and command != "notes" and command != "examples" and command != "messages":
 
                 if not self.haveHost:
@@ -335,25 +340,19 @@ class iBrewTerminal:
                     return
 
             if command == "connect" or command == "console" or ((command == "sweep" or command == "monitor") and not self.console):
+ 
                 try:
                     self.client.init_default()
                 except:
                     #print(traceback.format_exc())
                     print "iBrew: Could not init values"
                     return
-                self.app_info()
-                self.joke()
                 self.client.print_connect_status()
                 self.client.print_status()
                 
             if command == "console" or command == "connect":
                 self.intro()
                 return
-
-            if not self.console and command == "web":
-                self.app_info()
-                self.joke()
-
 
             if command == "help" or command == "?":
                                             self.usage()
@@ -363,7 +362,11 @@ class iBrewTerminal:
             elif command == "protocol":     print Smarter.protocol()
             elif command == "structure":    print Smarter.structure()
             elif command == "notes":        print Smarter.notes()
-            elif command == "license":      print Smarter.license()
+            elif command == "license":
+                                            if self.console and numarg == 1 and arguments[0] == "disagree":
+                                                os.remove('web/static/.ibrew')
+                                            else:
+                                                print Smarter.license()
             elif command == "examples":     self.examples()
             elif command == "messages":
                                             if numarg >= 1 or not self.console:
@@ -599,6 +602,82 @@ class iBrewTerminal:
             
         
     def __init__(self,arguments):
+    
+    
+        if not os.path.isfile('web/static/.ibrew'):
+            self.username = "NOT ACCEPTED"
+            self.app_info()
+            print
+            print "PLEASE READ THE FOLLOWING VERY CAREFULLY"
+            print
+            print
+            print "LICENSE " + iBrewApp
+            print
+            print Smarter.license()
+            print
+            print
+            print "WARNING YOU COULD BRICK YOUR DEVICE, USE AT YOUR OWN RISK"
+            print
+            print
+            print "LICENSING AGREEMENT"
+            try:
+                self.username = raw_input("Please enter your full name: ").strip()
+                c = 0
+                while not (' ' in self.username):
+                    c += 1
+                    if c > 2:
+                        print "Forgot your full name?"
+                        return
+                    print "That is not your full name!"
+                    self.username = raw_input("Please enter your full name: ").strip()
+                c = 0
+                email = raw_input(self.username + ", please enter your email address: ").strip()
+                while (not re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)",email)):
+                    c += 1
+                    if c > 2:
+                        print "Forgot your email address?"
+                        return
+                    print "Invalid email"
+                    email = raw_input(self.username + ", please enter your email: ").strip()
+                c = 0
+                accept = raw_input("You accept the license? Please answer with YES or NO followed by pressing the ENTER key: ").strip()
+                while (accept != "YES"):
+                    if accept == "NO":
+                        return
+                    c += 1
+                    if c > 2:
+                        print "You decided to not to agree!"
+                        return
+                    email = raw_input("Please answer with YES or NO followed by pressing the ENTER key: ").strip()
+            except:
+                print "You decided to not to agree!"
+                return
+            print "Thank you, "+ self.username +" for accepting!"
+            print
+            
+            config = SafeConfigParser()
+            config.read('web/static/.ibrew')
+        
+            try:
+                config.add_section('license')
+            except:
+                pass
+
+            config.set('license', 'accepted', 'true')
+            config.set('license', 'name', self.username)
+            config.set('license', 'email', email)
+            with open('web/static/.ibrew', 'w') as f:
+                config.write(f)
+        else:
+            config = SafeConfigParser()
+            config.read('web/static/.ibrew')
+            try:
+                self.username =  config.get('license','name')
+            except:
+                return
+                # delete license...
+        
+        
         self.console = False
         self.quit = True
         self.client = SmarterClient()
@@ -619,12 +698,15 @@ class iBrewTerminal:
                 break
         self.client.disconnect()
         
-#------------------------------------------------------
+#------------------------------------------------------/Users/Tristan/iBrew/web/static/license
 # iBrew Console PRINT
 #------------------------------------------------------
+
     def app_info(self):
         print iBrewApp
         print iBrewInfo
+        if self.username != "NOT ACCEPTED":
+            print "iBrew: LICENSING AGREEMENT accepted by LICENSEE " + self.username
         print
         print iBrewContribute
         print
@@ -742,6 +824,7 @@ class iBrewTerminal:
         print "  iBrew Commands"
         print "    joke                   show joke"
         print "    license                show license"
+        print "    license disagree       stop using license [command line only]"
         print "    quit                   quit console [console only]"
         print
 
