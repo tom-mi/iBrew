@@ -1,0 +1,26 @@
+{% set title = "Arguments" %} {% include ../wrapper/head.html %}
+{% from smarter.SmarterProtocol import * %}
+
+<br>
+
+<center>
+
+<br>
+<br>
+<div class="TitleMessage">Arguments</div>
+
+{% for i in Smarter.message_protocol_arguments() %}
+<div class="Args"  id ="{{ i }}">
+<br>
+<br>
+<br>
+<br>
+{% raw Smarter.string_argument(i).replace(' ', '&nbsp;').replace('>', '&gt%%%%/a>').replace("<", "<a href=\"/info/arguments#" + str(i) + "\"> &lt").replace('%%%%','<').replace('”', '”</a>').replace("“", "<a href=\"/info/arguments#" + str(i) + "\">“").replace('\n', '<br>').replace('\r', '<br>').replace('<br>&nbsp;&nbsp;','',1).replace('&lt','<span class=\"TitleMessageSub\">&lt',1).replace('&gt','&gt</span>',1) %}
+</div>
+
+{% end %}
+<br>
+<br>
+</center>
+
+{% include ../wrapper/foot.html %}

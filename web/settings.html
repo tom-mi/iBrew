@@ -50,7 +50,7 @@ function calibrate(ip)          { $.getJSON( '/api/' + ip + '/calibrate'); }
 <br>
 <div class="tRow"><div class="tCell">Grind Source</div><div class="tCell">
 
-<input type="radio" name="grind" value="beans" checked="{{ client.defaultGrind == Smarter.CoffeeBean }}"><img width="24px" src="{{ static_url('icons/coffee/beans.png') }}">
+<input type="radio" name="grind" value="beans" checked="{{ client.defaultGrind == Smarter.CoffeeBeans }}"><img width="24px" src="{{ static_url('icons/coffee/beans.png') }}">
 <input type="radio" name="grind" value="filter" checked={{ client.defaultGrind == Smarter.CoffeeFilter }}"><img width="24px" src="{{ static_url('icons/coffee/filter.png') }}">
 
 

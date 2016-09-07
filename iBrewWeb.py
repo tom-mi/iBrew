@@ -126,6 +126,13 @@ class MessagesPageHandler(BaseHandler):
               self.render(webroot+"info/messages.html",status = Smarter.StatusToJSON(),commands = Smarter.CommandToJSON(), responses = Smarter.ResponseToJSON())
 
 
+
+class ArgumentsPageHandler(BaseHandler):
+    #@tornado.web.authenticated
+    def get(self):
+              self.render(webroot+"info/arguments.html",status = Smarter.StatusToJSON(),commands = Smarter.CommandToJSON(), responses = Smarter.ResponseToJSON())
+
+
 class MessagePageHandler(BaseHandler):
     #@tornado.web.authenticated
     def get(self,message):
@@ -171,8 +178,9 @@ def encodeFirmware(device,version):
 
 
 def encodeDevice(client):
-    return { 'id'          : client.deviceId,
-             'type'        : Smarter.device_to_string(client.deviceId),
+    return { 'type'        : { 'desciption' : Smarter.device_to_string(client.deviceId),
+                               'id'          : client.deviceId
+                            },
              'directmode'  : client.isDirect,
              'host'        : client.host,
              'connected'   : client.connected,
@@ -258,8 +266,9 @@ class DevicesHandler(GenericAPIHandler):
         devices = SmarterClient().find_devices()
         response = {}
         for device in devices:
-            response[device[0]] = { 'id'          : device[1],
-                                    'type'        : Smarter.device_to_string(device[1]),
+            response[device[0]] = { 'type'        : { 'desciption'  : Smarter.device_to_string(device[1]),
+                                                      'id'          : device[1]
+                                                    },
                                     'firmware'    : encodeFirmware(device[1],device[2])
                                   }
         self.setContentType()
@@ -680,7 +689,7 @@ class VersionHandler(GenericAPIHandler):
 
 class iBrewWeb(tornado.web.Application):
 
-    version = '0.7'
+    version = '0.71'
     
     def start(self):
         tornado.ioloop.IOLoop.instance().start()
@@ -881,6 +890,7 @@ class iBrewWeb(tornado.web.Application):
                 (r"/server/?",ServerPageHandler),
                 (r"/info/rest/?",APIPageHandler),
                 (r"/info/messages/?",MessagesPageHandler),
+                (r"/info/arguments/?",ArgumentsPageHandler),
                 (r"/info/message/([0-9,A-F,a-f][0-9,A-F,a-f])/?",MessagePageHandler),
                 (r"/",MainPageHandler),
                 (r"/info/?",InfoPageHandler),

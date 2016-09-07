@@ -7,6 +7,7 @@ import string
 import random
 import time
 import datetime
+from ConfigParser import SafeConfigParser
 
 import threading
 
@@ -34,7 +35,7 @@ def threadsafe_function(fn):
         try:
             r = fn(*args, **kwargs)
         except Exception as e:
-            #print(traceback.format_exc())
+            print(traceback.format_exc())
             #print str(e)
             raise e
         finally:
@@ -543,7 +544,55 @@ class SmarterClient:
     def disconnect(self):
         #print "DISCONNECT "+self.host
         self.run = False
+        
         if self.connected:
+        
+            # PERSISTENCE NEW NEW
+            # PERSISTENCE NEW NEW
+            # PERSISTENCE NEW NEW
+            # PERSISTENCE NEW NEW
+            
+            config = SafeConfigParser()
+            config.read('devices/'+self.host+'.conf')
+            
+            
+            try:
+                config.add_section('device')
+            except:
+                pass
+            try:
+                config.add_section('stats')
+            except:
+                pass
+
+            try:
+                config.set('device', 'type',Smarter.number_to_code(self.deviceId))
+            except:
+                config.set('device', 'type','00')
+            
+            try:
+                config.set('stats', 'send', str(int(config.get('stats', 'send')) + self.sendCount))
+            except:
+                config.set('stats', 'send', str(self.sendCount))
+            
+            try:
+                config.set('stats', 'read', str(int(config.get('stats', 'read')) + self.readCount))
+            except:
+                config.set('stats', 'read', str(self.readCount))
+
+            try:
+                config.set('stats', 'sendbytes', str(int(config.get('stats', 'sendbytes')) + self.sendBytesCount))
+            except:
+                config.set('stats', 'sendbytes', str(self.sendBytesCount))
+
+            try:
+                config.set('stats', 'readbytes', str(int(config.get('stats', 'sendbytes')) + self.readBytesCount))
+            except:
+                config.set('stats', 'readbytes', str(self.readBytesCount))
+
+            with open('devices/'+self.host+'.conf', 'w') as f:
+                config.write(f)
+
             self.connected = False
             try:
                 if self.monitor:

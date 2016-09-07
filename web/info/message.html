@@ -23,7 +23,6 @@
 <br>
 <br>
 {{ Smarter.message_notes(id) }}
-
 {% if Smarter.message_arguments(id) != [] %}
 <br>
 <br>
@@ -31,12 +30,11 @@
 
 <div class="TitleMessageSubSub">Arguments</div>
 {% for x in Smarter.message_arguments(id) %}
-<span style"color:#FF0000">&lt;{{ x[1] }}&gt;</span>
+<a href="info/arguments#{{ x[0]  }}">&lt;{{ x[1] }}&gt;</a>
 {% end %}
-<br><br>
 <div class="Args">
 {% for x in Smarter.message_arguments(id) %}
-{% raw (((Smarter.string_argument(x[0])).replace('<', '&lt&lt')).replace('>', '&gt&gt')).replace('\n', '<br>').replace('\r', '<br>').replace(' ', '&nbsp') %}
+<br><br><span class="TitleMessageSubSub">Argument</span>{% raw Smarter.string_argument(x[0]).replace(' ', '&nbsp').replace("<", "<a href=\"/info/arguments#" + str(x[0]) + "\"> &lt").replace('>', '&gt </a>').replace('”', '”</a>').replace("“", "<a href=\"/info/arguments#" + str(x[0]) + "\">“").replace('\n', '<br>').replace('\r', '<br>')[9:] %}
 {% end %}
 </div>
 {% end %}

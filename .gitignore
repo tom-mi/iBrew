@@ -6,3 +6,5 @@
 iBrewCloudWeb.py
 
 web/cloud.html
+
+*.conf
