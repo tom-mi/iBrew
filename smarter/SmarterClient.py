@@ -116,9 +116,9 @@ class SmarterClient:
 
         self.cupsBrew                   = 0
         self.waterEnough                = False
-        self.carafe                     = False
+        self.carafe                     = True
         self.timerEvent                 = False
-        self.ready                      = False
+        self.ready                      = True
         self.hotPlateOn                 = False
         self.grinderOn                  = False
         self.working                    = False

@@ -118,6 +118,7 @@ class SmarterProtocol:
     StatusNoWaterUnknown      = 0x06
     StatusNoWaterAborted      = 0x07
     StatusInvalidTimer        = 0x0d
+    StatusErrorWifi           = 0x68
     StatusInvalid             = 0x69
 
 
@@ -131,6 +132,7 @@ class SmarterProtocol:
         StatusNoWaterUnknown   : "no water",   # which one?
         StatusNoWaterAborted   : "low water could not finish",
         StatusInvalidTimer     : "invalid timer time",
+        StatusErrorWifi        : "wifi error",
         StatusInvalid          : "invalid command"
     }
 
@@ -322,45 +324,46 @@ class SmarterProtocol:
     ArgPayloadTimer            = 1026
     ArgPayloadCoffeeHistory    = 1028
     ArgPayloadKettleHistory    = 1029
+    ArgPayloadWifiScan         = 1039
     ArgWater  = 1033
     
     # NOT ADDED
-    #ProTail          = 230
+    #ProTail          = 1030
     ProListText     = 1031
-    ProTextPayload  = 1039
     ArgValueOther = -1
     
     # ArgIndex needs combines with 0 index...???
     
     
     ArgType = {
-        ResponseWirelessNetworks    : ('PROTOCOL',[],"","List containing the wireless networks found with scanning"),
-        ResponseKettleHistory       : ('PROTOCOL',[ArgPayloadKettleHistory],"",""),
-        ResponseTimers              : ('PROTOCOL',[ArgCounter,ArgPayloadTimer],"",""),
-        ResponseCoffeeHistory       : ('PROTOCOL',[ArgCounter,ArgPayloadCoffeeHistory],"",""),
-        ResponseBase                : ('PROTOCOL',[],"","Calibration base value, the base value in relation to the watersensor and temperature is unknown"),
+        ResponseWirelessNetworks    : ('PROTOCOL',[ArgPayloadWifiScan],"416972476c6f772c2d38347d486f6d65576966692c2d37327d54502d4c494e4b5f3344443245362c2d39337d","List containing the wireless networks found with scanning"),
+        ResponseKettleHistory       : ('PROTOCOL',[ArgPayloadKettleHistory],"020164000006001927250c1901000000000000000000000000000000000000007d015f000001001902260c1901000000000000000000000000000000000000007d",""),
+        ResponseTimers              : ('PROTOCOL',[ArgCounter,ArgPayloadTimer],"000f0f01010114147d01030701010114137d01020501010114127d01010101010114117d",""),
+        ResponseCoffeeHistory       : ('PROTOCOL',[ArgCounter,ArgPayloadCoffeeHistory],"03010000020200000b01010000000000000000000000000000000000000000007d010000020200012001010000000000000000000000000000000000000000007d010010010101000401010014000000000000000000000000000000000000007d",""),
+        ResponseBase                : ('PROTOCOL',[ArgWater],"044c","Calibration base value, the base value in relation to the watersensor and temperature is unknown"),
 
         ArgPayloadTimer             : ('PAYLOAD',""),
         ArgPayloadCoffeeHistory     : ('PAYLOAD',""),
         ArgPayloadKettleHistory     : ('PAYLOAD',""),
+        ArgPayloadWifiScan          : ('PAYLOAD',""),
 
 
-        ResponseCarafe              : ('PROTOCOL',[ArgCarafe],"",""),
-        ResponseSingleCupMode       : ('PROTOCOL',[ArgSingleCup],"",""),
-        ResponseCommandStatus       : ('PROTOCOL',[ArgCommandStatus],"",""),
+        ResponseCarafe              : ('PROTOCOL',[ArgCarafe],"00",""),
+        ResponseSingleCupMode       : ('PROTOCOL',[ArgSingleCup],"01",""),
+        ResponseCommandStatus       : ('PROTOCOL',[ArgCommandStatus],"04",""),
         ResponseDeviceInfo          : ('PROTOCOL',[ArgDevice,ArgVersion],"0113","Get the type of the device connected to and it's firmware. It is used for auto discovery over UDP broadcast. This fails on some routers, which don't propagate UDP broadcasts."),
         ResponseWifiFirmware        : ('PROTOCOL',[ArgWifiFirmware],"41542b474d525c6e41542076657273696f6e3a302e34302e302e302841756720203820323031352031343a34353a3538295c6e53444b2076657273696f6e3a312e332e305c6e636f6d70696c652074696d653a41756720203820323031352031373a31393a33385c6e4f4b5c6e",""),
-        ResponseCoffeeSettings      : ('PROTOCOL',[ArgStrength,ArgCups,ArgGrind,ArgHotPlate],"",""),
-        ResponseCoffeeStatus        : ('PROTOCOL',[ArgCoffeeStatus,ArgWaterLevelRaw,ArgUnknown,ArgStrength,ArgCupsCombi],"",""),
-        ResponseKettleStatus        : ('PROTOCOL',[ArgKettleStatus,ArgTemperatureCombi,ArgWater,ArgKeepWarmCombi],"",""),
-        ResponseKettleSettings      : ('PROTOCOL',[ArgTemperatureCombi,ArgKeepWarmCombi,ArgFormulaTemperature],"","It sends a 0 between this response and the command status succes. (BUG)"),
+        ResponseCoffeeSettings      : ('PROTOCOL',[ArgStrength,ArgCups,ArgGrind,ArgHotPlate],"01020005",""),
+        ResponseCoffeeStatus        : ('PROTOCOL',[ArgCoffeeStatus,ArgWaterLevelRaw,ArgUnknown,ArgStrength,ArgCupsCombi],"0500000021",""),
+        ResponseKettleStatus        : ('PROTOCOL',[ArgKettleStatus,ArgTemperatureCombi,ArgWater,ArgKeepWarmCombi],"14007f07d7007e",""),
+        ResponseKettleSettings      : ('PROTOCOL',[ArgTemperatureCombi,ArgKeepWarmCombi,ArgFormulaTemperature],"641400","It sends a 0 between this response and the command status succes. (BUG)"),
         CommandDeviceTime           : ('PROTOCOL',[ArgSecond,ArgMinute,ArgHour,ArgUnknown,ArgDay,ArgMonth,ArgCentury,ArgYear],"1213030105021410",
                                         "Set the time on the device, is used in history and in the coffee scheduled timers messages. Unknown is Day of week index?"),
         CommandResetSettings        : ('PROTOCOL',[],"","For the kettle these are the default user settings: keepwarm 0 minutes, temperature 100ºC, formula mode off and formula temperature 75ºC. The Smarter Coffee does nothing."),
     
         CommandDeviceInfo           : ('PROTOCOL',[],"",""),
         CommandUpdate               : ('PROTOCOL',[],"","Disables wifi and creates a 'iKettle Update' wireless network and opens port 6000. A hard device reset (hold power button for 10 seconds) is sometimes required to fix this state, or just unplug the power for a moment."),
-        Command69                   : ('PROTOCOL',[ArgUnknown],"",""),  #REPEAT?
+        Command69                   : ('PROTOCOL',[ArgUnknown],"00",""),  #REPEAT?
 
     # wifi
         CommandWifiNetwork          : ('PROTOCOL',[ArgSSID],"416363657373506f696e74",""),
@@ -371,23 +374,23 @@ class SmarterProtocol:
         CommandWifiFirmware         : ('PROTOCOL',[],"","The firmware of the wifi module in text with control chars as new line."),
 
         # coffee
-        CommandBrew                 : ('PROTOCOL',[ArgCups,ArgStrength,ArgHotPlate,ArgGrind],"040200",""),
+        CommandBrew                 : ('PROTOCOL',[ArgCups,ArgStrength,ArgHotPlate,ArgGrind],"04020001",""),
         CommandCoffeeStop           : ('PROTOCOL',[],"",""),
         CommandStrength             : ('PROTOCOL',[ArgStrength],"01","Sets the strength of the coffee to be brewed. Use command 37 to brew."),
-        CommandCups                 : ('PROTOCOL',[ArgCups],"","Select the number of cups to be brewed. Use command 37 to brew."),
+        CommandCups                 : ('PROTOCOL',[ArgCups],"03","Select the number of cups to be brewed. Use command 37 to brew."),
         CommandBrewDefault          : ('PROTOCOL',[],"","Uses the settings not the default user settings."),
-        CommandCoffeeSettings       : ('PROTOCOL',[ArgCups,ArgStrength,ArgGrind,ArgHotPlate],"","Also return 00 message in an unconfigured state.??? CHECK"),
-        CommandCoffeeStoreSettings  : ('PROTOCOL',[ArgStrength,ArgCups,ArgGrind,ArgHotPlate],"",""),
+        CommandCoffeeSettings       : ('PROTOCOL',[ArgCups,ArgStrength,ArgGrind,ArgHotPlate],"03010100","Also return 00 message in an unconfigured state.??? CHECK"),
+        CommandCoffeeStoreSettings  : ('PROTOCOL',[ArgStrength,ArgCups,ArgGrind,ArgHotPlate],"02050010",""),
         CommandGrinder              : ('PROTOCOL',[],"",""),
         CommandHotplateOn           : ('PROTOCOL',[ArgHotPlate],"05","Sets on the hotplate, you can specify how many minutes before it switch off. If no value it uses the default. "),
         CommandCoffeeHistory        : ('PROTOCOL',[],"","When called will erase this history."),
         CommandHotplateOff          : ('PROTOCOL',[],"",""),
         CommandCarafe               : ('PROTOCOL',[],"",""),
-        CommandSetCarafe            : ('PROTOCOL',[ArgCarafe],"",""),
+        CommandSetCarafe            : ('PROTOCOL',[ArgCarafe],"00",""),
         CommandSingleCupMode        : ('PROTOCOL',[],"",""),
-        CommandSetSingleCupMode     : ('PROTOCOL',[ArgSingleCup],"",""),
-        CommandStoreTimer           : ('PROTOCOL',[ArgIndex,ArgMinute,ArgHour,ArgUnknown,ArgDay,ArgMonth,ArgCentury,ArgYear],"","Store time in timer schedule"),
-        CommandTimers               : ('PROTOCOL',[],"00","Get scheduled timers. If index is not all timers it gets the first timer to go off."),
+        CommandSetSingleCupMode     : ('PROTOCOL',[ArgSingleCup],"01",""),
+        CommandStoreTimer           : ('PROTOCOL',[ArgIndex,ArgMinute,ArgHour,ArgUnknown,ArgDay,ArgMonth,ArgCentury,ArgYear],"0401010101011411","Store time in timer schedule"),
+        CommandTimers               : ('PROTOCOL',[ArgIndex],"00","Get scheduled timers. If index is not all timers it gets the first timer to go off."),
         CommandDisableTimer         : ('PROTOCOL',[ArgIndex],"00","Clear time event bit in timers schedule??? It beeps that's all then it brews, it needs investigating..."),
      
         # kettle
@@ -398,13 +401,13 @@ class SmarterProtocol:
         Command20                   : ('PROTOCOL',[],"","This setting ignores the user setting and heats untill the tempeature is 100ºC"),
         Command22                   : ('PROTOCOL',[],"",""),
         Command23                   : ('PROTOCOL',[],"",""),
-        Command30                   : ('PROTOCOL',[],"1f196401227e","Default user defaults message is [1f0064004b7e]. I think the correct message in v18 is without formula, since that value can take values up to 100 and nothing is returned for the 4th value. <[FORMULA]>"),
-        CommandKettleStoreSettings  : ('PROTOCOL',[ArgKeepWarmCombi,ArgTemperature,ArgFormula,ArgFormulaTemperature],"",""),
+        Command30                   : ('PROTOCOL',[ArgUnknown],"",""),
+        CommandKettleStoreSettings  : ('PROTOCOL',[ArgKeepWarmCombi,ArgTemperature,ArgFormula,ArgFormulaTemperature],"1f196401227e","Default user defaults message is [1f0064004b7e]. I think the correct message in v18 is without formula, since that value can take values up to 100 and nothing is returned for the 4th value. <[FORMULA]>"),
         CommandKettleHistory        : ('PROTOCOL',[],"","When called will erase this history."),
         CommandKettleSettings       : ('PROTOCOL',[],"","Also return 00 message in an unconfigured state.??? CHECK"),
-        CommandStoreBase            : ('PROTOCOL',[ArgWater],"",""),
+        CommandStoreBase            : ('PROTOCOL',[ArgWater],"044c",""),
         CommandBase                 : ('PROTOCOL',[],"",""),
-        CommandCalibrate            : ('PROTOCOL',[],"",""),
+        CommandCalibrate            : ('PROTOCOL',[],"","Calibrates the base, only do this when the kettle is off base"),
  
  
         ArgWorking        : ('OPTION',"Working",[(0,"?"),(1,"?")]),
@@ -523,11 +526,11 @@ class SmarterProtocol:
 
     def string_int(self,argument):
         s = ""
-        s += ("    Integer <" + self.ArgType[argument[2]][1].upper() + ">").ljust(15, ' ')  + "<"
-        s += self.ArgType[argument[3]][1].upper() + ">"  + "\n\n"
-        s += self.string_argument(argument[2]) + "\n"
+        s += ("    Integer <" + self.ArgType[argument[2]][1].upper() + ">").ljust(15, ' ')  + "\n"
+        s += "<" + self.ArgType[argument[3]][1].upper() + ">"  + "\n"
+        s += self.string_argument(argument[2])
         s +=  self.string_argument(argument[3])
-        return s + ""
+        return s
 
 
     def string_option(self,argument):
@@ -540,22 +543,23 @@ class SmarterProtocol:
         s = ""
         for (x,y,z) in argument[2]:
             if y == 1:
-                range = str(x) + "    (" + str(y) + " bits)"
+                range = " bit " + str(x)
             if y > 1:
-                range = str(x) + ".." + str(x+y-1) + " (" + str(y) + " bits)"
-            s += ("    \"" + self.ArgType[z][1].upper() + "\"").ljust(17, ' ') + " " + range + "\n"
+                range = "bits " + str(x) + ".." + str(x+y-1)
+            s += ("    " + range).ljust(13, ' ') + " \"" + self.ArgType[z][1].upper() + "\"\n"
+            # herer
         for (x,y,z) in argument[2]:
-            s += "\n" + self.string_argument(z)
-        return s
+            s += self.string_argument(z,True)
+        return s + ""
             
 
     def string_range(self,argument):
         s = ""
         s += ("    Merged byte <" + self.ArgType[argument[2]][1].upper() + ">").ljust(15, ' ')  + "<"
-        s += self.ArgType[argument[3]][1].upper() + ">"  + "\n\n"
-        s += self.string_argument(argument[2]) + "\n"
+        s += self.ArgType[argument[3]][1].upper() + ">"  + "\n"
+        s += self.string_argument(argument[2])
         s += self.string_argument(argument[3])
-        return s + "\n"
+        return s + ""
  
     def string_text(self,argument):
             return "    TEXT      " + argument[2] + "\n"
@@ -586,7 +590,7 @@ class SmarterProtocol:
         
         if len(argument[1]) != 0:
             
-            s += "\n  Arguments: "
+            s += "\n\n  Arguments: "
             
             for a in argument[1]:
                 s += "<" + self.ArgType[a][1].upper() + ">"
@@ -596,21 +600,24 @@ class SmarterProtocol:
 
 
     
-        s += "\n  Example: [" + self.number_to_code(id) + argument[2] + self.number_to_code(self.MessageTail) + "]"
-        return s + "\n"
+        s += "\n\n  Example: [" + self.number_to_code(id) + argument[2] + self.number_to_code(self.MessageTail) + "]"
+        return s + "\n\n"
 
     def string_number(self,argument):
         return "    " + "[" + self.number_to_code(argument[2][0]) + ".." + self.number_to_code(argument[2][1]) + "]  " + argument[3] + "\n"
 
     
-    def string_argument(self,argument):
+    def string_argument(self,argument,bit=False):
         if self.ArgType.has_key(argument):
             s = ""
             a = self.ArgType[argument]
             if a[0] == 'PROTOCOL':
                 return self.string_protocol(a,argument)
         
-            s += "  " + a[1].upper() + "\n"
+            if bit:
+                s += "\n  \"" + a[1].upper() + "\"\n"
+            else:
+                s += "\n  <" + a[1].upper() + ">\n"
             if a[0] == 'OPTION':
                 s += ""
                 s += self.string_option(a)
@@ -626,9 +633,10 @@ class SmarterProtocol:
                 s += self.string_range(a)
             else:
                 print "AAAAARRGGHHH"
+            
         else:
             s = "No information on: " + self.number_to_code(argument)
-        return s
+        return s + ""
 
     def all(self):
         s = ""
@@ -1422,9 +1430,14 @@ class SmarterProtocol:
             raise SmarterErrorOld("Unknown coffee cups [1..12]: " + str(cups))
         return cups
 
+    def check_cups_brew(self,cups_raw):
+        cups = cups_raw % 16
+        if cups < 0 or cups > 12:
+            raise SmarterErrorOld("Unknown brew(ed) coffee cups [0..12]: " + str(cups))
+        return cups
 
     def raw_to_cups_brew(self,cups_raw):
-        return self.check_cups(self.raw_to_number(cups_raw) / 16)
+        return self.check_cups_brew(self.raw_to_number(cups_raw) / 16)
 
 
     def raw_to_cups(self,raw):
