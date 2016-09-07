@@ -1196,7 +1196,7 @@ class SmarterProtocol:
         if strength == self.CoffeeMedium or strength == self.CoffeeStrong or strength == self.CoffeeWeak:
             return strength
         else:
-            raise SmarterErrorOld("Invalid coffee strength ["+CoffeeStringWeak+", "+CoffeeStringMedium+", "+CoffeeStringStrong +"]: " + strength)
+            raise SmarterErrorOld("Invalid coffee strength ["+self.CoffeeStringWeak+", "+self.CoffeeStringMedium+", "+self.CoffeeStringStrong +"]: " + strength)
 
 
     def strength_to_raw(self,strength):
@@ -1208,13 +1208,13 @@ class SmarterProtocol:
     
     def strength_to_string(self,number):
         if self.CoffeeWeak == number:
-            return CoffeeStringWeak
+            return self.CoffeeStringWeak
         elif self.CoffeeMedium == number:
-            return CoffeeStringMedium
+            return self.CoffeeStringMedium
         elif self.CoffeeStrong == number:
-            return CoffeeStringStrong
-        return self.StatusCoffeeStrength[self.check_strength(strength)]
-
+            return self.CoffeeStringStrong
+        else:
+            raise SmarterErrorOld("Invalid coffee strength ["+CoffeeStringWeak+", "+CoffeeStringMedium+", "+CoffeeStringStrong +"] " + self.number_to_code(strength))
 
     def string_to_strength(self,strength):
         if strength.strip().lower() == CoffeeStringWeak:
@@ -1224,7 +1224,7 @@ class SmarterProtocol:
         elif strength.strip().lower() == CoffeeStringStrong:
             return self.CoffeeStrong
         else:
-            raise SmarterErrorOld("Invalid coffee strength ["+CoffeeStringWeak+", "+CoffeeStringMedium+", "+CoffeeStringStrong +"] " + strength)
+            raise SmarterErrorOld("Invalid coffee strength ["+self.CoffeeStringWeak+", "+self.CoffeeStringMedium+", "+self.CoffeeStringStrong +"] " + strength)
 
 
     #------------------------------------------------------
@@ -1522,20 +1522,20 @@ class SmarterProtocol:
 
 
     def grind_to_string(self,grind):
-        s = CoffeeStringFilter
+        s = self.CoffeeStringFilter
         if grind:
-            s = CoffeeStringBeans
+            s = self.CoffeeStringBeans
         return s
 
 
     def string_to_grind(self,grind):
         s = grind.lower()
-        if s == CoffeeStringBeans:
+        if s == self.CoffeeStringBeans:
             return True
-        elif s == CoffeeStringFilter:
+        elif s == self.CoffeeStringFilter:
             return False
         else:
-           raise SmarterErrorOld("Unknown grind ["+CoffeeStringBeans+"/"+CoffeeStringFilter+"] " + grind)
+           raise SmarterErrorOld("Unknown grind ["+self.CoffeeStringBeans+"/"+self.CoffeeStringFilter+"] " + grind)
 
 
     def string_coffee_settings(self, cups, strength, grind, hotplate):
