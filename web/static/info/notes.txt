@@ -1,7 +1,7 @@
 
 
 
-  Smarter iKettle 2.0 & SmarterCoffee  Notes
+  Smarter iKettle 2.0 & Smarter Coffee  Notes
   __________________________________________
     
   WaterSensor Calibration:

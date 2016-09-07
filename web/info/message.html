@@ -27,6 +27,14 @@
 <br>
 <br>
 
+<div class="TitleMessageSub">Arguments</div>
+{{  Smarter.message_arguments(id) }}
+
+<pre>
+{{ Smarter.string_argument(id) }}
+</pre>
+
+
 <div class="TitleMessageSub">
 {% if Smarter.message_connection(id) and Smarter.message_is_response(id) %}
 <a href="/info/messages#command">Command messages</a>
@@ -34,6 +42,7 @@
 <a href="/info/messages#response">Response messages</a>
 {% end %}
 </div>
+
 
 <br>
 <br>

@@ -1,7 +1,7 @@
 
        
        
-  Smarter iKettle 2.0 & SmarterCoffee  Protocol
+  Smarter iKettle 2.0 & Smarter Coffee  Protocol
   _____________________________________________
 
     Smarter uses a binary message protocol

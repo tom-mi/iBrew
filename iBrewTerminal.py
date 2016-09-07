@@ -6,8 +6,6 @@ import datetime
 
 from smarter.SmarterClient import *
 from smarter.SmarterProtocol import *
-from smarter.SmarterHelp import *
-
 from iBrewWeb import *
 from iBrewJokes import *
 
@@ -16,7 +14,7 @@ from iBrewJokes import *
 #------------------------------------------------------
 # iBrew
 #
-# Terminal Interface to iKettle 2.0 & SmarterCoffee Devices
+# Terminal Interface to iKettle 2.0 & Smarter Coffee Devices
 #
 # https://github.com/Tristan79/iBrew
 #
@@ -32,7 +30,7 @@ from iBrewJokes import *
 #------------------------------------------------------
 
 
-iBrewApp          = "iBrew: iKettle 2.0 & SmarterCoffee Interface"
+iBrewApp          = "iBrew: iKettle 2.0 & Smarter Coffee Interface"
 iBrewInfo         = "iBrew: Out of order! © 2016 Tristan (@monkeycat.nl)"
 iBrewContribute   = "Please contribute any discoveries on https://github.com/Tristan79/iBrew/issues"
 
@@ -362,52 +360,33 @@ class iBrewTerminal:
                                             self.commands()
             elif command == "usage":        self.usage()
             elif command == "commands":     self.commands()
-            elif command == "protocol":     SmarterHelp.protocol()
-            elif command == "structure":    SmarterHelp.structure()
-            elif command == "notes":        SmarterHelp.notes()
+            elif command == "protocol":     print Smarter.protocol()
+            elif command == "structure":    print Smarter.structure()
+            elif command == "notes":        print Smarter.notes()
             elif command == "examples":     self.examples()
             elif command == "messages":
                                             if numarg >= 1 or not self.console:
-                                                SmarterHelp.messages()
+                                                print Smarter.messages()
                                             else:
                                                 print str(self.client.isCoffee) + " " + str(self.client.isKettle)
-                                                SmarterHelp.messages(self.client.isCoffee,self.client.isKettle)
+                                                print Smarter.messages(self.client.isCoffee,self.client.isKettle)
             elif command == "message":
                                             if numarg >= 1:
-                                                SmarterHelp.message(Smarter.code_to_number(arguments[0]))
+                                                print Smarter.message(Smarter.code_to_number(arguments[0]))
                                             else:
-                                                SmarterHelp.all()
+                                                print Smarter.all()
             elif command == "list":         self.client.print_devices_found(self.client.find_devices())
             elif command == "joke" or command == "quote":
                                             print
                                             self.joke()
                                             print
             elif command == "stats":
-                                            print
-                                            print "  " + str(self.client.connectCount).rjust(10, ' ') + "  Connected"
-                                            print "  " + str(self.client.sendCount).rjust(10, ' ')   + "  Commands ("  + Smarter.bytes_to_human(self.client.sendBytesCount) + ")"
-                                            print "  " + str(self.client.readCount).rjust(10, ' ')   + "  Responses (" + Smarter.bytes_to_human(self.client.readBytesCount) + ")"
-                                            print
-                                            
-                                            for id in sorted(self.client.commandCount):
-                                                print "  " + str(self.client.commandCount[id]).rjust(10, ' ') + "  [" + Smarter.number_to_code(id) + "] " + Smarter.message_description(id)
+                                            if self.console:
+                                                self.client.print_stats()
+                                            else:
+                                                print "iBrew: In console only"
                                             print
                                             
-                                            for id in sorted(self.client.responseCount):
-                                                print "  " + str(self.client.responseCount[id]).rjust(10, ' ') + "  [" + Smarter.number_to_code(id) + "] "  + Smarter.message_description(id)
-                                            print
-                                            if self.client.isCoffee:
-                                                print "  " + str(self.client.countCarafeRemoved).rjust(10, ' ') + "x Carafe removed"
-                                                print "  " + str(self.client.countHeater).rjust(10, ' ') + "x Heater on"
-                                                print "  " + str(self.client.countHotPlateOn).rjust(10, ' ') + "x Hotplate on"
-                                                print "  " + str(self.client.countGrinderOn).rjust(10, ' ') + "x Grinder on"
-                                            elif self.client.isKettle:
-                                                print "  " + str(self.client.countKettleRemoved).rjust(10, ' ') + "x Kettle removed"
-                                                print "  " + str(self.client.countHeater).rjust(10, ' ') + "x Heater on"
-                                                print "  " + str(self.client.countKeepWarm).rjust(10, ' ') + "x Kept warm"
-                                            
-                                            
-                                            print
             elif command == "web":
                                             if not self.console:
                                                 if numarg == 0:
@@ -691,10 +670,10 @@ class iBrewTerminal:
         print "  If you do not supply a host, it will try to connect to the first detected device"
         print "  Thus if you have more then one device supply a host (if its not in direct mode)"
         print
-    
+
     def commands(self):
         print
-        print "  iKettle 2.0 & SmarterCoffee  Commands"
+        print "  iKettle 2.0 & Smarter Coffee  Commands"
         print "    default                set default settings"
         print "    info                   device info"
         print "    history                action history"
@@ -717,7 +696,7 @@ class iBrewTerminal:
         print "    stop kettle            stops heating"
         print "    settings [temperature] [keepwarm] [formula] [formulatemperature] store kettle user settings"
         print
-        print "  SmarterCoffee  Commands"
+        print "  Smarter Coffee  Commands"
         print "    brew (cups (hotplate (grind (strength)))) brew coffee"
         print "    brew default           brew coffee with default settings"
         print "    carafe                 returns if carafe is required"

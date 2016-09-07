@@ -106,7 +106,7 @@ you can also use them on the command line as arguments:
 
 ```
 
-  iKettle 2.0 & SmarterCoffee  Commands
+  iKettle 2.0 & Smarter Coffee  Commands
     default                set default settings
     info                   device info
     history                action history
@@ -129,7 +129,7 @@ you can also use them on the command line as arguments:
     stop kettle            stops heating
     settings [temperature] [keepwarm] [formula] [formulatemperature] store kettle user settings
 
-  SmarterCoffee  Commands
+  Smarter Coffee  Commands
     brew (cups (hotplate (grind (strength)))) brew coffee
     brew default           brew coffee with default settings
     carafe                 returns if carafe is required

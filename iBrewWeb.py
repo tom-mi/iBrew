@@ -20,7 +20,7 @@ from iBrewJokes import *
 #------------------------------------------------------
 # SMARTER PROTOCOL INTERFACE REST API
 #
-# REST API interface to iKettle 2.0 & SmarterCoffee Devices
+# REST API interface to iKettle 2.0 & Smarter Coffee Devices
 #
 # https://github.com/Tristan79/iBrew
 #
@@ -219,15 +219,16 @@ class DeviceHandler(GenericAPIHandler):
                             }
             elif client.isCoffee:
                 response = { 'device'      : encodeDevice(client),
-                             'sensors'     : { 'singlecupmode'  : client.singlecup,
-                                               'carafe'         : client.carafe,
-                                               'carafemode'     : client.carafeMode,
+                             'sensors'     : { 'hotplate'   : client.hotPlateOn,
+                                               'heater'     : client.heaterOn,
+                                               'grinder'    : client.grinderOn,
                                                'waterlevel'     : client.waterLevel,
-                                               'status'         : { 'hotplate'   : client.hotPlateOn,
-                                                                    'heater'     : client.heaterOn,
-                                                                    'grinder'    : client.grinderOn,
-                                                                    'working'    : client.working,
-                                                                    'ready'      : client.ready
+                                               'status'         : { 'working'     : client.working,
+                                                                    'ready'       : client.ready,
+                                                                    'cups'        : clinet.cupsBrew,
+                                                                    'carafe'      : client.carafe,
+                                                                    'enoughwater' : client.waterEnough,
+                                                                    'timerevent'  : client.timerEvent
                                                                   },
                                              },
                              'settings'    : { 'default'       : { 'cups'       : client.defaultCups,
@@ -239,7 +240,9 @@ class DeviceHandler(GenericAPIHandler):
                                                                    'strength'   : Smarter.strength_to_string(client.strength),
                                                                    'source'     : Smarter.grind_to_string(client.grind),
                                                                    'hotplate'   : client.hotPlate
-                                                                 }
+                                                                 },
+                                               'caraferequired' : client.carafeMode,
+                                               'singlecup'      : client.singlecup
                                              },
                             }
 
@@ -677,7 +680,7 @@ class VersionHandler(GenericAPIHandler):
 
 class iBrewWeb(tornado.web.Application):
 
-    version = '0.5'
+    version = '0.7'
     
     def start(self):
         tornado.ioloop.IOLoop.instance().start()
