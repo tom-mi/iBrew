@@ -311,7 +311,7 @@ class iBrewTerminal:
             if command == "console" or command == "connect":
                 self.client.disconnect()
 
-            if (not self.client.connected or self.haveHost) and command != "help" and command != "?" and command != "list" and command != "message" and command != "usage" and command != "commands" and command != "web" and command != "joke" and command != "protocol" and command != "structure" and command != "notes" and command != "examples" and command != "messages":
+            if (not self.client.connected or self.haveHost) and command != "help" and command != "?" and command != "list" and command != "message" and command != "usage" and command != "commands" and command != "web" and command != "joke" and command != "license" and command != "protocol" and command != "structure" and command != "notes" and command != "examples" and command != "messages":
 
                 if not self.haveHost:
                     devices = self.client.find_devices()
@@ -363,6 +363,7 @@ class iBrewTerminal:
             elif command == "protocol":     print Smarter.protocol()
             elif command == "structure":    print Smarter.structure()
             elif command == "notes":        print Smarter.notes()
+            elif command == "license":      print Smarter.license()
             elif command == "examples":     self.examples()
             elif command == "messages":
                                             if numarg >= 1 or not self.console:
@@ -738,8 +739,9 @@ class iBrewTerminal:
         print "    notes                  show developer notes on the devices"
         print "    structure              show protocol structure information"
         print
-        print "  Console Commands"
+        print "  iBrew Commands"
         print "    joke                   show joke"
+        print "    license                show license"
         print "    quit                   quit console [console only]"
         print
 

@@ -136,6 +136,25 @@ class SmarterClient:
 
         self.writeLock                  = threading.Lock()
         self.socketLock                 = threading.Lock()
+    
+        # total for device
+        self.totalSendCount             = 0
+        self.totalReadCount             = 0
+        self.totalReadBytesCount        = 0
+        self.totalSendBytesCount        = 0
+        
+        # session
+        self.sendCount                  = 0
+        self.readCount                  = 0
+        self.sendBytesCount             = 0
+        self.readBytesCount             = 0
+
+        # already written to total from session
+        self.deltaSendCount             = 0
+        self.deltaReadCount             = 0
+        self.deltaReadBytesCount        = 0
+        self.deltaSendBytesCount        = 0
+    
 
     def __init__(self):
         self.host                       = Smarter.DirectHost
@@ -148,11 +167,7 @@ class SmarterClient:
         
         self.device                     = "None"
         self.deviceId                   = 0
-        
-        self.sendCount                  = 0
-        self.readCount                  = 0
-        self.sendBytesCount             = 0
-        self.readBytesCount             = 0
+ 
         self.connectCount               = 0
         self.commandCount               = dict()
         self.responseCount              = dict()
@@ -252,14 +267,19 @@ class SmarterClient:
                     if monitorCount % timeout == timeout - 9:
                         if self.isKettle:   self.kettle_calibrate_base()
                         if self.isCoffee:   self.coffee_carafe()
+                        self.write_stats()
 
                     if monitorCount % timeout == timeout - 19:
                         if self.isCoffee:   self.coffee_single_cup_mode()
+                        self.write_stats()
 
                     if monitorCount % timeout == timeout - 29:
                         self.device_settings()
+                        self.write_stats()
 
-                    #if monitorCount % timeout == timeout - 39:
+                    if monitorCount % timeout == timeout - 39:
+                        self.write_stats()
+                    #    self.coffee_timers()
                     #    self.device_history()
                 except:
                     #print(traceback.format_exc())
@@ -506,6 +526,7 @@ class SmarterClient:
     def connect(self):
         #print "CONNECT " + self.host
         self.init()
+        self.write_stats()
         
         if self.host == "":
             self.host = Smarter.DirectHost
@@ -538,6 +559,89 @@ class SmarterClient:
             except:
                 raise SmarterErrorOld("Could not start monitor")
                 
+    """
+    def read_stats(self):
+        config = SafeConfigParser()
+        config.read('devices/'+self.host+'.conf')
+        
+        try:
+            config.add_section('stats')
+        except:
+            pass
+
+        try:
+            self.totalSendCount = int(config.get('stats', 'send'))
+        except:
+            pass
+        
+        try:
+            self.totalReadCount = int(config.get('stats', 'read'))
+        except:
+            pass
+
+        try:
+            self.totalReadBytesCount = int(config.get('stats', 'readbytes'))
+        except:
+            pass
+
+        try:
+            self.totalSendBytesCount = int(config.get('stats', 'sendbytes'))
+        except:
+            pass
+    """
+    
+    def write_stats(self):
+        config = SafeConfigParser()
+        config.read('devices/'+self.host+'.conf')
+        
+        #try:
+        #    config.add_section('device')
+        #except:
+        #    pass
+        try:
+            config.add_section('stats')
+        except:
+            pass
+
+        #try:
+        #    config.set('device', 'type',Smarter.number_to_code(self.deviceId))
+        #except:
+        #    config.set('device', 'type','00')
+        
+        try:
+            self.totalSendCount = int(config.get('stats', 'send')) + self.sendCount - self.deltaSendCount
+            self.deltaSendCount = self.sendCount - self.deltaSendCount
+            config.set('stats', 'send', str(self.totalSendCount))
+        except:
+            config.set('stats', 'send', str(self.sendCount))
+        
+        try:
+            self.totalReadCount = int(config.get('stats', 'read')) + self.readCount - self.deltaReadCount
+            self.deltaReadCount = self.readCount - self.deltaReadCount
+            config.set('stats', 'read', str(self.totalReadCount))
+        except:
+            config.set('stats', 'read', str(self.readCount))
+
+        try:
+            self.totalReadBytesCount = int(config.get('stats', 'readbytes')) + self.readBytesCount - self.deltaReadBytesCount
+            self.deltaReadBytesCount = self.readBytesCount - self.deltaReadBytesCount
+            config.set('stats', 'readbytes', str(self.totalReadBytesCount))
+        except:
+            config.set('stats', 'readbytes', str(self.readBytesCount))
+
+        try:
+            self.totalSendBytesCount = int(config.get('stats', 'sendbytes')) + self.sendBytesCount - self.deltaSendBytesCount
+            self.deltaSendBytesCount = self.sendBytesCount - self.deltaSendBytesCount
+            config.set('stats', 'sendbytes', str(self.totalSendBytesCount))
+        except:
+            config.set('stats', 'sendbytes', str(self.sendBytesCount))
+
+        with open('devices/'+self.host+'.conf', 'w') as f:
+            config.write(f)
+            
+        if self.dump:
+            self.print_stats()
+
 
 
     @threadsafe_function
@@ -546,53 +650,8 @@ class SmarterClient:
         self.run = False
         
         if self.connected:
+            self.write_stats()
         
-            # PERSISTENCE NEW NEW
-            # PERSISTENCE NEW NEW
-            # PERSISTENCE NEW NEW
-            # PERSISTENCE NEW NEW
-            
-            config = SafeConfigParser()
-            config.read('devices/'+self.host+'.conf')
-            
-            
-            try:
-                config.add_section('device')
-            except:
-                pass
-            try:
-                config.add_section('stats')
-            except:
-                pass
-
-            try:
-                config.set('device', 'type',Smarter.number_to_code(self.deviceId))
-            except:
-                config.set('device', 'type','00')
-            
-            try:
-                config.set('stats', 'send', str(int(config.get('stats', 'send')) + self.sendCount))
-            except:
-                config.set('stats', 'send', str(self.sendCount))
-            
-            try:
-                config.set('stats', 'read', str(int(config.get('stats', 'read')) + self.readCount))
-            except:
-                config.set('stats', 'read', str(self.readCount))
-
-            try:
-                config.set('stats', 'sendbytes', str(int(config.get('stats', 'sendbytes')) + self.sendBytesCount))
-            except:
-                config.set('stats', 'sendbytes', str(self.sendBytesCount))
-
-            try:
-                config.set('stats', 'readbytes', str(int(config.get('stats', 'sendbytes')) + self.readBytesCount))
-            except:
-                config.set('stats', 'readbytes', str(self.readBytesCount))
-
-            with open('devices/'+self.host+'.conf', 'w') as f:
-                config.write(f)
-
             self.connected = False
             try:
                 if self.monitor:
@@ -1436,7 +1495,20 @@ class SmarterClient:
 
     def print_stats(self):
         print
+        print "Stats "+ self.host
+        print "______"+ "_"*len(self.host)
+        print
+        print
+        print "Total:"
+        print
         print "  " + str(self.connectCount).rjust(10, ' ') + "  Connected"
+        print "  " + str(self.totalSendCount).rjust(10, ' ')   + "  Commands ("  + Smarter.bytes_to_human(self.totalSendBytesCount) + ")"
+        print "  " + str(self.totalReadCount).rjust(10, ' ')   + "  Responses (" + Smarter.bytes_to_human(self.totalReadBytesCount) + ")"
+        print
+
+        print "Session:"
+        print
+    #    print "  " + str(self.connectCount).rjust(10, ' ') + "  Connected"
         print "  " + str(self.sendCount).rjust(10, ' ')   + "  Commands ("  + Smarter.bytes_to_human(self.sendBytesCount) + ")"
         print "  " + str(self.readCount).rjust(10, ' ')   + "  Responses (" + Smarter.bytes_to_human(self.readBytesCount) + ")"
         print
