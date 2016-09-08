@@ -663,8 +663,8 @@ class iBrewTerminal:
                     email = raw_input(self.username + ", please enter your email: ").strip()
                 c = 0
                 accept = raw_input("You accept the license? Please answer with YES or NO followed by pressing the ENTER key: ").strip()
-                while (accept != "YES"):
-                    if accept == "NO":
+                while (accept.upper() != "YES"):
+                    if accept.upper() == "NO":
                         return
                     c += 1
                     if c > 2:
