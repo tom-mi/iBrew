@@ -170,7 +170,7 @@ class SmarterClient:
         self.device                     = "None"
         self.deviceId                   = 0
         self.version                    = 0
-        self.connectCount               = 0
+        self.sessionCount               = 0
         self.commandCount               = dict()
         self.responseCount              = dict()
         
@@ -224,7 +224,7 @@ class SmarterClient:
         
         monitorCount = 0
    
-        timeout = 50
+        timeout = 60
         self.run = True
         while self.run:
                 try:
@@ -268,20 +268,22 @@ class SmarterClient:
                     if monitorCount % timeout == timeout - 9:
                         if self.isKettle:   self.kettle_calibrate_base()
                         if self.isCoffee:   self.coffee_carafe()
-                        self.write_stats()
-
+ 
                     if monitorCount % timeout == timeout - 19:
                         if self.isCoffee:   self.coffee_single_cup_mode()
-                        self.write_stats()
-
+ 
                     if monitorCount % timeout == timeout - 29:
                         self.device_settings()
-                        self.write_stats()
-
+ 
                     if monitorCount % timeout == timeout - 39:
                         self.write_stats()
-                    #    self.coffee_timers()
-                    #    self.device_history()
+                    
+                    if monitorCount % timeout == timeout - 49:
+                        pass #self.coffee_timers()
+                    
+                    if monitorCount % timeout == timeout - 50:
+                        pass #self.device_history()
+                        
                 except:
                     #print(traceback.format_exc())
                     self.disconnect()
@@ -554,7 +556,6 @@ class SmarterClient:
             self.socket.settimeout(12)
             self.socket.connect((self.host, self.port))
             self.connected = True
-            self.connectCount += 1
         except socket.error, msg:
             raise SmarterErrorOld("Could not connect to + " + self.host + " (" + str(msg) + ")")
 
@@ -569,6 +570,37 @@ class SmarterClient:
 
 
     @threadsafe_function
+    def connect_stats(self):
+  
+        section = "stats"
+        if self.isKettle:
+            section += ".kettle"
+        elif self.isCoffee:
+            section += ".coffee"
+        #else:
+        #    return
+        config = SafeConfigParser()
+        config.read('devices/'+self.host+'.conf')
+        
+        try:
+            config.add_section(section)
+        except:
+            pass
+
+        try:
+            self.sessionCount = int(config.get(section, 'sessions')) + 1
+        except:
+             self.sessionCount = 1
+        config.set(section, 'sessions', str(self.sessionCount))
+
+
+        with open('devices/'+self.host+'.conf', 'w') as f:
+            config.write(f)
+
+        if self.dump:
+            self.print_stats()
+            
+    @threadsafe_function
     def write_stats(self):
         
         section = "stats"
@@ -581,20 +613,16 @@ class SmarterClient:
         config = SafeConfigParser()
         config.read('devices/'+self.host+'.conf')
         
-        #try:
-        #    config.add_section('device')
-        #except:
-        #    pass
         try:
             config.add_section(section)
         except:
             pass
 
-        #try:
-        #    config.set('device', 'type',Smarter.number_to_code(self.deviceId))
-        #except:
-        #    config.set('device', 'type','00')
-        
+        try:
+            self.sessionCount = int(config.get(section, 'sessions')) + int(self.connected)
+        except:
+            self.sessionCount = int(self.connected)
+
         try:
             self.totalSendCount = int(config.get(section, 'send')) + self.sendCount - self.deltaSendCount
             self.deltaSendCount += self.sendCount - self.deltaSendCount
@@ -638,11 +666,13 @@ class SmarterClient:
         self.run = False
         
         if self.connected:
+            
+            self.connect_stats()
+        
             if self.dump:
                 x = self.device
                 if x == "Unknown": x = "device"
                 print "[" + self.host +  ":" + '{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()) + "] Disconnecting " + x
-            self.write_stats()
         
             self.connected = False
             try:
@@ -1489,14 +1519,14 @@ class SmarterClient:
         print
         print "  " + str(self.totalSendCount).rjust(9, ' ')   + "  Commands ("  + Smarter.bytes_to_human(self.totalSendBytesCount) + ")"
         print "  " + str(self.totalReadCount).rjust(9, ' ')   + "  Responses (" + Smarter.bytes_to_human(self.totalReadBytesCount) + ")"
-        if self.connectCount != 0:
-            print "".rjust(11, ' ') + "  " + "Connections to device " + str(self.connectCount)
+        if self.sessionCount != 0:
+            print "  " + str(self.sessionCount).rjust(9, ' ') + "  " + "Sessions"
         print
 
         if self.sendCount != 0 and self.readCount != 0:
-            print "  Session information"
+            print "  Current session"
             print
-        #    print "  " + str(self.connectCount).rjust(10, ' ') + "  Connected"
+        #    print "  " + str(self.sessionCount).rjust(10, ' ') + "  Connected"
             print "  " + str(self.sendCount).rjust(9, ' ')   + "  Commands ("  + Smarter.bytes_to_human(self.sendBytesCount) + ")"
             print "  " + str(self.readCount).rjust(9, ' ')   + "  Responses (" + Smarter.bytes_to_human(self.readBytesCount) + ")"
             print

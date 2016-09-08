@@ -67,6 +67,12 @@
         <div class="CellStats"> {{ client.countHotPlateOn }}x</div>
     </div>
     {% end %}
+    {% if client.sessionCount > 1 %}
+    <div class="tRow">
+        <div class="CellStatsTitle">Sessions</div>
+        <div class="CellStats"> {{ client.sessionCount }}x</div>
+    </div>
+    {% end %}
 </div>
 <br>
 <div class="tTable">
@@ -138,13 +144,4 @@
         <div class="CellStats">{{ client.commandCount[id] }} messages</div>
     </div>
     {% end %}
-    
-
-    {% if client.connectCount > 1 %}
-    <div class="tRow">
-        <div class="CellStatsTitle">Auto<br>Connect</div>
-        <div class="CellStats"> {{ client.connectCount - 1 }}x</div>
-    </div>
-    {% end %}
-    
 </div>
