@@ -150,7 +150,17 @@ class SmarterClient:
         self.deltaReadCount             = 0
         self.deltaReadBytesCount        = 0
         self.deltaSendBytesCount        = 0
-    
+
+
+        self.deltaCountCarafeRemoved         = 0
+        self.deltaCountCupsBrew              = 0
+        self.deltaCountGrinderOn             = 0
+        self.deltaCountHotPlateOn            = 0
+        self.deltaCountKettleRemoved         = 0
+        self.deltaCountHeater                = 0
+        self.deltaCountKeepWarm              = 0
+        self.deltaSessionCount               = 0
+
 
     def __init__(self):
         # total for device
@@ -158,7 +168,19 @@ class SmarterClient:
         self.totalReadCount             = 0
         self.totalReadBytesCount        = 0
         self.totalSendBytesCount        = 0
-
+        
+        
+        self.totalCountCarafeRemoved         = 0
+        self.totalCountCupsBrew              = 0
+        self.totalCountGrinderOn             = 0
+        self.totalCountHotPlateOn            = 0
+        self.totalCountKettleRemoved         = 0
+        self.totalCountHeater                = 0
+        self.totalCountKeepWarm              = 0
+        self.totalSessionCount               = 0
+        
+        
+        
         self.host                       = Smarter.DirectHost
         self.dump_status                = True
         self.dump                       = False
@@ -364,9 +386,9 @@ class SmarterClient:
             message = self.read_message()
             id = Smarter.raw_to_number(message[0])
             
-            if Smarter.message_kettle(id):
+            if Smarter.message_kettle(id) and not Smarter.message_coffee(id):
                 self.switch_kettle_device()
-            elif Smarter.message_coffee(id):
+            elif Smarter.message_coffee(id) and not Smarter.message_kettle(id):
                 self.switch_coffee_device()
             try:
                 if   id == Smarter.ResponseKettleStatus:    self.decode_ResponseKettleStatus(message)
@@ -556,6 +578,7 @@ class SmarterClient:
             self.socket.settimeout(12)
             self.socket.connect((self.host, self.port))
             self.connected = True
+            self.sessionCount = 1
         except socket.error, msg:
             raise SmarterErrorOld("Could not connect to + " + self.host + " (" + str(msg) + ")")
 
@@ -570,43 +593,16 @@ class SmarterClient:
 
 
     @threadsafe_function
-    def connect_stats(self):
-  
-        section = "stats"
-        if self.isKettle:
-            section += ".kettle"
-        elif self.isCoffee:
-            section += ".coffee"
-        #else:
-        #    return
-        config = SafeConfigParser()
-        config.read('devices/'+self.host+'.conf')
-        
-        try:
-            config.add_section(section)
-        except:
-            pass
-
-        try:
-            self.sessionCount = int(config.get(section, 'sessions')) + 1
-        except:
-             self.sessionCount = 1
-        config.set(section, 'sessions', str(self.sessionCount))
-
-
-        with open('devices/'+self.host+'.conf', 'w') as f:
-            config.write(f)
-
-        if self.dump:
-            self.print_stats()
-            
-    @threadsafe_function
     def write_stats(self):
         
+        
+        
         section = "stats"
         if self.isKettle:
             section += ".kettle"
+            print "Kettle " +  self.host
         elif self.isCoffee:
+            print "Kdtle " +  self.host
             section += ".coffee"
         else:
             return
@@ -617,11 +613,6 @@ class SmarterClient:
             config.add_section(section)
         except:
             pass
-
-        try:
-            self.sessionCount = int(config.get(section, 'sessions')) + int(self.connected)
-        except:
-            self.sessionCount = int(self.connected)
 
         try:
             self.totalSendCount = int(config.get(section, 'send')) + self.sendCount - self.deltaSendCount
@@ -651,6 +642,62 @@ class SmarterClient:
         except:
             config.set(section, 'sendbytes', str(self.sendBytesCount))
 
+
+
+        try:
+            self.totalCountHeater = int(config.get(section, 'heater')) + self.countHeater - self.deltaCountHeater
+            self.deltaCountHeater += self.countHeater - self.deltaCountHeater
+            config.set(section, 'heater', str(self.totalCountHeater))
+        except:
+            config.set(section, 'heater', str(self.countHeater))
+
+
+        if self.isKettle:
+            try:
+                self.totalCountKettleRemoved = int(config.get(section, 'kettleremoved')) + self.countKettleRemoved - self.deltaCountKettleRemoved
+                self.deltaCountKettleRemoved += self.countKettleRemoved - self.deltaCountKettleRemoved
+                config.set(section, 'kettleremoved', str(self.totalCountKettleRemoved))
+            except:
+                config.set(section, 'kettleremoved', str(self.countKettleRemoved))
+
+            try:
+                self.totalCountKeepWarm = int(config.get(section, 'keepwarm')) + self.countKeepWarm - self.deltaCountKeepWarm
+                self.deltaCountKeepWarm += self.countKeepWarm - self.deltaCountKeepWarm
+                config.set(section, 'keepwarm', str(self.totalCountKeepWarm))
+            except:
+                config.set(section, 'keepwarm', str(self.countKeepWarm))
+                
+                
+        if self.isCoffee:
+            try:
+                self.totalCountCarafeRemoved = int(config.get(section, 'caraferemoved')) + self.countCarafeRemoved - self.deltaCountCarafeRemoved
+                self.deltaCountCarafeRemoved += self.countCarafeRemoved - self.deltaCountCarafeRemoved
+                config.set(section, 'caraferemoved', str(self.totalCountCarafeRemoved))
+            except:
+                config.set(section, 'caraferemoved', str(self.countCarafeRemoved))
+
+            try:
+                self.totalCountGrinderOn = int(config.get(section, 'grinder')) + self.countGrinderOn - self.deltaCountGrinderOn
+                self.deltaCountGrinderOn += self.countGrinderOn - self.deltaCountGrinderOn
+                config.set(section, 'grinder', str(self.totalCountGrinderOn))
+            except:
+                config.set(section, 'grinder', str(self.countGrinderOn))
+
+            try:
+                self.totalCountHotPlateOn = int(config.get(section, 'hotplate')) + self.countHotPlateOn - self.deltaCountHotPlateOn
+                self.deltaCountHotPlateOn += self.countHotPlateOn - self.deltaCountHotPlateOn
+                config.set(section, 'hotplate', str(self.totalCountHotPlateOn))
+            except:
+                config.set(section, 'hotplate', str(self.countHotPlateOn))
+
+        try:
+            self.totalSessionCount = int(config.get(section, 'sessions')) + self.sessionCount - self.deltaSessionCount
+            self.deltaSessionCount += self.sessionCount - self.deltaSessionCount
+            config.set(section, 'sessions', str(self.totalSessionCount))
+        except:
+            config.set(section, 'sessions', str(self.sessionCount))
+
+        
         with open('devices/'+self.host+'.conf', 'w') as f:
             config.write(f)
 
@@ -667,7 +714,7 @@ class SmarterClient:
         
         if self.connected:
             
-            self.connect_stats()
+            self.write_stats()
         
             if self.dump:
                 x = self.device
@@ -1519,10 +1566,22 @@ class SmarterClient:
         print
         print "  " + str(self.totalSendCount).rjust(9, ' ')   + "  Commands ("  + Smarter.bytes_to_human(self.totalSendBytesCount) + ")"
         print "  " + str(self.totalReadCount).rjust(9, ' ')   + "  Responses (" + Smarter.bytes_to_human(self.totalReadBytesCount) + ")"
-        if self.sessionCount != 0:
-            print "  " + str(self.sessionCount).rjust(9, ' ') + "  " + "Sessions"
+        if self.totalSessionCount != 0:
+            print "  " + str(self.totalSessionCount).rjust(9, ' ') + "  " + "Sessions"
         print
-
+        print
+        if self.isCoffee:
+            print "  " + str(self.totalCountCarafeRemoved).rjust(9, ' ') + "  Carafe removed"
+            print "  " + str(self.totalCountCupsBrew).rjust(9, ' ') + "  Cups brew"
+            print "  " + str(self.totalCountHeater).rjust(9, ' ') + "  Heater on"
+            print "  " + str(self.totalCountHotPlateOn).rjust(9, ' ') + "  Hotplate on"
+            print "  " + str(self.totalCountGrinderOn).rjust(9, ' ') + "  Grinder on"
+        elif self.isKettle:
+            print "  " + str(self.totalCountKettleRemoved).rjust(9, ' ') + "  Kettle removed"
+            print "  " + str(self.totalCountHeater).rjust(9, ' ') + "  Heater on"
+            print "  " + str(self.totalCountKeepWarm).rjust(9, ' ') + "  Kept warm"
+        print
+        print
         if self.sendCount != 0 and self.readCount != 0:
             print "  Current session"
             print

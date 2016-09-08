@@ -10,6 +10,46 @@
 
 
 <div class="tTable">
+    {% if client.isCoffee %}
+    <div class="tRow">
+        <div class="CellStatsTitle">Carafe Removed</b></div>
+        <div class="CellStats"> {{ client.totalCountCarafeRemoved }}x</div>
+    </div>
+    <div class="tRow">
+        <div class="CellStatsTitle">Grinder</b></div>
+        <div class="CellStats"> {{ client.totalCountGrinderOn }}x</div>
+    </div>
+    {% end %}
+    
+    <div class="tRow">
+        <div class="CellStatsTitle">Heater</b></div>
+        <div class="CellStats"> {{ client.totalCountHeater }}x</div>
+    </div>
+
+    {% if client.isKettle %}
+    <div class="tRow">
+        <div class="CellStatsTitle">Kept Warm</b></div>
+        <div class="CellStats"> {{ client.totalCountKeepWarm }}x</div>
+    </div>
+    <div class="tRow">
+        <div class="CellStatsTitle">Kettle Removed</b></div>
+        <div class="CellStats"> {{ client.totalCountKettleRemoved }}x</div>
+    </div>
+    {% end %}
+    
+    {% if client.isCoffee %}
+    <div class="tRow">
+        <div class="CellStatsTitle">Hotplate</b></div>
+        <div class="CellStats"> {{ client.totalCountHotPlateOn }}x</div>
+    </div>
+    {% end %}
+</div>
+<br>
+<div class="tTable">
+    <div class="tRow">
+        <div class="CellStatsTitle">Sessions</div>
+        <div class="CellStats"> {{ client.totalSessionCount }}x</div>
+    </div>
    <div class="tRow">
         <div class="CellStatsTitle">Read</div>
         <div class="CellStats">{{ client.totalReadCount }} messages</div>
@@ -65,12 +105,6 @@
     <div class="tRow">
         <div class="CellStatsTitle">Hotplate</b></div>
         <div class="CellStats"> {{ client.countHotPlateOn }}x</div>
-    </div>
-    {% end %}
-    {% if client.sessionCount > 1 %}
-    <div class="tRow">
-        <div class="CellStatsTitle">Sessions</div>
-        <div class="CellStats"> {{ client.sessionCount }}x</div>
     </div>
     {% end %}
 </div>
