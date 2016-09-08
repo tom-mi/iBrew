@@ -4,20 +4,20 @@
 
 
 ## Introduction
-iBrew is a (python) interface to iKettle 2.0 and Smarter Coffee devices. It includes a console, monitor, command line interface, web interface and rest api. You can also use it in your own code. iKettle 2.0 v19 and SmarterCoffee v20 tested at the moment. Please share any other discoveries you made!
+iBrew is a (python) interface to iKettle 2.0 and Smarter Coffee devices. It includes a console, monitor, command line interface, web interface and rest api. You can also use it in your own code. iKettle 2.0 v19 and SmarterCoffee v20 tested at the moment. Please share any other discoveries you made! 
 
 This means your machine is free! You can connect it yourself and do whatever you want with it. Like interface it with your favorite smarthome controller!
 
    Signed Me!
 
 #### Versions
- * v0.0 Bean Grinder Pack
- * v0.1 White Tealeaf Edition
- * v0.2 Tea Noire Sweet
- * v0.3 Kettle Rattle 
- * v0.4 Brewing on the 7th day (rest & web interface) <-- CURRENT VERSION
- * v0.5 Dumb Dump Limited Collector Edition (numbered, signed by author)
- * v1.0 Out of order! (the final cut) <-- 2017 NEVER TOUCH THE CODE AGAIN VERSION
+ * PHASE 1: [BRAINSTORMING] v0.0 Bean Grinder Pack 
+ * PHASE 2: [PROTOTYPE]     v0.1 White Tealeaf Edition 
+ * PHASE 3: [PROTOCOL]      v0.2 Tea Noire Sweet 
+ * PHASE 4: [CONSOLE]       v0.3 Kettle Rattle 
+ * PHASE 5: [WEB]           v0.4 Brewing on the 7th day 
+ * PHASE 6: [PRERELEASE]    v0.5 Dumb Dump Limited Collector Edition (numbered, signed by author)
+ * PHASE 7: [FINALCUT]      v1.0 Out of order!
  
 #### Upcoming for the last 3 versions  
  * Timers protocol
@@ -35,13 +35,12 @@ This means your machine is free! You can connect it yourself and do whatever you
  * filter out wrong responses... of know commands??? or atleast acknowledge them, (03 responses)
  * have not looked at single cup... needs a remote coffee machine session ;-)
  * strip zero from ip
- 
+
 #### Contact
 [Bugs or issues](https://github.com/Tristan79/iBrew/issues). Donations & other questions <tristan@monkeycat.nl>
 If you have jokes on coffee, tea, hot chocolade, coffee machines or kettles, please post in the issues.
 
-Still no coffee machine (so no web for that)! I could like to thank Ju4ia for letting me access his coffee machine remotely, so I could test the client code and helping me
-get more SmarterCoffee missing protocol stuff.
+Still no coffee machine (so no web for that)! I could like to thank Ju4ia for letting me access his coffee machine remotely, and get more Smarter Coffee missing protocol bits, and... that I could test the client code. And thanks for jkellerer for supplying coffee codes!
 
 
 ## Installation
@@ -216,6 +215,8 @@ http://ip:port/info/api
  
      
 ### LICENSE
+
+The author has no contact with or support from Smarter, and is not affiliated in any way with the company that produces the appliances.
 
 
 Copyright (c) 2016, Tristan Crispijn
