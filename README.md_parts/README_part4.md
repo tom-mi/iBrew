@@ -23,3 +23,5 @@ http://ip:port/info/api
      
 ### LICENSE
 
+The author has no contact with or support from Smarter, and is not affiliated in any way with the company that produces the appliances.
+
