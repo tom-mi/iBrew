@@ -659,7 +659,7 @@ class StatsHandler(GenericAPIHandler):
                                                          }
                                                 },
 
-                         'connections'      : client.connectCount,
+                         'sessions'      : client.sessionCount,
                          client.deviceId    : device
                         }
         
