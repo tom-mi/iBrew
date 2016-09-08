@@ -600,9 +600,7 @@ class SmarterClient:
         section = "stats"
         if self.isKettle:
             section += ".kettle"
-            print "Kettle " +  self.host
         elif self.isCoffee:
-            print "Kdtle " +  self.host
             section += ".coffee"
         else:
             return

@@ -1,4 +1,4 @@
-# iBrew Brewing on the 7th day
+# iBrew: Brewing on the 7th day
 
 [iKettle 2.0](http://smarter.am/ikettle) and [Smarter Coffee](http://smarter.am/coffee) Interface
 
