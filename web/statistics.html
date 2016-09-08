@@ -1,0 +1,8 @@
+{% set title = "Statistics iBrew Server" %} {% include wrapper/head.html %}
+<center>
+{% for ip in clients %}
+{% module Template('device/body_statistics.html',client=clients[ip]) %}
+<br><br><br><br><br><br>
+{% end %}
+</center>
+{% include wrapper/foot.html %}

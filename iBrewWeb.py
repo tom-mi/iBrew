@@ -20,7 +20,7 @@ from iBrewJokes import *
 #------------------------------------------------------
 # SMARTER PROTOCOL INTERFACE REST API
 #
-# REST API interface to iKettle 2.0 & SmarterCoffee Devices
+# REST API interface to iKettle 2.0 & Smarter Coffee Devices
 #
 # https://github.com/Tristan79/iBrew
 #
@@ -79,7 +79,7 @@ class MainPageHandler(BaseHandler):
 class ServerPageHandler(BaseHandler):
     #@tornado.web.authenticated
     def get(self):
-        self.render(webroot+"server.html",clients = self.application.clients)
+        self.render(webroot+"statistics.html",clients = self.application.clients)
 
 
 class InfoPageHandler(BaseHandler):
@@ -91,7 +91,7 @@ class InfoPageHandler(BaseHandler):
 class WifiPageHandler(BaseHandler):
     #@tornado.web.authenticated
     def get(self,ip):
-        self.render(webroot+"wifi.html",client = self.application.clients[ip])
+        self.render(webroot+"device/wifi.html",client = self.application.clients[ip])
 
 class ShowTextFilePageHandler(BaseHandler):
     #@tornado.web.authenticated
@@ -123,7 +123,20 @@ class APIPageHandler(BaseHandler):
 class MessagesPageHandler(BaseHandler):
     #@tornado.web.authenticated
     def get(self):
-              self.render(webroot+"info/messages.html",status = Smarter.StatusToJSON(),commands = Smarter.CommandToJSON(), responses = Smarter.ResponseToJSON())
+        self.render(webroot+"info/messages.html",status = Smarter.StatusToJSON(),commands = Smarter.CommandToJSON(), responses = Smarter.ResponseToJSON())
+
+
+class LicensePageHandler(BaseHandler):
+    #@tornado.web.authenticated
+    def get(self):
+        self.render(webroot+"info/license.html")
+
+
+
+class ArgumentsPageHandler(BaseHandler):
+    #@tornado.web.authenticated
+    def get(self):
+        self.render(webroot+"info/arguments.html",status = Smarter.StatusToJSON(),commands = Smarter.CommandToJSON(), responses = Smarter.ResponseToJSON())
 
 
 class MessagePageHandler(BaseHandler):
@@ -151,7 +164,7 @@ class StatsPageHandler(BaseHandler):
     def get(self,ip):
         if ip in self.application.clients:
             c = self.application.clients[ip]
-            self.render(webroot+"stats.html",client = c)
+            self.render(webroot+"device/statistics.html",client = c)
         else:
             self.render(webroot+"somethingwrong.html")
 
@@ -171,8 +184,9 @@ def encodeFirmware(device,version):
 
 
 def encodeDevice(client):
-    return { 'id'          : client.deviceId,
-             'type'        : Smarter.device_to_string(client.deviceId),
+    return { 'type'        : { 'desciption' : Smarter.device_to_string(client.deviceId),
+                               'id'          : client.deviceId
+                            },
              'directmode'  : client.isDirect,
              'host'        : client.host,
              'connected'   : client.connected,
@@ -219,15 +233,16 @@ class DeviceHandler(GenericAPIHandler):
                             }
             elif client.isCoffee:
                 response = { 'device'      : encodeDevice(client),
-                             'sensors'     : { 'singlecupmode'  : client.singlecup,
-                                               'carafe'         : client.carafe,
-                                               'carafemode'     : client.carafeMode,
+                             'sensors'     : { 'hotplate'   : client.hotPlateOn,
+                                               'heater'     : client.heaterOn,
+                                               'grinder'    : client.grinderOn,
                                                'waterlevel'     : client.waterLevel,
-                                               'status'         : { 'hotplate'   : client.hotPlateOn,
-                                                                    'heater'     : client.heaterOn,
-                                                                    'grinder'    : client.grinderOn,
-                                                                    'working'    : client.working,
-                                                                    'ready'      : client.ready
+                                               'status'         : { 'working'     : client.working,
+                                                                    'ready'       : client.ready,
+                                                                    'cups'        : clinet.cupsBrew,
+                                                                    'carafe'      : client.carafe,
+                                                                    'enoughwater' : client.waterEnough,
+                                                                    'timerevent'  : client.timerEvent
                                                                   },
                                              },
                              'settings'    : { 'default'       : { 'cups'       : client.defaultCups,
@@ -239,7 +254,9 @@ class DeviceHandler(GenericAPIHandler):
                                                                    'strength'   : Smarter.strength_to_string(client.strength),
                                                                    'source'     : Smarter.grind_to_string(client.grind),
                                                                    'hotplate'   : client.hotPlate
-                                                                 }
+                                                                 },
+                                               'caraferequired' : client.carafeMode,
+                                               'singlecup'      : client.singlecup
                                              },
                             }
 
@@ -255,8 +272,9 @@ class DevicesHandler(GenericAPIHandler):
         devices = SmarterClient().find_devices()
         response = {}
         for device in devices:
-            response[device[0]] = { 'id'          : device[1],
-                                    'type'        : Smarter.device_to_string(device[1]),
+            response[device[0]] = { 'type'        : { 'desciption'  : Smarter.device_to_string(device[1]),
+                                                      'id'          : device[1]
+                                                    },
                                     'firmware'    : encodeFirmware(device[1],device[2])
                                   }
         self.setContentType()
@@ -625,15 +643,23 @@ class StatsHandler(GenericAPIHandler):
             else:
                 device = {}
             
-            response = { 'messages'         : { 'send'      : client.sendCount,
-                                                'read'      : client.readCount,
-                                                'client'    : client.commandCount,
-                                                'server'    : client.responseCount
-                                            },
-                         'bytes'            : { 'send'      : client.sendBytesCount,
-                                                'read'      : client.readBytesCount
-                                            },
-                         'reconnect'        : client.connectCount - 1,
+            response = { 'messages'         : { 'session' : { 'send'      : { 'count' : client.sendCount,
+                                                                          'bytes' : client.sendBytesCount},
+                                                          'read'      : { 'count' : client.readCount,
+                                                                          'bytes' : client.readBytesCount},
+                                                          'command'   : client.commandCount,
+                                                          'response'  : client.responseCount
+                                                         },
+                                             'total'    : { 'send'      : { 'count' : client.totalSendCount,
+                                                                          'bytes' : client.totalSendBytesCount},
+                                                          'read'      : { 'count' : client.totalReadCount,
+                                                                          'bytes' : client.totalReadBytesCount}
+                                                         # 'command'   : client.commandCount,
+                                                         # 'response'  : client.responseCount
+                                                         }
+                                                },
+
+                         'connections'      : client.connectCount,
                          client.deviceId    : device
                         }
         
@@ -677,7 +703,7 @@ class VersionHandler(GenericAPIHandler):
 
 class iBrewWeb(tornado.web.Application):
 
-    version = '0.5'
+    version = '0.71'
     
     def start(self):
         tornado.ioloop.IOLoop.instance().start()
@@ -729,6 +755,9 @@ class iBrewWeb(tornado.web.Application):
                     if self.dump:
                         print "[" + device[0] + "] Adding Web Device"
                     client = SmarterClient()
+                    client.deviceId = device[1]
+                    client.device = Smarter.device_to_string(device[1])
+                    client.version = device[2]
                     client.dump = self.dump
                     client.dump_status = self.dump
                     client.host = device[0]
@@ -858,7 +887,7 @@ class iBrewWeb(tornado.web.Application):
                 (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/start/?",StartHandler),
                 (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/stop/?",StopHandler),
                 (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/joke/?",JokeHandler),
-                (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/stats/?",StatsHandler),
+                (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/statistics/?",StatsHandler),
                 
                 (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/?",SettingsHandler),
                 (r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/default/?",SettingsDefaultHandler),
@@ -873,11 +902,13 @@ class iBrewWeb(tornado.web.Application):
                 # WEB PAGES
                 (r"/",MainPageHandler),
                 (r"/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/wifi/?", WifiPageHandler),
-                (r"/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/stats/?", StatsPageHandler),
+                (r"/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/statistics/?", StatsPageHandler),
                 (r"/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/?", SettingsPageHandler),
-                (r"/server/?",ServerPageHandler),
+                (r"/statistics/?",ServerPageHandler),
                 (r"/info/rest/?",APIPageHandler),
+                (r"/info/license/?",LicensePageHandler),
                 (r"/info/messages/?",MessagesPageHandler),
+                (r"/info/arguments/?",ArgumentsPageHandler),
                 (r"/info/message/([0-9,A-F,a-f][0-9,A-F,a-f])/?",MessagePageHandler),
                 (r"/",MainPageHandler),
                 (r"/info/?",InfoPageHandler),

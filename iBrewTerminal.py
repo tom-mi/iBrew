@@ -6,17 +6,16 @@ import datetime
 
 from smarter.SmarterClient import *
 from smarter.SmarterProtocol import *
-from smarter.SmarterHelp import *
-
 from iBrewWeb import *
 from iBrewJokes import *
-
+import re
+import random
 #import traceback
 
 #------------------------------------------------------
 # iBrew
 #
-# Terminal Interface to iKettle 2.0 & SmarterCoffee Devices
+# Terminal Interface to iKettle 2.0 & Smarter Coffee Devices
 #
 # https://github.com/Tristan79/iBrew
 #
@@ -32,8 +31,8 @@ from iBrewJokes import *
 #------------------------------------------------------
 
 
-iBrewApp          = "iBrew: iKettle 2.0 & SmarterCoffee Interface"
-iBrewInfo         = "iBrew: Out of order! © 2016 Tristan (@monkeycat.nl)"
+iBrewApp          = "iBrew: iKettle 2.0 & Smarter Coffee Interface"
+iBrewInfo         = "iBrew: Brewing on the 7th day © 2016 Tristan (@monkeycat.nl)"
 iBrewContribute   = "Please contribute any discoveries on https://github.com/Tristan79/iBrew/issues"
 
 
@@ -73,7 +72,7 @@ class iBrewTerminal:
     #------------------------------------------------------
 
     # assume we're connected to a client
-    # you can stop the sweep by pressing ctrl-c
+    # you can stop the web server by pressing ctrl-c
     def web(self,port=Smarter.Port+1):
  
         webs = None
@@ -127,23 +126,28 @@ class iBrewTerminal:
         for id in range(int(start),256):
             try:
                 # known command/message?
-                known = Smarter.message_is_known(id)
+                known = False
+                if self.client.isKettle:
+                    known = Smarter.message_kettle(id)
+                if self.client.isCoffee:
+                    known = Smarter.message_coffee(id)
                 # know command for other device except itself?
                 if not known:
                 
                     # add zero here...
-                    print "iBrew: Testing Command: " + Smarter.number_to_code(id)
+                    print "iBrew: Probing command: " + Smarter.number_to_code(id)
 
                     # button pressed quit...
                     self.client.send_command(id)
 
                     # check if got also a ???status message... FIX
                     if self.client.commandStatus != Smarter.StatusInvalid:
-                        print "iBrew: New Command Found: " + Smarter.number_to_code(id)
+                        print "iBrew: New command found: " + Smarter.number_to_code(id)
                     self.client.dump = False
                     self.client.device_stop()
                     self.client.dump = True
             except:
+                # was it ctrl-c or error???
                 break;
         self.client.dump = dump
 
@@ -220,7 +224,7 @@ class iBrewTerminal:
 
             if command == "shout":
                 if self.console or numarg == 0:
-                    print "iBrew: Can't hear you. Drinking tea at a dinner on the other side of the universe..."
+                    print "iBrew: Can't hear you. Drinking tea at a dinner on the other side of the universe…"
                     return
                 command = arguments[0].lower()
                 arguments = arguments[1:]
@@ -235,7 +239,7 @@ class iBrewTerminal:
 
             if command == "coffee":
                 if self.console or numarg == 0:
-                    print "iBrew: Can't hear you. Drinking tea at a dinner on the other side of the universe..."
+                    print "iBrew: Nah, I want hot chocolade…"
                     return
                 command = arguments[0].lower()
                 arguments = arguments[1:]
@@ -248,7 +252,23 @@ class iBrewTerminal:
 
             if command == "kettle":
                 if self.console or numarg == 0:
-                    print "iBrew: Can't hear you. Drinking tea at a dinner on the other side of the universe..."
+                
+                    sim = ""
+                    blubtext = "*blub*"
+                    borreltext = "*borrel*"
+                    for i in range(1,random.randint(0,42*42)):
+                        if random.randint(0,1) == 0:
+                            if random.randint(0,4) == 0:
+                                sim += " ".rjust(random.randint(0,4)," ") + blubtext.upper()
+                            else:
+                                sim += " ".rjust(random.randint(0,4)," ") + blubtext
+
+                        else:
+                            if random.randint(0,5) == 0:
+                                sim += " ".rjust(random.randint(0,4)," ") + borreltext.upper()
+                            else:
+                                sim += " ".rjust(random.randint(0,4)," ") + borreltext
+                    print "iBrew: Starting simulation of boiling water…\n\n" + sim
                     return
                 command = arguments[0].lower()
                 arguments = arguments[1:]
@@ -261,7 +281,7 @@ class iBrewTerminal:
 
             if command == "slow":
                 if self.console or numarg == 0:
-                    print "iBrew: As you command, but it can take a while..."
+                    print "iBrew: As you command, but it can take a while…"
                     return
                 command = arguments[0].lower()
                 arguments = arguments[1:]
@@ -275,7 +295,7 @@ class iBrewTerminal:
 
             if command == "fahrenheid":
                 if numarg == 0 and not self.console:
-                    print "iBrew: Kelvin..."
+                    print "iBrew: Kelvin… stop that!"
                     return
                 else:
                     Smarter.fahrenheid = True
@@ -289,6 +309,10 @@ class iBrewTerminal:
 
 
             if command == "celsius":
+                if numarg == 0 and not self.console:
+                    print "iBrew: But i'm freezing… and so confused. Please turn me on!"
+                    return
+                else:
                     Smarter.fahrenheid = False
                     if numarg > 0:
                         command = arguments[0].lower()
@@ -313,7 +337,15 @@ class iBrewTerminal:
             if command == "console" or command == "connect":
                 self.client.disconnect()
 
-            if (not self.client.connected or self.haveHost) and command != "help" and command != "?" and command != "list" and command != "message" and command != "usage" and command != "commands" and command != "web" and command != "joke" and command != "protocol" and command != "structure" and command != "notes" and command != "examples" and command != "messages":
+            if command == "connect" or command == "console" or ((command == "sweep" or command == "monitor" or command == "web") and not self.console):
+                self.app_info()
+                self.joke()
+
+
+            if command == "monitor":
+                self.client.fast = False
+
+            if (not self.client.connected or self.haveHost) and command != "help" and command != "?" and command != "list" and command != "message" and command != "usage" and command != "commands" and command != "web" and command != "joke" and command != "license" and command != "protocol" and command != "structure" and command != "notes" and command != "examples" and command != "messages":
 
                 if not self.haveHost:
                     devices = self.client.find_devices()
@@ -337,14 +369,13 @@ class iBrewTerminal:
                     return
 
             if command == "connect" or command == "console" or ((command == "sweep" or command == "monitor") and not self.console):
+ 
                 try:
                     self.client.init_default()
                 except:
                     #print(traceback.format_exc())
                     print "iBrew: Could not init values"
                     return
-                self.app_info()
-                self.joke()
                 self.client.print_connect_status()
                 self.client.print_status()
                 
@@ -352,62 +383,36 @@ class iBrewTerminal:
                 self.intro()
                 return
 
-            if not self.console and command == "web":
-                self.app_info()
-                self.joke()
-
-
             if command == "help" or command == "?":
                                             self.usage()
                                             self.commands()
             elif command == "usage":        self.usage()
             elif command == "commands":     self.commands()
-            elif command == "protocol":     SmarterHelp.protocol()
-            elif command == "structure":    SmarterHelp.structure()
-            elif command == "notes":        SmarterHelp.notes()
+            elif command == "protocol":     print Smarter.protocol()
+            elif command == "structure":    print Smarter.structure()
+            elif command == "notes":        print Smarter.notes()
+            elif command == "license":
+                                            if self.console and numarg == 1 and arguments[0] == "disagree":
+                                                os.remove('web/static/.ibrew')
+                                            else:
+                                                print Smarter.license()
             elif command == "examples":     self.examples()
             elif command == "messages":
                                             if numarg >= 1 or not self.console:
-                                                SmarterHelp.messages()
+                                                print Smarter.messages()
                                             else:
-                                                print str(self.client.isCoffee) + " " + str(self.client.isKettle)
-                                                SmarterHelp.messages(self.client.isCoffee,self.client.isKettle)
+                                                print Smarter.messages(self.client.isCoffee,self.client.isKettle)
             elif command == "message":
                                             if numarg >= 1:
-                                                SmarterHelp.message(Smarter.code_to_number(arguments[0]))
+                                                print Smarter.message(Smarter.code_to_number(arguments[0]))
                                             else:
-                                                SmarterHelp.all()
+                                                print Smarter.all()
             elif command == "list":         self.client.print_devices_found(self.client.find_devices())
             elif command == "joke" or command == "quote":
                                             print
                                             self.joke()
                                             print
-            elif command == "stats":
-                                            print
-                                            print "  " + str(self.client.connectCount).rjust(10, ' ') + "  Connected"
-                                            print "  " + str(self.client.sendCount).rjust(10, ' ')   + "  Commands ("  + Smarter.bytes_to_human(self.client.sendBytesCount) + ")"
-                                            print "  " + str(self.client.readCount).rjust(10, ' ')   + "  Responses (" + Smarter.bytes_to_human(self.client.readBytesCount) + ")"
-                                            print
-                                            
-                                            for id in sorted(self.client.commandCount):
-                                                print "  " + str(self.client.commandCount[id]).rjust(10, ' ') + "  [" + Smarter.number_to_code(id) + "] " + Smarter.message_description(id)
-                                            print
-                                            
-                                            for id in sorted(self.client.responseCount):
-                                                print "  " + str(self.client.responseCount[id]).rjust(10, ' ') + "  [" + Smarter.number_to_code(id) + "] "  + Smarter.message_description(id)
-                                            print
-                                            if self.client.isCoffee:
-                                                print "  " + str(self.client.countCarafeRemoved).rjust(10, ' ') + "x Carafe removed"
-                                                print "  " + str(self.client.countHeater).rjust(10, ' ') + "x Heater on"
-                                                print "  " + str(self.client.countHotPlateOn).rjust(10, ' ') + "x Hotplate on"
-                                                print "  " + str(self.client.countGrinderOn).rjust(10, ' ') + "x Grinder on"
-                                            elif self.client.isKettle:
-                                                print "  " + str(self.client.countKettleRemoved).rjust(10, ' ') + "x Kettle removed"
-                                                print "  " + str(self.client.countHeater).rjust(10, ' ') + "x Heater on"
-                                                print "  " + str(self.client.countKeepWarm).rjust(10, ' ') + "x Kept warm"
-                                            
-                                            
-                                            print
+            elif command == "stats":        self.client.print_stats()
             elif command == "web":
                                             if not self.console:
                                                 if numarg == 0:
@@ -619,6 +624,82 @@ class iBrewTerminal:
             
         
     def __init__(self,arguments):
+    
+    
+        if not os.path.isfile('web/static/.ibrew'):
+            self.username = "NOT ACCEPTED"
+            self.app_info()
+            print
+            print "PLEASE READ THE FOLLOWING VERY CAREFULLY"
+            print
+            print
+            print "LICENSE " + iBrewApp
+            print
+            print Smarter.license()
+            print
+            print
+            print "WARNING YOU COULD BRICK YOUR DEVICE, USE AT YOUR OWN RISK"
+            print
+            print
+            print "LICENSING AGREEMENT"
+            try:
+                self.username = raw_input("Please enter your full name: ").strip()
+                c = 0
+                while not (' ' in self.username):
+                    c += 1
+                    if c > 2:
+                        print "Forgot your full name?"
+                        return
+                    print "That is not your full name!"
+                    self.username = raw_input("Please enter your full name: ").strip()
+                c = 0
+                email = raw_input(self.username + ", please enter your email address: ").strip()
+                while (not re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)",email)):
+                    c += 1
+                    if c > 2:
+                        print "Forgot your email address?"
+                        return
+                    print "Invalid email"
+                    email = raw_input(self.username + ", please enter your email: ").strip()
+                c = 0
+                accept = raw_input("You accept the license? Please answer with YES or NO followed by pressing the ENTER key: ").strip()
+                while (accept != "YES"):
+                    if accept == "NO":
+                        return
+                    c += 1
+                    if c > 2:
+                        print "You decided to not to agree!"
+                        return
+                    email = raw_input("Please answer with YES or NO followed by pressing the ENTER key: ").strip()
+            except:
+                print "You decided to not to agree!"
+                return
+            print "Thank you, "+ self.username +" for accepting!"
+            print
+            
+            config = SafeConfigParser()
+            config.read('web/static/.ibrew')
+        
+            try:
+                config.add_section('license')
+            except:
+                pass
+
+            config.set('license', 'accepted', 'true')
+            config.set('license', 'name', self.username)
+            config.set('license', 'email', email)
+            with open('web/static/.ibrew', 'w') as f:
+                config.write(f)
+        else:
+            config = SafeConfigParser()
+            config.read('web/static/.ibrew')
+            try:
+                self.username =  config.get('license','name')
+            except:
+                return
+                # delete license...
+        
+        
         self.console = False
         self.quit = True
         self.client = SmarterClient()
@@ -639,12 +720,15 @@ class iBrewTerminal:
                 break
         self.client.disconnect()
         
-#------------------------------------------------------
+#------------------------------------------------------/Users/Tristan/iBrew/web/static/license
 # iBrew Console PRINT
 #------------------------------------------------------
+
     def app_info(self):
         print iBrewApp
         print iBrewInfo
+        if self.username != "NOT ACCEPTED":
+            print "iBrew: LICENSING AGREEMENT accepted by LICENSEE " + self.username
         print
         print iBrewContribute
         print
@@ -661,7 +745,7 @@ class iBrewTerminal:
             if self.client.isCoffee:
                 joke = iBrewJokes().coffee()
             elif self.client.isKettle:
-                joke = iBrewJokes().tea()
+                joke = iBrewJokes().kettle()
         print "\n      \'" + joke[0] + "\'\n                  -- " + joke[1] + "\n"
 
 
@@ -691,10 +775,10 @@ class iBrewTerminal:
         print "  If you do not supply a host, it will try to connect to the first detected device"
         print "  Thus if you have more then one device supply a host (if its not in direct mode)"
         print
-    
+
     def commands(self):
         print
-        print "  iKettle 2.0 & SmarterCoffee  Commands"
+        print "  iKettle 2.0 & Smarter Coffee  Commands"
         print "    default                set default settings"
         print "    info                   device info"
         print "    history                action history"
@@ -717,7 +801,7 @@ class iBrewTerminal:
         print "    stop kettle            stops heating"
         print "    settings [temperature] [keepwarm] [formula] [formulatemperature] store kettle user settings"
         print
-        print "  SmarterCoffee  Commands"
+        print "  Smarter Coffee  Commands"
         print "    brew (cups (hotplate (grind (strength)))) brew coffee"
         print "    brew default           brew coffee with default settings"
         print "    carafe                 returns if carafe is required"
@@ -759,8 +843,10 @@ class iBrewTerminal:
         print "    notes                  show developer notes on the devices"
         print "    structure              show protocol structure information"
         print
-        print "  Console Commands"
+        print "  iBrew Commands"
         print "    joke                   show joke"
+        print "    license                show license"
+        print "    license disagree       stop using license [command line only]"
         print "    quit                   quit console [console only]"
         print
 

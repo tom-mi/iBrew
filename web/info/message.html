@@ -2,7 +2,6 @@
 {% from smarter.SmarterProtocol import * %}
 
 <br>
-<br>
 
 <center>
 
@@ -12,9 +11,6 @@
 {{ Smarter.number_to_code(id) }}</div></a>
 <br>
 <div class="TitleMessage">{{ Smarter.message_description(id) }}</div>
-<br>
-<br>
-<br>
 <br>
 {% if Smarter.message_coffee(id) %}
 <img class="IconMessage" src="{{ static_url('icons/coffee/coffee.png')}}">
@@ -26,8 +22,34 @@
 <br>
 <br>
 <br>
+{{ Smarter.message_notes(id) }}
+{% if Smarter.message_arguments(id) != [] %}
+<br>
+<br>
 
-<div class="TitleMessageSub">
+
+<div class="TitleMessageSubSub">Arguments</div>
+{% for x in Smarter.message_arguments(id) %}
+<a href="info/arguments#{{ x[0]  }}">&lt;{{ x[1] }}&gt;</a>
+{% end %}
+<div class="Args">
+{% for x in Smarter.message_arguments(id) %}
+<br><br><span class="TitleMessageSubSub">Argument</span>{% raw Smarter.string_argument(x[0]).replace(' ', '&nbsp').replace("<", "<a href=\"/info/arguments#" + str(x[0]) + "\"> &lt").replace('>', '&gt </a>').replace('”', '”</a>').replace("“", "<a href=\"/info/arguments#" + str(x[0]) + "\">“").replace('\n', '<br>').replace('\r', '<br>')[9:] %}
+{% end %}
+</div>
+{% end %}
+
+<br>
+<br>
+<div class="TitleMessageSubSub">Example</div>
+
+[{{ Smarter.message_example(id) }}]
+
+<br>
+<br>
+
+
+<div class="TitleMessageSubSub">
 {% if Smarter.message_connection(id) and Smarter.message_is_response(id) %}
 <a href="/info/messages#command">Command messages</a>
 {% elif Smarter.message_connection(id) %}
@@ -35,8 +57,7 @@
 {% end %}
 </div>
 
-<br>
-<br>
+
 
 <div class="tTable">
 {% for i, iid in enumerate(Smarter.message_connection(id)) %}
@@ -62,6 +83,10 @@
 {% else %}
 Unknown Message {{ Smarter.number_to_code(id).upper() }}
 {% end %}
+<br><br>
+<div class="TitleMessageSubSub">Know more info about this message?</div>Please mail!<br>
+<a href="mailto:tristan@monkeycat.nl?subject=Smarter Protocol Message {{ id }}"><img class="IconMessage" src="{{ static_url('icons/info/contact.png') }}"></a>
+
 </center>
 
 {% include ../wrapper/foot.html %}

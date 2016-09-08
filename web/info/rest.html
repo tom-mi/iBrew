@@ -23,19 +23,19 @@
     </div>
     <div class="tRow">
         <div class="CellApiDesc">Version</div>
-        <div class="CellApi"><a href="api/version">/version</a></div>
+        <div class="CellApi"><a href="/api/version">/version</a></div>
     </div>
     <div class="tRow">
         <div class="CellApiDesc">Joke</div>
-        <div class="CellApi"><a href="api/joke">/joke</a></div>
+        <div class="CellApi"><a href="/api/joke">/joke</a></div>
     </div>
     <div class="tRow">
         <div class="CellApiDesc">List of devices</div>
-        <div class="CellApi"><a href="api/devices">/devices</a></div>
+        <div class="CellApi"><a href="/api/devices">/devices</a></div>
     </div>
     <div class="tRow">
         <div class="CellApiDesc">Statistics Server</div>
-        <div class="CellApi"><a href="api/status">/stats</a></div>
+        <div class="CellApi"><a href="/api/statistics">/statistics</a></div>
     </div>
 </div>
 
@@ -161,7 +161,7 @@
     
     <div class="tRow">
         <div class="CellApiDesc">Statistics {{ devices[ip] }} </div>
-        <div class="CellApi"><a href="/api/{{ escape(ip) }}/stats">/stats</a></div>
+        <div class="CellApi"><a href="/api/{{ escape(ip) }}/statistics">/statistics</a></div>
     </div>
     
     <div class="tRow">
@@ -186,7 +186,7 @@
 
     <div class="tRow">
         <div class="CellApiDesc">Joke</div>
-        <div class="CellApi"><a href="api/{{ escape(ip) }}/joke">/joke</a></div>
+        <div class="CellApi"><a href="/api/{{ escape(ip) }}/joke">/joke</a></div>
     </div>
 
  </div>

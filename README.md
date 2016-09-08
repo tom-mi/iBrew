@@ -1,4 +1,4 @@
-# iBrew Kettle Rattle
+# iBrew Brewing on the 7th day
 
 [iKettle 2.0](http://smarter.am/ikettle) and [Smarter Coffee](http://smarter.am/coffee) Interface
 
@@ -14,8 +14,8 @@ This means your machine is free! You can connect it yourself and do whatever you
  * v0.0 Bean Grinder Pack
  * v0.1 White Tealeaf Edition
  * v0.2 Tea Noire Sweet
- * v0.3 Kettle Rattle <-- CURRENT VERSION
- * v0.4 Brewing on the 7th day (web interface) 
+ * v0.3 Kettle Rattle 
+ * v0.4 Brewing on the 7th day (rest & web interface) <-- CURRENT VERSION
  * v0.5 Dumb Dump Limited Collector Edition (numbered, signed by author)
  * v1.0 Out of order! (the final cut) <-- 2017 NEVER TOUCH THE CODE AGAIN VERSION
  
@@ -23,19 +23,18 @@ This means your machine is free! You can connect it yourself and do whatever you
  * Timers protocol
  * Time arguments (have not figured that out)
  * Better error handling (sometimes it does not quit :-)
- * it also hangs if you scan wifi too much (luckily it reconnects)
+ * it also hangs if you scan wifi too much (luckily it reconnects, can not fix this)
  * Connecting in console mode... fails sometimes, and after reconnect is had strange data... stupid threads... missing...
- * Web interface & rest api (rest almost finished, web interface still have to create some pages) and introduce webroot & api key,...,...
+ * Web interface & rest api (rest almost finished, uhum, web interface still have to create some pages) and introduce webroot & api key, login, license,...,...
  * History message is not finished
  * Fahrenheid not finished, please to not use.
- * v0.5 Missing Coffee Smarter codes (!)
- * messages everywhere from the monitor...
+ * v0.5 Missing Coffee Smarter codes (working bit only?)
  * fix wireless with the same name
  * watersensor to something usefull
- * process what you get back... (03 responses)
  * Currently the default values in fast mode are not initalized use slow or give all values
- * filter out wrong responses... of know commands??? or atleast acknowledge them
+ * filter out wrong responses... of know commands??? or atleast acknowledge them, (03 responses)
  * have not looked at single cup... needs a remote coffee machine session ;-)
+ * strip zero from ip
  
 #### Contact
 [Bugs or issues](https://github.com/Tristan79/iBrew/issues). Donations & other questions <tristan@monkeycat.nl>
@@ -106,7 +105,7 @@ you can also use them on the command line as arguments:
 
 ```
 
-  iKettle 2.0 & SmarterCoffee  Commands
+  iKettle 2.0 & Smarter Coffee  Commands
     default                set default settings
     info                   device info
     history                action history
@@ -129,7 +128,7 @@ you can also use them on the command line as arguments:
     stop kettle            stops heating
     settings [temperature] [keepwarm] [formula] [formulatemperature] store kettle user settings
 
-  SmarterCoffee  Commands
+  Smarter Coffee  Commands
     brew (cups (hotplate (grind (strength)))) brew coffee
     brew default           brew coffee with default settings
     carafe                 returns if carafe is required
@@ -171,8 +170,10 @@ you can also use them on the command line as arguments:
     notes                  show developer notes on the devices
     structure              show protocol structure information
 
-  Console Commands
+  iBrew Commands
     joke                   show joke
+    license                show license
+    license disagree       stop using license [command line only]
     quit                   quit console [console only]
 
 
@@ -216,6 +217,7 @@ http://ip:port/info/api
      
 ### LICENSE
 
+
 Copyright (c) 2016, Tristan Crispijn
 All rights reserved.
 
@@ -230,5 +232,5 @@ Redistribution and use in source and binary forms, with or without modification,
 4. Written consent of the original author with his/her signature on paper.
 
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. SMARTER EMPLOYEES OR SMARTER AFFILIATED PEOPLE ARE NOT ALLOWED TO USE THIS SOFTWARE OR DERIVATIVE WORK. YOU AGREE THAT THE SOFTWARE CAN MONITOR THE USAGE OF THE SOFTWARE ITSELF AND OR THE DEVICES ATTACHED TO THE SOFTWARE, AND SEND IT BACK TO A MONITOR SERVER FOR BETTER SUPPORT. 
-
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. YOU AGREE TO NOT USE THIS SOFTWARE IN ANY WAY. SMARTER EMPLOYEES OR SMARTER AFFILIATED PEOPLE ARE NOT ALLOWED TO USE THIS SOFTWARE OR DERIVATIVE WORK. YOU AGREE THAT THE SOFTWARE CAN MONITOR THE USAGE OF THE SOFTWARE ITSELF AND OR THE DEVICES ATTACHED TO THE SOFTWARE, AND SEND IT BACK TO A MONITOR SERVER FOR BETTER SUPPORT. ENJOY!
+               

@@ -6,3 +6,7 @@
 iBrewCloudWeb.py
 
 web/cloud.html
+
+*.conf
+
+web/static/.ibrew
