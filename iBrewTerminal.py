@@ -9,7 +9,7 @@ from smarter.SmarterProtocol import *
 from iBrewWeb import *
 from iBrewJokes import *
 import re
-
+import random
 #import traceback
 
 #------------------------------------------------------
@@ -32,7 +32,7 @@ import re
 
 
 iBrewApp          = "iBrew: iKettle 2.0 & Smarter Coffee Interface"
-iBrewInfo         = "iBrew: Rest on the 7th day © 2016 Tristan (@monkeycat.nl)"
+iBrewInfo         = "iBrew: Brewing on the 7th day © 2016 Tristan (@monkeycat.nl)"
 iBrewContribute   = "Please contribute any discoveries on https://github.com/Tristan79/iBrew/issues"
 
 
@@ -72,7 +72,7 @@ class iBrewTerminal:
     #------------------------------------------------------
 
     # assume we're connected to a client
-    # you can stop the sweep by pressing ctrl-c
+    # you can stop the web server by pressing ctrl-c
     def web(self,port=Smarter.Port+1):
  
         webs = None
@@ -126,23 +126,28 @@ class iBrewTerminal:
         for id in range(int(start),256):
             try:
                 # known command/message?
-                known = Smarter.message_is_known(id)
+                known = False
+                if self.client.isKettle:
+                    known = Smarter.message_kettle(id)
+                if self.client.isCoffee:
+                    known = Smarter.message_coffee(id)
                 # know command for other device except itself?
                 if not known:
                 
                     # add zero here...
-                    print "iBrew: Testing Command: " + Smarter.number_to_code(id)
+                    print "iBrew: Probing command: " + Smarter.number_to_code(id)
 
                     # button pressed quit...
                     self.client.send_command(id)
 
                     # check if got also a ???status message... FIX
                     if self.client.commandStatus != Smarter.StatusInvalid:
-                        print "iBrew: New Command Found: " + Smarter.number_to_code(id)
+                        print "iBrew: New command found: " + Smarter.number_to_code(id)
                     self.client.dump = False
                     self.client.device_stop()
                     self.client.dump = True
             except:
+                # was it ctrl-c or error???
                 break;
         self.client.dump = dump
 
@@ -219,7 +224,7 @@ class iBrewTerminal:
 
             if command == "shout":
                 if self.console or numarg == 0:
-                    print "iBrew: Can't hear you. Drinking tea at a dinner on the other side of the universe..."
+                    print "iBrew: Can't hear you. Drinking tea at a dinner on the other side of the universe…"
                     return
                 command = arguments[0].lower()
                 arguments = arguments[1:]
@@ -234,7 +239,7 @@ class iBrewTerminal:
 
             if command == "coffee":
                 if self.console or numarg == 0:
-                    print "iBrew: Can't hear you. Drinking tea at a dinner on the other side of the universe..."
+                    print "iBrew: Nah, I want hot chocolade…"
                     return
                 command = arguments[0].lower()
                 arguments = arguments[1:]
@@ -247,7 +252,23 @@ class iBrewTerminal:
 
             if command == "kettle":
                 if self.console or numarg == 0:
-                    print "iBrew: Can't hear you. Drinking tea at a dinner on the other side of the universe..."
+                
+                    sim = ""
+                    blubtext = "*blub*"
+                    borreltext = "*borrel*"
+                    for i in range(1,random.randint(0,42*42)):
+                        if random.randint(0,1) == 0:
+                            if random.randint(0,4) == 0:
+                                sim += " ".rjust(random.randint(0,4)," ") + blubtext.upper()
+                            else:
+                                sim += " ".rjust(random.randint(0,4)," ") + blubtext
+
+                        else:
+                            if random.randint(0,5) == 0:
+                                sim += " ".rjust(random.randint(0,4)," ") + borreltext.upper()
+                            else:
+                                sim += " ".rjust(random.randint(0,4)," ") + borreltext
+                    print "iBrew: Starting simulation of boiling water…\n\n" + sim
                     return
                 command = arguments[0].lower()
                 arguments = arguments[1:]
@@ -260,7 +281,7 @@ class iBrewTerminal:
 
             if command == "slow":
                 if self.console or numarg == 0:
-                    print "iBrew: As you command, but it can take a while..."
+                    print "iBrew: As you command, but it can take a while…"
                     return
                 command = arguments[0].lower()
                 arguments = arguments[1:]
@@ -274,7 +295,7 @@ class iBrewTerminal:
 
             if command == "fahrenheid":
                 if numarg == 0 and not self.console:
-                    print "iBrew: Kelvin..."
+                    print "iBrew: Kelvin… stop that!"
                     return
                 else:
                     Smarter.fahrenheid = True
@@ -288,6 +309,10 @@ class iBrewTerminal:
 
 
             if command == "celsius":
+                if numarg == 0 and not self.console:
+                    print "iBrew: But i'm freezing… and so confused. Please turn me on!"
+                    return
+                else:
                     Smarter.fahrenheid = False
                     if numarg > 0:
                         command = arguments[0].lower()
@@ -315,6 +340,10 @@ class iBrewTerminal:
             if command == "connect" or command == "console" or ((command == "sweep" or command == "monitor" or command == "web") and not self.console):
                 self.app_info()
                 self.joke()
+
+
+            if command == "monitor":
+                self.client.fast = False
 
             if (not self.client.connected or self.haveHost) and command != "help" and command != "?" and command != "list" and command != "message" and command != "usage" and command != "commands" and command != "web" and command != "joke" and command != "license" and command != "protocol" and command != "structure" and command != "notes" and command != "examples" and command != "messages":
 
@@ -372,7 +401,6 @@ class iBrewTerminal:
                                             if numarg >= 1 or not self.console:
                                                 print Smarter.messages()
                                             else:
-                                                print str(self.client.isCoffee) + " " + str(self.client.isKettle)
                                                 print Smarter.messages(self.client.isCoffee,self.client.isKettle)
             elif command == "message":
                                             if numarg >= 1:
@@ -384,13 +412,7 @@ class iBrewTerminal:
                                             print
                                             self.joke()
                                             print
-            elif command == "stats":
-                                            if self.console:
-                                                self.client.print_stats()
-                                            else:
-                                                print "iBrew: In console only"
-                                            print
-                                            
+            elif command == "stats":        self.client.print_stats()
             elif command == "web":
                                             if not self.console:
                                                 if numarg == 0:
@@ -723,7 +745,7 @@ class iBrewTerminal:
             if self.client.isCoffee:
                 joke = iBrewJokes().coffee()
             elif self.client.isKettle:
-                joke = iBrewJokes().tea()
+                joke = iBrewJokes().kettle()
         print "\n      \'" + joke[0] + "\'\n                  -- " + joke[1] + "\n"
 
 

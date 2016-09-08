@@ -1,4 +1,4 @@
-# iBrew Kettle Rattle
+# iBrew Brewing on the 7th day
 
 [iKettle 2.0](http://smarter.am/ikettle) and [Smarter Coffee](http://smarter.am/coffee) Interface
 
@@ -14,8 +14,8 @@ This means your machine is free! You can connect it yourself and do whatever you
  * v0.0 Bean Grinder Pack
  * v0.1 White Tealeaf Edition
  * v0.2 Tea Noire Sweet
- * v0.3 Kettle Rattle <-- CURRENT VERSION
- * v0.4 Brewing on the 7th day (web interface) 
+ * v0.3 Kettle Rattle 
+ * v0.4 Brewing on the 7th day (rest & web interface) <-- CURRENT VERSION
  * v0.5 Dumb Dump Limited Collector Edition (numbered, signed by author)
  * v1.0 Out of order! (the final cut) <-- 2017 NEVER TOUCH THE CODE AGAIN VERSION
  
@@ -23,19 +23,18 @@ This means your machine is free! You can connect it yourself and do whatever you
  * Timers protocol
  * Time arguments (have not figured that out)
  * Better error handling (sometimes it does not quit :-)
- * it also hangs if you scan wifi too much (luckily it reconnects)
+ * it also hangs if you scan wifi too much (luckily it reconnects, can not fix this)
  * Connecting in console mode... fails sometimes, and after reconnect is had strange data... stupid threads... missing...
- * Web interface & rest api (rest almost finished, web interface still have to create some pages) and introduce webroot & api key,...,...
+ * Web interface & rest api (rest almost finished, uhum, web interface still have to create some pages) and introduce webroot & api key, login, license,...,...
  * History message is not finished
  * Fahrenheid not finished, please to not use.
- * v0.5 Missing Coffee Smarter codes (!)
- * messages everywhere from the monitor...
+ * v0.5 Missing Coffee Smarter codes (working bit only?)
  * fix wireless with the same name
  * watersensor to something usefull
- * process what you get back... (03 responses)
  * Currently the default values in fast mode are not initalized use slow or give all values
- * filter out wrong responses... of know commands??? or atleast acknowledge them
+ * filter out wrong responses... of know commands??? or atleast acknowledge them, (03 responses)
  * have not looked at single cup... needs a remote coffee machine session ;-)
+ * strip zero from ip
  
 #### Contact
 [Bugs or issues](https://github.com/Tristan79/iBrew/issues). Donations & other questions <tristan@monkeycat.nl>

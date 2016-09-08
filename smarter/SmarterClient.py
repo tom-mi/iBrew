@@ -66,7 +66,7 @@ class SmarterClient:
         # device info
         self.heaterOn                   = False
         self.countHeater                = 0
-        self.version                    = 0
+
         
         # unknown status byte
         self.unknown                    = 0
@@ -125,7 +125,7 @@ class SmarterClient:
         self.working                    = False
         
         self.countCarafeRemoved         = 0
-        self.countCupsBrewed            = 0
+        self.countCupsBrew              = 0
         self.countGrinderOn             = 0
         self.countHotPlateOn            = 0
         
@@ -165,9 +165,9 @@ class SmarterClient:
         #set this to try is you want to connect send and really do not care about the about the out come, its disconnect afterwards....
         self.shout                      = False
         
-        self.device                     = "None"
+  #      self.device                     = "None"
         self.deviceId                   = 0
- 
+        self.version                    = 0
         self.connectCount               = 0
         self.commandCount               = dict()
         self.responseCount              = dict()
@@ -261,7 +261,6 @@ class SmarterClient:
                     self.dump = True;
                 else:
                     self.dump = False;
-
 
                 try:
                     if monitorCount % timeout == timeout - 9:
@@ -524,7 +523,8 @@ class SmarterClient:
  
     @threadsafe_function
     def connect(self):
-        #print "CONNECT " + self.host
+        if self.dump:
+            print "[" + self.host +  ":" + '{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()) + "] Connecting device"
         self.init()
         self.write_stats()
         
@@ -551,45 +551,16 @@ class SmarterClient:
         except socket.error, msg:
             raise SmarterErrorOld("Could not connect to + " + self.host + " (" + str(msg) + ")")
 
-        if not self.fast and not self.monitor:
+
+        if not self.fast:
             import threading
             try:
                 self.monitor = threading.Thread(target=self.monitor_device)
                 self.monitor.start()
             except:
                 raise SmarterErrorOld("Could not start monitor")
-                
-    """
-    def read_stats(self):
-        config = SafeConfigParser()
-        config.read('devices/'+self.host+'.conf')
-        
-        try:
-            config.add_section('stats')
-        except:
-            pass
 
-        try:
-            self.totalSendCount = int(config.get('stats', 'send'))
-        except:
-            pass
-        
-        try:
-            self.totalReadCount = int(config.get('stats', 'read'))
-        except:
-            pass
 
-        try:
-            self.totalReadBytesCount = int(config.get('stats', 'readbytes'))
-        except:
-            pass
-
-        try:
-            self.totalSendBytesCount = int(config.get('stats', 'sendbytes'))
-        except:
-            pass
-    """
-    
     def write_stats(self):
         config = SafeConfigParser()
         config.read('devices/'+self.host+'.conf')
@@ -646,10 +617,14 @@ class SmarterClient:
 
     @threadsafe_function
     def disconnect(self):
-        #print "DISCONNECT "+self.host
+ 
         self.run = False
         
         if self.connected:
+            if self.dump:
+                x = self.device
+                if x == "Unknown": x = "device"
+                print "[" + self.host +  ":" + '{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()) + "] Disconnecting " + x
             self.write_stats()
         
             self.connected = False
@@ -732,6 +707,8 @@ class SmarterClient:
     def switch_coffee_device(self):
         self.isKettle = False
         self.isCoffee = True
+        
+        
         if self.deviceId != Smarter.DeviceCoffee:
             self.deviceId = 0
             self.device = "None"
@@ -796,7 +773,7 @@ class SmarterClient:
                 self.countHeater += 1
             else:
                 # what happens when it fails?? or stopped
-                countCupsBrewed += cupsBrew
+                countCupsBrew += cupsBrew
             self.heaterOn = is_set(self.coffeeStatus,4)
 
         if self.hotPlateOn != is_set(self.coffeeStatus,6):
@@ -1495,41 +1472,42 @@ class SmarterClient:
 
     def print_stats(self):
         print
-        print "Stats "+ self.host
-        print "______"+ "_"*len(self.host)
+        print "  Stats "+ self.host
+        print "  ______"+ "_"*len(self.host)
         print
         print
-        print "Total:"
-        print
-        print "  " + str(self.connectCount).rjust(10, ' ') + "  Connected"
-        print "  " + str(self.totalSendCount).rjust(10, ' ')   + "  Commands ("  + Smarter.bytes_to_human(self.totalSendBytesCount) + ")"
-        print "  " + str(self.totalReadCount).rjust(10, ' ')   + "  Responses (" + Smarter.bytes_to_human(self.totalReadBytesCount) + ")"
+        print "  " + str(self.totalSendCount).rjust(9, ' ')   + "  Commands ("  + Smarter.bytes_to_human(self.totalSendBytesCount) + ")"
+        print "  " + str(self.totalReadCount).rjust(9, ' ')   + "  Responses (" + Smarter.bytes_to_human(self.totalReadBytesCount) + ")"
+        if self.connectCount != 0:
+            print "".rjust(11, ' ') + "  " + "Connections to device " + str(self.connectCount)
         print
 
-        print "Session:"
-        print
-    #    print "  " + str(self.connectCount).rjust(10, ' ') + "  Connected"
-        print "  " + str(self.sendCount).rjust(10, ' ')   + "  Commands ("  + Smarter.bytes_to_human(self.sendBytesCount) + ")"
-        print "  " + str(self.readCount).rjust(10, ' ')   + "  Responses (" + Smarter.bytes_to_human(self.readBytesCount) + ")"
-        print
-        
-        for id in sorted(self.commandCount):
-            print "  " + str(self.commandCount[id]).rjust(10, ' ') + "  [" + Smarter.number_to_code(id) + "] " + Smarter.message_description(id)
-        print
-        
-        for id in sorted(self.responseCount):
-            print "  " + str(self.responseCount[id]).rjust(10, ' ') + "  [" + Smarter.number_to_code(id) + "] "  + Smarter.message_description(id)
-        print
-        if self.isCoffee:
-            print "  " + str(self.countCarafeRemoved).rjust(10, ' ') + "x Carafe removed"
-            print "  " + str(self.countCupsBrew).rjust(10, ' ') + "x Cups brew"
-            print "  " + str(self.countHeater).rjust(10, ' ') + "x Heater on"
-            print "  " + str(self.countHotPlateOn).rjust(10, ' ') + "x Hotplate on"
-            print "  " + str(self.countGrinderOn).rjust(10, ' ') + "x Grinder on"
-        elif self.isKettle:
-            print "  " + str(self.countKettleRemoved).rjust(10, ' ') + "x Kettle removed"
-            print "  " + str(self.countHeater).rjust(10, ' ') + "x Heater on"
-            print "  " + str(self.countKeepWarm).rjust(10, ' ') + "x Kept warm"
+        if self.sendCount != 0 and self.readCount != 0:
+            print "  Session information"
+            print
+        #    print "  " + str(self.connectCount).rjust(10, ' ') + "  Connected"
+            print "  " + str(self.sendCount).rjust(9, ' ')   + "  Commands ("  + Smarter.bytes_to_human(self.sendBytesCount) + ")"
+            print "  " + str(self.readCount).rjust(9, ' ')   + "  Responses (" + Smarter.bytes_to_human(self.readBytesCount) + ")"
+            print
+            
+            for id in sorted(self.commandCount):
+                print "  " + str(self.commandCount[id]).rjust(9, ' ') + "  [" + Smarter.number_to_code(id) + "] " + Smarter.message_description(id)
+            print
+            
+            for id in sorted(self.responseCount):
+                print "  " + str(self.responseCount[id]).rjust(9, ' ') + "  [" + Smarter.number_to_code(id) + "] "  + Smarter.message_description(id)
+            print
+            if self.isCoffee:
+                print "  " + str(self.countCarafeRemoved).rjust(9, ' ') + "  Carafe removed"
+                print "  " + str(self.countCupsBrew).rjust(9, ' ') + "  Cups brew"
+                print "  " + str(self.countHeater).rjust(9, ' ') + "  Heater on"
+                print "  " + str(self.countHotPlateOn).rjust(9, ' ') + "  Hotplate on"
+                print "  " + str(self.countGrinderOn).rjust(9, ' ') + "  Grinder on"
+            elif self.isKettle:
+                print "  " + str(self.countKettleRemoved).rjust(9, ' ') + "  Kettle removed"
+                print "  " + str(self.countHeater).rjust(9, ' ') + "  Heater on"
+                print "  " + str(self.countKeepWarm).rjust(9, ' ') + "  Kept warm"
+            print
                 
 
     def print_message_send(self,message):

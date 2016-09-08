@@ -83,6 +83,10 @@
 {% else %}
 Unknown Message {{ Smarter.number_to_code(id).upper() }}
 {% end %}
+<br><br>
+<div class="TitleMessageSubSub">Know more info about this message?</div>Please mail!<br>
+<a href="mailto:tristan@monkeycat.nl?subject=Smarter Protocol Message {{ id }}"><img class="IconMessage" src="{{ static_url('icons/info/contact.png') }}"></a>
+
 </center>
 
 {% include ../wrapper/foot.html %}
