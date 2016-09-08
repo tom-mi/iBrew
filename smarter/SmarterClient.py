@@ -137,11 +137,7 @@ class SmarterClient:
         self.writeLock                  = threading.Lock()
         self.socketLock                 = threading.Lock()
     
-        # total for device
-        self.totalSendCount             = 0
-        self.totalReadCount             = 0
-        self.totalReadBytesCount        = 0
-        self.totalSendBytesCount        = 0
+
         
         # session
         self.sendCount                  = 0
@@ -157,6 +153,12 @@ class SmarterClient:
     
 
     def __init__(self):
+        # total for device
+        self.totalSendCount             = 0
+        self.totalReadCount             = 0
+        self.totalReadBytesCount        = 0
+        self.totalSendBytesCount        = 0
+
         self.host                       = Smarter.DirectHost
         self.dump_status                = True
         self.dump                       = False
@@ -165,7 +167,7 @@ class SmarterClient:
         #set this to try is you want to connect send and really do not care about the about the out come, its disconnect afterwards....
         self.shout                      = False
         
-  #      self.device                     = "None"
+        self.device                     = "None"
         self.deviceId                   = 0
         self.version                    = 0
         self.connectCount               = 0
@@ -359,6 +361,11 @@ class SmarterClient:
      
             message = self.read_message()
             id = Smarter.raw_to_number(message[0])
+            
+            if Smarter.message_kettle(id):
+                self.switch_kettle_device()
+            elif Smarter.message_coffee(id):
+                self.switch_coffee_device()
             try:
                 if   id == Smarter.ResponseKettleStatus:    self.decode_ResponseKettleStatus(message)
                 elif id == Smarter.ResponseCoffeeStatus:    self.decode_ResponseCoffeeStatus(message)
@@ -561,7 +568,16 @@ class SmarterClient:
                 raise SmarterErrorOld("Could not start monitor")
 
 
+    @threadsafe_function
     def write_stats(self):
+        
+        section = "stats"
+        if self.isKettle:
+            section += ".kettle"
+        elif self.isCoffee:
+            section += ".coffee"
+        else:
+            return
         config = SafeConfigParser()
         config.read('devices/'+self.host+'.conf')
         
@@ -570,7 +586,7 @@ class SmarterClient:
         #except:
         #    pass
         try:
-            config.add_section('stats')
+            config.add_section(section)
         except:
             pass
 
@@ -580,36 +596,37 @@ class SmarterClient:
         #    config.set('device', 'type','00')
         
         try:
-            self.totalSendCount = int(config.get('stats', 'send')) + self.sendCount - self.deltaSendCount
-            self.deltaSendCount = self.sendCount - self.deltaSendCount
-            config.set('stats', 'send', str(self.totalSendCount))
+            self.totalSendCount = int(config.get(section, 'send')) + self.sendCount - self.deltaSendCount
+            self.deltaSendCount += self.sendCount - self.deltaSendCount
+            config.set(section, 'send', str(self.totalSendCount))
         except:
-            config.set('stats', 'send', str(self.sendCount))
+            config.set(section, 'send', str(self.sendCount))
         
         try:
-            self.totalReadCount = int(config.get('stats', 'read')) + self.readCount - self.deltaReadCount
-            self.deltaReadCount = self.readCount - self.deltaReadCount
-            config.set('stats', 'read', str(self.totalReadCount))
+            self.totalReadCount = int(config.get(section, 'read')) + self.readCount - self.deltaReadCount
+            self.deltaReadCount += self.readCount - self.deltaReadCount
+            config.set(section, 'read', str(self.totalReadCount))
         except:
-            config.set('stats', 'read', str(self.readCount))
+            config.set(section, 'read', str(self.readCount))
 
         try:
-            self.totalReadBytesCount = int(config.get('stats', 'readbytes')) + self.readBytesCount - self.deltaReadBytesCount
-            self.deltaReadBytesCount = self.readBytesCount - self.deltaReadBytesCount
-            config.set('stats', 'readbytes', str(self.totalReadBytesCount))
+            self.totalReadBytesCount = int(config.get(section, 'readbytes')) + self.readBytesCount - self.deltaReadBytesCount
+            self.deltaReadBytesCount += self.readBytesCount - self.deltaReadBytesCount
+            config.set(section, 'readbytes', str(self.totalReadBytesCount))
         except:
-            config.set('stats', 'readbytes', str(self.readBytesCount))
+            config.set(section, 'readbytes', str(self.readBytesCount))
 
         try:
-            self.totalSendBytesCount = int(config.get('stats', 'sendbytes')) + self.sendBytesCount - self.deltaSendBytesCount
-            self.deltaSendBytesCount = self.sendBytesCount - self.deltaSendBytesCount
-            config.set('stats', 'sendbytes', str(self.totalSendBytesCount))
+            self.totalSendBytesCount = int(config.get(section, 'sendbytes')) + self.sendBytesCount - self.deltaSendBytesCount
+            self.deltaSendBytesCount += self.sendBytesCount - self.deltaSendBytesCount
+            config.set(section, 'sendbytes', str(self.totalSendBytesCount))
         except:
-            config.set('stats', 'sendbytes', str(self.sendBytesCount))
+            config.set(section, 'sendbytes', str(self.sendBytesCount))
 
         with open('devices/'+self.host+'.conf', 'w') as f:
             config.write(f)
-            
+
+        
         if self.dump:
             self.print_stats()
 
@@ -679,14 +696,14 @@ class SmarterClient:
 
 
     def decode_ResponseKettleSettings(self,message):
-        self.switch_kettle_device()
+        #self.switch_kettle_device()
         self.defaultKeepWarmTime  = Smarter.raw_to_number(message[2])
         self.defaultTemperature   = Smarter.raw_to_temperature(message[1])
         self.defaultFormulaTemperature = Smarter.raw_to_number(message[3])
 
 
     def decode_ResponseCoffeeSettings(self,message):
-        self.switch_coffee_device()
+        #self.switch_coffee_device()
         self.defaultCups          = Smarter.raw_to_cups(message[1])
         self.defaultStrength      = Smarter.raw_to_strength(message[2])
         self.defaultGrind         = Smarter.raw_to_bool(message[3])
@@ -694,30 +711,24 @@ class SmarterClient:
 
 
     def switch_kettle_device(self):
-        self.isKettle = True
-        self.isCoffee = False
-        if self.deviceId != Smarter.DeviceKettle:
-            self.deviceId = 0
-            self.device = "None"
-        else:
+        if not self.isKettle:
+            self.isKettle = True
+            self.isCoffee = False
+            self.write_stats()
             self.deviceId = Smarter.DeviceKettle
             self.device = Smarter.device_to_string(Smarter.DeviceKettle)
 
 
     def switch_coffee_device(self):
-        self.isKettle = False
-        self.isCoffee = True
-        
-        
-        if self.deviceId != Smarter.DeviceCoffee:
-            self.deviceId = 0
-            self.device = "None"
-        else:
+        if not self.isCoffee:
+            self.isKettle = False
+            self.isCoffee = True
+            self.write_stats()
             self.deviceId = Smarter.DeviceCoffee
             self.device = Smarter.device_to_string(Smarter.DeviceCoffee)
 
     def decode_ResponseKettleStatus(self,message):
-        self.switch_kettle_device()
+        #self.switch_kettle_device()
         self.statusMessage       = message
 
         self.kettleStatus        = Smarter.raw_to_number(message[1])
@@ -755,7 +766,7 @@ class SmarterClient:
 
 
     def decode_ResponseCoffeeStatus(self,message):
-        self.switch_coffee_device()
+        #self.switch_coffee_device()
         
         def is_set(x, n):
             return x & 2**n != 0
@@ -817,17 +828,17 @@ class SmarterClient:
 
 
     def decode_ResponseBase(self,message):
-        self.switch_kettle_device()
+        #self.switch_kettle_device()
         self.waterSensorBase = Smarter.raw_to_watersensor(message[1],message[2])
 
 
     def decode_ResponseCarafe(self,message):
-        self.switch_coffee_device()
+        #self.switch_coffee_device()
         self.carafeMode = Smarter.raw_to_bool(message[1])
 
 
     def decode_ResponseSingleCupMode(self,message):
-        self.switch_coffee_device()
+        #self.switch_coffee_device()
         self.singlecup  = Smarter.raw_to_bool(message[1])
 
 
@@ -845,7 +856,7 @@ class SmarterClient:
 
 
     def decode_ResponseTimers(self,message):
-        self.switch_coffee_device()
+        #self.switch_coffee_device()
         pass
 
 
@@ -875,7 +886,7 @@ class SmarterClient:
 
 
     def decode_ResponseCoffeeHistory(self,message):
-        self.switch_coffee_device()
+        #self.switch_coffee_device()
         counter = Smarter.raw_to_number(message[1])
         if counter > 0:
             for i in range(0,counter):
@@ -885,7 +896,7 @@ class SmarterClient:
   
   
     def decode_ResponseKettleHistory(self,message):
-        self.switch_kettle_device()
+        #self.switch_kettle_device()
         
         counter = Smarter.raw_to_number(message[1])
         if counter > 0:
