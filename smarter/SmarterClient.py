@@ -607,6 +607,8 @@ class SmarterClient:
         else:
             return
         config = SafeConfigParser()
+        if not os.path.exists('devices/'):
+                os.makedirs('devices/')
         config.read('devices/'+self.host+'.conf')
         
         try:
