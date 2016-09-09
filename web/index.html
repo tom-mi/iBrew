@@ -13,7 +13,7 @@ function auto_joke()            { joke(); setTimeout(auto_joke, wait_joke);}
 
 function process_update_kettle(status) { if ( status.sensors.base == "On") {
                                            $('#kettle').attr('src','{{ static_url('icons/kettle/kettle.png')}}');
-                                           if ( status.default.temperature.prefered == 'Celsius' ) {
+                                           if ( status.default.temperature.prefered == 'celsius' ) {
                                              $('#temperature').html( status.sensors.temperature.raw.celsius + " ºC" ); }
                                            else
                                              $('#temperature').html( status.sensors.temperature.raw.fahrenheid + " ºF" );
