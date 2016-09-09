@@ -67,7 +67,8 @@ class GenericPageHandler(BaseHandler):
         if os.path.isfile(os.path.join(os.path.dirname(__file__), webroot)+page+".html"):
             self.render(webroot+page+".html")
         else:
-            self.render(webroot+"somethingwrong.html")
+#            self.render(webroot+"somethingwrong.html")
+            self.render(webroot+"index.html",clients = self.application.clients,joke = iBrewJokes().joke())
 
 
 class MainPageHandler(BaseHandler):
@@ -97,7 +98,6 @@ class ShowTextFilePageHandler(BaseHandler):
     #@tornado.web.authenticated
     def get(self,txt):
         location =  self.application.settings["static_path"] + "/info/" + txt + ".txt"
-        print location
         if os.path.isfile(os.path.join(os.path.dirname(__file__), webroot)+ "info/" + txt+".html") and os.path.isfile(location):
             text = ""
             with open(location, 'rb') as fd:
@@ -106,7 +106,9 @@ class ShowTextFilePageHandler(BaseHandler):
                 text = text.replace('\n', '<br>')
             self.render(webroot+ "info/" + txt+".html",file = text)
         else:
-            self.render(webroot+"somethingwrong.html")
+            self.render(webroot+"index.html",clients = self.application.clients,joke = iBrewJokes().joke())
+
+            #self.render(webroot+"somethingwrong.html")
 
 
 
@@ -118,6 +120,12 @@ class APIPageHandler(BaseHandler):
             client = self.application.clients[ip]
             d.update({client.host : Smarter.device_to_string(client.deviceId)})
         self.render(webroot+"info/rest.html",devices = d,joke = iBrewJokes().joke())
+
+
+class ProtocolPageHandler(BaseHandler):
+    #@tornado.web.authenticated
+    def get(self):
+        self.render(webroot+"info/protocol.html")
 
 
 class MessagesPageHandler(BaseHandler):
@@ -145,7 +153,7 @@ class MessagePageHandler(BaseHandler):
         try:
             mid = Smarter.code_to_number(message)
         except:
-            self.render(webroot+"somethingwrong.html")
+            self.render(webroot+"info/protocol.html",status = Smarter.StatusToJSON(),commands = Smarter.CommandToJSON(), responses = Smarter.ResponseToJSON())
         self.render(webroot+"info/message.html", id = mid)
 
 
@@ -907,6 +915,7 @@ class iBrewWeb(tornado.web.Application):
                 (r"/statistics/?",ServerPageHandler),
                 (r"/info/rest/?",APIPageHandler),
                 (r"/info/license/?",LicensePageHandler),
+                (r"/info/protocol/?",ProtocolPageHandler),
                 (r"/info/messages/?",MessagesPageHandler),
                 (r"/info/arguments/?",ArgumentsPageHandler),
                 (r"/info/message/([0-9,A-F,a-f][0-9,A-F,a-f])/?",MessagePageHandler),

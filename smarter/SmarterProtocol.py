@@ -382,7 +382,8 @@ class SmarterProtocol:
         try:
             return struct.unpack('B',raw)[0]
         except:
-            raise SmarterError(ConvertRawNumber,"Could not convert raw data to number")
+            # DEBUG LEN RAW!!! (probably tornado)
+            raise SmarterError(ConvertRawNumber,"Could not convert raw data to number" + str(len(raw)))
 
     def number_to_raw(self,number):
         try:
@@ -895,7 +896,7 @@ class SmarterProtocol:
         StatusNoCarafeUnknown  : "no carafe",  # which one?
         StatusNoWaterUnknown   : "no water",   # which one?
         StatusNoWaterAborted   : "low water could not finish",
-        StatusInvalidTimer     : "invalid timer time",
+        StatusInvalidTimer     : "timer error",
         StatusErrorWifi        : "wifi error",
         StatusInvalid          : "invalid command"
     }
@@ -1094,9 +1095,10 @@ class SmarterProtocol:
     #
     # Protocol Information
     #
-    # kinda a mess ;-)
+    # kinda a real, mess ;-)
     #------------------------------------------------------
 
+    # merge and payload not finished...
 
     ArgCups       = 1000
     ArgStrength   = 1001
@@ -1168,13 +1170,13 @@ class SmarterProtocol:
         ResponseCoffeeHistory       : ('PROTOCOL',[ArgCounter,ArgPayloadCoffeeHistory],"03010000020200000b01010000000000000000000000000000000000000000007d\n010000020200012001010000000000000000000000000000000000000000007d\n010010010101000401010014000000000000000000000000000000000000007d",""),
         ResponseBase                : ('PROTOCOL',[ArgWater],"044c","Calibration base value, the base value in relation to the watersensor and temperature is unknown"),
 
-        ArgPayloadTimer             : ('PAYLOAD',"",MessagePayloadTail,[]),
-        ArgPayloadCoffeeHistory     : ('PAYLOAD',"",MessagePayloadTail,[]),
-        ArgPayloadKettleHistory     : ('PAYLOAD',"",MessagePayloadTail,[]),
-        ArgPayloadWifiScan          : ('PAYLOAD',"",MessagePayloadTail,[]),
+        ArgPayloadTimer             : ('PAYLOAD',"PAYLOADTIMER",MessagePayloadTail,[]),
+        ArgPayloadCoffeeHistory     : ('PAYLOAD',"PAYLOADHISTORYKETTLE",MessagePayloadTail,[]),
+        ArgPayloadKettleHistory     : ('PAYLOAD',"PAYLOADHISTORYCOFFEE",MessagePayloadTail,[]),
+        ArgPayloadWifiScan          : ('PAYLOAD',"PAYLOADWIFI",MessagePayloadTail,[]),
         
-        ArgSubList                  : ('PAYLOAD',"",",",[]),
-        ArgList                     : ('PAYLOAD',"","}",[]),
+        ArgSubList                  : ('PAYLOAD',"TUPLE",",",[]),
+        ArgList                     : ('PAYLOAD',"LIST","}",[]),
 
 
         ResponseCarafe              : ('PROTOCOL',[ArgCarafe],"00",""),
@@ -1300,7 +1302,7 @@ class SmarterProtocol:
         ArgFormula            : ('OPTION',"Formula",[(0,"Disabled"),(1,"Enabled")]),
         ArgOffBase            : ('OPTION',"Base",[(0,"Kettle on base"),(MessageOffBase,"Kettle off base")]),
         ArgRequired           : ('OPTION',"Required",[(0,"Carafe Required"),(1,"Can brew without carafe")]),
-        ArgSingleCup          : ('OPTION',"SingleCup",[(0,"Snigle cup mode off"),(1,"Single cup mode on")]),
+        ArgSingleCup          : ('OPTION',"SingleCup",[(0,"Single cup mode off"),(1,"Single cup mode on")]),
 
         ArgHotPlateOn         : ('OPTION',"HotplateOn",[(0,"Hotplate on"),(1,"Hotplate off")]),
 
@@ -1345,18 +1347,40 @@ class SmarterProtocol:
 
     # nice printab;e protocol info...
     
+
+    def argument_messages(self,id):
+        d = []
+        for b in self.ArgType:
+            if self.ArgType[b][0] == 'PROTOCOL':
+                print "YEAH"
+                if id in self.ArgType[b][1]:
+                    print "DSS"
+                    d += [b]
+        return d
+
+    
     def message_arguments(self,id):
         a = list()
         for b in self.ArgType[id][1]:
             a += [(b,self.ArgType[b][1].upper())]
         return a
-
+        
+        
     def message_protocol_arguments(self):
         a = list()
         for b in self.ArgType:
             if self.ArgType[b][0] == "PROTOCOL":
                 a += self.ArgType[b][1]
-        return set(a)
+    
+        z = list()
+        for x in a:
+            
+            z += [(x,self.ArgType[x][1])]
+        z = set(z)
+        a = list(z)
+        z = sorted(a, key=lambda tup: tup[1])
+
+        return [item[0] for item in z]
 
     # nice printab;e protocol info...
 

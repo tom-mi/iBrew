@@ -7,7 +7,7 @@
 
 {% if Smarter.message_is_known(id) %}
 
-<a href="/info/messages#{{ Smarter.message_is_type(id).lower() }}"><div class="TitleMessageSub">{{ Smarter.message_is_type(id) }} Message
+<a href="/info/messages#{{ Smarter.message_is_type(id).lower() }}"><div class="TitleMessageSubSubSub">{{ Smarter.message_is_type(id) }} Message
 {{ Smarter.number_to_code(id) }}</div></a>
 <br>
 <div class="TitleMessage">{{ Smarter.message_description(id) }}</div>
@@ -30,7 +30,7 @@
 
 <div class="TitleMessageSubSub">Arguments</div>
 {% for x in Smarter.message_arguments(id) %}
-<a href="info/arguments#{{ x[0]  }}">&lt;{{ x[1] }}&gt;</a>
+<a href="/info/arguments#{{ x[0]  }}">&lt;{{ x[1] }}&gt;</a>
 {% end %}
 <div class="Args">
 {% for x in Smarter.message_arguments(id) %}
@@ -84,9 +84,12 @@
 Unknown Message {{ Smarter.number_to_code(id).upper() }}
 {% end %}
 <br><br>
-<div class="TitleMessageSubSub">Know more info about this message?</div>Please mail!<br>
+<div class="TitleMessageSubSub">Know more info about this message?</div><br>Please contact me!<br><br>
 <a href="mailto:tristan@monkeycat.nl?subject=Smarter Protocol Message {{ id }}"><img class="IconMessage" src="{{ static_url('icons/info/contact.png') }}"></a>
 
+
+
 </center>
+<br><br><br>
 
 {% include ../wrapper/foot.html %}

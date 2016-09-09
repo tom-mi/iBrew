@@ -92,11 +92,26 @@ a:hover {
 
 }
 
- .IconStats  {
+.IconStats  {
     margin-top: 10px;
     margin-left: 10px;
     width: 7vw;
 
+}
+
+@-webkit-keyframes thumb {
+	0% { -webkit-transform: scale(1); }
+	50% { -webkit-transform: scale(0.95); }
+	100% { -webkit-transform: scale(1); }
+}
+
+.IconMenu, .IconInfo:hover
+{
+	-webkit-animation-name: thumb;
+	-webkit-animation-duration: 200ms;
+	-webkit-transform-origin:50% 50%;
+	-webkit-animation-iteration-count: 1;
+	-webkit-animation-timing-function: linear;
 }
 
 /*****************
@@ -221,6 +236,12 @@ a:hover {
 
 .TitleMessageSub {
     font-size: 5vw;
+    font-weight: bold;
+    font-family: 'Abel', sans-serif;
+}
+
+.TitleMessageSubSubSub {
+    font-size: 2.5vw;
     font-weight: bold;
     font-family: 'Abel', sans-serif;
 }
