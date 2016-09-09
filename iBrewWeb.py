@@ -98,7 +98,6 @@ class ShowTextFilePageHandler(BaseHandler):
     #@tornado.web.authenticated
     def get(self,txt):
         location =  self.application.settings["static_path"] + "/info/" + txt + ".txt"
-        print location
         if os.path.isfile(os.path.join(os.path.dirname(__file__), webroot)+ "info/" + txt+".html") and os.path.isfile(location):
             text = ""
             with open(location, 'rb') as fd:
@@ -272,7 +271,6 @@ class DeviceHandler(GenericAPIHandler):
 
         else:
             response = { 'error': 'no device' }
-        print Smarter.temperature_metric_to_string()
         self.setContentType()
         self.write(response)
 
