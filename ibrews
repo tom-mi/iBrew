@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf8 -*
 
-from iBrewTerminal import *
+from iBrewConsole import *
 
 #------------------------------------------------------
 # iBrew
@@ -19,4 +19,5 @@ from iBrewTerminal import *
 # MAIN
 #------------------------------------------------------
 
-iBrewTerminal(sys.argv[1:])
+iBrewConsole().run(sys.argv[1:])
+

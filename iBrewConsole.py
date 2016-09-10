@@ -3,19 +3,26 @@
 import sys
 import time
 import datetime
+import logging
+import logging.handlers
 
 from smarter.SmarterClient import *
 from smarter.SmarterProtocol import *
+
 from iBrewWeb import *
 from iBrewJokes import *
+from iBrewFolders import AppFolders
+
 import re
 import random
+
+
 #import traceback
 
 #------------------------------------------------------
 # iBrew
 #
-# Terminal Interface to iKettle 2.0 & Smarter Coffee Devices
+# Console Interface to iKettle 2.0 & Smarter Coffee Devices
 #
 # https://github.com/Tristan79/iBrew
 #
@@ -36,7 +43,7 @@ iBrewInfo         = "iBrew: Brewing on the 7th day © 2016 Tristan (@monkeycat.n
 iBrewContribute   = "Please contribute any discoveries on https://github.com/Tristan79/iBrew/issues"
 
 
-class iBrewTerminal:
+class iBrewConsole:
 
     #------------------------------------------------------
     # iBrew MONITOR
@@ -73,24 +80,25 @@ class iBrewTerminal:
 
     # assume we're connected to a client
     # you can stop the web server by pressing ctrl-c
-    def web(self,port=Smarter.Port+1):
- 
+    def web(self,port=Smarter.Port-1):
+        
         webs = None
         try:
             if self.haveHost:
-                webs = iBrewWeb()
-                webs.run(port,self.client.dump,self.client.host)
+                self.web = iBrewWeb()
+                self.web.run(port,self.client.dump,self.client.host)
             else:
-                webs = iBrewWeb()
-                webs.run(port,self.client.dump)
+                self.web = iBrewWeb()
+                self.web.run(port,self.client.dump)
         except Exception, e:
-            print str(e)
-            print "iBrew: Failed to run Web Interface & REST API on port " + str(port)
+            logging.debug(e)
+            logging.info("iBrew: Failed to run Web Interface & REST API on port " + str(port))
             return
-        print "iBrew: Starting Web Interface & REST API on port " + str(port) + ". Press ctrl-c to stop"
-        self.monitor()
-        webs.kill()
-        print "iBrew: Stopped Web Interface & REST API on port " + str(port)
+        logging.info("iBrew: Starting Web Interface & REST API on port " + str(port) + ". Press ctrl-c to stop")
+        if not self.ui:
+            self.monitor()
+            self.web.kill()
+            logging.info("iBrew: Stopped Web Interface & REST API on port " + str(port))
  
 
     #------------------------------------------------------
@@ -179,7 +187,88 @@ class iBrewTerminal:
         return True
         
 
+    def check_license(self):
+        self.username = "WebServer"
+        
+        if not os.path.isfile(AppFolders.settings() + '/.ibrew') and not self.ui:
+            self.username = "NOT ACCEPTED"
+            self.app_info()
+            print
+            print "PLEASE READ THE FOLLOWING VERY CAREFULLY"
+            print
+            print
+            print "LICENSE " + iBrewApp
+            print
+            print Smarter.license()
+            print
+            print
+            print "WARNING YOU COULD BRICK YOUR DEVICE, USE AT YOUR OWN RISK"
+            print
+            print
+            print "LICENSING AGREEMENT"
+            try:
+                self.username = raw_input("Please enter your full name: ").strip()
+                c = 0
+                while not (' ' in self.username):
+                    c += 1
+                    if c > 2:
+                        print "Forgot your full name?"
+                        return False
+                    print "That is not your full name!"
+                    self.username = raw_input("Please enter your full name: ").strip()
+                c = 0
+                email = raw_input(self.username + ", please enter your email address: ").strip()
+                while (not re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)",email)):
+                    c += 1
+                    if c > 2:
+                        print "Forgot your email address?"
+                        return False
+                    print "Invalid email"
+                    email = raw_input(self.username + ", please enter your email: ").strip()
+                c = 0
+                accept = raw_input("You accept the license? Please answer with YES or NO followed by pressing the ENTER key: ").strip()
+                while (accept.upper() != "YES"):
+                    if accept.upper() == "NO":
+                        return False
+                    c += 1
+                    if c > 2:
+                        print "You decided to not to agree!"
+                        return False
+                    email = raw_input("Please answer with YES or NO followed by pressing the ENTER key: ").strip()
+            except:
+                print "You decided to not to agree!"
+                return False
+            print "Thank you, "+ self.username +" for accepting!"
+            print
+        
+            config = SafeConfigParser()
+            config.read(AppFolders.settings() + '/.ibrew')
+        
+            try:
+                config.add_section('license')
+            except:
+                pass
+
+            config.set('license', 'accepted', 'true')
+            config.set('license', 'name', self.username)
+            config.set('license', 'email', email)
+            with open(AppFolders.settings() + '/.ibrew', 'w') as f:
+                config.write(f)
+        else:
+            config = SafeConfigParser()
+            config.read(AppFolders.settings() + '/.ibrew')
+            try:
+                self.username =  config.get('license','name')
+            except:
+                if self.ui:
+                    self.username = "iBrew"
+                else:
+                    self.username = "NOT ACCEPTED"
+        return True
+        
+    
     def execute(self,line):
+    
         try:
             numarg = 0
             if len(line) == 0:
@@ -196,11 +285,25 @@ class iBrewTerminal:
                 numarg = len(line) - 1
                 arguments = line[1:]
 
+            if command == "ui":
+                if numarg > 0:
+                    command = arguments[0].lower()
+                    arguments = arguments[1:]
+                    numarg -= 1
+                self.ui = True
+            else:
+                self.ui = False
+            
             if command == "exit" or command == "quit":
                 self.client.run = False
                 self.quit = True
                 return
 
+
+            if command != "help" and command != "?" and command != "message" and command != "usage" and command != "commands" and command != "joke" and command != "license" and command != "protocol" and command != "structure" and command != "notes" and command != "examples" and command != "messages":
+                if not self.check_license():
+                    return
+            
             if command == "dump":
                 if numarg == 0 and not self.console:
                     print "iBrew: Do I look like a civet cat to you?"
@@ -226,24 +329,26 @@ class iBrewTerminal:
                 if self.console or numarg == 0:
                     print "iBrew: Can't hear you. Drinking tea at a dinner on the other side of the universe…"
                     return
-                command = arguments[0].lower()
-                arguments = arguments[1:]
-                numarg -= 1
+                if numarg > 0:
+                    command = arguments[0].lower()
+                    arguments = arguments[1:]
+                    numarg -= 1
                 if not self.console:
                     self.client.shout      = True
                     self.client.isKettle   = True
                     self.client.isCoffee   = True
                 else:
                     print "iBrew: \'shout\' not available in the console"
-                
+
 
             if command == "coffee":
                 if self.console or numarg == 0:
                     print "iBrew: Nah, I want hot chocolade…"
                     return
-                command = arguments[0].lower()
-                arguments = arguments[1:]
-                numarg -= 1
+                if numarg > 0:
+                    command = arguments[0].lower()
+                    arguments = arguments[1:]
+                    numarg -= 1
                 if not self.console:
                     self.client.isCoffee   = True
                 else:
@@ -270,9 +375,11 @@ class iBrewTerminal:
                                 sim += " ".rjust(random.randint(0,4)," ") + borreltext
                     print "iBrew: Starting simulation of boiling water…\n\n" + sim
                     return
-                command = arguments[0].lower()
-                arguments = arguments[1:]
-                numarg -= 1
+                
+                if numarg > 0:
+                    command = arguments[0].lower()
+                    arguments = arguments[1:]
+                    numarg -= 1
                 if not self.console:
                     self.client.isKettle   = True
                 else:
@@ -283,9 +390,10 @@ class iBrewTerminal:
                 if self.console or numarg == 0:
                     print "iBrew: As you command, but it can take a while…"
                     return
-                command = arguments[0].lower()
-                arguments = arguments[1:]
-                numarg -= 1
+                if numarg > 0:
+                    command = arguments[0].lower()
+                    arguments = arguments[1:]
+                    numarg -= 1
                 if not self.console:
                     self.client.fast   = False
                 else:
@@ -322,7 +430,6 @@ class iBrewTerminal:
                         print "iBrew: Temperature in celsius"
                         return
 
-
             self.haveHost = False
             
             if numarg > 0:
@@ -333,7 +440,7 @@ class iBrewTerminal:
                     arguments = arguments[0:numarg]
                     self.client.disconnect()
                     # still wong...
-            
+              
             if command == "console" or command == "connect":
                 self.client.disconnect()
 
@@ -362,10 +469,14 @@ class iBrewTerminal:
                     self.client.shout = False
 
                 try:
+                    if not self.client.dump:
+                        print
+                        print "  Starting please wait..."
+                        print
                     self.client.connect()
-                except:
-                    print(traceback.format_exc())
-                    print "iBrew: Could not not connect to [" + self.client.host + "]"
+                except Exception, e:
+                    logging.debug(e)
+                    logging.info("iBrew: Could not not connect to [" + self.client.host + "]")
                     return
 
             if command == "connect" or command == "console" or ((command == "sweep" or command == "monitor") and not self.console):
@@ -393,7 +504,7 @@ class iBrewTerminal:
             elif command == "notes":        print Smarter.notes()
             elif command == "license":
                                             if self.console and numarg == 1 and arguments[0] == "disagree":
-                                                os.remove('web/static/.ibrew')
+                                                os.remove(AppFolders.settings() + '/.ibrew')
                                             else:
                                                 print Smarter.license()
             elif command == "examples":     self.examples()
@@ -570,7 +681,7 @@ class iBrewTerminal:
                                             elif numarg == 2 and self.client.isCoffee: print "iBrew: Could not store coffee settings, missing grinder"
                                             elif numarg == 3 and self.client.isCoffee: print "iBrew: Could not store coffee settings, missing hotplate"
                                             elif numarg == 1 and self.client.isKettle: print "iBrew: Could not store kettle settings, missing temperature"
-                                            elif numarg == 2 and self.client.isKettle: print "iBrew: Could not store kettle settinss, missing formula mode"
+                                            elif numarg == 2 and self.client.isKettle: print "iBrew: Could not store kettle settings, missing formula mode"
                                             elif numarg == 3 and self.client.isKettle: print "iBrew: Could not store kettle settings, missing formula temperature"
                                             elif numarg >= 4:
                                                 self.client.device_store_settings(arguments[0],arguments[1],arguments[2],arguments[3])
@@ -622,105 +733,58 @@ class iBrewTerminal:
             print(traceback.format_exc())
             print "iBrew: Command Failed"
             
-        
-    def __init__(self,arguments):
-    
-    
-        if not os.path.isfile('web/static/.ibrew'):
-            self.username = "NOT ACCEPTED"
-            self.app_info()
-            print
-            print "PLEASE READ THE FOLLOWING VERY CAREFULLY"
-            print
-            print
-            print "LICENSE " + iBrewApp
-            print
-            print Smarter.license()
-            print
-            print
-            print "WARNING YOU COULD BRICK YOUR DEVICE, USE AT YOUR OWN RISK"
-            print
-            print
-            print "LICENSING AGREEMENT"
-            try:
-                self.username = raw_input("Please enter your full name: ").strip()
-                c = 0
-                while not (' ' in self.username):
-                    c += 1
-                    if c > 2:
-                        print "Forgot your full name?"
-                        return
-                    print "That is not your full name!"
-                    self.username = raw_input("Please enter your full name: ").strip()
-                c = 0
-                email = raw_input(self.username + ", please enter your email address: ").strip()
-                while (not re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)",email)):
-                    c += 1
-                    if c > 2:
-                        print "Forgot your email address?"
-                        return
-                    print "Invalid email"
-                    email = raw_input(self.username + ", please enter your email: ").strip()
-                c = 0
-                accept = raw_input("You accept the license? Please answer with YES or NO followed by pressing the ENTER key: ").strip()
-                while (accept.upper() != "YES"):
-                    if accept.upper() == "NO":
-                        return
-                    c += 1
-                    if c > 2:
-                        print "You decided to not to agree!"
-                        return
-                    email = raw_input("Please answer with YES or NO followed by pressing the ENTER key: ").strip()
-            except:
-                print "You decided to not to agree!"
-                return
-            print "Thank you, "+ self.username +" for accepting!"
-            print
-            
-            config = SafeConfigParser()
-            config.read('web/static/.ibrew')
-        
-            try:
-                config.add_section('license')
-            except:
-                pass
+       
+    def run(self,arguments):
+        AppFolders.makeFolders()
 
-            config.set('license', 'accepted', 'true')
-            config.set('license', 'name', self.username)
-            config.set('license', 'email', email)
-            with open('web/static/.ibrew', 'w') as f:
-                config.write(f)
-        else:
-            config = SafeConfigParser()
-            config.read('web/static/.ibrew')
-            try:
-                self.username =  config.get('license','name')
-            except:
-                return
-                # delete license...
+        #Configure logging
+        # root level        
+        logger = logging.getLogger()    
+        logger.setLevel(logging.DEBUG)
+        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
         
+        log_file = os.path.join(AppFolders.logs(), "iBrewConsole.log")
+        
+        fh = logging.handlers.RotatingFileHandler(log_file, maxBytes=1048576, backupCount=4, encoding="UTF8")
+        fh.setLevel(logging.DEBUG)
+        fh.setFormatter(formatter)
+        logger.addHandler(fh)
+        
+        # By default only do info level to console
+        sh = logging.StreamHandler(sys.stdout)
+        sh.setLevel(logging.INFO)
+        sh.setFormatter(formatter)
+        logger.addHandler(sh)
+
+        sh.setLevel(logging.DEBUG)
         
         self.console = False
         self.quit = True
         self.client = SmarterClient()
+        
+        self.client.settingsPath = AppFolders.settings() + "/"
         self.client.fast = True
         try:
             self.execute(arguments)
         except:
             self.console = False
   
+  
         if self.console:
             self.quit = False
-        while not self.quit:
+        while not self.quit and not self.ui:
             try:
                 # is should be threaded... since the kettle input is still comming as we wait for user input...
                 cursor = self.client.host + ":" + self.client.device + "$"
                 self.execute(raw_input(cursor).strip().split())
             except:
                 break
-        self.client.disconnect()
+        if not self.ui:
+            
+            self.client.disconnect()
+
         
-#------------------------------------------------------/Users/Tristan/iBrew/web/static/license
+#------------------------------------------------------
 # iBrew Console PRINT
 #------------------------------------------------------
 
@@ -757,6 +821,7 @@ class iBrewTerminal:
         print
         print "    web                    start web interface & rest api"
         print "    port                   optional port number, default 2082"
+        print "    dump                   dump message enabled"
         print
         print
         print "  iBrew Command Line"
