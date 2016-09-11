@@ -15,15 +15,39 @@ function calibrate(ip)          { $.getJSON( '/api/' + ip + '/calibrate'); }
 <div class="tTable">
 <div id="defaults">
 <br>
-<div class="tRow"><div class="tCell">Temperature</div><div class="tCell"><input type="range" id="dt" min="1" value="{{ client.defaultTemperature }}" max="100" step="1"></div></div>
-<br>
-<div class="tRow"><div class="tCell">Keep warm</div><div class="tCell"><input type="checkbox" name="df" value="{{ Smarter.check_keepwarm_on(client.defaultKeepWarmTime)  }}"><input type="range" id="dkwt" min="1" value="{{ client.defaultKeepWarmTime }}" max="25" step="1"></div></div>
-<br>
-<div class="tRow"><div class="tCell">Formula Mode</div><div class="tCell">
+<div class="tRow"><div class="tCell">Temperature</div><div class="CellSettings"></div><div class="tCell">
+<input type="range" id="dt" min="1" value="{{ client.defaultTemperature }}" max="100" step="1">
 
-<img width="24px" src="{{ static_url('icons/kettle/formula.png') }}"><input type="checkbox" name="df" value="{{ client.defaultFormula }}"><input type="range" id="dft" min="1" value="{{ client.defaultFormulaTemperature }}" max="100" step="1"></div></div>
+{% if client.defaultTemperature < 33 %}
+<img height="24px" src="{{ static_url('icons/kettle/temperature/low.png')}}">
+{% elif client.defaultTemperature < 66 %}
+<img height="24px" src="{{ static_url('icons/kettle/temperature/middle.png')}}">
+{% else %}
+<img height="24px" src="{{ static_url('icons/kettle/temperature/high.png')}}">
+{% end %}
+<span id="temperature">{{ Smarter.temperature_to_string(client.defaultTemperature) }}</span>
+</div></div>
+
+<div class="tRow"><div class="tCell">Formula Mode</div><div class="CellSettings"><img width="32px" src="{{ static_url('icons/kettle/formula/on.png') }}"></div><div class="tCell">
+
+
+<input type="range" id="dft" min="1" value="" max="100" step="1">
+{% if client.defaultFormulaTemperature < 33 %}
+<img height="24px" src="{{ static_url('icons/kettle/temperature/low.png')}}">
+{% elif client.defaultFormulaTemperature < 66 %}
+<img height="24px" src="{{ static_url('icons/kettle/temperature/middle.png')}}">
+{% else %}
+<img height="24px" src="{{ static_url('icons/kettle/temperature/high.png')}}">
+{% end %}
+<span id="temperature">{{ Smarter.temperature_to_string(client.defaultFormulaTemperature) }}</span>
 </div>
 </div>
+<div class="tRow"><div class="tCell">Keep warm</div><div class="CellSettings"><img width="32px" src="{{ static_url('icons/kettle/keepwarm.png') }}"></div><div class="tCell">
+
+<input type="range" id="dkwt" min="5" value="{{ client.defaultKeepWarmTime }}" max="35" step="1">
+<span id="keepwarm">{{ client.defaultKeepWarmTime }} minutes</span>
+
+</div></div>
 {% end %}
 
 {% if client.isCoffee %}

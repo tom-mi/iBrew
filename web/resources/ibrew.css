@@ -142,6 +142,19 @@ a:hover {
     font-family: 'Abel', sans-serif;
 }
 
+
+
+/*** settings */
+
+.CellSettings {
+    font-family: 'Abel', sans-serif;
+    font-size: 3vw;
+   	display: table-cell;
+    padding: 1vw;
+    width: 4vw;
+    min-width: 20px;
+}
+
 /**** STATS 
 */
 
