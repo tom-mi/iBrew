@@ -64,7 +64,7 @@ buildmac:
 	@pip install -q -r distro/mac/requirements-mac.txt
 	@rm -rf build     
 	@echo Please install upx with: brew install upx
-	@pyinstaller iBrewUI.py -s -w -n iBrew --noupx
+	@pyinstaller ibrewui -s -w -n iBrew --noupx
 	@pyinstaller ibrew -s -w -n iBrewConsole --noupx
 	@cp -a resources dist/iBrew.app/Contents/MacOS
 	@cp -a web dist/iBrew.app/Contents/MacOS
