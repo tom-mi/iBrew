@@ -1,15 +1,17 @@
 # iBrew: Intermezzo!
 
-[iKettle 2.0](http://smarter.am/ikettle) and [Smarter Coffee](http://smarter.am/coffee) Interface
+iKettle, [iKettle 2.0](http://smarter.am/ikettle) and [Smarter Coffee](http://smarter.am/coffee) Interface
 
 ## Hot! News
+
+__Legacy iKettle command line support (alpha)__
 
 _Smarter Coffee & iKettle 2.0 Simulation!_
 
 [iSamsungTV](https://github.com/Tristan79/iSamsungTV) the command line interface to Samsung TV series C, D, E, F and Blue Ray Disc Players with Smart Hub feature.
 
 ## Introduction
-iBrew is an interface to the iKettle 2.0 and Smarter Coffee devices. 
+iBrew is an interface to the iKettle 2.0 and Smarter Coffee devices (and has legacy support for the original iKettle). 
 
 _Stand alone, no internet or Smarter app needed!_
 
@@ -22,7 +24,7 @@ _For smarthome fans!__
  * Stand alone or bridge mode!
  
 __iBrew Interfaces & Bridges__
- * Command Line 
+ * Command Line (now with iKettle Legacy support) 
  * Web (almost finished, help appreciated!)
  * JSON REST 
  * [Javascript](https://github.com/Tristan79/iBrew/blob/master/resources/ibrew.js) (almost finished :-)

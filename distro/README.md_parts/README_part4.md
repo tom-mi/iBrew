@@ -1,6 +1,31 @@
 
 ```
 
+### iKettle legacy support
+
+```
+
+Usage: ibrewlegacy command host
+
+Commands
+    heat  Start heating water
+    stop  Stop heating water
+      65  65ºC selected
+      80  80ºC selected
+      95  95ºC selected
+     100  100ºC selected
+    warm  Keep water warm
+       5  Keep water warm timer is set to 5 minutes
+      10  Keep water warm timer is set to 10 minutes
+      20  Keep water warm timer is set to 20 minutes
+  status  Kettle status
+
+    host  ip or host address of device
+
+
+```
+
+
 ### Relay
 
 Start a relay server on port 2081, it acts as an man in the middle passing messages between the appliance and

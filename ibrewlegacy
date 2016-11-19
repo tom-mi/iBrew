@@ -53,7 +53,7 @@ text100c            = "100ºC selected"
 text95c             = "95ºC selected"
 text80c             = "80ºC selected"
 text65c             = "65ºC selected"
-textWarm            = "Keeping water warm" # for 30 minutes???
+textWarm            = "Keep water warm" # for 30 minutes???
 textWarm5m          = "Keep water warm timer is set to 5 minutes"
 textWarm10m         = "Keep water warm timer is set to 10 minutes"
 textWarm20m         = "Keep water warm timer is set to 20 minutes"
@@ -64,7 +64,7 @@ textReady           = "Ready"
 textHeated          = "Water heated"
 textOverheat        = "Kettle overheated"
 textKettleRemoved   = "Kettle removed"
-textWarmFinished    = "Keeping water warm finished"
+textWarmFinished    = "Keep water warm finished"
 
 # Status messages
 status100c          = "sys status 0x100"
@@ -136,7 +136,7 @@ def decode_status(status):
     elif status == statusKettleRemoved:
         return textKettleRemoved
     else:
-        return "Unknown status please report in the issues on github"
+        return "Unknown status please report in the issues on github" + str([status])
 
 
 iBrewApp          = "iBrew: Legacy iKettle Interface"
@@ -234,7 +234,7 @@ def app_info():
 
 
 def usage():
-        print ""
+        print
         print "Usage: ibrewlegacy command host"
         print
         print "Commands"
@@ -249,9 +249,9 @@ def usage():
         print "      10  " + textWarm10m
         print "      20  " + textWarm20m
         print "  status  " + textStatus
-        print ""
         print 
         print "    host  ip or host address of device"
+        print
 
 
 if check_license():
