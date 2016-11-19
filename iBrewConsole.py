@@ -298,9 +298,9 @@ class iBrewConsole:
                 return
 
 
-            if command != "help" and command != "?" and command != "message" and command != "usage" and command != "commands" and command != "joke" and command != "license" and command != "protocol" and command != "structure" and command != "groups" and command != "group" and command != "notes" and command != "examples" and command != "messages":
-                if not self.check_license():
-                    return
+            #if command != "help" and command != "?" and command != "message" and command != "usage" and command != "commands" and command != "joke" and command != "license" and command != "protocol" and command != "structure" and command != "groups" and command != "group" and command != "notes" and command != "examples" and command != "messages":
+            if not self.check_license():
+                return
             
             if command == "dump":
                 if numarg == 0 and not self.console:
@@ -544,6 +544,7 @@ class iBrewConsole:
 
             
             if command == "help" or command == "?":
+                                            self.app_info()
                                             self.usage()
                                             self.commands()
             elif command == "shortstatus":  self.client.print_short_status()
