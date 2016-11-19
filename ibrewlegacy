@@ -85,24 +85,29 @@ statusKettleRemoved = "sys status 0x1"
 replyStatus         = "sys status key="
 
 def decode_replyStatus(status):
+
+    def is_set(x, n):
+        return x & 2**n != 0
+
     if len(replyStatus) == len(status):
         return textReady
-    statusdata = status[len(replyStatus)]
+
+    statusdata = Smarter.raw_to_number(status[len(replyStatus)])
     
     statustext = ""
     if is_set(statusdata,0):
         statustext += textHeating + " "
-    if is_set(statusdata,0):
+    if is_set(statusdata,1):
         statustext += textWarm + " "
-    if is_set(statusdata,0):
+    if is_set(statusdata,2):
         statustext += text65c + " "
-    if is_set(statusdata,0):
+    if is_set(statusdata,3):
         statustext += text80c + " "
-    if is_set(statusdata,0):
+    if is_set(statusdata,4):
         statustext += text95c + " "
-    if is_set(statusdata,0):
+    if is_set(statusdata,5):
         statustext += text100c + " "
-    return strip(statustext)
+    return statustext.strip()
 
 def decode_status(status):
     if status[0:len(replyStatus)] == replyStatus:
@@ -327,5 +332,4 @@ if check_license():
             print "Received 3: " + decode_status(data[0:len(data)-1])
         except socket.timeout:
             print "\niBrew: Did you see reply messages? Please report on https://github.com/Tristan79/iBrew/issues, which reply messages are received and which command is used!"
-            sys.exit(3)
         s.close()
