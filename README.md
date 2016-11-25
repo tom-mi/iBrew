@@ -4,7 +4,9 @@ iKettle, [iKettle 2.0](http://smarter.am/ikettle) and [Smarter Coffee](http://sm
 
 ## Hot! News
 
-__Legacy iKettle command line support (alpha)__
+__Homekit Cmdswitch2 Homebridge Polling!__ (https://github.com/luisiam/homebridge-cmdswitch2/issues/4)
+
+_Legacy iKettle command line support (alpha)_
 
 _Smarter Coffee & iKettle 2.0 Simulation!_
 
