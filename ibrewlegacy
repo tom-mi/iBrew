@@ -260,11 +260,11 @@ def usage():
 
 
 if check_license():
-    app_info()
     try:
         action = str(sys.argv[1])
         ip = str(sys.argv[2])
     except IndexError:
+        app_info()
         usage()
         sys.exit(2);
     else: 
@@ -290,7 +290,7 @@ if check_license():
         if action == "stop":
             print "Sending: " + textStop
             s.send(commandStop)
-        elif action == "heat":
+        elif action == "heat" or action == "start":
             print "Sending: " + textHeat
             s.send(commandHeat)
         elif action == "status":
@@ -331,5 +331,5 @@ if check_license():
             data = s.recv(bufferSize)
             print "Received 3: " + decode_status(data[0:len(data)-1])
         except socket.timeout:
-            print "\niBrew: Did you see reply messages? Please report on https://github.com/Tristan79/iBrew/issues, which reply messages are received and which command is used!"
+             pass #print "\niBrew: Did you see reply messages? Please report on https://github.com/Tristan79/iBrew/issues, which reply messages are received and which command is used!"
         s.close()
