@@ -4,24 +4,36 @@ iKettle, [iKettle 2.0](http://smarter.am/ikettle) and [Smarter Coffee](http://sm
 
 ## Hot! News
 
-__Legacy iKettle command line support (alpha)__
+_Legacy iKettle command line support (alpha)_
 
-_Smarter Coffee & iKettle 2.0 Simulation!_
+__Homekit [Cmdswitch2](https://github.com/luisiam/homebridge-cmdswitch2/) Homebridge Polling!__ 
+Please update/git pull your Cmdswitch2! Luisiam fixed the incorrect status [issue](https://github.com/luisiam/homebridge-cmdswitch2/issues/4) :-)
+
 
 [iSamsungTV](https://github.com/Tristan79/iSamsungTV) the command line interface to Samsung TV series C, D, E, F and Blue Ray Disc Players with Smart Hub feature.
 
+_Smarter Coffee & iKettle 2.0 Simulation!_
+
+__Please post links, information or help on interfacing with smarthome controllers software in the issues! There are too many out there for me to test and write guides for them all!__.
+If you are a plugin coder or scripter and you do not have an iKettle or Smarter Coffee, __just simulate one!__
+
+* Simulates iKettle 2.0 ```ibrew simulate```
+* Simulates Smarter Coffee machine ```ibrew simulate```
+
+
 ## Introduction
-iBrew is an interface to the iKettle 2.0 and Smarter Coffee devices (and has legacy support for the original iKettle). 
+iBrew is an interface to the iKettle 2.0 and Smarter Coffee devices (and has legacy support for the original iKettle, see below). 
 
 _Stand alone, no internet or Smarter app needed!_
 
-It features!
+It features! 
 
-_For smarthome fans!__
+__For smarthome fans!__
  * Support unlimited iKettle 2.0 or Smarter Coffee appliances! As many as you like!
  * Usage statistics!
  * No tracking!
  * Stand alone or bridge mode!
+ * HomeKit Support
  
 __iBrew Interfaces & Bridges__
  * Command Line (now with iKettle Legacy support) 
@@ -47,22 +59,22 @@ __For the Smarthome and Domotics Interface experts!__
 
 Tested on iKettle 2.0 v19 and SmarterCoffee v20 & v22. 
 
-Written enterly lying down... (sick in bed for months and months :-/) 
-
-__Donations welcome! Tea, jokes, smarthome stuff, apple cakes, indian food, hugs... or new stuff to play with!__
+__Donations welcome! Tea, jokes, smarthome stuff, apple cakes, indian food, hugs... or new stuff to play with! __
 
 <tristan@monkeycat.nl>
 
 Please share any bugs, jokes, problems, discoveries you made! 
 
+### Legacy support of the original iKettle 
 
-## News 
-__Please post links, information or help on interfacing with smarthome controllers software in the issues! There are too many out there for me to test and write guides for them all!__.
+It features! 
 
-If you are a plugin coder or scripter and you do not have an iKettle or Smarter Coffee, __just simulate one!__
+__For smarthome fans!__
+ * Command Line
+ * HomeKit support 
 
-* Simulates iKettle 2.0 ```ibrew simulate```
-* Simulates Smarter Coffee machine ```ibrew simulate```
+#### Usefull links
+Check out [ikettle-brute-forcer](https://github.com/C0smos/ikettle-brute-forcer) and the iKettle simulator [kettle-fake](https://github.com/jerrosenberg/kettle-fake)
 
         
 ### iBrew in the Media
