@@ -93,7 +93,8 @@ def decode_replyStatus(status):
         return textReady
 
     statusdata = Smarter.raw_to_number(status[len(replyStatus)])
-    
+
+    print "Debug status: " + str(statusdata)
     statustext = ""
     if is_set(statusdata,0):
         statustext += textHeating + " "
@@ -111,7 +112,7 @@ def decode_replyStatus(status):
 
 def decode_status(status):
     if status[0:len(replyStatus)] == replyStatus:
-            return decode_replyStatus(status)
+        return decode_replyStatus(status)
     elif status == status100c:
         return text100c
     elif status == status95c:
@@ -330,6 +331,7 @@ if check_license():
             print "Received 2: " + decode_status(data[0:len(data)-1])
             data = s.recv(bufferSize)
             print "Received 3: " + decode_status(data[0:len(data)-1])
+            
         except socket.timeout:
              pass #print "\niBrew: Did you see reply messages? Please report on https://github.com/Tristan79/iBrew/issues, which reply messages are received and which command is used!"
         s.close()
