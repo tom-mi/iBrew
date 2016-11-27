@@ -4,6 +4,8 @@ iKettle, [iKettle 2.0](http://smarter.am/ikettle) and [Smarter Coffee](http://sm
 
 ## Hot! News
 
+Make sure you also accept the license of the user you run homebridge with, will fixed this later that accepting the license is for all users... or remove it :-) see issues!
+
 _Legacy iKettle command line support (alpha)_
 
 __Homekit [Cmdswitch2](https://github.com/luisiam/homebridge-cmdswitch2/) Homebridge Polling!__ 
