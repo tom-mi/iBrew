@@ -260,7 +260,7 @@ def usage():
         print
 
 
-if check_license():
+if True: #check_license():
     try:
         action = str(sys.argv[1])
         ip = str(sys.argv[2])
