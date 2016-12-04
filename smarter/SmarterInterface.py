@@ -79,9 +79,7 @@ class SmarterClient:
     def __init(self):
         self.__simulation_default()
     
-        # network
-        self.port                       = Smarter.Port
-        
+    
         # device
         self.historySuccess             = 0
         
@@ -106,7 +104,7 @@ class SmarterClient:
         self.onBase                     = True
         
         self.keepWarmOn                 = False
-        self.formulaCoolingOn              = False
+        self.formulaCoolingOn           = False
         self.temperature                = 24
         self.temperatureStable          = 24
         
@@ -200,6 +198,8 @@ class SmarterClient:
         Initializing SmarterClient
         """
 
+        self.serverHost                 = ''
+        self.serverPort                 = Smarter.Port
         self.isKettle                   = False
         self.isCoffee                   = False
         
@@ -221,7 +221,9 @@ class SmarterClient:
         self.totalSessionCount               = 0
         
         
-        
+       # network
+        self.port                       = Smarter.Port
+         
         self.host                       = Smarter.DirectHost
         self.dump_status                = True
         self.dump                       = False
@@ -464,10 +466,11 @@ class SmarterClient:
             try:
                 self.udp=socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                 self.udp.settimeout(1)
-                self.udp.bind(('',Smarter.Port))
+                self.udp.bind((self.serverHost,self.serverPort))
+                
                 self.broadcast = threading.Thread(target=self.__broadcast_device)
                 self.broadcast.start()
-                logging.info("Starting UDP")
+                logging.info("Starting UDP (" + self.serverHost + ":" + str(self.serverPort) + ")")
             except socket.error, e:
                 print str(e)
             except threading.ThreadError:
@@ -547,7 +550,7 @@ class SmarterClient:
         self.serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.serversocket.settimeout(1)
         try:
-            self.serversocket.bind(("",Smarter.Port))
+            self.serversocket.bind((self.serverHost,self.serverPort))
             self.serversocket.listen(20)
         except socket.error:
             return
@@ -556,7 +559,8 @@ class SmarterClient:
  
         self.__broadcast_device_start()
 
-        print "iBrew Server Running on port " + str(Smarter.Port)
+        logging.info("iBrew Server (" + self.serverHost + ":" + str(self.serverPort) + ")")
+        
         while self.__server_run:
             try:
                 clientsock, addr = self.serversocket.accept()

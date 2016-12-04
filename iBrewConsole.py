@@ -448,8 +448,16 @@ class iBrewConsole:
             self.haveHost = False
             
             if numarg > 0:
-                if self.is_valid_ipv4_address(arguments[numarg-1]) or self.is_valid_ipv6_address(arguments[numarg-1]):
-                    self.client.host = arguments[numarg-1]
+                connection = str.split(arguments[numarg-1],':')
+                if self.is_valid_ipv4_address(connection[0]) or self.is_valid_ipv6_address(connection[0]):
+                    self.client.host = connection[0]
+                    try:
+                        p = int(connection[1])
+                        self.client.port = p
+                    except ValueError:
+                        pass
+                    except IndexError:
+                        pass
                     self.haveHost = True
                     numarg -= 1
                     arguments = arguments[0:numarg]
@@ -504,7 +512,7 @@ class iBrewConsole:
                         return
 
                 # FIX RELAY SHOULD NOT BE HERE
-                if command == "console" or command == "connect" or command == "relay":
+                if command == "console" or command == "connect":
                     self.console = True
 
                 if command == "console" or command == "connect" or command == "relay":
@@ -522,7 +530,6 @@ class iBrewConsole:
                     logging.debug(traceback.format_exc())
                     print "iBrew: Could not init values"
                     return
-
 
 
             if command == "connect" or command == "console" or ((command == "relay" or command == "sweep" or command == "monitor") and not self.console):
@@ -559,11 +566,27 @@ class iBrewConsole:
             elif command == "unblock":      self.client.unblock(arguments[0])
             elif command == "block":        self.client.block(arguments[0])
             elif command == "relay":
-                                            if numarg >= 1 and arguments[0] == "stop":
-                                                self.client.relay_stop()
+                                            if numarg >= 1:
+                                                if arguments[0] == "stop":
+                                                    self.client.relay_stop()
+                                                # decode port and ip?
+                                                else:
+                                                    connection = str.split(arguments[0],':')
+                                                    if self.is_valid_ipv4_address(connection[0]) or self.is_valid_ipv6_address(connection[0]):
+                                                        self.client.serverHost = connection[0]
+                                                    try:
+                                                        p = int(connection[1])
+                                                        self.client.serverPort = p
+                                                    except ValueError:
+                                                        pass
+                                                    except IndexError:
+                                                        pass
+                                                    self.client.relay_start()
+                                                    self.monitor()
+                                                    
                                             else:
                                                 self.client.relay_start()
-                                            return
+                                                self.monitor()
             
             elif command == "commands":     self.commands()
             elif command == "protocol":     print Smarter.protocol()
@@ -1028,7 +1051,7 @@ class iBrewConsole:
         print "    dump                   toggle \'dump raw messages\'"
         print "    monitor                monitor incomming traffic"
         print "    modify (modifiers)     patch or unpatch messages"
-        print "    relay (port)           start relay device"
+        print "    relay ((ip:)port)      start relay device"
         print "    simulate               start kettle (or coffee simulation)"
         print "    sweep (id)             [developer only] try (all or start with id) unknown command codes"
         print
