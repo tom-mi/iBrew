@@ -989,8 +989,12 @@ class SmarterProtocol:
         except Exception:
             raise SmarterErrorOld("Hotplate timer is not a number: " + string)
 
-    def check_hotplate(self,timer):
-        if timer != 0 and (timer < 5 or timer > 40):
+
+    # added new firmware v22 which has a hotplate range till 40...
+    def check_hotplate(self,timer,version=20):
+        if version < 22 and timer != 0 and (timer < 5 or timer > 35):
+            raise SmarterErrorOld("Hotplate timer out of range [0=Off] or [5..35] minutes: " + str(timer))
+        if version >= 22 and timer != 0 and (timer < 5 or timer > 40):
             raise SmarterErrorOld("Hotplate timer out of range [0=Off] or [5..40] minutes: " + str(timer))
         return timer
 
@@ -998,12 +1002,12 @@ class SmarterProtocol:
         if timer > 0: return True
         else: return False
 
-    def raw_to_hotplate(self,raw):
-        return self.check_hotplate(self.raw_to_number(raw))
+    def raw_to_hotplate(self,raw,version=20):
+        return self.check_hotplate(self.raw_to_number(raw),version)
 
 
-    def hotplate_to_raw(self,timer):
-        return self.number_to_raw(self.check_hotplate(timer))
+    def hotplate_to_raw(self,timer,version=20):
+        return self.number_to_raw(self.check_hotplate(timer,version))
 
 
     #------------------------------------------------------
@@ -1029,7 +1033,7 @@ class SmarterProtocol:
     
     
     def raw_to_keepwarm(self,raw):
-        return self.check_hotplate(self.raw_to_number(raw))
+        return self.check_keepwarm(self.raw_to_number(raw))
 
 
     def keepwarm_to_raw(self,timer):

@@ -1550,7 +1550,7 @@ class SmarterClient:
         try:
             self.sim_setCups         = Smarter.raw_to_cups(message[1])
             self.sim_setKeepWarmTime = Smarter.raw_to_strength(message[2])
-            self.sim_setHotPlate     = Smarter.raw_to_hotplate(message[3])
+            self.sim_setHotPlate     = Smarter.raw_to_hotplate(message[3],self.version)
             self.sim_setGrind        = Smarter.raw_to_bool(message[4])
         except SmarterError:
             return self.__encode_CommandStatus(Smarter.StatusFailed)
@@ -1649,7 +1649,7 @@ class SmarterClient:
             self.sim_hotPlate = self.sim_defaultHotPlate
         else:
             try:
-                hotPlate = Smarter.raw_to_hotplate(message[1])
+                hotPlate = Smarter.raw_to_hotplate(message[1],self.version)
             except SmarterError:
                 return self.__encode_CommandStatus(Smarter.StatusFailed)
         
@@ -1809,7 +1809,7 @@ class SmarterClient:
         Simulate response on command Coffee Store Settings
         """
         try:
-            self.sim_defaultHotPlate    = Smarter.raw_to_hotplate(message[4])
+            self.sim_defaultHotPlate    = Smarter.raw_to_hotplate(message[4],self.version)
             self.sim_defaultCups        = Smarter.raw_to_cups(message[2])
             self.sim_defaultStrength    = Smarter.raw_to_strength(message[1])
             self.sim_defaultGrind       = Smarter.raw_to_bool(message[3])
@@ -2125,7 +2125,7 @@ class SmarterClient:
         """
         Encode coffee machine settings response message
         """
-        return [Smarter.number_to_raw(Smarter.ResponseCoffeeSettings) + Smarter.cups_to_raw(cups) + Smarter.strength_to_raw(strength) + Smarter.bool_to_raw(grind) + Smarter.hotplate_to_raw(hotplate) + Smarter.number_to_raw(Smarter.MessageTail)]
+        return [Smarter.number_to_raw(Smarter.ResponseCoffeeSettings) + Smarter.cups_to_raw(cups) + Smarter.strength_to_raw(strength) + Smarter.bool_to_raw(grind) + Smarter.hotplate_to_raw(hotplate,self.version) + Smarter.number_to_raw(Smarter.MessageTail)]
 
 
 
@@ -2283,7 +2283,7 @@ class SmarterClient:
         self.defaultCups          = Smarter.raw_to_cups(message[1])
         self.defaultStrength      = Smarter.raw_to_strength(message[2])
         self.defaultGrind         = Smarter.raw_to_bool(message[3])
-        self.defaultHotPlate      = Smarter.raw_to_hotplate(message[4])
+        self.defaultHotPlate      = Smarter.raw_to_hotplate(message[4],self.version)
 
 
 
@@ -3119,7 +3119,7 @@ class SmarterClient:
         Store 'default' user settings on the coffee machine
         """
         if self.fast or self.isCoffee:
-            self.__send_command(Smarter.CommandCoffeeStoreSettings,Smarter.strength_to_raw(strength)+Smarter.cups_to_raw(cups)+Smarter.bool_to_raw(grind)+Smarter.hotplate_to_raw(hotplate))
+            self.__send_command(Smarter.CommandCoffeeStoreSettings,Smarter.strength_to_raw(strength)+Smarter.cups_to_raw(cups)+Smarter.bool_to_raw(grind)+Smarter.hotplate_to_raw(hotplate,self.version))
 
             if self.commandStatus == Smarter.StatusSucces:
                 self.defaultCups = cups
@@ -3160,7 +3160,7 @@ class SmarterClient:
         """
         #  cups strength hotplate grind
         if self.fast or self.isCoffee:
-            self.__send_command(Smarter.CommandBrew,Smarter.cups_to_raw(cups)+Smarter.strength_to_raw(strength)+Smarter.hotplate_to_raw(hotplate)+Smarter.bool_to_raw(grind))
+            self.__send_command(Smarter.CommandBrew,Smarter.cups_to_raw(cups)+Smarter.strength_to_raw(strength)+Smarter.hotplate_to_raw(hotplate,self.version)+Smarter.bool_to_raw(grind))
         else:
             raise SmarterError(Smarter.CoffeeNoMachineBrew,"You need a coffee machine to brew coffee")
 
@@ -3207,7 +3207,7 @@ class SmarterClient:
                 self.__send_command(Smarter.CommandHotplateOff)
                 self.hotPlate = self.defaultHotPlate
             else:
-                self.__send_command(Smarter.CommandHotplateOn,Smarter.hotplate_to_raw(minutes))
+                self.__send_command(Smarter.CommandHotplateOn,Smarter.hotplate_to_raw(minutes,self.version))
                 self.hotPlate = minutes
         else:
             raise SmarterError(Smarter.CoffeeNoMachineHotplateOn,"You need a coffee machine to turn on the hotplate")
