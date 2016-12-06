@@ -4,13 +4,9 @@ iKettle, [iKettle 2.0](http://smarter.am/ikettle) and [Smarter Coffee](http://sm
 
 ## Hot! News
 
-Make sure you also accept the license of the user you run homebridge with, will fixed this later that accepting the license is for all users... or remove it :-) see issues!
-
 _Legacy iKettle command line support (alpha)_
 
 __Homekit [Cmdswitch2](https://github.com/luisiam/homebridge-cmdswitch2/) Homebridge Polling!__ 
-Please update/git pull your Cmdswitch2! Luisiam fixed the incorrect status [issue](https://github.com/luisiam/homebridge-cmdswitch2/issues/4) :-)
-
 
 [iSamsungTV](https://github.com/Tristan79/iSamsungTV) the command line interface to Samsung TV series C, D, E, F and Blue Ray Disc Players with Smart Hub feature.
 
@@ -21,7 +17,6 @@ If you are a plugin coder or scripter and you do not have an iKettle or Smarter 
 
 * Simulates iKettle 2.0 ```ibrew simulate```
 * Simulates Smarter Coffee machine ```ibrew simulate```
-
 
 ## Introduction
 iBrew is an interface to the iKettle 2.0 and Smarter Coffee devices (and has legacy support for the original iKettle, see below). 
@@ -46,8 +41,9 @@ __iBrew Interfaces & Bridges__
  * Message relay (works with Smarter app!)
  
 __Connection Guides__
- * __HomeKit__ (using HomeBridge)
+ * __HomeKit__ (using HomeBridge)  (coming soon!)
  * [Domoticz](http://www.domoticz.com/) (coming soon!)
+ * Improve your connection with a relay server (coming soon!)
  * Please share your favorite smarthome controller setup!
 
 _No tracking of you or your appliances usage!_
@@ -60,8 +56,6 @@ __For the Smarthome and Domotics Interface experts!__
  * Smarter protocol description (start web interface for a clickable web version :-)
 
 Tested on iKettle 2.0 v19 and SmarterCoffee v20 & v22. 
-
-__Donations welcome! Tea, jokes, smarthome stuff, apple cakes, indian food, hugs... or new stuff to play with! __
 
 <tristan@monkeycat.nl>
 
@@ -92,10 +86,9 @@ Since the console it nearly done, protocol almost fully mapped out. It is time t
 ## Contact
 [Bugs or issues](https://github.com/Tristan79/iBrew/issues). 
 
-Donations & other questions <tristan@monkeycat.nl>
+<tristan@monkeycat.nl>
 
-If you have jokes on coffee, tea, hot chocolade, coffee machines or kettles, please post in the issues.
-
+If you have jokes on coffee, tea, hot chocolade, coffee machines or kettles, please post in the issues!
 
  
 ## Downloads & Setup
@@ -342,7 +335,7 @@ you can also use them on the command line as arguments, note that [] are mandito
     dump                   toggle 'dump raw messages'
     monitor                monitor incomming traffic
     modify (modifiers)     patch or unpatch messages
-    relay (port)           start relay device
+    relay ((ip:)port)      start relay device
     simulate               start kettle (or coffee simulation)
     sweep (id)             [developer only] try (all or start with id) unknown command codes
 
