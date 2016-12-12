@@ -445,7 +445,6 @@ class SmarterClient:
             pass #print 'iBrew:' + str(e)
         finally:
             cs.close()
-        print relay
         return devices, relay
 
 
@@ -1386,11 +1385,11 @@ class SmarterClient:
     
     
     def __simulate_device(self):
+        self.simulator_run = True
+        time.sleep(0.25)
         if self.dump:
             logging.info("Simulation Running")
-        self.simulator_run = True
         while self.simulator_run:
-
             if self.deviceId == Smarter.DeviceKettle:
             
                 self.sim_cooling_timer += 1
@@ -1518,6 +1517,7 @@ class SmarterClient:
                         self.sim_hotPlate_timout = 0
                 
             time.sleep(1)
+
             
         if self.dump:
             logging.info("Simulation Stopped")
@@ -3453,6 +3453,7 @@ class SmarterClient:
 
     def print_info_device(self):
         print Smarter.device_info(self.deviceId,self.version)
+
 
     def print_info_relay(self):
         if self.remoteRelay:

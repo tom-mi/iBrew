@@ -288,7 +288,6 @@ class DeviceHandler(GenericAPIHandler):
 class DevicesHandler(GenericAPIHandler):
     def get(self):
         devices, relay = SmarterClient().find_devices()
-        print relay
         response = {}
         for device in devices:
             x = -1
