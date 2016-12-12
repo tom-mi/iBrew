@@ -702,6 +702,7 @@ class SmarterClient:
                         
                         if monitorCount % timeout == timeout - 49:
                             pass #self.coffee_timers()
+                            self.relay_info()
                         
                         if monitorCount % timeout == timeout - 50:
                             # we did not init it to speed up boot time... so init it
@@ -2583,6 +2584,7 @@ class SmarterClient:
                 self.coffee_mode()
                 self.coffee_carafe_required()
             #self.wifi_firmware()
+            self.relay_info()
         except SmarterError, e:
             raise e
         finally:
@@ -3450,7 +3452,10 @@ class SmarterClient:
         print Smarter.device_info(self.deviceId,self.version)
 
     def print_info_relay(self):
-        print "Relay version " + str(self.remoteRelayVersion) + " (" + self.remoteRelayHost + ")"
+        if self.remoteRelay:
+            print "Relay version " + str(self.remoteRelayVersion) + " (" + self.remoteRelayHost + ")"
+        else:
+            print "No relay"
 
 
     def print_mode(self):
