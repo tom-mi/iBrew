@@ -516,8 +516,12 @@ class iBrewConsole:
                     self.console = True
 
                 if command == "console" or command == "connect" or command == "relay":
-                    if numarg == 1:
-                        self.client.block(arguments[0])
+                    if numarg >= 1:
+                        if arguments[0][2] == ':' or arguments[0][3] == ':':
+                            self.client.unblock("in:GOD,out:GOD")
+                            self.client.block(arguments[0])
+                            numarg -= 1
+                            arguments = arguments[0:numarg]
                     if self.client.dump:
                         self.client.print_rules_short()
                 
@@ -565,6 +569,13 @@ class iBrewConsole:
                                                 self.client.print_rules_short()
             elif command == "unblock":      self.client.unblock(arguments[0])
             elif command == "block":        self.client.block(arguments[0])
+            elif command == "remote":
+                                            if numarg == 1 and arguments[0] == "info":
+                                                self.client.relay_info()
+                                                if not self.client.dump: self.client.print_info_relay()
+                                            else:
+                                                print "iBrew: Use additional command: info, block or unblock"
+            
             elif command == "relay":
                                             if numarg >= 1:
                                                 if arguments[0] == "stop":
@@ -1028,10 +1039,12 @@ class iBrewConsole:
         print "    connect (host) (rules&modifiers) connect to device"
         print "    block [rules]          block messages with groups or ids"
         print "    disconnect             disconnect connected device"
-        print "    unblock [rules]        unblock messages groups or ids"
+        print "    relay ((ip:)port)      start relay device"
         print "    relay stop             stop relay device"
+        print "    remote info            info on remote relay device"
         print "    rules (full)           show blocking rules"
         print "    stats                  show traffic statistics"
+        print "    unblock [rules]        unblock messages groups or ids"
         print
         
         print "  Block Rules"
@@ -1051,7 +1064,6 @@ class iBrewConsole:
         print "    dump                   toggle \'dump raw messages\'"
         print "    monitor                monitor incomming traffic"
         print "    modify (modifiers)     patch or unpatch messages"
-        print "    relay ((ip:)port)      start relay device"
         print "    simulate               start kettle (or coffee simulation)"
         print "    sweep (id)             [developer only] try (all or start with id) unknown command codes"
         print

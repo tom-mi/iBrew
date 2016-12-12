@@ -3,7 +3,6 @@
 import socket
 import os
 import sys
-import string
 import random
 import time
 import datetime
@@ -188,6 +187,10 @@ class SmarterClient:
         # kettle session counters
         self.countKeepWarm              = 0
         self.countKettleRemoved         = 0
+    
+        self.remoteRelayHost             = ""
+        self.remoteRelayVersion        = 0
+        self.remoteRelay               = False
    
    
     
@@ -251,7 +254,8 @@ class SmarterClient:
         self.monitor_run                  = False
         self.simulator_run                = False
         self.__utp_ResponseDeviceInfo     = False
-        self.__server_run                 = False
+        self.relay                        = False
+        self.relayVersion                 = 1
         
         self.__init()
         self.settingsPath                 = ""
@@ -419,6 +423,8 @@ class SmarterClient:
             cs.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
             command = Smarter.number_to_raw(Smarter.CommandDeviceInfo) + Smarter.number_to_raw(Smarter.MessageTail)
             #command = '\x64\x7e'
+
+            command = Smarter.number_to_raw(Smarter.CommandRelayInfo) + Smarter.number_to_raw(Smarter.MessageTail)
   
             cs.sendto(command, ('255.255.255.255', self.port))
             cs.settimeout(4)
@@ -485,7 +491,7 @@ class SmarterClient:
 
 
     def __serverMonitor(self,clientsock,addr):
-            while self.__server_run:
+            while self.relay:
                 time.sleep(1)
                 if  not self.__clients[(clientsock, addr)].locked():
                     self.__clients[(clientsock, addr)].acquire()
@@ -512,7 +518,7 @@ class SmarterClient:
     def __handler(self,clientsock,addr):
         logging.info(addr[0] + ":" + str(addr[1]) + " Client connected")
         clientsock.setblocking(1)
-        while self.__server_run:
+        while self.relay:
             data = clientsock.recv(100)
             if not data:
                 break
@@ -528,7 +534,14 @@ class SmarterClient:
                 response = self.__block_command(data)
             else:
                 # relay
-                response = self.__send(data)
+                
+                if command == Smarter.CommandRelayInfo:
+                    if self.connected:
+                        response = self.__encode_RelayInfo(self.relayVersion,self.host)
+                    else:
+                        response = self.__encode_RelayInfo(self.relayVersion,"")
+                else:
+                    response = self.__send(data)
             self.mode = not self.mode
 
             if command == Smarter.CommandWifiJoin or command == Smarter.CommandWifiLeave:
@@ -559,7 +572,7 @@ class SmarterClient:
 
         logging.info("iBrew Server (" + self.serverHost + ":" + str(self.serverPort) + ")")
         
-        while self.__server_run:
+        while self.relay:
             try:
                 clientsock, addr = self.serversocket.accept()
                 self.__clients[(clientsock, addr)] = threading.Lock()
@@ -576,7 +589,7 @@ class SmarterClient:
 
 
     def relay_start(self):
-        self.__server_run = True
+        self.relay = True
         self.server = threading.Thread(target=self.__server)
         self.server.start()
 
@@ -585,7 +598,7 @@ class SmarterClient:
     def relay_stop(self):
     
         self.__broadcast_device_stop()
-        self.__server_run = False
+        self.relay = False
 
 
 
@@ -2078,9 +2091,17 @@ class SmarterClient:
 
     def __encode_DeviceInfo(self,type,version):
         """
-        Encode commandstatus response message
+        Encode device info response message
         """
         return [Smarter.number_to_raw(Smarter.ResponseDeviceInfo) + Smarter.number_to_raw(type) + Smarter.number_to_raw(version) + Smarter.number_to_raw(Smarter.MessageTail)]
+
+
+
+    def __encode_RelayInfo(self,version,ip):
+        """
+        Encode relay device info response message
+        """
+        return [Smarter.number_to_raw(Smarter.ResponseRelayInfo) + Smarter.number_to_raw(version) + Smarter.text_to_raw(ip) + Smarter.number_to_raw(Smarter.MessageTail)]
 
 
 
@@ -2250,6 +2271,7 @@ class SmarterClient:
             elif id == Smarter.ResponseKettleSettings:  self.__decode_KettleSettings(message)
             elif id == Smarter.ResponseCoffeeSettings:  self.__decode_CoffeeSettings(message)
             elif id == Smarter.ResponseDeviceInfo:      self.__decode_DeviceInfo(message)
+            elif id == Smarter.ResponseRelayInfo: self.__decode_RelayInfo(message)
             elif id == Smarter.ResponseWifiFirmware:    self.__decode_WifiFirmware(message)
             elif id == Smarter.ResponseWirelessNetworks:self.__decode_WirelessNetworks(message)
         
@@ -2402,6 +2424,11 @@ class SmarterClient:
 
 
 
+    def __decode_RelayInfo(self,message):
+        self.remoteRelay = True
+        self.remoteRelayVersion = Smarter.raw_to_number(message[1])
+        self.remoteRelayHost = str(Smarter.raw_to_text(message[1:]))
+
     def __decode_Base(self,message):
         self.waterSensorBase = Smarter.raw_to_watersensor(message[1],message[2])
 
@@ -2423,12 +2450,7 @@ class SmarterClient:
 
 
     def __decode_WifiFirmware(self,message):
-        s = ""
-        for i in range(1,len(message)-1):
-            x = str(message[i])
-            if x in string.printable:
-                s += x
-        self.WifiFirmware = s
+        self.WifiFirmware = Smarter.raw_to_text(message[1:])
 
 
 
@@ -2572,6 +2594,14 @@ class SmarterClient:
         self.dump = dump
  
  
+
+    def relay_info(self):
+        """
+        Retrieve device info
+        """
+        self.__send_command(Smarter.CommandRelayInfo)
+    
+    
 
     def device_info(self):
         """
@@ -3411,6 +3441,9 @@ class SmarterClient:
     def print_info_device(self):
         print Smarter.device_info(self.deviceId,self.version)
 
+    def print_info_relay(self):
+        print "Relay version " + str(self.remoteRelayVersion) + " (" + self.remoteRelayHost + ")"
+
 
     def print_mode(self):
         if self.mode:
@@ -3639,6 +3672,7 @@ class SmarterClient:
         elif id == Smarter.ResponseCarafe:          self.print_carafe_required()
         elif id == Smarter.ResponseMode:          self.print_mode()
         elif id == Smarter.ResponseDeviceInfo:      self.print_info_device()
+        elif id == Smarter.ResponseRelayInfo: self.print_info_relay()
         elif id == Smarter.ResponseBase:            self.print_watersensor_base()
         elif id == Smarter.ResponseKettleStatus:    self.print_short_kettle_status()
         elif id == Smarter.ResponseCoffeeStatus:    self.print_short_coffee_status()

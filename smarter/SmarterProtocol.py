@@ -2,6 +2,7 @@
 
 import traceback
 import struct
+import string
 from operator import itemgetter
 
 #------------------------------------------------------
@@ -154,13 +155,15 @@ class SmarterProtocol:
     CommandBase               = 0x2b
     CommandCalibrate          = 0x2c
     
-
+    # Relay
+    CommandRelayInfo    = 0x70
 
     # device
     ResponseCommandStatus     = 0x03
     ResponseWirelessNetworks  = 0x0e
     ResponseKettleHistory     = 0x29
     ResponseDeviceInfo        = 0x65
+    ResponseRelayInfo   = 0x71
     ResponseWifiFirmware      = 0x6b
 
     # coffee
@@ -178,6 +181,7 @@ class SmarterProtocol:
     
     # format kettle? coffee? response to command, description
     CommandMessages = {
+        CommandRelayInfo  : (True,True,[ResponseRelayInfo],"Get iBrew relay device info"),
         CommandDeviceTime       : (True,True,[ResponseCommandStatus],"Set device time"),
         CommandWifiNetwork      : (True,True,[ResponseCommandStatus],"Set wireless network name"),
         CommandWifiPassword     : (True,True,[ResponseCommandStatus],"Set wireless network password"),
@@ -269,6 +273,7 @@ class SmarterProtocol:
         ResponseKettleSettings  : (True,False,9,[CommandKettleSettings],"Default kettle user settings",[]),
         ResponseKettleStatus    : (True,False,7,[],"Kettle status",[]),
         ResponseDeviceInfo      : (True,True,4,[CommandDeviceInfo],"Device info",[]),
+        ResponseRelayInfo : (True,True,0,[CommandRelayInfo],"iBrew relay device info",[]),
         ResponseWifiFirmware    : (True,True,0,[CommandWifiFirmware],"Wifi firmware info",[]),
         ResponseCarafe          : (False,True,3,[CommandCarafe],"Carafe required",[]),
         ResponseCoffeeStatus    : (False,True,0,[],"Coffee machine status",[]),
@@ -445,8 +450,12 @@ class SmarterProtocol:
     MessagesNormal      = MessagesCoffeeControl + MessagesKettleControl + MessagesGet + MessagesDeviceInfo + [ResponseCommandStatus]
     GroupUser           = 18
     MessagesUser        = MessagesNormal
+
+    GroupRelay         = 39
+    MessagesRelay      = [CommandRelayInfo, ResponseRelayInfo]
+
     GroupAdmin          = 19
-    MessagesAdmin       = MessagesSetup + MessagesNormal
+    MessagesAdmin       = MessagesSetup + MessagesNormal + MessagesRelay
     GroupGod            = 20
     MessagesGod         = MessagesAdmin + MessagesDebug
     
@@ -467,7 +476,8 @@ class SmarterProtocol:
     
     GroupStatus  = 38
     MessagesStatus = [ResponseCommandStatus] + [ResponseCoffeeStatus] + [ResponseKettleStatus]
-    
+
+
     
     def __init__(self):
         l = []
@@ -511,6 +521,7 @@ class SmarterProtocol:
         GroupCoffeeHistory     : ("CoffeeHistory",MessagesCoffeeHistory),
         GroupDeviceInfo      : ("DeviceInfo",MessagesDeviceInfo),
         GroupStore       : ("SettingsStore",MessagesStore),
+        GroupRelay       : ("Relay",MessagesRelay),
         GroupGet         : ("SettingsGet",MessagesGet),
         GroupAll         : ("Settings",MessagesAll),
         GroupKettleStore       : ("KettleStore",MessagesKettleStore),
@@ -710,10 +721,12 @@ class SmarterProtocol:
 
     def raw_to_text(self,raw):
         # FIX ERROR CHECKING + CODE
-        for i in range(0,len(raw)):
-            raw =+ raw_to_number(raw_[i])
-        return raw
-
+        s = ""
+        for i in range(1,len(raw)-1):
+            x = str(raw[i])
+            if x in string.printable:
+                s += x
+        return s
 
     #------------------------------------------------------
     # RAW HEX STRING <-> RAW
@@ -1503,6 +1516,10 @@ class SmarterProtocol:
     ArgTemperatureCombi= 1052
     ArgHotplateCombi   = 1053
     ArgWifiFirmware    = 1055
+
+    ArgRelayVersion   = 1056
+    ArgRelayHost = 1057
+
     ArgPayloadTimer            = 1026
     ArgPayloadCoffeeHistory    = 1028
     ArgPayloadKettleHistory    = 1029
@@ -1533,6 +1550,8 @@ class SmarterProtocol:
         ArgList                     : ('PAYLOAD',"LIST","}",[]),
 
 
+        ResponseRelayInfo          : ('PROTOCOL',[ArgRelayVersion,ArgRelayHost],"0131302e302e302e3939","Get the version of the firmware of relay connected to (if connected) It is used for auto discovery over UDP broadcast by iBrew. This fails on some routers, which don't propagate UDP broadcasts."),
+
         ResponseCarafe              : ('PROTOCOL',[ArgCarafe],"00",""),
         ResponseMode       : ('PROTOCOL',[ArgMode],"01",""),
         ResponseCommandStatus       : ('PROTOCOL',[ArgCommandStatus],"04",""),
@@ -1547,6 +1566,7 @@ class SmarterProtocol:
         CommandResetSettings        : ('PROTOCOL',[],"","For the kettle these are the default user settings: keepwarm 0 minutes, temperature 100ºC, formula mode off and formula temperature 75ºC. The Smarter Coffee does nothing."),
     
         CommandDeviceInfo           : ('PROTOCOL',[],"",""),
+        CommandRelayInfo      : ('PROTOCOL',[],"",""),
         CommandUpdate               : ('PROTOCOL',[],"","Disables wifi and creates a 'iKettle Update' wireless network and opens port 6000. A hard device reset (hold power button for 10 seconds) is sometimes required to fix this state, or just unplug the power for a moment."),
         Command69                   : ('PROTOCOL',[ArgUnknown],"00",""),  #REPEAT?
 
@@ -1639,6 +1659,9 @@ class SmarterProtocol:
                                     (19,DeviceStringKettle)
                                     ]
                               ),
+        ArgRelayVersion      : ('OPTION',"Version",[(1,"iBrew Relay Snow Tea")
+                                    ]
+                              ),
         ArgDevice            : ('OPTION',"Device",[(DeviceCoffee,DeviceStringCoffee),(DeviceKettle,DeviceStringKettle)]),
         ArgKettleStatus      : ('OPTION',"KettleStatus",[
                                 (KettleReady, StatusKettle[KettleReady]),
@@ -1666,6 +1689,7 @@ class SmarterProtocol:
                                     (CoffeeStrong,CoffeeStringStrong)]
                             ),
         ArgPassword       : ('TEXT',"Password","wireless network password"),
+        ArgRelayHost      : ('TEXT',"Host","Host of the appliance connected with the relay, empty if not connected"),
         ArgDB             : ('TEXT',"DB","in dBm"),
         ArgWifiFirmware   : ('TEXT',"WifiFirmware","wifi firmware string"),
         ArgSSID           : ('TEXT',"SSID","wireless network name"),
