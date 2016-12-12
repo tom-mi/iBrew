@@ -187,13 +187,21 @@ def encodeFirmware(device,version):
     return { 'version'   : version, 'certified' : Smarter.firmware_verified(device,version) }
 
 
+def encodeRelay(enabled,version,host):
+    if enabled:
+        return { 'version' : version,
+                 'host'    : host }
+    else:
+        return False
+
 def encodeDevice(client):
-    return { 'type'        : { 'desciption' : Smarter.device_to_string(client.deviceId),
+    return { 'type'        : { 'description' : Smarter.device_to_string(client.deviceId),
                                'id'          : client.deviceId
                             },
              'directmode'  : client.isDirect,
              'host'        : client.host,
              'connected'   : client.connected,
+             'relay'       : encodeRelay(client.remoteRelay,client.remoteRelayVersion,client.remoteRelayHost),
              'firmware'    : encodeFirmware(client.deviceId,client.version)
             }
 
@@ -253,7 +261,7 @@ class DeviceHandler(GenericAPIHandler):
                                                'waterlevel'     : client.waterLevel,
                                                'status'         : { 'working'     : client.working,
                                                                     'ready'       : client.ready,
-                                                                    'cups'        : clinet.cupsBrew,
+                                                                    'cups'        : client.cupsBrew,
                                                                     'carafe'      : client.carafe,
                                                                     'enoughwater' : client.waterEnough,
                                                                     'timerevent'  : client.timerEvent
@@ -279,12 +287,24 @@ class DeviceHandler(GenericAPIHandler):
 
 class DevicesHandler(GenericAPIHandler):
     def get(self):
-        devices = SmarterClient().find_devices()
+        devices, relay = SmarterClient().find_devices()
+        print relay
         response = {}
         for device in devices:
-            response[device[0]] = { 'type'        : { 'desciption'  : Smarter.device_to_string(device[1]),
+            x = -1
+            for j in range(0,len(relay)):
+                if device[0] == relay[j][0]:
+                    x = j
+        
+            if x != -1:
+                r = encodeRelay(True,relay[x][1],relay[x][2])
+            else:
+                r = encodeRelay(False,0,"")
+
+            response[device[0]] = { 'type'        : { 'description'  : Smarter.device_to_string(device[1]),
                                                       'id'          : device[1]
                                                     },
+                                    'relay'       : r,
                                     'firmware'    : encodeFirmware(device[1],device[2])
                                   }
         self.setContentType()
@@ -766,8 +786,8 @@ class iBrewWeb(tornado.web.Application):
         
         #if not self.isRunning:
         #    return
-        devices = SmarterClient().find_devices()
-        SmarterClient().print_devices_found(devices)
+        devices, relay = SmarterClient().find_devices()
+        SmarterClient().print_devices_found(devices,relay)
         
         reconnect = 7
         

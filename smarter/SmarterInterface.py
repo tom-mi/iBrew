@@ -412,6 +412,8 @@ class SmarterClient:
     #------------------------------------------------------
 
 
+
+    
     def find_devices(self):
         """
         Find devices using udp
@@ -443,6 +445,7 @@ class SmarterClient:
             pass #print 'iBrew:' + str(e)
         finally:
             cs.close()
+        print relay
         return devices, relay
 
 
