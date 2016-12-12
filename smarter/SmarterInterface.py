@@ -91,8 +91,6 @@ class SmarterClient:
     
         # kettle
         self.waterSensorBase            = 974
-
-
         
         self.waterSensor                = 2010
         self.waterSensorStable          = 2010
@@ -3138,7 +3136,7 @@ class SmarterClient:
         """
         Brew coffee with 'default' user settings from the coffee machine
         """
-        self.brew(self.defaultCups,self.defaultStrength,self.defaultHotPlate,self.defaultGrind)
+        self.coffee_brew(self.defaultCups,self.defaultStrength,self.defaultHotPlate,self.defaultGrind)
 
 
 
