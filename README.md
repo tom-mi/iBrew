@@ -313,10 +313,12 @@ you can also use them on the command line as arguments, note that [] are mandito
     connect (host) (rules&modifiers) connect to device
     block [rules]          block messages with groups or ids
     disconnect             disconnect connected device
-    unblock [rules]        unblock messages groups or ids
+    relay ((ip:)port)      start relay device
     relay stop             stop relay device
+    remote info            info on remote relay device
     rules (full)           show blocking rules
     stats                  show traffic statistics
+    unblock [rules]        unblock messages groups or ids
 
   Block Rules
     Consists of rules, in: is for outgoing connection to the device, out: is for incomming connection from relay client.
@@ -335,7 +337,6 @@ you can also use them on the command line as arguments, note that [] are mandito
     dump                   toggle 'dump raw messages'
     monitor                monitor incomming traffic
     modify (modifiers)     patch or unpatch messages
-    relay ((ip:)port)      start relay device
     simulate               start kettle (or coffee simulation)
     sweep (id)             [developer only] try (all or start with id) unknown command codes
 
