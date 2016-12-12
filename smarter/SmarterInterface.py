@@ -188,7 +188,7 @@ class SmarterClient:
         self.countKeepWarm              = 0
         self.countKettleRemoved         = 0
     
-        self.remoteRelayHost             = ""
+        self.remoteRelayHost           = ""
         self.remoteRelayVersion        = 0
         self.remoteRelay               = False
    
@@ -417,6 +417,7 @@ class SmarterClient:
         Find devices using udp
         """
         devices = []
+        relay = []
         try:
             cs = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             cs.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -424,23 +425,25 @@ class SmarterClient:
             command = Smarter.number_to_raw(Smarter.CommandDeviceInfo) + Smarter.number_to_raw(Smarter.MessageTail)
             #command = '\x64\x7e'
 
-            command = Smarter.number_to_raw(Smarter.CommandRelayInfo) + Smarter.number_to_raw(Smarter.MessageTail)
+            #command = Smarter.number_to_raw(Smarter.CommandRelayInfo) + Smarter.number_to_raw(Smarter.MessageTail)
   
             cs.sendto(command, ('255.255.255.255', self.port))
             cs.settimeout(4)
 
             # support up to 100 devices
             for i in range (0,100):
-                message, server = cs.recvfrom(4)
+                message, server = cs.recvfrom(1024)
                 # '0x64 type version 0x7e
                 if Smarter.raw_to_number(message[0]) == Smarter.ResponseDeviceInfo and Smarter.raw_to_number(message[3]) == Smarter.MessageTail:
                     devices.append((server[0],Smarter.raw_to_number(message[1]),Smarter.raw_to_number(message[2])))
+                if Smarter.raw_to_number(message[0]) == Smarter.ResponseRelayInfo:
+                    relay.append((server[0],Smarter.raw_to_number(message[1]),Smarter.raw_to_text(message[1:])))
         except socket.error, e:
             # FIX
             pass #print 'iBrew:' + str(e)
         finally:
             cs.close()
-        return devices
+        return devices, relay
 
 
 
@@ -454,9 +457,14 @@ class SmarterClient:
             # so what happens....
             logging.info("Received UDP " + address[0] + ":" + str(address[1]))
             command = Smarter.number_to_raw(Smarter.ResponseDeviceInfo) + Smarter.number_to_raw(self.deviceId) + Smarter.number_to_raw(self.version) + Smarter.number_to_raw(Smarter.MessageTail)
-   
+            if self.connected:
+                commandRelay = Smarter.number_to_raw(Smarter.ResponseRelayInfo) + Smarter.number_to_raw(self.relayVersion) + Smarter.text_to_raw(self.host) + Smarter.number_to_raw(Smarter.MessageTail)
+            else:
+                commandRelay = Smarter.number_to_raw(Smarter.ResponseRelayInfo) + Smarter.number_to_raw(self.relayVersion) + Smarter.number_to_raw(Smarter.MessageTail)
+            
             if message[0] == Smarter.number_to_raw(Smarter.CommandDeviceInfo) and message[1] == Smarter.number_to_raw(Smarter.MessageTail):
                 self.udp.sendto(command, address)
+                self.udp.sendto(commandRelay, address)
 
 
 
@@ -3591,9 +3599,13 @@ class SmarterClient:
     
 
 
-    def print_devices_found(self,devices):
+    def print_devices_found(self,devices,relay):
         for i in range(0,len(devices)):
-            print "[" + devices[i][0] +  ":" + '{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()) + "] Found " + Smarter.device_info(devices[i][1],devices[i][2])
+            s = ""
+            for j in range(0,len(relay)):
+                if devices[i][0] == relay[j][0]:
+                    s = "Relay v" + str(relay[j][1]) + " (" + relay[j][2] + ") "
+            print "[" + devices[i][0] +  ":" + '{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()) + "] Found " + s + Smarter.device_info(devices[i][1],devices[i][2])
         if len(devices) == 0:
             print "No coffee machine or kettle found"
 

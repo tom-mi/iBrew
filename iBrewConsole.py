@@ -483,9 +483,9 @@ class iBrewConsole:
 
 
                 if not self.haveHost and command != "relay":
-                    devices = self.client.find_devices()
+                    devices, relay = self.client.find_devices()
                     if self.client.dump:
-                        self.client.print_devices_found(devices)
+                        self.client.print_devices_found(devices,relay)
             
                     if len(devices) == 1:
                         self.client.host = devices[0][0]
@@ -631,7 +631,9 @@ class iBrewConsole:
                                                     print s
                                             else:
                                                 print Smarter.groups_all()
-            elif command == "list":         self.client.print_devices_found(self.client.find_devices())
+            elif command == "list":
+                                            devices, relay = self.client.find_devices()
+                                            self.client.print_devices_found(devices, relay)
             elif command == "joke" or command == "quote":
                                             print
                                             self.joke()
