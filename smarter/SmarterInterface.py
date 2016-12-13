@@ -141,6 +141,7 @@ class SmarterClient:
         self.grinderOn                  = False
         self.working                    = False
         
+        self.busy                       = False
         
         # Wifi
         self.Wifi                       = []
@@ -2315,8 +2316,9 @@ class SmarterClient:
 
 
     # Kettle
+    triggerBusyKettle                   = 9
     triggerDefaultTemperature           = 10
-    triggerDefaultFormulatemperature    = 11
+    triggerDefaultFormulaTemperature    = 11
     triggerDefaultKeepWarmTime          = 12
     triggerWaterSensorBase              = 13
     triggerKeepWarm                     = 14
@@ -2348,10 +2350,13 @@ class SmarterClient:
     triggerHotPlate                     = 38
     triggerHeaterCoffee                 = 39
     triggerCarafeRequired               = 40
+    triggerBusyCoffee                   = 41
 
     
     # format {(group,sensorid,command),...(group,sensorid,command)}
     actions = {
+        triggerBusyKettle                   : {},
+        triggerBusyCoffee                   : {},
         triggerDefaultTemperature           : {},
         triggerDefaultFormulaTemperature    : {},
         triggerDefaultKeepWarmTime          : {},
@@ -2393,7 +2398,20 @@ class SmarterClient:
     def actionDelete(self,group,trigger):
         pass
 
-
+    """
+    typeONOFF      "ON" "OFF"
+    typeOnOff      "On" "Off"
+    typeonoff
+    typeTrueFalse
+    typeTRUEFALSE
+    typetruefalse
+    typeOneZero     "1" "0"
+    typeInt
+    typeString
+    
+    def sendorType(self)
+    """
+    
     def action(self,trigger,old,new):
         print "Trigger: " + str(trigger) + " old:" + str(old) + " new:" + str(new)
         
@@ -2498,7 +2516,6 @@ class SmarterClient:
 
 
     def __decode_CoffeeSettings(self,message):
-    
         v = Smarter.raw_to_cups(message[1])
         if v != self.defaultCups:
             self.action(self.triggerDefaultCups,self.defaultCups,v)
@@ -2516,13 +2533,13 @@ class SmarterClient:
         
         v =  Smarter.raw_to_hotplate(message[4],self.version)
         if v != self.defaultHotPlate:
-            self.action(self.triggerDefaultHotPlate,self.defaultHotPlate,v)
+            self.action(self.triggerDefaultHotplate,self.defaultHotPlate,v)
             self.defaultHotPlate = v
 
 
 
     def __decode_KettleStatus(self,message):
-        self.kettleStatus        = Smarter.raw_to_number(message[1])
+        self.kettleStatus = Smarter.raw_to_number(message[1])
             
         if self.kettleStatus == Smarter.KettleHeating:
             if not self.heaterOn:
@@ -2536,6 +2553,9 @@ class SmarterClient:
                 self.formulaCoolingOn = False
                 self.action(self.triggerFormulaCooling,True,False)
                 self.countFormulaCooling+= 1
+            if not self.busy:
+                self.action(self.triggerBusyKettle,False,True)
+                self.busy = True
 
         elif self.kettleStatus == Smarter.KettleFormulaCooling:
             if not self.formulaCoolingOn:
@@ -2549,6 +2569,9 @@ class SmarterClient:
                 self.keepWarmOn = False
                 self.action(self.triggerKeepWarm,True,False)
                 self.countKeepWarm += 1
+            if not self.busy:
+                self.action(self.triggerBusyKettle,False,True)
+                self.busy = True
         
         elif self.kettleStatus == Smarter.KettleKeepWarm:
             if not self.keepWarmOn:
@@ -2562,6 +2585,9 @@ class SmarterClient:
                 self.formulaCoolingOn = False
                 self.action(self.triggerFormulaCooling,True,False)
                 self.countFormulaCooling+= 1
+            if self.busy:
+                self.action(self.triggerBusyKettle,True,False)
+                self.busy = False
         else:
             if self.keepWarmOn == True:
                 self.action(self.triggerKeepWarm,True,False)
@@ -2575,6 +2601,9 @@ class SmarterClient:
                 self.formulaCoolingOn = False
                 self.action(self.triggerFormulaCooling,True,False)
                 self.countFormulaCooling+= 1
+            if self.busy:
+                self.action(self.triggerBusyKettle,True,False)
+                self.busy = False
 
         v = Smarter.raw_to_temperature(message[2])
         if v != self.temperature:
@@ -2672,6 +2701,15 @@ class SmarterClient:
                 # what happens when it fails?? or stopped
                 self.countCupsBrew += self.cupsBrew
             self.action(self.triggerHeaterCoffee,self.heaterOn,v)
+
+            if self.busy and not v:
+                self.action(self.triggerBusyCoffee,True,False)
+                self.busy = False
+
+            if not self.busy and v:
+                self.action(self.triggerBusyCoffee,False,True)
+                self.busy = True
+            
             self.heaterOn = v
 
         v = is_set(coffeeStatus,6)
@@ -2686,6 +2724,15 @@ class SmarterClient:
             if not self.grinderOn:
                 self.countGrinderOn += 1
             self.action(self.triggerGrinder,self.grinderOn,v)
+
+            if self.busy and not v:
+                self.action(self.triggerBusyCoffee,True,False)
+                self.busy = False
+
+            if not self.busy and v:
+                self.action(self.triggerBusyCoffee,False,True)
+                self.busy = True
+            
             self.grinderOn = v
             
 
@@ -3874,7 +3921,9 @@ class SmarterClient:
 
 
     def print_short_kettle_status(self):
-        print Smarter.string_kettle_status(self.onBase,self.kettleStatus,self.temperature,self.waterSensor)
+        if self.busy: s = "busy "
+        else: s = ""
+        print s + Smarter.string_kettle_status(self.onBase,self.kettleStatus,self.temperature,self.waterSensor)
 
 
     def print_short_status(self):
@@ -3886,23 +3935,29 @@ class SmarterClient:
 
 
     def print_kettle_status(self):
+        if self.busy: s = "busy "
+        else: s = ""
         if self.onBase:
-            print "Status           " + Smarter.status_kettle_description(self.kettleStatus)
+            print "Status           " + s + Smarter.status_kettle_description(self.kettleStatus)
             print "Temperature      " + Smarter.temperature_to_string(self.temperature)
             print "Water sensor     " + str(self.waterSensor) + " (calibration base " + str(self.waterSensorBase) + ")"
         else:
-            print "Status           off base"
+            print "Status           " + s + "off base"
         print "Default heating  " + Smarter.string_kettle_settings(self.defaultTemperature,self.defaultFormula, self.defaultFormulaTemperature,self.defaultKeepWarmTime)
 
 
 
     def print_short_coffee_status(self):
-        print Smarter.string_coffee_status(self.ready, self.cupsBrew, self.working, self.heaterOn, self.hotPlateOn, self.carafe, self.grinderOn) + ", water " + Smarter.waterlevel(self.waterLevel) + ", setting: " + Smarter.string_coffee_settings(self.cups, self.strength, self.grind, self.hotPlate) + Smarter.string_coffee_bits(self.carafeRequired,self.mode,self.waterEnough,self.timerEvent)
+        if self.busy: s = "busy "
+        else: s = ""
+        print s + Smarter.string_coffee_status(self.ready, self.cupsBrew, self.working, self.heaterOn, self.hotPlateOn, self.carafe, self.grinderOn) + ", water " + Smarter.waterlevel(self.waterLevel) + ", setting: " + Smarter.string_coffee_settings(self.cups, self.strength, self.grind, self.hotPlate) + Smarter.string_coffee_bits(self.carafeRequired,self.mode,self.waterEnough,self.timerEvent)
 
 
 
     def print_coffee_status(self):
-        print "Status           " + Smarter.string_coffee_status(self.ready, self.cupsBrew, self.working, self.heaterOn, self.hotPlateOn, self.carafe, self.grinderOn) + Smarter.string_coffee_bits(self.carafeRequired,self.mode,self.waterEnough,self.timerEvent)
+        if self.busy: s = "busy "
+        else: s = ""
+        print "Status           " + s + Smarter.string_coffee_status(self.ready, self.cupsBrew, self.working, self.heaterOn, self.hotPlateOn, self.carafe, self.grinderOn) + Smarter.string_coffee_bits(self.carafeRequired,self.mode,self.waterEnough,self.timerEvent)
         print "Water level      " + Smarter.waterlevel(self.waterLevel)
         print "Setting          " + Smarter.string_coffee_settings(self.cups, self.strength, self.grind, self.hotPlate)
         print "Default brewing  " + Smarter.string_coffee_settings(self.defaultCups, self.defaultStrength, self.defaultGrind, self.defaultHotPlate)
