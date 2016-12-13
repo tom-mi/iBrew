@@ -992,9 +992,10 @@ class SmarterProtocol:
 
     def string_to_temperature(self,temperature):
         try:
-            return check_temperature(int(temperature))
+            t = int(temperature)
+            return self.check_temperature(t)
         # FIX THIS INTO TWO DIFFERENT EXCEPTION INT & TEMPCHECK
-        except Exception:
+        except Exception, e:
             raise SmarterErrorOld("Temperature is not a number: " + temperature)
 
 
@@ -1004,8 +1005,9 @@ class SmarterProtocol:
 
     def string_to_hotplate(self,string):
         try:
-            return int(string)
+            return self.check_hotplate(int(string))
         except Exception:
+            # FIX exception
             raise SmarterErrorOld("Hotplate timer is not a number: " + string)
 
 
@@ -1035,8 +1037,9 @@ class SmarterProtocol:
 
     def string_to_keepwarm(self,string):
         try:
-            return int(string)
+            return self.check_keepwarm(int(string))
         except Exception:
+            # FIX exception
             raise SmarterErrorOld("Keepwarm timer is not a number: " + string)
 
 
@@ -1162,10 +1165,11 @@ class SmarterProtocol:
 
     def string_to_cups(self,string):
         try:
-            cups = int(string)
+            cups = self.check_cups(int(string))
+        # FIX EXCEPTION
         except Exception:
             raise SmarterErrorOld("Unknown coffee cups [1..12]: " + string)
-        return self.check_cups(cups)
+        return cups
 
 
     def cups_to_string(self,cups):
@@ -1308,6 +1312,19 @@ class SmarterProtocol:
         else:
             return self.status_kettle_description(kettlestatus) + " off base"
 
+
+    KettleModeNormal = "normal"
+    KettleModeFormula  = "formula"
+
+
+    def string_to_mode(self,mode):
+        s = mode.lower()
+        if s == self.KettleModeFormula:
+            return True
+        elif s == self.KettleModeNormal:
+            return False
+        else:
+           raise SmarterErrorOld("Unknown kettle mode ["+self.KettleModeNormal+"/"+self.KettleModeFormula+"] " + mode)
 
 
     #------------------------------------------------------

@@ -530,8 +530,8 @@ class iBrewConsole:
                 try:
                     self.client.device_all_settings()
                 except Exception, e:
-                    logging.debug(str(e))
-                    logging.debug(traceback.format_exc())
+                    #logging.debug(str(e))
+                    #logging.debug(traceback.format_exc())
                     print "iBrew: Could not init values"
                     return
 

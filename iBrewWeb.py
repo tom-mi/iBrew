@@ -1123,7 +1123,7 @@ class iBrewWeb(tornado.web.Application):
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/calibrate/base/([0-9]+)/?",CalibrateStoreBaseHandler),
 
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/heat/([0-9]+)/([0-9]+)/?",HeatHandler),
-                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/brew/([0-9]+)/([0-9]+)/(true|false)/(weak|medium|strong)/?",BrewHandler),
+                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/brew/([0-9]+)/([0-9]+)/(false|true|on|off|beans|filter)/(weak|medium|strong)/?",BrewHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/formula/([0-9]+)/([0-9]+)/?",FormulaHandler),
 
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/beans/?",BeansHandler),
@@ -1156,8 +1156,8 @@ class iBrewWeb(tornado.web.Application):
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/default/?",SettingsDefaultHandler),
                 
                 # test these two...
-                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/([0-9]+)/([0-9]+)/(true|false)/(weak|medium|strong)/?",StoreSettingsHandler),
-                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/([0-9]+)/([0-9]+)/(true|false)/([0-9]+)/?",StoreSettingsHandler),
+                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/([0-9]+)/([0-9]+)/(false|true|on|off|beans|filter)/(weak|medium|strong)/?",StoreSettingsHandler),
+                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/([0-9]+)/([0-9]+)/(false|true|on|off|normal|formula)/([0-9]+)/?",StoreSettingsHandler),
                 (self.webroot + r"/api/version/?",VersionHandler),
                 (self.webroot + r"/api/devices/?",DevicesHandler),
                 (self.webroot + r"/api/joke/?",JokeHandler),

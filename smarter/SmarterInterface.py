@@ -2735,11 +2735,16 @@ class SmarterClient:
 
         """
         self.__device_check()
-        if self.isKettle:   self.kettle_store_settings(Smarter.string_to_temperature(v1),Smarter.string_to_keepwarm(v2),Smarter.string_to_bool(v3),Smarter.string_to_temperature(v4))
+        if self.isKettle:
+            try:
+                b = Smarter.string_to_mode(v3)
+            except SmarterErrorOld, e:
+                b = Smarter.string_to_bool(v3)
+            self.kettle_store_settings(Smarter.string_to_temperature(v1),Smarter.string_to_keepwarm(v2),b,Smarter.string_to_temperature(v4))
         elif self.isCoffee:
             try:
                 b = Smarter.string_to_grind(v3)
-            except Exception:
+            except SmarterErrorOld, e:
                 b = Smarter.string_to_bool(v3)
             self.coffee_store_settings(Smarter.string_to_cups(v1),Smarter.string_to_hotplate(v2),b,Smarter.string_to_strength(v4))
 
