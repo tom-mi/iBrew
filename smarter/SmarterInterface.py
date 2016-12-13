@@ -3303,7 +3303,7 @@ class SmarterClient:
 
 
 
-    def coffee_descaling(self):
+    def coffee_descale(self):
         """
         Descale coffee machine
         """

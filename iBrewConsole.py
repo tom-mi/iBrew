@@ -785,9 +785,9 @@ class iBrewConsole:
                                             else:
                                                 self.client.coffee_filter()
                                                 print "iBrew: Filter used"
-            elif command == "descaling":
+            elif command == "descale":
                                             try:
-                                                self.client.coffee_descaling()
+                                                self.client.coffee_descale()
                                             except Exception:
                                                 # no water...?
                                                 print "iBrew: Descaling failed"
@@ -1037,7 +1037,7 @@ class iBrewConsole:
         print "    carafe                 returns if carafe is required"
         print "    carafe [state]         set carafe is required [true or false]"
         print "    cups [number]          set number of cups [1..12]"
-        print "    descaling              descale coffee machine"
+        print "    descale                descale coffee machine"
         print "    filter                 use pregrind beans in filter for coffee"
         print "    hotplate off           turn hotplate off"
         

@@ -277,7 +277,8 @@ you can also use them on the command line as arguments, note that [] are mandito
   iKettle 2.0 Commands
     base                   show watersensor base value
     base [base]            store watersensor base value
-    boil                   heat till 100°C (coffee level)
+    boil                   heat till 100°C
+    kettlecoffee           warms water for coffee
     calibrate              calibrates watersensor
     celsius                use celsius °C [console only]
     fahrenheid             use fahrenheid °F [console only]
@@ -293,7 +294,7 @@ you can also use them on the command line as arguments, note that [] are mandito
     carafe                 returns if carafe is required
     carafe [state]         set carafe is required [true or false]
     cups [number]          set number of cups [1..12]
-    descaling              descale coffee machine
+    descale                descale coffee machine
     filter                 use pregrind beans in filter for coffee
     hotplate off           turn hotplate off
     hotplate on (minutes)  turn hotplate on (time in minutes)
@@ -679,6 +680,7 @@ Interfaces
  * PYTHON: Strip zero from ip
  * PYTHON: fix wireless with the same name
  * PYTHON: filter out wrong responses... of know commands??? or atleast acknowledge them, (03 responses)
+ * PYTHON: Beverages should be able to override keepwarm time... xCLI/REST
  * CLI: make on/off true/false universal with string_to_bool
  * CLI: relay has no port neither has ibrew, we need port numbers...
  * CLI: Fix Simulation command and relay...
@@ -691,6 +693,7 @@ Interfaces
  * WEB: Auto relay when in web mode
  * WEB: API key, login
  * WEB: Settings iBrew (like blocking, patches, other stuff)
+ * WEB: All REST api has no error check...
  * JAVASCRIPT: JSON Rest API
  * OTHER: Guides to Smarthome controllers
  * ME: hugs!

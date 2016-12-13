@@ -331,22 +331,22 @@ class BeverageHandler(GenericAPIHandler):
             if client.isKettle:
                 if beverage == "coffee":
                     client.kettle_heat_coffee()
-                    response = { 'command status'  : client.commandStatus }
+                    response = { 'command status'  : Smarter.status_command(client.commandStatus) }
                 elif beverage == "white":
                     client.kettle_heat_white_tea()
-                    response = { 'command status'  : client.commandStatus }
+                    response = { 'command status'  : Smarter.status_command(client.commandStatus) }
                 elif beverage == "black":
                     client.kettle_heat_black_tea()
-                    response = { 'command status'  : client.commandStatus }
+                    response = { 'command status'  : Smarter.status_command(client.commandStatus) }
                 elif beverage == "green":
                     client.kettle_heat_green_tea()
-                    response = { 'command status'  : client.commandStatus }
+                    response = { 'command status'  : Smarter.status_command(client.commandStatus) }
                 elif beverage == "oelong":
                     client.kettle_heat_oelong_tea()
-                    response = { 'command status'  : client.commandStatus }
+                    response = { 'command status'  : Smarter.status_command(client.commandStatus) }
                 elif beverage == "boil":
                     client.kettle_boil()
-                    response = { 'command status'  : client.commandStatus }
+                    response = { 'command status'  : Smarter.status_command(client.commandStatus) }
                 else:
                     response = { 'error': 'wrong beverage use coffee, white, black, green, oelong, boil' }
                 
@@ -363,8 +363,8 @@ class HeatHandler(GenericAPIHandler):
         if ip in self.application.clients:
             client = self.application.clients[ip]
             if client.isKettle:
-                client.kettle_heat(temperature,keepwarm)
-                response = { 'command status'  : client.commandStatus }
+                client.kettle_heat(int(temperature),int(keepwarm))
+                response = { 'command status'  : Smarter.status_command(client.commandStatus) }
             else:
                 response = { 'error': 'need kettle' }
         else:
@@ -378,8 +378,8 @@ class FormulaHandler(GenericAPIHandler):
         if ip in self.application.clients:
             client = self.application.clients[ip]
             if client.isKettle:
-                client.kettle_formula_heat(temperature,keepwarm)
-                response = { 'command status'  : client.commandStatus }
+                client.kettle_formula_heat(int(temperature),int(keepwarm))
+                response = { 'command status'  : Smarter.status_command(client.commandStatus) }
             else:
                 response = { 'error': 'need kettle' }
         else:
@@ -400,7 +400,7 @@ class CalibrateHandler(GenericAPIHandler):
                 client.kettle_calibrate()
                 # fix kettle_calibrate_offbase
                 response = { 'base'            : client.waterSensorBase,
-                             'command status'  : client.commandStatus }
+                             'command status'  : Smarter.status_command(client.commandStatus) }
             else:
                 response = { 'error': 'need kettle' }
         else:
@@ -416,7 +416,7 @@ class CalibrateBaseHandler(GenericAPIHandler):
             if client.isKettle:
                 client.kettle_calibrate_base()
                 response = { 'base'            : client.waterSensorBase,
-                             'command status'  : client.commandStatus }
+                             'command status'  : Smarter.status_command(client.commandStatus) }
             else:
                 response = { 'error': 'need kettle' }
         else:
@@ -432,7 +432,7 @@ class CalibrateStoreBaseHandler(GenericAPIHandler):
             if client.isKettle:
                 client.kettle_calibrate_store_base(Smarter.string_to_watersensor(base))
                 response = { 'base'            : client.waterSensorBase,
-                             'command status'  : client.commandStatus }
+                             'command status'  : Smarter.status_command(client.commandStatus) }
             else:
                 response = { 'error': 'need kettle' }
         else:
@@ -505,7 +505,7 @@ class StoreSettingsHandler(GenericAPIHandler):
         if ip in self.application.clients:
             client = self.application.clients[ip]
             client.device_store_settings(x1,x2,x3,x4)
-            response = { 'command status'  : client.commandStatus }
+            response = { 'command status'  : Smarter.status_command(client.commandStatus) }
         else:
             response = { 'error': 'no device' }
         self.setContentType()
@@ -540,7 +540,7 @@ class SettingsDefaultHandler(GenericAPIHandler):
         if ip in self.application.clients:
             client = self.application.clients[ip]
             client.device_default()
-            response = { 'command status'  : client.commandStatus }
+            response = { 'command status'  : Smarter.status_command(client.commandStatus) }
         else:
             response = { 'error': 'no device' }
         self.setContentType()
@@ -551,6 +551,53 @@ class SettingsDefaultHandler(GenericAPIHandler):
 # Coffee settings
 #------------------------------------------------------
 
+
+class BrewHandler(GenericAPIHandler):
+    def get(self,ip,cups,hotplate,grind,strength):
+        if ip in self.application.clients:
+            client = self.application.clients[ip]
+            if client.isCoffee:
+                client.coffee_brew(Smarter.string_to_cups(cups),Smarter.string_to_hotplate(hotplate),Smarter.string_to_bool(grind),Smarter.string_to_strength(strength))
+                response = { 'command status'  : Smarter.status_command(client.commandStatus) }
+            else:
+                response = { 'error': 'need coffee machine' }
+        else:
+            response = { 'error': 'no device' }
+        self.setContentType()
+        self.write(response)
+
+
+class BrewDefaultHandler(GenericAPIHandler):
+    def get(self,ip):
+        if ip in self.application.clients:
+            client = self.application.clients[ip]
+            if client.isCoffee:
+                client.coffee_brew_default()
+                response = { 'command status'  : Smarter.status_command(client.commandStatus) }
+            else:
+                response = { 'error': 'need coffee machine' }
+        else:
+            response = { 'error': 'no device' }
+        self.setContentType()
+        self.write(response)
+
+
+class DescaleHandler(GenericAPIHandler):
+    def get(self,ip):
+        if ip in self.application.clients:
+            client = self.application.clients[ip]
+            if client.isCoffee:
+            
+                client.coffee_descale()
+                response = { 'command status'  : Smarter.status_command(client.commandStatus) }
+            else:
+                response = { 'error': 'need coffee machine' }
+        else:
+            response = { 'error': 'no device' }
+        self.setContentType()
+        self.write(response)
+
+
 class StrengthHandler(GenericAPIHandler):
     def get(self,ip,strength):
         if ip in self.application.clients:
@@ -559,13 +606,13 @@ class StrengthHandler(GenericAPIHandler):
             if client.isCoffee:
                 if strength == Smarter.CoffeeStringWeak:
                     client.coffee_weak()
-                    response = { 'command status'  : client.commandStatus }
+                    response = { 'command status'  : Smarter.status_command(client.commandStatus) }
                 elif strength == Smarter.CoffeeStringMedium:
                     client.coffee_medium()
-                    response = { 'command status'  : client.commandStatus }
+                    response = { 'command status'  : Smarter.status_command(client.commandStatus) }
                 elif strength == Smarter.CoffeeStringStrong:
                     client.coffee_strong()
-                    response = { 'command status'  : client.commandStatus }
+                    response = { 'command status'  : Smarter.status_command(client.commandStatus) }
                 else:
                     response = { 'error': 'wrong strength use weak, medium or strong' }   
                 
@@ -583,7 +630,7 @@ class CupsHandler(GenericAPIHandler):
             client = self.application.clients[ip]
             if client.isCoffee:
                 client.coffee_cups(Smarter.string_to_cups(cups))
-                response = { 'command status'  : client.commandStatus }
+                response = { 'command status'  : Smarter.status_command(client.commandStatus) }
             else:
                 response = { 'error': 'need coffee machine' }
         else:
@@ -598,7 +645,7 @@ class HotPlateOnHandler(GenericAPIHandler):
             client = self.application.clients[ip]
             if client.isCoffee:
                 client.coffee_hotplate_on(timer)
-                response = { 'command status'  : client.commandStatus }
+                response = { 'command status'  : Smarter.status_command(client.commandStatus) }
             else:
                 response = { 'error': 'need coffee machine' }
         else:
@@ -613,7 +660,7 @@ class HotPlateOffHandler(GenericAPIHandler):
             client = self.application.clients[ip]
             if client.isCoffee:
                 client.coffee_hotplate_off()
-                response = { 'command status'  : client.commandStatus }
+                response = { 'command status'  : Smarter.status_command(client.commandStatus) }
             else:
                 response = { 'error': 'need coffee machine' }
         else:
@@ -629,7 +676,7 @@ class CarafeOnHandler(GenericAPIHandler):
             if client.isCoffee:
                 client.coffee_carafe_required_on()
                 response = { 'carafe' : 'required',
-                             'command status' : client.commandStatus }
+                             'command status' : Smarter.status_command(client.commandStatus) }
             else:
                 response = { 'error': 'need coffee machine' }
         else:
@@ -645,7 +692,7 @@ class CarafeOffHandler(GenericAPIHandler):
             if client.isCoffee:
                 client.coffee_carafe_required_off()
                 response = { 'carafe' : 'optional',
-                             'command status' : client.commandStatus }
+                             'command status' : Smarter.status_command(client.commandStatus) }
             else:
                 response = { 'error': 'need coffee machine' }
         else:
@@ -661,7 +708,7 @@ class CarafeModeHandler(GenericAPIHandler):
             if client.isCoffee:
                 client.coffee_carafe_mode()
                 response = { 'mode'           : 'carafe',
-                             'command status' : client.commandStatus }
+                             'command status' : Smarter.status_command(client.commandStatus) }
             else:
                 response = { 'error': 'need coffee machine' }
         else:
@@ -677,7 +724,7 @@ class CupModeHandler(GenericAPIHandler):
             if client.isCoffee:
                 client.coffee_cup_mode()
                 response = { 'mode'      : 'cup',
-                             'command status' : client.commandStatus }
+                             'command status' : Smarter.status_command(client.commandStatus) }
             else:
                 response = { 'error': 'need coffee machine' }
         else:
@@ -726,7 +773,7 @@ class StopHandler(GenericAPIHandler):
         if ip in self.application.clients:
             client = self.application.clients[ip]
             client.device_stop()
-            response = { 'command status' : client.commandStatus }
+            response = { 'command status' : Smarter.status_command(client.commandStatus) }
         else:
             response = { 'error': 'no device' }
         self.setContentType()
@@ -738,7 +785,7 @@ class StartHandler(GenericAPIHandler):
         if ip in self.application.clients:
             client = self.application.clients[ip]
             client.device_start()
-            response = { 'command status' : client.commandStatus }
+            response = { 'command status' : Smarter.status_command(client.commandStatus) }
         else:
             response = { 'error': 'no device' }
         self.setContentType()
@@ -1076,11 +1123,14 @@ class iBrewWeb(tornado.web.Application):
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/calibrate/base/([0-9]+)/?",CalibrateStoreBaseHandler),
 
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/heat/([0-9]+)/([0-9]+)/?",HeatHandler),
+                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/brew/([0-9]+)/([0-9]+)/(true|false)/(weak|medium|strong)/?",BrewHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/formula/([0-9]+)/([0-9]+)/?",FormulaHandler),
 
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/beans/?",BeansHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/filter/?",FilterHandler),
-                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/carafe/on/?",CarafeOnHandler),
+                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/descale/?",DescaleHandler),
+                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/brew/default/?",BrewDefaultHandler),
+                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/filter/?",FilterHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/carafe/off?",CarafeOffHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/mode/cup/?",CupModeHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/mode/carafe/?",CarafeModeHandler),
@@ -1104,8 +1154,10 @@ class iBrewWeb(tornado.web.Application):
                 
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/?",SettingsHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/default/?",SettingsDefaultHandler),
-                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/([0-9]+)/([0-9]+)/([0-9]+)/([0-9]+)/?",StoreSettingsHandler),
                 
+                # test these two...
+                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/([0-9]+)/([0-9]+)/(true|false)/(weak|medium|strong)/?",StoreSettingsHandler),
+                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/([0-9]+)/([0-9]+)/(true|false)/([0-9]+)/?",StoreSettingsHandler),
                 (self.webroot + r"/api/version/?",VersionHandler),
                 (self.webroot + r"/api/devices/?",DevicesHandler),
                 (self.webroot + r"/api/joke/?",JokeHandler),

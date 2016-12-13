@@ -69,6 +69,19 @@
         <div class="CellApi"><a href="/api/{{ escape(ip) }}/start">/start</a></div>
     </div>
     <div class="tRow">
+        <div class="CellApiDesc">Start brewing</div>
+        <div class="CellApi"><a href="/api/{{ escape(ip) }}/brew/1/0/false/weak">/brew/(cups)/(hotplate)(true|false)/(weak|medium|strong)</a></div>
+    </div>
+    <div class="tRow">
+        <div class="CellApiDesc">Start brewing using default</div>
+        <div class="CellApi"><a href="/api/{{ escape(ip) }}/brew/default">/brew/default</a></div>
+    </div>
+
+    <div class="tRow">
+        <div class="CellApiDesc">Descale</div>
+        <div class="CellApi"><a href="/api/{{ escape(ip) }}/descale">/descale</a></div>
+    </div>
+    <div class="tRow">
         <div class="CellApiDesc">Stop brewing</div>
         <div class="CellApi"><a href="/api/{{ escape(ip) }}/start">/stop</a></div>
     </div>
@@ -164,11 +177,6 @@
         <div class="CellApiDesc">Set waterlevel base</div>
         <div class="CellApi"><a href="/api/{{ escape(ip) }}/calibrate/base/951">/calibrate/base/(value)</a></div>
     </div>
-    <div class="tRow">
-        <div class="CellApiDesc">Set keepwarm</div>
-        <div class="CellApi"><a href="/api/{{ escape(ip) }}/calibrate/base/951">/calibrate/base/(value)</a></div>
-    </div>
-
     <div class="tRow">
         <div class="CellApiDesc">Tea white</div>
         <div class="CellApi"><a href="/api/{{ escape(ip) }}/white">/white</a></div>

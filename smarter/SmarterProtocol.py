@@ -992,10 +992,8 @@ class SmarterProtocol:
 
     def string_to_temperature(self,temperature):
         try:
-            if self.Fahrenheid:
-                return self.fahrenheid_to_celsius(int(temperature))
-            else:
-                return int(temperature)
+            return check_temperature(int(temperature))
+        # FIX THIS INTO TWO DIFFERENT EXCEPTION INT & TEMPCHECK
         except Exception:
             raise SmarterErrorOld("Temperature is not a number: " + temperature)
 
