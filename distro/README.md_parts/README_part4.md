@@ -94,7 +94,7 @@ Keep your appliance usage to yourself, will you!
 
 #### Protocol description is fully interactive!
 
-Cuz my code sucks... :-) 
+Cuz my code... :-) 
 
 ![protocol](https://raw.githubusercontent.com/Tristan79/iBrew/master/distro/images/protocol.png)
 
@@ -195,7 +195,9 @@ Fill in your own device host (either IP address or hostname) and location to iBr
 			"name": "iKettle 2",
 			"on_cmd": "/Users/Tristan/Coding/iBrew/ibrew start 10.0.0.99",
 			"off_cmd": "/Users/Tristan/Coding/iBrew/ibrew stop 10.0.0.99",
-			"state_cmd": "/Users/Tristan/Coding/iBrew/ibrew shortstatus 10.0.0.99 | grep 'heating'"
+			"state_cmd": "/Users/Tristan/Coding/iBrew/ibrew shortstatus 10.0.0.99 | grep 'heating'",
+            "polling": true,
+            "interval": 1
 		}]
 ```
 
@@ -208,7 +210,9 @@ Fill in your own device host (either IP address or hostname) and location to iBr
 			"name": "Smarter Coffee",
 			"on_cmd": "/Users/Tristan/Coding/iBrew/ibrew start 10.0.0.89",
 			"off_cmd": "/Users/Tristan/Coding/iBrew/ibrew stop 10.0.0.89",
-			"state_cmd": "/Users/Tristan/Coding/iBrew/ibrew shortstatus 10.0.0.89 | grep 'grinding\|brewing'"
+			"state_cmd": "/Users/Tristan/Coding/iBrew/ibrew shortstatus 10.0.0.89 | grep 'grinding\|brewing'",
+            "polling": true,
+            "interval": 1
 		}]
 ```
 
@@ -234,8 +238,10 @@ example config file for iKettle 2.0.
 			"name": "iKettle 2",
 			"on_cmd": "/Users/Tristan/Coding/iBrew/ibrew start 10.0.0.99",
 			"off_cmd": "/Users/Tristan/Coding/iBrew/ibrew stop 10.0.0.99",
-			"state_cmd": "/Users/Tristan/Coding/iBrew/ibrew shortstatus 10.0.0.99 | grep 'heating'"
-		}]
+			"state_cmd": "/Users/Tristan/Coding/iBrew/ibrew shortstatus 10.0.0.99 | grep 'heating'",
+            "polling": true,
+            "interval": 1
+        }]
 
 	}]
 }
