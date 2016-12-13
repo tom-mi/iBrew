@@ -146,7 +146,38 @@ git pull
 ```
 
 #### Start web server on pi boot
-Coming soon!
+
+To add the webserver on boot run
+
+```
+sudo nano /lib/systemd/system/iBrew.service```
+```
+
+Copy and paste this text and save with ctrl-x
+
+```
+[Unit]
+Description=iBrew
+After=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python /home/pi/iBrew/ibrew dump web
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Then run the additional commands
+```
+sudo chmod 644 /lib/systemd/system/iBrew.service
+sudo systemctl daemon-reload
+sudo systemctl enable iBrew.service
+sudo systemctl start iBrew.service
+sudo systemctl status iBrew.service
+```
+
 
 ### Download from source
 
@@ -179,11 +210,20 @@ Start iBrewUI with python to get a taskbar icon. I failed to create a working pa
 Please post any bug or [issues](https://github.com/Tristan79/iBrew/issues) here on github!
 The error handling is still kinda broken... :-) now use dump to see more. Will revert to debug, info, logging (wip)
 
-### Log location
+### Log & config location
 
+#### Log 
  * macOS ```~/Library/Application Support/iBrew/logs```
  * unix  ```~/.iBrew/logs```
+ * unix (root) ```/var/log/iBrew/```
  * windows ```~%APPDATA%\iBrew\logs```
+ 
+#### Config
+ * macOS ```~/Library/Application Support/iBrew/```
+ * unix  ```~/.iBrew/```
+ * unix (root) ```/etc/iBrew/```
+ * windows ```~%APPDATA%\iBrew\logs```
+ 
 
 ### Unable to connect to iKettle 2.0 or Smarter Coffee appliance
 
