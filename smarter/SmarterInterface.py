@@ -2309,6 +2309,123 @@ class SmarterClient:
 
 
 
+    #------------------------------------------------------
+    # TRIGGERS
+    #------------------------------------------------------
+
+
+    # Kettle
+    triggerDefaultTemperature           = 10
+    triggerDefaultFormulatemperature    = 11
+    triggerDefaultKeepWarmTime          = 12
+    triggerWaterSensorBase              = 13
+    triggerKeepWarm                     = 14
+    triggerHeaterKettle                 = 15
+    triggerFormulaCooling               = 16
+    triggerTemperature                  = 17
+    triggerWaterSensor                  = 18
+    triggerOnBase                       = 19
+    triggerUnknownKettle                = 20
+
+    # Coffee
+    triggerMode                         = 21
+    triggerDefaultStrength              = 22
+    triggerDefaultCups                  = 23
+    triggerDefaultGrind                 = 24
+    triggerDefaultHotplate              = 25
+    triggerGrind                        = 26
+    triggerReady                        = 27
+    triggerWorking                      = 28
+    triggerTimerEvent                   = 29
+    triggerWaterLevel                   = 30
+    triggerWaterEnough                  = 31
+    triggerStrength                     = 32
+    triggerCups                         = 33
+    triggerCupsBrew                     = 34
+    triggerUnknownCoffee                = 35
+    triggerCarafe                       = 36
+    triggerGrinder                      = 37
+    triggerHotPlate                     = 38
+    triggerHeaterCoffee                 = 39
+    triggerCarafeRequired               = 40
+
+    
+    # format {(group,sensorid,command),...(group,sensorid,command)}
+    actions = {
+        triggerDefaultTemperature           : {},
+        triggerDefaultFormulatemperature    : {},
+        triggerDefaultKeepWarmTime          : {},
+        triggerDefaultStrength              : {},
+        triggerDefaultCups                  : {},
+        triggerDefaultGrind                 : {},
+        triggerDefaultHotplate              : {},
+        triggerWaterSensorBase              : {},
+        triggerCarafeRequired               : {},
+        triggerMode                         : {},
+        triggerGrind                        : {},
+        triggerReady                        : {},
+        triggerWorking                      : {},
+        triggerTimerEvent                   : {},
+        triggerWaterLevel                   : {},
+        triggerWaterEnough                  : {},
+        triggerStrength                     : {},
+        triggerCups                         : {},
+        triggerCupsBrew                     : {},
+        triggerUnknownCoffee                : {},
+        triggerCarafe                       : {},
+        triggerGrinder                      : {},
+        triggerHotPlate                     : {},
+        triggerHeaterCoffee                 : {},
+        triggerKeepWarm                     : {},
+        triggerHeaterKettle                 : {},
+        triggerFormulaCooling               : {},
+        triggerTemperature                  : {},
+        triggerWaterSensor                  : {},
+        triggerOnBase                       : {},
+        triggerUnknownKettle                : {}
+    }
+
+
+    def actionAdd(self,group,trigger,sensorID,action):
+        pass
+
+
+    def actionDelete(self,group,trigger):
+        pass
+
+
+    def action(self,trigger,old,new):
+        print "Trigger: " + str(trigger) + " old:" + str(old) + " new:" + str(new)
+        
+        
+        # you can add delays here, I probably should move over code from the monitor to here ;-)
+        
+        # Something like?
+        
+        
+        # $O : old value
+        # $N : new value
+        # $I : sensor id ???
+
+        # format {(group,sensorid,command),...(group,sensorid,command)}
+        
+        # examples
+        # {("iBrew",Null,"/home/pi/iBrew/trigger.sh $O $N"),("Domoticz","454","http://smarthome.local/controller/update?sensor=$I&value=$N")}
+        # {("MTTQ",Null,"D:\coding\iBrew\trigger.bat $O $N"),("OpenHAB","KettleTemperature","http://smarthome.local/controller/update?sensor=$I&value=$N")}
+        # {("Domoticz","CoffeeStrength","http://smarthome.local/controller/update?sensor=$I&value=$N")}
+        
+        # a = actions[trigger]
+        # for i in a:
+        #   if "http" == i[1][1:4]:
+                # fill in sensor and old and new
+                # execute http... get post???
+        #   else:
+                # fill in sensor and old and new
+        #       execute command...
+        
+        pass
+
+
 
     #------------------------------------------------------
     # MESSAGE RESPONSE DECODERS
@@ -2360,21 +2477,47 @@ class SmarterClient:
                 if id != Smarter.ResponseCoffeeStatus and id != Smarter.ResponseKettleStatus:
                     self.print_message_read(message)
                     
-
-
+                    
 
     def __decode_KettleSettings(self,message):
-        self.defaultKeepWarmTime  = Smarter.raw_to_number(message[2])
-        self.defaultTemperature   = Smarter.raw_to_temperature(message[1])
-        self.defaultFormulaTemperature = Smarter.raw_to_number(message[3])
+        v = Smarter.raw_to_number(message[2])
+        if v != self.defaultKeepWarmTime:
+            self.action(self.triggerDefaultKeepWarmTime,self.defaultKeepWarmTime,v)
+            self.defaultKeepWarmTime = v
+        
+        v = Smarter.raw_to_temperature(message[1])
+        if v != self.defaultTemperature:
+            self.action(self.triggerDefaultTemperature,self.defaultTemperature,v)
+            self.defaultTemperature = v
+        
+        v = Smarter.raw_to_number(message[3])
+        if v != self.defaultFormulaTemperature:
+            self.action(self.triggerDefaultFormulaTemperature,self.defaultFormulaTemperature,v)
+            self.defaultFormulaTemperature = v
 
 
 
     def __decode_CoffeeSettings(self,message):
-        self.defaultCups          = Smarter.raw_to_cups(message[1])
-        self.defaultStrength      = Smarter.raw_to_strength(message[2])
-        self.defaultGrind         = Smarter.raw_to_bool(message[3])
-        self.defaultHotPlate      = Smarter.raw_to_hotplate(message[4],self.version)
+    
+        v = Smarter.raw_to_cups(message[1])
+        if v != self.defaultCups:
+            self.action(self.triggerDefaultCups,self.defaultCups,v)
+            self.defaultCups = v
+        
+        v = Smarter.raw_to_strength(message[2])
+        if v != self.defaultStrength:
+            self.action(self.triggerDefaultStrength,self.defaultStrength,v)
+            self.defaultStrength = v
+        
+        v = Smarter.raw_to_bool(message[3])
+        if v != self.defaultGrind:
+            self.action(self.triggerDefaultGrind,self.defaultGrind,v)
+            self.defaultGrind  = v
+        
+        v =  Smarter.raw_to_hotplate(message[4],self.version)
+        if v != self.defaultHotPlate:
+            self.action(self.triggerDefaultHotPlate,self.defaultHotPlate,v)
+            self.defaultHotPlate = v
 
 
 
@@ -2383,53 +2526,77 @@ class SmarterClient:
             
         if self.kettleStatus == Smarter.KettleHeating:
             if not self.heaterOn:
+                self.action(self.triggerHeaterKettle,False,True)
                 heaterOn = True
             if self.keepWarmOn == True:
                 self.keepWarmOn = False
+                self.action(self.triggerKeepWarm,True,False)
                 self.countKeepWarm += 1
             if self.formulaCoolingOn == True:
                 self.formulaCoolingOn = False
+                self.action(self.triggerFormulaCooling,True,False)
                 self.countFormulaCooling+= 1
 
         elif self.kettleStatus == Smarter.KettleFormulaCooling:
             if not self.formulaCoolingOn:
                 self.formulaCoolingOn = True
+                self.action(self.triggerFormulaCooling,False,True)
             if self.heaterOn == True:
+                self.action(self.triggerHeaterKettle,True,False)
                 self.heaterOn = False
                 self.countHeater += 1
             if self.keepWarmOn == True:
                 self.keepWarmOn = False
+                self.action(self.triggerKeepWarm,True,False)
                 self.countKeepWarm += 1
         
         elif self.kettleStatus == Smarter.KettleKeepWarm:
             if not self.keepWarmOn:
                 self.keepWarmOn = True
+                self.action(self.triggerKeepWarm,False,True)
             if self.heaterOn == True:
+                self.action(self.triggerHeaterKettle,True,False)
                 self.heaterOn = False
                 self.countHeater += 1
             if self.formulaCoolingOn == True:
                 self.formulaCoolingOn = False
+                self.action(self.triggerFormulaCooling,True,False)
                 self.countFormulaCooling+= 1
         else:
             if self.keepWarmOn == True:
+                self.action(self.triggerKeepWarm,True,False)
                 self.keepWarmOn = False
                 self.countKeepWarm += 1
             if self.heaterOn == True:
                 self.heaterOn = False
+                self.action(self.triggerHeaterKettle,True,False)
                 self.countHeater+= 1
             if self.formulaCoolingOn == True:
                 self.formulaCoolingOn = False
+                self.action(self.triggerFormulaCooling,True,False)
                 self.countFormulaCooling+= 1
-                
-        self.temperature            = Smarter.raw_to_temperature(message[2])
-        self.waterSensor            = Smarter.raw_to_watersensor(message[3],message[4])
-        
-        if self.onBase != Smarter.is_on_base(message[2]):
+
+        v = Smarter.raw_to_temperature(message[2])
+        if v != self.temperature:
+            self.action(self.triggerTemperature,self.temperature,v)
+            self.temperature = v
+
+        v = Smarter.raw_to_watersensor(message[3],message[4])
+        if v != self.waterSensor:
+            self.action(self.triggerTemperature,self.waterSensor,v)
+            self.waterSensor = v
+
+        v = Smarter.is_on_base(message[2])
+        if self.onBase != v:
             if self.onBase:
                 self.countKettleRemoved += 1
-            self.onBase = Smarter.is_on_base(message[2])
-            
-        self.unknown            = Smarter.raw_to_number(message[5])
+            self.action(self.triggerOnBase,self.onBase,v)
+            self.onBase = v
+
+        v = Smarter.raw_to_number(message[5])
+        if v != self.unknown:
+            self.action(self.triggerUnknownKettle,self.unknown,v)
+            self.unknown = v
 
 
 
@@ -2439,41 +2606,87 @@ class SmarterClient:
             return x & 2**n != 0
         
         coffeeStatus = Smarter.raw_to_number(message[1])
-  
-        self.ready               = is_set(coffeeStatus,2)
-        self.grind               = is_set(coffeeStatus,1)
-        self.working             = is_set(coffeeStatus,5)
-        self.timerEvent          = is_set(coffeeStatus,7)
-        self.waterLevel          = Smarter.raw_to_waterlevel(message[2])
-        self.waterEnough         = Smarter.raw_to_waterlevel_bit(message[2])
-        self.strength            = Smarter.raw_to_strength(message[4])
-        self.cups                = Smarter.raw_to_cups(message[5])
-        self.cupsBrew            = Smarter.raw_to_cups_brew(message[5])
-        self.unknown             = Smarter.raw_to_number(message[3])
 
-  
-        if self.carafe != is_set(coffeeStatus,0):
+        v = is_set(coffeeStatus,2)
+        if v != self.ready:
+            self.action(self.triggerReady,self.ready,v)
+            self.ready = v
+
+        v = is_set(coffeeStatus,1)
+        if v != self.grind :
+            self.action(self.triggerGrind,self.grind ,v)
+            self.grind  = v
+
+        v = is_set(coffeeStatus,5)
+        if v != self.working:
+            self.action(self.triggerWorking,self.working,v)
+            self.working = v
+
+        v = is_set(coffeeStatus,7)
+        if v != self.timerEvent:
+            self.action(self.triggerTimerEvent,self.timerEvent,v)
+            self.timerEvent = v
+
+        v = Smarter.raw_to_waterlevel(message[2])
+        if v != self.waterLevel:
+            self.action(self.triggerWaterLevel,self.waterLevel,v)
+            self.waterLevel = v
+
+        v = Smarter.raw_to_waterlevel_bit(message[2])
+        if v != self.waterEnough:
+            self.action(self.triggerWaterEnough,self.waterEnough,v)
+            self.waterEnough = v
+
+        v = Smarter.raw_to_strength(message[4])
+        if v != self.strength:
+            self.action(self.triggerStrength,self.strength,v)
+            self.strength = v
+
+        v = Smarter.raw_to_cups(message[5])
+        if v != self.cups:
+            self.action(self.triggerCups,self.cups,v)
+            self.cups = v
+
+        v = Smarter.raw_to_cups_brew(message[5])
+        if v != self.cupsBrew:
+            self.action(self.triggerCupsBrew,self.cupsBrew,v)
+            self.cupsBrew = v
+
+        v = Smarter.raw_to_number(message[3])
+        if v != self.unknown:
+            self.action(self.triggerUnknownCoffee,self.unknown,v)
+            self.unknown = v
+
+        v = is_set(coffeeStatus,0)
+        if self.carafe != v:
             if not self.carafe:
                  self.countCarafeRemoved += 1
-            self.carafe = is_set(coffeeStatus,0)
-        
-        if self.heaterOn != is_set(coffeeStatus,4):
+            self.action(self.triggerCarafe,self.carafe,v)
+            self.carafe = v
+
+        v = is_set(coffeeStatus,4)
+        if self.heaterOn != v:
             if not self.heaterOn:
                 self.countHeater += 1
             else:
                 # what happens when it fails?? or stopped
                 self.countCupsBrew += self.cupsBrew
-            self.heaterOn = is_set(coffeeStatus,4)
+            self.action(self.triggerHeaterCoffee,self.heaterOn,v)
+            self.heaterOn = v
 
-        if self.hotPlateOn != is_set(coffeeStatus,6):
+        v = is_set(coffeeStatus,6)
+        if self.hotPlateOn != v:
             if not self.hotPlateOn:
                 self.countHotPlateOn += 1
-            self.hotPlateOn = is_set(coffeeStatus,6)
-        
-        if self.grinderOn != is_set(coffeeStatus,3):
+            self.action(self.triggerHotPlate,self.hotPlateOn,v)
+            self.hotPlateOn = v
+
+        v = is_set(coffeeStatus,3)
+        if self.grinderOn != v:
             if not self.grinderOn:
                 self.countGrinderOn += 1
-            self.grinderOn = is_set(coffeeStatus,3)
+            self.action(self.triggerGrinder,self.grinderOn,v)
+            self.grinderOn = v
             
 
 
@@ -2514,17 +2727,29 @@ class SmarterClient:
 
 
     def __decode_Base(self,message):
-        self.waterSensorBase = Smarter.raw_to_watersensor(message[1],message[2])
-
+        v = Smarter.raw_to_watersensor(message[1],message[2])
+        if v != self.waterSensorBase:
+            # trigger
+            self.action(self.triggerWaterSensorBase,self.waterSensorBase,v)
+            self.waterSensorBase = v
+        
 
 
     def __decode_Carafe(self,message):
-        self.carafeRequired = not Smarter.raw_to_bool(message[1])
-
+        v = not Smarter.raw_to_bool(message[1])
+        if v != self.carafeRequired:
+            # trigger
+            self.action(self.triggerCarafeRequired,self.carafeRequired,v)
+            self.carafeRequired = v
+  
 
 
     def __decode_Mode(self,message):
-        self.mode  = Smarter.raw_to_bool(message[1])
+        v = Smarter.raw_to_bool(message[1])
+        if v != self.mode:
+            # trigger
+            self.action(self.triggerMode,self.mode,v)
+            self.mode = v
 
 
 
