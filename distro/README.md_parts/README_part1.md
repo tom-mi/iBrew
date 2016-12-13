@@ -150,7 +150,7 @@ git pull
 To add the webserver on boot run
 
 ```
-sudo nano /lib/systemd/system/iBrew.service```
+sudo nano /lib/systemd/system/iBrew.service
 ```
 
 Copy and paste this text and save with ctrl-x

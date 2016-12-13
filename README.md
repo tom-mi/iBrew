@@ -150,7 +150,7 @@ git pull
 To add the webserver on boot run
 
 ```
-sudo nano /lib/systemd/system/iBrew.service```
+sudo nano /lib/systemd/system/iBrew.service
 ```
 
 Copy and paste this text and save with ctrl-x
@@ -453,7 +453,7 @@ Commands
       20  Keep water warm timer is set to 20 minutes
   status  Kettle status
 
-    host  ip or host address of device
+    host  ip or host address of the iKettle
 
 
 ```
@@ -476,6 +476,21 @@ __Advantages__
 
 ```ibrew dump relay 10.0.0.99```
 
+#### Advance relay options
+
+```ibrew dump relay in:DEBUG,out:DEBUG 10.0.0.99 127.0.0.1:3081```
+
+Bind relay server to localhost on a different port and uses the firewall to block all debug messages
+
+To change the firewall rules of a relay server already running, use
+
+```ibrew remote unblock in:ADMIN,out:ADMIN 127.0.0.1:3081```
+
+```ibrew remote block in:DEBUG,out:DEBUG 127.0.0.1:3081```
+
+To see the rules use
+
+```ibrew remote rules 127.0.0.1:3081```
 
 ### Simulation
 
@@ -580,9 +595,8 @@ appliance.disconnect()
 You can always patch or hack in your favorite Smarthome controller (if they have a python interface) into the following functions of SmarterInterface.py. 
 
 ```
-def __read(self)
-def __send(self)
-def __monitor_device(self)
+# all decode functions
+def __decode_???(self,.)
 ```
 
 And start up the monitor with a command like ```ibrew dump monitor 10.0.0.99```  ;-) 
@@ -611,13 +625,33 @@ Install the following software to bridge iBrew with HomeKit
 
 #### Setup
 
-Part of config file relevant to iKettle 2.0 or Smarter Coffee
+Part of config file relevant to iKettle, iKettle 2.0 or Smarter Coffee
 
 Fill in your own device host (either IP address or hostname) and location to iBrew, 
 
  * If you use an IP address: PLEASE use a static IP address! (assign in your router)
  * If you are the lucky owner of a router that assigns dynamic IP addresses with hostnames attached (usually in the form of device.local or device.lan) you can use that. If you are lucky, else use a static IP.
  * If you only have ONE device: you can use autodetection (and leave out the ip or hostname) but it adds a 2 seconds time penalty.
+
+
+#### HomeBridge example config iKettle 
+
+```
+	"platforms": [{
+		"platform": "cmdSwitch2",
+		"switches": [{
+			"name": "iKettle",
+			"on_cmd": "/Users/Tristan/Coding/iBrew/ibrewlegacy heat 10.0.0.3",
+			"off_cmd": "/Users/Tristan/Coding/iBrew/ibrewlegacy stop 10.0.0.3",
+			"state_cmd": "/Users/Tristan/Coding/iBrew/ibrewlegacy status 10.0.0.3 | grep 'Heating'"
+            "manufacturer": "iBrew",
+            "model": "iKettle Intermezzo",
+            "serial": "44DE1AD79BC",
+            "polling": true,
+            "interval": 1,
+		}]
+
+```
 
 #### HomeBridge example config iKettle 2.0
   
@@ -629,6 +663,9 @@ Fill in your own device host (either IP address or hostname) and location to iBr
 			"on_cmd": "/Users/Tristan/Coding/iBrew/ibrew start 10.0.0.99",
 			"off_cmd": "/Users/Tristan/Coding/iBrew/ibrew stop 10.0.0.99",
 			"state_cmd": "/Users/Tristan/Coding/iBrew/ibrew shortstatus 10.0.0.99 | grep 'heating'",
+            "manufacturer": "iBrew",
+            "model": "iKettle 2.0 Intermezzo",
+            "serial": "44DE2AD79BC",
             "polling": true,
             "interval": 1
 		}]
@@ -644,10 +681,16 @@ Fill in your own device host (either IP address or hostname) and location to iBr
 			"on_cmd": "/Users/Tristan/Coding/iBrew/ibrew start 10.0.0.89",
 			"off_cmd": "/Users/Tristan/Coding/iBrew/ibrew stop 10.0.0.89",
 			"state_cmd": "/Users/Tristan/Coding/iBrew/ibrew shortstatus 10.0.0.89 | grep 'grinding\|brewing'",
+            "manufacturer": "iBrew",
+            "model": "Smarter Coffee Intermezzo",
+            "serial": "44DE3AD79BC",
             "polling": true,
             "interval": 1
 		}]
 ```
+
+
+
 
 #### Example HomeBridge config file
 
@@ -672,13 +715,18 @@ example config file for iKettle 2.0.
 			"on_cmd": "/Users/Tristan/Coding/iBrew/ibrew start 10.0.0.99",
 			"off_cmd": "/Users/Tristan/Coding/iBrew/ibrew stop 10.0.0.99",
 			"state_cmd": "/Users/Tristan/Coding/iBrew/ibrew shortstatus 10.0.0.99 | grep 'heating'",
+            "manufacturer": "iBrew",
+            "model": "iKettle 2.0 Intermezzo",
+            "serial": "44DE2AD79BC",
             "polling": true,
             "interval": 1
-        }]
+		}]
 
 	}]
 }
 ```
+
+
 ### Other
 
 Have any links, info or help on other Smarthome controller software, please post in the issues!
@@ -742,6 +790,7 @@ Interfaces
  * WEB: All REST api has no error check...
  * JAVASCRIPT: JSON Rest API
  * OTHER: Guides to Smarthome controllers
+ * RELAY: `ibrew dump relay 10.0.0.99 :3081`
  * ME: hugs!
 
 
