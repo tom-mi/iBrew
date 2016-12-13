@@ -319,6 +319,42 @@ class UnknownHandler(GenericAPIHandler):
 
 
 #------------------------------------------------------
+# Kettle heat
+#------------------------------------------------------
+
+
+class BeverageHandler(GenericAPIHandler):
+    def get(self,ip,beverage):
+        if ip in self.application.clients:
+            client = self.application.clients[ip]
+            
+            if client.isKettle:
+                if beverage == "coffee":
+                    client.kettle_heat_coffee()
+                    response = { 'command status'  : client.commandStatus }
+                elif beverage == "white":
+                    client.kettle_heat_white_tea()
+                    response = { 'command status'  : client.commandStatus }
+                elif beverage == "black":
+                    client.kettle_heat_black_tea()
+                    response = { 'command status'  : client.commandStatus }
+                elif beverage == "oelong":
+                    client.kettle_heat_oelong_tea()
+                    response = { 'command status'  : client.commandStatus }
+                elif beverage == "boil":
+                    client.kettle_boil()
+                    response = { 'command status'  : client.commandStatus }
+                else:
+                    response = { 'error': 'wrong beverage use coffee, white, black, green, oelong, boil' }
+                
+            else:
+                response = { 'error': 'need kettle' }
+        else:
+            response = { 'error': 'no device' }
+        self.setContentType()
+        self.write(response)
+
+#------------------------------------------------------
 # Kettle calibration
 #------------------------------------------------------
 
@@ -329,6 +365,7 @@ class CalibrateHandler(GenericAPIHandler):
             client = self.application.clients[ip]
             if client.isKettle:
                 client.kettle_calibrate()
+                # fix kettle_calibrate_offbase
                 response = { 'base'            : client.waterSensorBase,
                              'command status'  : client.commandStatus }
             else:
@@ -360,7 +397,7 @@ class CalibrateStoreBaseHandler(GenericAPIHandler):
         if ip in self.application.clients:
             client = self.application.clients[ip]
             if client.isKettle:
-                client.calibrate_store_base(Smarter.string_to_watersensor(base))
+                client.kettle_calibrate_store_base(Smarter.string_to_watersensor(base))
                 response = { 'base'            : client.waterSensorBase,
                              'command status'  : client.commandStatus }
             else:
@@ -676,6 +713,61 @@ class StartHandler(GenericAPIHandler):
 
 
 #------------------------------------------------------
+# Remote Blocks
+#------------------------------------------------------
+
+
+def encodeRules(rulesIn,rulesOut):
+
+    groupsIn,  idsIn  = Smarter.idsListEncode(rulesIn)
+    groupsOut, idsOut = Smarter.idsListEncode(rulesOut)
+    return { 'in' :  { 'groups' : list(groupsIn),
+                       'ids'    : list(idsIn)
+                     },
+             'out' : { 'groups' : list(groupsOut),
+                       'ids'    : list(idsOut)
+                     }
+            }
+
+class BlockHandler(GenericAPIHandler):
+    def get(self,ip,block):
+        if ip in self.application.clients:
+            client = self.application.clients[ip]
+            if block[-1] == '/':
+                block = block[0:-1]
+            print block
+            client.block(block)
+            response = encodeRules(client.rulesIn,client.rulesOut)
+        else:
+            response = { 'error': 'no device' }
+        self.setContentType()
+        self.write(response)
+
+class UnblockHandler(GenericAPIHandler):
+    def get(self,ip,unblock):
+        if ip in self.application.clients:
+            client = self.application.clients[ip]
+            if unblock[-1] == '/':
+                unblock = unblock[0:-1]
+            print unblock
+            client.unblock(unblock)
+            response = encodeRules(client.rulesIn,client.rulesOut)
+        else:
+            response = { 'error': 'no device' }
+        self.setContentType()
+        self.write(response)
+
+
+class RulesHandler(GenericAPIHandler):
+    def get(self,ip):
+        if ip in self.application.clients:
+            client = self.application.clients[ip]
+            response = encodeRules(client.rulesIn,client.rulesOut)
+        else:
+            response = { 'error': 'no device' }
+        self.setContentType()
+        self.write(response)
+#------------------------------------------------------
 # Misc
 #------------------------------------------------------
 
@@ -960,7 +1052,7 @@ class iBrewWeb(tornado.web.Application):
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/hotplate/off/?",HotPlateOffHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/cups/([0-9]+)/?",CupsHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/(weak|normal|strong)/?",StrengthHandler),
-                
+                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/(boil|coffee|white|green|black|oelong)/?",BeverageHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/scan/?",WifiScanHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/join/(.+)/(.*)/?",WifiJoinHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/direct/?",WifiDirectHandler),
@@ -969,6 +1061,10 @@ class iBrewWeb(tornado.web.Application):
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/stop/?",StopHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/joke/?",JokeHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/statistics/?",StatsHandler),
+
+                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/rules/?",RulesHandler),
+                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/block/(.+)/?",BlockHandler),
+                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/unblock/(.+)/?",UnblockHandler),
                 
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/?",SettingsHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/default/?",SettingsDefaultHandler),

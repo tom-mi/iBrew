@@ -2974,7 +2974,7 @@ class SmarterClient:
 
 
 
-    def kettle_heat_oelong(self):
+    def kettle_heat_oelong_tea(self):
         """
         Heat water to temperature right for oelong tea
         """

@@ -686,6 +686,8 @@ class iBrewConsole:
                                                 
             elif command == "boil":         self.client.kettle_boil()
 
+            elif command == "kettlecoffee": self.client.kettle_heat_coffee()
+
             elif command == "formula":
                                             if numarg >= 2:
                                                 self.client.kettle_formula_heat(Smarter.string_to_temperature(arguments[0]),Smarter.string_to_keepwarm(arguments[1]))
@@ -1018,7 +1020,8 @@ class iBrewConsole:
         print "  iKettle 2.0 Commands"
         print "    base                   show watersensor base value"
         print "    base [base]            store watersensor base value"
-        print "    boil                   heat till 100°C (coffee level)"
+        print "    boil                   heat till 100°C"
+        print "    kettlecoffee           warms water for coffee"
         print "    calibrate              calibrates watersensor"
         print "    celsius                use celsius °C [console only]"
         print "    fahrenheid             use fahrenheid °F [console only]"

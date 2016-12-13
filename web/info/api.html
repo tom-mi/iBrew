@@ -26,10 +26,15 @@
         <div class="CellApiDesc">List of devices</div>
         <div class="CellApi"><a href="/api/devices">/devices</a></div>
     </div>
-    <div class="tRow">
+<!--    <div class="tRow">
         <div class="CellApiDesc">Statistics Server</div>
         <div class="CellApi"><a href="/api/statistics">/statistics</a></div>
+    </div> -->
+    <div class="tRow">
+        <div class="CellApiDesc">Messages</div>
+        <div class="CellApi"><a href="/api/messages">/messages</a></div>
     </div>
+
 </div>
 
 <br>
@@ -69,11 +74,19 @@
     </div>
     <div class="tRow">
         <div class="CellApiDesc">Single cup mode</div>
-        <div class="CellApi"><a href="/api/{{ escape(ip) }}/singlecup">/singlecup</a></div>
+        <div class="CellApi"><a href="/api/{{ escape(ip) }}/mode/cup">/mode/cup</a></div>
+    </div>
+    <div class="tRow">
+        <div class="CellApiDesc">Carafe mode</div>
+        <div class="CellApi"><a href="/api/{{ escape(ip) }}/mode/cup">/mode/carafe</a></div>
     </div>
     <div class="tRow">
         <div class="CellApiDesc">Carafe required</div>
-        <div class="CellApi"><a href="/api/{{ escape(ip) }}/carafe">/carafe</a></div>
+        <div class="CellApi"><a href="/api/{{ escape(ip) }}/carafe/on">/carafe/on</a></div>
+    </div>
+    <div class="tRow">
+        <div class="CellApiDesc">Carafe required</div>
+        <div class="CellApi"><a href="/api/{{ escape(ip) }}/carafe/off">/carafe/off</a></div>
     </div>
     <div class="tRow">
         <div class="CellApiDesc">Set filter</div>
@@ -97,17 +110,17 @@
     </div>
     <div class="tRow">
         <div class="CellApiDesc">Set cups</div>
-        <div class="CellApi"><a href="/api/{{ escape(ip) }}/cups">/cups</a></div>
+        <div class="CellApi"><a href="/api/{{ escape(ip) }}/cups/3">/cups/(value)</a></div>
     </div>
     <div class="tRow">
         <div class="CellApiDesc">Hotplate on</div>
-        <div class="CellApi"><a href="/api/{{ escape(ip) }}/hotplate/on">/hotplate/on</a></div>
+        <div class="CellApi"><a href="/api/{{ escape(ip) }}/hotplate/on/5">/hotplate/on/(value)</a></div>
     </div>
     <div class="tRow">
         <div class="CellApiDesc">Hotplate off</div>
         <div class="CellApi"><a href="/api/{{ escape(ip) }}/hotplate/off">/hotplate/off</a></div>
     </div>
-    <div class="tRow">
+<!--    <div class="tRow">
         <div class="CellApiDesc">Set timer</div>
         <div class="CellApi"><a href="/api/{{ escape(ip) }}/timer">/timer</a></div>
     </div>
@@ -118,7 +131,7 @@
     <div class="tRow">
         <div class="CellApiDesc">Timers</div>
         <div class="CellApi"><a href="/api/{{ escape(ip) }}/timers">/timers</a></div>
-    </div>
+    </div> -->
     {% end %}
     
     {% if "iKettle 2.0" == devices[ip] %}
@@ -131,18 +144,54 @@
         <div class="CellApiDesc">Stop heating</div>
         <div class="CellApi"><a href="/api/{{ escape(ip) }}/stop">/stop</a></div>
     </div>
-    <div class="tRow">
+<!--    <div class="tRow">
         <div class="CellApiDesc">Start heating in formula mode</div>
         <div class="CellApi"><a href="/api/{{ escape(ip) }}/heat">/heat</a></div>
-    </div>
+    </div> -->
     <div class="tRow">
         <div class="CellApiDesc">Calibrate</div>
         <div class="CellApi"><a href="/api/{{ escape(ip) }}/calibrate">/calibrate</a></div>
     </div>
-    
-    {% end %}
+    <div class="tRow">
+        <div class="CellApiDesc">Get waterlevel base</div>
+        <div class="CellApi"><a href="/api/{{ escape(ip) }}/calibrate/base">/calibrate/base</a></div>
+    </div>
+    <div class="tRow">
+        <div class="CellApiDesc">Set waterlevel base</div>
+        <div class="CellApi"><a href="/api/{{ escape(ip) }}/calibrate/base/951">/calibrate/base/(value)</a></div>
+    </div>
+    <div class="tRow">
+        <div class="CellApiDesc">Set keepwarm</div>
+        <div class="CellApi"><a href="/api/{{ escape(ip) }}/calibrate/base/951">/calibrate/base/(value)</a></div>
+    </div>
 
     <div class="tRow">
+        <div class="CellApiDesc">Tea white</div>
+        <div class="CellApi"><a href="/api/{{ escape(ip) }}/white">/white</a></div>
+    </div>
+    <div class="tRow">
+        <div class="CellApiDesc">Tea green</div>
+        <div class="CellApi"><a href="/api/{{ escape(ip) }}/green">/green</a></div>
+    </div>
+    <div class="tRow">
+        <div class="CellApiDesc">Tea black</div>
+        <div class="CellApi"><a href="/api/{{ escape(ip) }}/black">/black</a></div>
+    </div>
+    <div class="tRow">
+        <div class="CellApiDesc">Tea oelong</div>
+        <div class="CellApi"><a href="/api/{{ escape(ip) }}/oelong">/oelong</a></div>
+    </div>
+    <div class="tRow">
+        <div class="CellApiDesc">Coffee</div>
+        <div class="CellApi"><a href="/api/{{ escape(ip) }}/coffee">/coffee</a></div>
+    </div>
+    <div class="tRow">
+        <div class="CellApiDesc">Boil</div>
+        <div class="CellApi"><a href="/api/{{ escape(ip) }}/boil">/boil</a></div>
+    </div>
+    {% end %}
+
+<!--    <div class="tRow">
         <div class="CellApiDesc">Set Time</div>
         <div class="CellApi"><a href="/api/{{ escape(ip) }}/time">/time</a></div>
     </div>
@@ -150,7 +199,7 @@
     <div class="tRow">
         <div class="CellApiDesc">History</div>
         <div class="CellApi"><a href="/api/{{ escape(ip) }}/history">/history</a></div>
-    </div>
+    </div> -->
     
     <div class="tRow">
         <div class="CellApiDesc">Statistics {{ devices[ip] }} </div>
@@ -177,11 +226,33 @@
         <div class="CellApi"><a href="/api/{{ escape(ip) }}/leave">/leave</a></div>
     </div>
 
+
+    <div class="tRow">
+        <div class="CellApiDesc">Join wireless network</div>
+        <div class="CellApi"><a href="/api/{{ escape(ip) }}/join/name/password">/join/name/password</a></div>
+    </div>
+    
+    
     <div class="tRow">
         <div class="CellApiDesc">Joke</div>
         <div class="CellApi"><a href="/api/{{ escape(ip) }}/joke">/joke</a></div>
     </div>
 
+    <div class="tRow">
+        <div class="CellApiDesc">Rules</div>
+        <div class="CellApi"><a href="/api/{{ escape(ip) }}/rules">/rules</a></div>
+    </div>
+    
+    
+    <div class="tRow">
+        <div class="CellApiDesc">Block</div>
+        <div class="CellApi"><a href="/api/{{ escape(ip) }}/block/out:DEBUG">/block/(rules)</a></div>
+    </div>
+    
+    <div class="tRow">
+        <div class="CellApiDesc">Unblock</div>
+        <div class="CellApi"><a href="/api/{{ escape(ip) }}/unblock/out:DEBUG">/unblock/(rules)</a></div>
+    </div>
  </div>
 <br>
 {% end %}

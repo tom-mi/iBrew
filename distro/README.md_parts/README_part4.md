@@ -287,6 +287,7 @@ Interfaces
  * PYTHON: Strip zero from ip
  * PYTHON: fix wireless with the same name
  * PYTHON: filter out wrong responses... of know commands??? or atleast acknowledge them, (03 responses)
+ * PYTHON: Beverages should be able to override keepwarm time... xCLI/REST
  * CLI: make on/off true/false universal with string_to_bool
  * CLI: relay has no port neither has ibrew, we need port numbers...
  * CLI: Fix Simulation command and relay...
@@ -299,6 +300,7 @@ Interfaces
  * WEB: Auto relay when in web mode
  * WEB: API key, login
  * WEB: Settings iBrew (like blocking, patches, other stuff)
+ * WEB: All REST api has no error check...
  * JAVASCRIPT: JSON Rest API
  * OTHER: Guides to Smarthome controllers
  * ME: hugs!
