@@ -66,12 +66,15 @@ buildmac:
 	@echo Please install upx with: brew install upx
 	@pyinstaller ibrewui -s -w -n iBrew --noupx
 	@pyinstaller ibrew -s -w -n iBrewConsole --noupx
+	@pyinstaller ibrewlegacy -s -w -n iBrewLegacyConsole --noupx
 	@cp -a resources dist/iBrew.app/Contents/MacOS
 	@cp -a web dist/iBrew.app/Contents/MacOS
 	@cp distro/mac/Info.plist dist/iBrew.app/Contents/
 	@mv dist/iBrewConsole.app/Contents/MacOS/iBrewConsole dist/iBrew.app/Contents/MacOS
+	@mv dist/iBrewLegacyConsole.app/Contents/MacOS/iBrewLegacyConsole dist/iBrew.app/Contents/MacOS
 	@cp distro/mac/iBrew.icns dist/iBrew.app/Contents/Resources/icon-windowed.icns
 	@rm -rf dist/iBrewConsole.app
+	@rm -rf dist/iBrewConsoleLegacy.app
 	@mkdir -p test
 	@mv dist/iBrew.app test
 	@rm -rf dist
