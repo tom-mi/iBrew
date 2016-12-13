@@ -338,6 +338,9 @@ class BeverageHandler(GenericAPIHandler):
                 elif beverage == "black":
                     client.kettle_heat_black_tea()
                     response = { 'command status'  : client.commandStatus }
+                elif beverage == "green":
+                    client.kettle_heat_green_tea()
+                    response = { 'command status'  : client.commandStatus }
                 elif beverage == "oelong":
                     client.kettle_heat_oelong_tea()
                     response = { 'command status'  : client.commandStatus }
@@ -347,6 +350,36 @@ class BeverageHandler(GenericAPIHandler):
                 else:
                     response = { 'error': 'wrong beverage use coffee, white, black, green, oelong, boil' }
                 
+            else:
+                response = { 'error': 'need kettle' }
+        else:
+            response = { 'error': 'no device' }
+        self.setContentType()
+        self.write(response)
+
+
+class HeatHandler(GenericAPIHandler):
+    def get(self,ip,temperature,keepwarm):
+        if ip in self.application.clients:
+            client = self.application.clients[ip]
+            if client.isKettle:
+                client.kettle_heat(temperature,keepwarm)
+                response = { 'command status'  : client.commandStatus }
+            else:
+                response = { 'error': 'need kettle' }
+        else:
+            response = { 'error': 'no device' }
+        self.setContentType()
+        self.write(response)
+
+
+class FormulaHandler(GenericAPIHandler):
+    def get(self,ip,temperature,keepwarm):
+        if ip in self.application.clients:
+            client = self.application.clients[ip]
+            if client.isKettle:
+                client.kettle_formula_heat(temperature,keepwarm)
+                response = { 'command status'  : client.commandStatus }
             else:
                 response = { 'error': 'need kettle' }
         else:
@@ -1041,6 +1074,9 @@ class iBrewWeb(tornado.web.Application):
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/calibrate/?",CalibrateHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/calibrate/base/?",CalibrateBaseHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/calibrate/base/([0-9]+)/?",CalibrateStoreBaseHandler),
+
+                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/heat/([0-9]+)/([0-9]+)/?",HeatHandler),
+                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/formula/([0-9]+)/([0-9]+)/?",FormulaHandler),
 
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/beans/?",BeansHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/filter/?",FilterHandler),

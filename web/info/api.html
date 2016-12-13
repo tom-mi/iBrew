@@ -144,10 +144,14 @@
         <div class="CellApiDesc">Stop heating</div>
         <div class="CellApi"><a href="/api/{{ escape(ip) }}/stop">/stop</a></div>
     </div>
-<!--    <div class="tRow">
+    <div class="tRow">
+        <div class="CellApiDesc">Start heating</div>
+        <div class="CellApi"><a href="/api/{{ escape(ip) }}/heat/100/20">/heat/(temperature)/(keepwarm)</a></div>
+    </div>
+    <div class="tRow">
         <div class="CellApiDesc">Start heating in formula mode</div>
-        <div class="CellApi"><a href="/api/{{ escape(ip) }}/heat">/heat</a></div>
-    </div> -->
+        <div class="CellApi"><a href="/api/{{ escape(ip) }}/formula/100/20">/formula/(temperature)/(keepwarm)</a></div>
+    </div>
     <div class="tRow">
         <div class="CellApiDesc">Calibrate</div>
         <div class="CellApi"><a href="/api/{{ escape(ip) }}/calibrate">/calibrate</a></div>
