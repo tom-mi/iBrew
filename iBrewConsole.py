@@ -79,6 +79,26 @@ class iBrewConsole:
         self.client.dump = dump
         self.client.dump_status = False
         print
+        
+    def rootmonitor(self):
+        dump = self.client.dump
+        self.client.dump_status = True
+        self.client.dump = True
+        
+        while True:
+            try:
+                import time
+                time.sleep(1)
+            except KeyboardInterrupt:
+                self.quit = True
+                break
+            except Exception, e:
+                self.quit = True
+                logging.debug(traceback.format_exc())
+                logging.debug(str(e))
+                break
+        self.client.dump = dump
+        self.client.dump_status = False
 
 
 
@@ -103,7 +123,7 @@ class iBrewConsole:
             logging.info("iBrew: Failed to run Web Interface & REST API on port " + str(port))
             return
         logging.info("iBrew: Starting Web Interface & REST API on port " + str(port) + ". Press ctrl-c to stop")
-        self.monitor()
+        self.rootmonitor()
         self.web.kill()
         logging.info("iBrew: Stopped Web Interface & REST API on port " + str(port))
  
@@ -608,11 +628,11 @@ class iBrewConsole:
                                                     except IndexError:
                                                         pass
                                                     self.client.relay_start()
-                                                    self.monitor()
+                                                    self.rootmonitor()
                                                     
                                             else:
                                                 self.client.relay_start()
-                                                self.monitor()
+                                                self.rootmonitor()
             
             elif command == "commands":     self.commands()
             elif command == "protocol":     print Smarter.protocol()
