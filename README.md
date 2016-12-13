@@ -234,7 +234,7 @@ See the console section for the commands.
     port                   optional port number, default 2082
     rules                  blocking rules
     modifiers              patches
-    host                   host address of device (format: ip4, ip6, fqdn)
+    host                   host address of the appliance (format: ip4, ip6, fqdn)
 
 
   iBrew Command Line
@@ -249,10 +249,10 @@ See the console section for the commands.
     kettle                 assumes kettle
     fahrenheid             PARTLY WORKING use fahrenheid
     command                action to take!
-    host                   host address of device (format: ip4, ip6, fqdn)
+    host                   host address of the appliance (format: ip4, ip6, fqdn)
 
-  If you do not supply a host, it will try to connect to the first detected device
-  Thus if you have more then one device supply a host (if its not in direct mode)
+  If you do not supply a host, it will try to connect to the first detected appliance
+  Thus if you have more then one appliance supply a host (if its not in direct mode)
 
 
 ```
@@ -263,13 +263,13 @@ you can also use them on the command line as arguments, note that [] are mandito
 
 ```
 
-  iKettle 2.0 & Smarter Coffee  Commands
+  iKettle 2.0 & Smarter Coffee Commands
     default                set default settings
-    info                   device info
-    list                   list detected devices
-    reset                  reset device to default
+    info                   appliance info
+    list                   list detected appliances
+    reset                  reset appliance to default
     shortstatus            show status
-    start                  start the device
+    start                  start the appliance
     status                 show full status
     settings               show user settings
     stop                   stop the appliance
@@ -310,18 +310,21 @@ you can also use them on the command line as arguments, note that [] are mandito
     scan                   scan wireless networks
 
   Smarter Network Commands [console only]
-    connect (host) (rules&modifiers) connect to device
+    connect (host) (rules&modifiers) connect to appliance
     block [rules]          block messages with groups or ids
-    disconnect             disconnect connected device
-    relay ((ip:)port)      start relay device
-    relay stop             stop relay device
-    remote info            info on remote relay device
+    disconnect             disconnect connected appliance
+    relay ((ip:)port)      start relay
+    relay stop             stop relay
+    remote info            info on remote relay
+    remote block [rules]   remote block messages with groups or ids
+    remote rules (full)    show remote blocking rules
+    remote unblock [rules] remote unblock messages groups or ids
     rules (full)           show blocking rules
     stats                  show traffic statistics
     unblock [rules]        unblock messages groups or ids
 
   Block Rules
-    Consists of rules, in: is for outgoing connection to the device, out: is for incomming connection from relay client.
+    Consists of rules, in: is for outgoing connection to the appliance, out: is for incomming connection from relay client.
 
     [in:|out:]rule(,[in:|out:]rule)*
 
@@ -330,10 +333,10 @@ you can also use them on the command line as arguments, note that [] are mandito
       group name
 
   Debug Commands
-    time [time]            set the device time
+    time [time]            set the appliance time
     firmware               show firmware Wifi
     history                action history
-    [hexdata]              send raw data to device (e.g. '64 7e')
+    [hexdata]              send raw data to appliance (e.g. '64 7e')
     dump                   toggle 'dump raw messages'
     monitor                monitor incomming traffic
     modify (modifiers)     patch or unpatch messages
@@ -346,7 +349,7 @@ you can also use them on the command line as arguments, note that [] are mandito
     group                  show messages in group
     messages               show all known protocol messages
     message [id]           show protocol message detail of message [id]
-    notes                  show developer notes on the devices
+    notes                  show developer notes on the appliances
     protocol               show all protocol information available
     structure              show protocol structure information
 
@@ -381,8 +384,8 @@ you can also use them on the command line as arguments, note that [] are mandito
     strength weak            Set coffee strength to weak but do not toggle filter/beans
     cups 3                   Set number of cups to brew
     mode cup                 Set cup mode
-    block in:wifi,in:02          Block wifi and [Set device time] command to device
-    patch relay out:version=12] Patches [Device info] Argument version to clients
+    block in:wifi,in:02          Block wifi and [Set appliance time] command to appliance
+    patch relay out:version=12] Patches [Appliance info] argument version to clients
     brew 4 10 beans strong   Brew 4 cups of strong coffee using the beans keeping the hotplate on for 10 minutes
     join MyWifi p@ssw0rd     Joins MyWifi wireless network using p@ssw0rd as credential
     settings 100 20 True 75  Set default user settings for the kettle to...
@@ -712,5 +715,5 @@ Redistribution and use in source and binary forms, with or without modification,
 4. Written consent of the iBrew creator Tristan Crispijn with original authentic signature on paper.
 
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. YOU AGREE TO NOT USE THIS SOFTWARE IN ANY WAY. SMARTER EMPLOYEES OR SMARTER AFFILIATED PEOPLE ARE NOT ALLOWED TO USE THIS SOFTWARE OR DERIVATIVE WORK. YOU AGREE THAT THE SOFTWARE CAN MONITOR THE USAGE OF THE SOFTWARE ITSELF AND OR THE DEVICES ATTACHED TO THE SOFTWARE, AND SEND IT BACK TO A MONITOR SERVER FOR BETTER SUPPORT. ENJOY!
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. YOU AGREE TO NOT USE THIS SOFTWARE IN ANY WAY. SMARTER EMPLOYEES OR SMARTER AFFILIATED PEOPLE ARE NOT ALLOWED TO USE THIS SOFTWARE OR DERIVATIVE WORK. YOU AGREE THAT THE SOFTWARE CAN MONITOR THE USAGE OF THE SOFTWARE ITSELF AND OR THE APPLIANCES ATTACHED TO THE SOFTWARE, AND SEND IT BACK TO A MONITOR SERVER FOR BETTER SUPPORT. ENJOY!
                

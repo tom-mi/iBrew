@@ -26,7 +26,7 @@ import traceback
 #------------------------------------------------------
 # iBrew
 #
-# Console interface to iKettle 2.0 & Smarter Coffee Devices
+# Console interface to iKettle 2.0 & Smarter Coffee Appliances
 #
 # https://github.com/Tristan79/iBrew
 #
@@ -54,7 +54,7 @@ class iBrewConsole:
     # assume we're connected to a client! we're printing
     # every message received. you can stop the monitor by
     # pressing ctrl-c, the only messages we expect to
-    # receive is a response message 14 (status device),
+    # receive is a response message 14 (status appliance),
     # if there are any other messages we print them too!
     
     def monitor(self):
@@ -209,7 +209,7 @@ class iBrewConsole:
             print Smarter.license()
             print
             print
-            print "WARNING: YOU COULD BRICK YOUR DEVICE, USE AT YOUR OWN RISK"
+            print "WARNING: YOU COULD BRICK YOUR APPLIANCE, USE AT YOUR OWN RISK"
             print
             print "NOTE: THIS IS OFFLINE! NO INFORMATION WILL BE SHARED WITH ANYONE!"
             print
@@ -573,6 +573,21 @@ class iBrewConsole:
                                             if numarg == 1 and arguments[0] == "info":
                                                 self.client.relay_info()
                                                 if not self.client.dump: self.client.print_info_relay()
+                                            elif numarg >= 1 and arguments[0] == "rules":
+                                                self.client.relay_block_info()
+                                                if numarg == 2:
+                                                    self.client.print_remote_rules()
+                                                else:
+                                                    if not self.client.dump: self.client.print_remote_rules_short()
+                                                
+                                            elif numarg == 2 and arguments[0] == "block":
+                                                self.client.relay_block(arguments[1])
+                                                if not self.client.dump: self.client.print_remote_rules_short()
+                                        
+                                            elif numarg == 2 and arguments[0] == "unblock":
+                                                self.client.relay_unblock(arguments[1])
+                                                if not self.client.dump: self.client.print_remote_rules_short()
+                                                
                                             else:
                                                 print "iBrew: Use additional command: info, block or unblock"
             
@@ -966,7 +981,7 @@ class iBrewConsole:
         print "    port                   optional port number, default 2082"
         print "    rules                  blocking rules"
         print "    modifiers              patches"
-        print "    host                   host address of device (format: ip4, ip6, fqdn)"
+        print "    host                   host address of the appliance (format: ip4, ip6, fqdn)"
         print
         print
         print "  iBrew Command Line"
@@ -981,21 +996,21 @@ class iBrewConsole:
         print "    kettle                 assumes kettle"
         print "    fahrenheid             PARTLY WORKING use fahrenheid"
         print "    command                action to take!"
-        print "    host                   host address of device (format: ip4, ip6, fqdn)"
+        print "    host                   host address of the appliance (format: ip4, ip6, fqdn)"
         print
-        print "  If you do not supply a host, it will try to connect to the first detected device"
-        print "  Thus if you have more then one device supply a host (if its not in direct mode)"
+        print "  If you do not supply a host, it will try to connect to the first detected appliance"
+        print "  Thus if you have more then one appliance supply a host (if its not in direct mode)"
         print
 
     def commands(self):
         print
-        print "  iKettle 2.0 & Smarter Coffee  Commands"
+        print "  iKettle 2.0 & Smarter Coffee Commands"
         print "    default                set default settings"
-        print "    info                   device info"
-        print "    list                   list detected devices"
-        print "    reset                  reset device to default"
+        print "    info                   appliance info"
+        print "    list                   list detected appliances"
+        print "    reset                  reset appliance to default"
         print "    shortstatus            show status"
-        print "    start                  start the device"
+        print "    start                  start the appliance"
         print "    status                 show full status"
         print "    settings               show user settings"
         print "    stop                   stop the appliance"
@@ -1038,19 +1053,22 @@ class iBrewConsole:
         print "    scan                   scan wireless networks"
         print
         print "  Smarter Network Commands [console only]"
-        print "    connect (host) (rules&modifiers) connect to device"
+        print "    connect (host) (rules&modifiers) connect to appliance"
         print "    block [rules]          block messages with groups or ids"
-        print "    disconnect             disconnect connected device"
-        print "    relay ((ip:)port)      start relay device"
-        print "    relay stop             stop relay device"
-        print "    remote info            info on remote relay device"
+        print "    disconnect             disconnect connected appliance"
+        print "    relay ((ip:)port)      start relay"
+        print "    relay stop             stop relay"
+        print "    remote info            info on remote relay"
+        print "    remote block [rules]   remote block messages with groups or ids"
+        print "    remote rules (full)    show remote blocking rules"
+        print "    remote unblock [rules] remote unblock messages groups or ids"
         print "    rules (full)           show blocking rules"
         print "    stats                  show traffic statistics"
         print "    unblock [rules]        unblock messages groups or ids"
         print
         
         print "  Block Rules"
-        print "    Consists of rules, in: is for outgoing connection to the device, out: is for incomming connection from relay client."
+        print "    Consists of rules, in: is for outgoing connection to the appliance, out: is for incomming connection from relay client."
         print
         print "    [in:|out:]rule(,[in:|out:]rule)*"
         print
@@ -1059,10 +1077,10 @@ class iBrewConsole:
         print "      group name"
         print
         print "  Debug Commands"
-        print "    time [time]            set the device time"
+        print "    time [time]            set the appliance time"
         print "    firmware               show firmware Wifi"
         print "    history                action history"
-        print "    [hexdata]              send raw data to device (e.g. \'64 7e\')"
+        print "    [hexdata]              send raw data to appliance (e.g. \'64 7e\')"
         print "    dump                   toggle \'dump raw messages\'"
         print "    monitor                monitor incomming traffic"
         print "    modify (modifiers)     patch or unpatch messages"
@@ -1075,7 +1093,7 @@ class iBrewConsole:
         print "    [in:|out:]var=(value)(,[in:|out:]var=(value))*"
         print
         print "    VAR           VALUE"
-        print "    version       [00..FF]               override device firmware version"
+        print "    version       [00..FF]               override appliance firmware version"
         print "    heater        disable                coffee machine or kettle heater disabled"
         print
         print "    base          [00..4000]             override default calibration base"
@@ -1110,7 +1128,7 @@ class iBrewConsole:
         print "    group                  show messages in group"
         print "    messages               show all known protocol messages"
         print "    message [id]           show protocol message detail of message [id]"
-        print "    notes                  show developer notes on the devices"
+        print "    notes                  show developer notes on the appliances"
         print "    protocol               show all protocol information available"
         print "    structure              show protocol structure information"
         print
@@ -1142,8 +1160,8 @@ class iBrewConsole:
         print "    strength weak            Set coffee strength to weak but do not toggle filter/beans"
         print "    cups 3                   Set number of cups to brew"
         print "    mode cup                 Set cup mode"
-        print "    block in:wifi,in:02          Block wifi and [" + Smarter.message_description(02) + "] command to device"
-        print "    patch relay out:version=12] Patches [" + Smarter.message_description(Smarter.ResponseDeviceInfo) + "] Argument version to clients"
+        print "    block in:wifi,in:02          Block wifi and [" + Smarter.message_description(02) + "] command to appliance"
+        print "    patch relay out:version=12] Patches [" + Smarter.message_description(Smarter.ResponseDeviceInfo) + "] argument version to clients"
         print "    brew 4 10 beans strong   Brew 4 cups of strong coffee using the beans keeping the hotplate on for 10 minutes"
         print "    join MyWifi p@ssw0rd     Joins MyWifi wireless network using p@ssw0rd as credential"
         print "    settings 100 20 True 75  Set default user settings for the kettle to..."

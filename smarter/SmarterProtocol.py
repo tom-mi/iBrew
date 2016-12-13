@@ -156,14 +156,20 @@ class SmarterProtocol:
     CommandCalibrate          = 0x2c
     
     # Relay
-    CommandRelayInfo    = 0x70
+    CommandRelayInfo      = 0x70
+    CommandRelayBlock     = 0x72
+    CommandRelayUnblock   = 0x73
+    CommandRelayBlockInfo = 0x74
+    
+
 
     # device
     ResponseCommandStatus     = 0x03
     ResponseWirelessNetworks  = 0x0e
     ResponseKettleHistory     = 0x29
     ResponseDeviceInfo        = 0x65
-    ResponseRelayInfo   = 0x71
+    ResponseRelayInfo         = 0x71
+    ResponseRelayBlockInfo    = 0x75
     ResponseWifiFirmware      = 0x6b
 
     # coffee
@@ -181,8 +187,11 @@ class SmarterProtocol:
     
     # format kettle? coffee? response to command, description
     CommandMessages = {
-        CommandRelayInfo  : (True,True,[ResponseRelayInfo],"Get iBrew relay device info"),
-        CommandDeviceTime       : (True,True,[ResponseCommandStatus],"Set device time"),
+        CommandRelayInfo        : (True,True,[ResponseRelayInfo],"Get iBrew relay info"),
+        CommandRelayBlockInfo   : (True,True,[ResponseRelayBlockInfo],"Get iBrew relay message block info"),
+        CommandRelayBlock       : (True,True,[ResponseRelayBlockInfo],"iBrew block relay message"),
+        CommandRelayUnblock     : (True,True,[ResponseRelayBlockInfo],"iBrew unblock relay message"),
+        CommandDeviceTime       : (True,True,[ResponseCommandStatus],"Set appliance time"),
         CommandWifiNetwork      : (True,True,[ResponseCommandStatus],"Set wireless network name"),
         CommandWifiPassword     : (True,True,[ResponseCommandStatus],"Set wireless network password"),
         CommandWifiJoin         : (True,True,[],"Join wireless network"),
@@ -221,10 +230,10 @@ class SmarterProtocol:
         CommandCoffeeSettings   : (False,True,[ResponseCoffeeSettings,ResponseCommandStatus],"Get default coffee machine user settings"),
         CommandCoffeeHistory    : (False,True,[ResponseCoffeeHistory],"Get coffee machine history"),
         CommandHotplateOff      : (False,True,[ResponseCommandStatus],"Turn off hotplate"),
-        CommandDeviceInfo       : (True,True,[ResponseDeviceInfo],"Get device info"),
+        CommandDeviceInfo       : (True,True,[ResponseDeviceInfo],"Get appliance info"),
         Command69               : (True,True,[ResponseCommandStatus],"Working unknown command"),
         CommandWifiFirmware     : (True,True,[ResponseWifiFirmware],"Get wifi firmware info"),
-        CommandUpdate           : (True,True,[],"Device firmware update")
+        CommandUpdate           : (True,True,[],"Appliance firmware update")
     }
 
 
@@ -244,7 +253,7 @@ class SmarterProtocol:
         json = dict()
         for command in self.CommandMessages:
             message = self.CommandMessages[command]
-            json[command] = { 'device' : self.__con(message[0],message[1]), 'description' : self.message_description(command) }
+            json[command] = { 'appliance' : self.__con(message[0],message[1]), 'description' : self.message_description(command) }
         return json
 
     def ResponseToJSON(self):
@@ -252,13 +261,13 @@ class SmarterProtocol:
         for response in self.ResponseMessages:
             if self.message_is_response(response):
                 message = self.ResponseMessages[response]
-                json[response] = { 'device' : self.__con(message[0],message[1]), 'description' : self.message_description(response) }
+                json[response] = { 'appliance' : self.__con(message[0],message[1]), 'description' : self.message_description(response) }
         return json
 
 
     def StatusToJSON(self):
-        return { self.ResponseKettleStatus : { 'device' : [self.DeviceKettle], 'description' : self.message_description(self.ResponseKettleStatus) },
-                 self.ResponseCoffeeStatus : { 'device' : [self.DeviceCoffee], 'description' : self.message_description(self.ResponseCoffeeStatus) }
+        return { self.ResponseKettleStatus : { 'appliance' : [self.DeviceKettle], 'description' : self.message_description(self.ResponseKettleStatus) },
+                 self.ResponseCoffeeStatus : { 'appliance' : [self.DeviceCoffee], 'description' : self.message_description(self.ResponseCoffeeStatus) }
                 }
 
 
@@ -272,8 +281,9 @@ class SmarterProtocol:
         ResponseBase            : (True,False,4,[CommandBase,CommandCalibrate],"Water sensor base value",[]),
         ResponseKettleSettings  : (True,False,9,[CommandKettleSettings],"Default kettle user settings",[]),
         ResponseKettleStatus    : (True,False,7,[],"Kettle status",[]),
-        ResponseDeviceInfo      : (True,True,4,[CommandDeviceInfo],"Device info",[]),
-        ResponseRelayInfo : (True,True,0,[CommandRelayInfo],"iBrew relay device info",[]),
+        ResponseDeviceInfo      : (True,True,4,[CommandDeviceInfo],"Appliance info",[]),
+        ResponseRelayInfo       : (True,True,0,[CommandRelayInfo],"iBrew remote relay info",[]),
+        ResponseRelayBlockInfo  : (True,True,0,[CommandRelayBlockInfo,CommandRelayBlock,CommandRelayUnblock],"iBrew relay rules block messages info",[]),
         ResponseWifiFirmware    : (True,True,0,[CommandWifiFirmware],"Wifi firmware info",[]),
         ResponseCarafe          : (False,True,3,[CommandCarafe],"Carafe required",[]),
         ResponseCoffeeStatus    : (False,True,0,[],"Coffee machine status",[]),
@@ -390,9 +400,9 @@ class SmarterProtocol:
     GroupWifi           = 1
     MessagesWifi        = [CommandWifiJoin,CommandWifiLeave,CommandWifiNetwork,CommandWifiPassword,CommandWifiFirmware,CommandWifiScan,ResponseWifiFirmware,ResponseWirelessNetworks]
     GroupCalibrateOnly  = 39
-    MessagesCalibrateOnly   = [CommandBase,CommandStoreBase,ResponseBase]
+    MessagesCalibrateOnly  = [CommandStoreBase,CommandCalibrate]
     GroupCalibrate      = 2
-    MessagesCalibrate   = MessagesCalibrateOnly + [CommandCalibrate]
+    MessagesCalibrate   = MessagesCalibrateOnly + [CommandBase,ResponseBase]
     GroupUnknown        = 3
     GroupUnknownKettle  = 26
     MessagesUnknownKettle = [Command20,Command22,Command23,Command30]
@@ -451,8 +461,8 @@ class SmarterProtocol:
     GroupUser           = 18
     MessagesUser        = MessagesNormal
 
-    GroupRelay         = 39
-    MessagesRelay      = [CommandRelayInfo, ResponseRelayInfo]
+    GroupRelay         = 40
+    MessagesRelay      = [CommandRelayInfo, ResponseRelayInfo, CommandRelayBlock, CommandRelayUnblock, CommandRelayBlockInfo, ResponseRelayBlockInfo]
 
     GroupAdmin          = 19
     MessagesAdmin       = MessagesSetup + MessagesNormal + MessagesRelay
@@ -501,7 +511,7 @@ class SmarterProtocol:
         GroupStatus      : ("Status",MessagesStatus),
         GroupWifi        : ("Wifi",MessagesWifi),
         GroupCalibrate   : ("Calibration",MessagesCalibrate),
-        GroupCalibrateOnly   : ("CalibrationBase",MessagesCalibrateOnly),
+        GroupCalibrateOnly  : ("CalibrationBase",MessagesCalibrateOnly),
         GroupModes       : ("Modes",MessagesModes),
         GroupUnknown     : ("Unknown",MessagesUnknown),
         GroupKettleControl : ("KettleControls",MessagesKettleControl),
@@ -519,17 +529,17 @@ class SmarterProtocol:
         GroupHistory     : ("History",MessagesHistory),
         GroupKettleHistory     : ("KettleHistory",MessagesKettleHistory),
         GroupCoffeeHistory     : ("CoffeeHistory",MessagesCoffeeHistory),
-        GroupDeviceInfo      : ("DeviceInfo",MessagesDeviceInfo),
+        GroupDeviceInfo  : ("ApplianceInfo",MessagesDeviceInfo),
         GroupStore       : ("SettingsStore",MessagesStore),
         GroupRelay       : ("Relay",MessagesRelay),
         GroupGet         : ("SettingsGet",MessagesGet),
         GroupAll         : ("Settings",MessagesAll),
-        GroupKettleStore       : ("KettleStore",MessagesKettleStore),
-        GroupKettleGet         : ("KettleGet",MessagesKettleGet),
-        GroupCoffeeStore       : ("CoffeeStore",MessagesCoffeeStore),
-        GroupCoffeeGet         : ("CoffeeGet",MessagesCoffeeGet),
-        GroupCoffeeAll         : ("CoffeeSettings",MessagesCoffeeAll),
-        GroupKettleAll         : ("KettleSettings",MessagesKettleAll),
+        GroupKettleStore : ("KettleStore",MessagesKettleStore),
+        GroupKettleGet   : ("KettleGet",MessagesKettleGet),
+        GroupCoffeeStore : ("CoffeeStore",MessagesCoffeeStore),
+        GroupCoffeeGet   : ("CoffeeGet",MessagesCoffeeGet),
+        GroupCoffeeAll   : ("CoffeeSettings",MessagesCoffeeAll),
+        GroupKettleAll   : ("KettleSettings",MessagesKettleAll),
         GroupModeGet     : ("ModesGet",MessagesModesGet),
         GroupModeStore   : ("ModesStore",MessagesModesStore),
         GroupShared      : ("Shared",MessagesShared),
@@ -590,7 +600,7 @@ class SmarterProtocol:
         """
         return " ".join(self.groupsList(groups)).upper()
     
-        
+    
     def string_to_group(self,string):
         """
         string name to group id
@@ -623,9 +633,6 @@ class SmarterProtocol:
     def ids_to_string(self,ids):
         return " ".join([str(i) for i in ids])
 
-    def groupsStringDecode(self,string):
-        return self.groupsListDecode(string.upper().split(","))
-
     def groupsListDecode(self,list):
         """
         Return a list of message ID's from a list of string
@@ -653,12 +660,13 @@ class SmarterProtocol:
         for g in self.Groups:
             found = True
             for i in self.Groups[g][1]:
+
                 messages = set(self.Groups[g][1])
                 if not messages.difference(set(ids)):
                     l += [g]
                     idsleft = idsleft.difference(messages)
                     break
-        return (l,list(idsleft))
+        return (l,idsleft)
 
     #------------------------------------------------------
     # RAW <-> BASIC TYPE
@@ -1519,6 +1527,7 @@ class SmarterProtocol:
 
     ArgRelayVersion   = 1056
     ArgRelayHost = 1057
+    ArgRelayBlock = 1058
 
     ArgPayloadTimer            = 1026
     ArgPayloadCoffeeHistory    = 1028
@@ -1552,22 +1561,28 @@ class SmarterProtocol:
 
         ResponseRelayInfo          : ('PROTOCOL',[ArgRelayVersion,ArgRelayHost],"0131302e302e302e3939","Get the version of the firmware of relay connected to (if connected) It is used for auto discovery over UDP broadcast by iBrew. This fails on some routers, which don't propagate UDP broadcasts."),
 
+        ResponseRelayBlockInfo          : ('PROTOCOL',[ArgRelayBlock],"",""),
+
         ResponseCarafe              : ('PROTOCOL',[ArgCarafe],"00",""),
         ResponseMode       : ('PROTOCOL',[ArgMode],"01",""),
         ResponseCommandStatus       : ('PROTOCOL',[ArgCommandStatus],"04",""),
-        ResponseDeviceInfo          : ('PROTOCOL',[ArgDevice,ArgVersion],"0113","Get the type of the device connected to and it's firmware. It is used for auto discovery over UDP broadcast. This fails on some routers, which don't propagate UDP broadcasts."),
+        ResponseDeviceInfo          : ('PROTOCOL',[ArgDevice,ArgVersion],"0113","Get the type of the appliance connected to and it's firmware. It is used for auto discovery over UDP broadcast. This fails on some routers, which don't propagate UDP broadcasts."),
         ResponseWifiFirmware        : ('PROTOCOL',[ArgWifiFirmware],"41542b474d525c6e41542076657273696f6e3a302e34302e302e302841756720203820323031352031343a34353a3538295c6e53444b2076657273696f6e3a312e332e305c6e636f6d70696c652074696d653a41756720203820323031352031373a31393a33385c6e4f4b5c6e",""),
         ResponseCoffeeSettings      : ('PROTOCOL',[ArgStrength,ArgCups,ArgGrind,ArgHotPlate],"01020005",""),
         ResponseCoffeeStatus        : ('PROTOCOL',[ArgCoffeeStatus,ArgWaterLevelRaw,ArgUnknown,ArgStrength,ArgCupsCombi],"0500000021",""),
         ResponseKettleStatus        : ('PROTOCOL',[ArgKettleStatus,ArgTemperatureCombi,ArgWater,ArgUnknown],"007f07d700",""),
         ResponseKettleSettings      : ('PROTOCOL',[ArgTemperature,ArgKeepWarmCombi,ArgFormulaTemperature],"641400","It sends a 0 between this response and the command status succes. (BUG)"),
         CommandDeviceTime           : ('PROTOCOL',[ArgSecond,ArgMinute,ArgHour,ArgUnknown,ArgDay,ArgMonth,ArgCentury,ArgYear],"1213030105021410",
-                                        "Set the time on the device, is used in history and in the coffee scheduled timers messages. Unknown is Day of week index?"),
+                                        "Set the time on the appliance, is used in history and in the coffee scheduled timers messages. Unknown is Day of week index?"),
         CommandResetSettings        : ('PROTOCOL',[],"","For the kettle these are the default user settings: keepwarm 0 minutes, temperature 100ºC, formula mode off and formula temperature 75ºC. The Smarter Coffee does nothing."),
     
         CommandDeviceInfo           : ('PROTOCOL',[],"",""),
-        CommandRelayInfo      : ('PROTOCOL',[],"",""),
-        CommandUpdate               : ('PROTOCOL',[],"","Disables wifi and creates a 'iKettle Update' wireless network and opens port 6000. A hard device reset (hold power button for 10 seconds) is sometimes required to fix this state, or just unplug the power for a moment."),
+        CommandRelayInfo            : ('PROTOCOL',[],"",""),
+        CommandRelayBlockInfo       : ('PROTOCOL',[],"",""),
+        CommandRelayBlock           : ('PROTOCOL',[ArgRelayBlock],"",""),
+        CommandRelayUnblock         : ('PROTOCOL',[ArgRelayBlock],"",""),
+
+        CommandUpdate               : ('PROTOCOL',[],"","Disables wifi and creates a 'iKettle Update' wireless network and opens port 6000. A hard appliance reset (hold power button for 10 seconds) is sometimes required to fix this state, or just unplug the power for a moment."),
         Command69                   : ('PROTOCOL',[ArgUnknown],"00",""),  #REPEAT?
 
     # wifi
@@ -1662,7 +1677,7 @@ class SmarterProtocol:
         ArgRelayVersion      : ('OPTION',"Version",[(1,"iBrew Relay Snow Tea")
                                     ]
                               ),
-        ArgDevice            : ('OPTION',"Device",[(DeviceCoffee,DeviceStringCoffee),(DeviceKettle,DeviceStringKettle)]),
+        ArgDevice            : ('OPTION',"Appliance",[(DeviceCoffee,DeviceStringCoffee),(DeviceKettle,DeviceStringKettle)]),
         ArgKettleStatus      : ('OPTION',"KettleStatus",[
                                 (KettleReady, StatusKettle[KettleReady]),
                                 (KettleHeating, StatusKettle[KettleHeating]),
@@ -1690,6 +1705,7 @@ class SmarterProtocol:
                             ),
         ArgPassword       : ('TEXT',"Password","wireless network password"),
         ArgRelayHost      : ('TEXT',"Host","Host of the appliance connected with the relay, empty if not connected"),
+        ArgRelayBlock     : ('TEXT',"Block","FIX"),
         ArgDB             : ('TEXT',"DB","in dBm"),
         ArgWifiFirmware   : ('TEXT',"WifiFirmware","wifi firmware string"),
         ArgSSID           : ('TEXT',"SSID","wireless network name"),
@@ -2014,7 +2030,7 @@ class SmarterProtocol:
     but the differences between levels seem the same. This means that the water level
     detection is probably weight based and that calibration is done at the base,
     which then remembers the weight for \'off base\'. To detect an empty kettle,
-    the connecting device must account for the weight of the kettle. Also the weght of
+    the connecting client must account for the weight of the kettle. Also the weight of
     the kettle is more to the handle, that why you have to choose between left and right
     handle use, it gives different results.
     
@@ -2025,7 +2041,7 @@ class SmarterProtocol:
 
     If the appliance is configured to access a wifi access point which is not available
     It will try to connect to it every so minutes. If it tries to connect it beeps three
-    times the wifi access point of the device will remain active but unreachable,
+    times the wifi access point of the appliance will remain active but unreachable,
     if it fails to access the access point it beeps once, and it opens up its own default
     open unencrypted wifi access point.access
 
@@ -2035,10 +2051,10 @@ class SmarterProtocol:
     of the mac address of the kettle. When connected directly to the kettle its connection is very flacky.
 
 
-  Device Detection:
+  Appliance Detection:
   
-    To detect a device broadcast a device info command (message 64) on UDP. It will reply
-    if the router permits it with a device info response (message 65) and being UDP 
+    To detect a appliance, broadcast an appliance info command (message 64) on UDP. It will reply
+    if the router permits it with an appliance info response (message 65) and being UDP
     with its IP address!
     
     
@@ -2062,8 +2078,8 @@ class SmarterProtocol:
            Step 4: rvictl -s <udid>
            Step 5: tcpdump -i rvi0 -w ~/Desktop/output.pcap
            Step 6: Connect to kettle's wifi network (or your home network if already setup) on the iOS device.
-           Step 7: Run setup for smarter device setup, or any commands
-           Step 8: When done or the device setup disconnected to switch to your home network, disconnect with ctrl-c
+           Step 7: Run setup for smarter appliance setup, or any commands
+           Step 8: When done, or the appliance setup disconnected to switch to your home network, disconnect with ctrl-c
            Step 9: rvictl -x <udid>
            Step A: Download wireshark (https://www.wireshark.org/) for mac and install it.
            Stap B: Open ~/Desktop/output.pcap with Wireshark
@@ -2112,7 +2128,7 @@ Redistribution and use in source and binary forms, with or without modification,
 4. Written consent of the iBrew creator Tristan Crispijn with original authentic signature on paper.
 
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. YOU AGREE TO NOT USE THIS SOFTWARE IN ANY WAY. SMARTER EMPLOYEES OR SMARTER AFFILIATED PEOPLE ARE NOT ALLOWED TO USE THIS SOFTWARE OR DERIVATIVE WORK. YOU AGREE THAT THE SOFTWARE CAN MONITOR THE USAGE OF THE SOFTWARE ITSELF AND OR THE DEVICES ATTACHED TO THE SOFTWARE, AND SEND IT BACK TO A MONITOR SERVER FOR BETTER SUPPORT. ENJOY!
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. YOU AGREE TO NOT USE THIS SOFTWARE IN ANY WAY. SMARTER EMPLOYEES OR SMARTER AFFILIATED PEOPLE ARE NOT ALLOWED TO USE THIS SOFTWARE OR DERIVATIVE WORK. YOU AGREE THAT THE SOFTWARE CAN MONITOR THE USAGE OF THE SOFTWARE ITSELF AND OR THE APPLIANCES ATTACHED TO THE SOFTWARE, AND SEND IT BACK TO A MONITOR SERVER FOR BETTER SUPPORT. ENJOY!
                """
 
 Smarter = SmarterProtocol()
