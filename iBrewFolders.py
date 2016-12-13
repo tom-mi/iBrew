@@ -30,7 +30,7 @@ class AppFolders():
 
     @staticmethod
     def runningAtRoolLevel():
-        return False
+        return os.geteuid() == 0 #False
     
     @staticmethod
     def windowsAppDataFolder():
