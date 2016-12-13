@@ -972,7 +972,7 @@ class iBrewConsole:
         print
         print "  iBrew Web Server"
         print
-        print "  Usage: ibrew (energy) (dump) (fahrenheid) web (port) (rules) (modifiers) (host)"
+        print "  Usage: ibrew (energy) (dump) (fahrenheid) web (port) (rules) (modifiers) (host(:port))"
         print
         print "    energy                 energy saver (stats not possible)"
         print "    dump                   dump message enabled"
@@ -986,7 +986,7 @@ class iBrewConsole:
         print
         print "  iBrew Command Line"
         print
-        print "  Usage: ibrew (energy) (dump) (shout|slow) (coffee|kettle) (fahrenheid) [command] (host)"
+        print "  Usage: ibrew (energy) (dump) (shout|slow) (coffee|kettle) (fahrenheid) [command] (host(:port))"
         print
         print "    dump                   dump message enabled"
         print "    energy                 NOT IMPLEMENTED energy saver (stats not possible)"

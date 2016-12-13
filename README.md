@@ -225,7 +225,7 @@ See the console section for the commands.
 
   iBrew Web Server
 
-  Usage: ibrew (energy) (dump) (fahrenheid) web (port) (rules) (modifiers) (host)
+  Usage: ibrew (energy) (dump) (fahrenheid) web (port) (rules) (modifiers) (host(:port))
 
     energy                 energy saver (stats not possible)
     dump                   dump message enabled
@@ -239,7 +239,7 @@ See the console section for the commands.
 
   iBrew Command Line
 
-  Usage: ibrew (energy) (dump) (shout|slow) (coffee|kettle) (fahrenheid) [command] (host)
+  Usage: ibrew (energy) (dump) (shout|slow) (coffee|kettle) (fahrenheid) [command] (host(:port))
 
     dump                   dump message enabled
     energy                 NOT IMPLEMENTED energy saver (stats not possible)
