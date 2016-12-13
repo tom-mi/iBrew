@@ -2353,7 +2353,7 @@ class SmarterClient:
     # format {(group,sensorid,command),...(group,sensorid,command)}
     actions = {
         triggerDefaultTemperature           : {},
-        triggerDefaultFormulatemperature    : {},
+        triggerDefaultFormulaTemperature    : {},
         triggerDefaultKeepWarmTime          : {},
         triggerDefaultStrength              : {},
         triggerDefaultCups                  : {},
