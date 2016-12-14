@@ -9,6 +9,7 @@ import datetime
 import logging
 import logging.handlers
 import platform
+import urllib
 from operator import itemgetter
 
 try:
@@ -2394,17 +2395,17 @@ class SmarterClient:
 
 
     # format Name,Active,Bool format
-    triggerGroups = [["Domoticz",False,('On','Off')],["OpenHAB",True,('1','0')]]
+    triggerGroups = [] # [["Domoticz",False,('On','Off')],["OpenHAB",True,('1','0')]]
     
     # format {(group,sensorid,command),...(group,sensorid,command)}
     triggersKettle = {
     
         # Operational sensors (boolean)
-        Smarter.triggerBusyKettle                   : [("Domoticz","http://www.google.com/$N&$O"),("OpenHAB","/e/x")],
-        Smarter.triggerKeepWarm                     : [("Domoticz","http://www.google.com/$N&$O"),("OpenHAB","/e/x")],
-        Smarter.triggerHeaterKettle                 : [("Domoticz","http://www.google.com/$N&$O"),("OpenHAB","/e/x")],
-        Smarter.triggerFormulaCooling               : [("Domoticz","http://www.google.com/$N&$O"),("OpenHAB","/e/x")],
-        Smarter.triggerOnBase                       : [("Domoticz","http://www.google.com/$N&$O"),("OpenHAB","/e/x")],
+        Smarter.triggerBusyKettle                   : [],
+        Smarter.triggerKeepWarm                     : [],
+        Smarter.triggerHeaterKettle                 : [],
+        Smarter.triggerFormulaCooling               : [],
+        Smarter.triggerOnBase                       : [],
         
         # Data sensors
         Smarter.triggerWaterSensorBase              : [],
@@ -2418,10 +2419,10 @@ class SmarterClient:
 
     triggersCoffee = {
         # Operational sensors (boolean)
-        Smarter.triggerGrinder                      : [("Domoticz","http://www.google.com/$N&$O"),("OpenHAB","/e/x")],
-        Smarter.triggerTimerEvent                   : [("Domoticz","http://www.google.com/$N&$O"),("OpenHAB","/e/x")],
-        Smarter.triggerBusyCoffee                   : [("Domoticz","http://www.google.com/$N&$O"),("OpenHAB","/e/x")],
-        Smarter.triggerReady                        : [("Domoticz","http://www.google.com/$N&$O"),("OpenHAB","/e/x")],
+        Smarter.triggerGrinder                      : [],
+        Smarter.triggerTimerEvent                   : [],
+        Smarter.triggerBusyCoffee                   : [],
+        Smarter.triggerReady                        : [],
         Smarter.triggerWorking                      : [],
         Smarter.triggerHotPlate                     : [],
         Smarter.triggerHeaterCoffee                 : [],
@@ -2528,23 +2529,32 @@ class SmarterClient:
         except DuplicateSectionError:
             pass
 
-        if self.isKettle:
-            for i in Smarter.triggersKettle:
-                try:
-                    s = config.get(section, Smarter.triggerName(i))
-                    self.triggersKettle[i][1] = s.split(",")
-                except Exception:
-                    pass
+
+        try:
+            g = config.get(section, "groups").split(",")
+            self.triggerGroups = []
+            for i in g:
+                a = config.get(section+"."+i, "Active")
+                s = config.get(section+"."+i, "State")
+                self.triggerGroups += [(i,Smarter.string_to_bool(a),Smarter.triggerCheckBooleans(s))]
+                
+                for j in Smarter.triggersKettle:
+                    try:
+                        s = config.get(section+"."+i, Smarter.triggerName(j))
+                        if s != "": self.triggersKettle[j] += [(i,s)]
+                    except Exception:
+                        pass
+                
+                for j in Smarter.triggersCoffee:
+                    try:
+                        s = config.get(section+"."+i, Smarter.triggerName(j))
+                        if s != "": self.triggersCoffee[j] += [(i,s)]
+                    except Exception:
+                        pass
+
+        except Exception:
+            pass
             
-        if self.isCoffee:
-            for i in Smarter.triggersCoffee:
-                try:
-                    s = config.get(section, Smarter.triggerName(i))
-                    self.triggersCoffee[i][1] = s.split(",")
-                except Exception:
-                    pass
-
-
     def triggerAdd(self,group,trigger,action):
         # check group exists
         # check if trigger exitst
@@ -2560,7 +2570,7 @@ class SmarterClient:
     
     def triggerDelete(self,group,trigger):
         self.__write_triggers()
-    
+
     
     def triggerGet(self,group,trigger):
         id = Smarter.triggerID(trigger)
@@ -2572,6 +2582,7 @@ class SmarterClient:
             if self.triggersCoffee[id] is not None:
                 for i in self.triggersCoffee[id]:
                     if i[0] == group: return i[1]
+        return ""
 
 
     def __isGroup(self,group):
@@ -2624,7 +2635,7 @@ class SmarterClient:
             if i[1]: s = "Active "
             else: s = "       "
             print i[0].rjust(18,' ') + " " + s + ":".join(i[2])
-            print
+        print
 
 
     def print_group(self,group):
@@ -2645,11 +2656,21 @@ class SmarterClient:
 
     def print_triggers(self):
         print
-        print "Triggers"
-        print "FIX"
-        pass
-
-    
+        
+        for j in self.triggerGroups:
+            print "Triggers " + j[0]
+            print "_".rjust(25, "_")
+            for i in Smarter.triggersKettle:
+                s = self.triggerGet(j[0],Smarter.triggersKettle[i][0])
+                if s != "":
+                    print Smarter.triggersKettle[i][0].rjust(25,' ') + " " + s
+            for i in Smarter.triggersCoffee:
+                s = self.triggerGet(j[0],Smarter.triggersCoffee[i][0])
+                if s != "":
+                    print Smarter.triggersCoffee[i][0].rjust(25,' ') + " " + s
+            print
+            print
+        
     @_threadsafe_function
     def __trigger(self,trigger,old,new):
         
@@ -2659,36 +2680,26 @@ class SmarterClient:
                 
             if self.isCoffee:
                 logging.debug("Trigger: " + Smarter.triggersCoffee[trigger][0] + " - old:" + str(old) + " new:" + str(new))
-            
-            
-            
-            
-            # you can add delays here, I probably should move over code from the monitor to here ;-)
-        
-        # Something like?
-        
-        
-        # $O : old value
-        # $N : new value
-        # $I : sensor id ???
 
-        # format {(group,sensorid,command),...(group,sensorid,command)}
-        
-        # examples
-        # {("iBrew",Null,"/home/pi/iBrew/trigger.sh $O $N"),("Domoticz","454","http://smarthome.local/controller/update?sensor=$I&value=$N")}
-        # {("MTTQ",Null,"D:\coding\iBrew\trigger.bat $O $N"),("OpenHAB","KettleTemperature","http://smarthome.local/controller/update?sensor=$I&value=$N")}
-        # {("Domoticz","CoffeeStrength","http://smarthome.local/controller/update?sensor=$I&value=$N")}
-        
-        # a = actions[trigger]
-        # for i in a:
-        #   if "http" == i[1][1:4]:
-                # fill in sensor and old and new
-                # execute http... get post???
-        #   else:
-                # fill in sensor and old and new
-        #       execute command...
-        
-        pass
+
+        for i in self.triggerGroups:
+            s = self.triggerGet(i[0],Smarter.triggerName(trigger))
+            if s != "":
+                s = s.replace("$O",str(old)).replace("$N",str(new))
+                
+                # replace False, True with boolean.. FIX
+                
+                if s[0:4] == "http":
+                    try:
+                        response = urllib.urlopen(s)
+                    except Exception, e:
+                        print str(e)
+                else:
+                    r = os.popen(s).read()
+                    if self.dump:
+                        print r
+                if self.dump and not self.dump_status:
+                    logging.debug("Trigger: " + Smarter.triggersKettle[trigger][0] + " - old:" + str(old) + " new:" + str(new) + " " + i[0] + " " + s)
 
 
 

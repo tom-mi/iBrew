@@ -1114,7 +1114,7 @@ class iBrewConsole:
         print
         print "  Triggers"
         print "    trigger add [group] [trigger] [action] add trigger to a group"
-        print "    trigger delete group (trigger) delete trigger or group triggers"
+        print "    trigger delete [group] (trigger) delete trigger or group triggers"
         print "    trigger groups         show list of groups"
         print "    trigger [group]        show triggers of group"
         print "    trigger                show all triggers"
