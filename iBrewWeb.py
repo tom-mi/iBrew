@@ -947,7 +947,7 @@ class VersionHandler(GenericAPIHandler):
 
 class iBrewWeb(tornado.web.Application):
 
-    version = '0.71'
+    version = '0.80'
     
     def start(self):
         tornado.ioloop.IOLoop.instance().start()
@@ -995,6 +995,7 @@ class iBrewWeb(tornado.web.Application):
                     if self.dump:
                         logging.info("[" + device[0] + "] Adding Web Device")
                     client = SmarterClient(AppFolders.settings() + "/")
+                    client.events = self.events
                     client.deviceId = device[1]
                     client.device = Smarter.device_to_string(device[1])
                     client.version = device[2]
@@ -1024,6 +1025,7 @@ class iBrewWeb(tornado.web.Application):
                     if self.dump:
                         logging.info("[" + ip + "] Adding Web Device")
                     client = SmarterClient(AppFolders.settings() + "/")
+                    client.events = self.events
                     client.host = self.host
                     client.dump = self.dump
                     client.dump_status = self.dump
@@ -1047,6 +1049,7 @@ class iBrewWeb(tornado.web.Application):
         self.clients = dict()
         self.thread = None
         self.reconnect_count = dict()
+        self.events = False
 
     def __del__(self):
         self.kill()

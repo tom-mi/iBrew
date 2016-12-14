@@ -94,6 +94,7 @@ class iBrewConsole:
         try:
             if self.haveHost:
                 self.web = iBrewWeb()
+                self.web.events = self.client.events
                 self.web.run(port,self.client.dump,self.client.host)
             else:
                 self.web = iBrewWeb()
@@ -305,21 +306,6 @@ class iBrewConsole:
             self.username = "NOT LICENSED"
 
 
-            if command == "events":
-                if self.console:
-                    if self.client.events == False:
-                        self.client.events = True
-                        print "iBrew: Trigger events enabled"
-                    else:
-                        self.client.events = False
-                        print "iBrew: Trigger events disabled"
-                    return
-                elif numarg != 0:
-                    self.client.events = True
-                    command = arguments[0].lower()
-                    arguments = arguments[1:]
-                    numarg -= 1
-
             if command == "dump":
                 if numarg == 0 and not self.console:
                     print "iBrew: Do I look like a civet cat to you?"
@@ -341,7 +327,24 @@ class iBrewConsole:
                     else:
                         return
 
-
+            if command == "events":
+                if self.console:
+                    print command
+                    if self.client.events == False:
+                        self.client.events = True
+                        print "iBrew: Trigger events enabled"
+                    else:
+                        self.client.events = False
+                        print "iBrew: Trigger events disabled"
+                    return
+                elif numarg != 0:
+                    self.client.events = True
+                    command = arguments[0].lower()
+                    print command
+                    arguments = arguments[1:]
+                    numarg -= 1
+                    
+                    
             if command == "shout":
                 if self.console or numarg == 0:
                     print "iBrew: Can't hear you. Drinking tea at a dinner on the other side of the universe!"
@@ -1046,7 +1049,7 @@ class iBrewConsole:
         print "  iBrew Command Line"
         print
         #print "  Usage: ibrew (energy) (dump) (shout|slow) (coffee|kettle) (fahrenheid) [command] (host(:port))"
-        print "  Usage: ibrew (events) (dump) (shout|slow) (coffee|kettle) (fahrenheid) [command] (host(:port))"
+        print "  Usage: ibrew (dump) (events) (shout|slow) (coffee|kettle) (fahrenheid) [command] (host(:port))"
         print
         print "    dump                   dump message enabled"
         print "    events                 enable trigger events (monitor, relay, console)"
