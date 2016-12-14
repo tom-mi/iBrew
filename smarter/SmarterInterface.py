@@ -2901,7 +2901,7 @@ class SmarterClient:
 
         v = Smarter.raw_to_watersensor(message[3],message[4])
         if v != self.waterSensor:
-            self.__trigger(Smarter.triggerTemperature,self.waterSensor,v)
+            self.__trigger(Smarter.triggerWaterSensor,self.waterSensor,v)
             self.waterSensor = v
 
         v = Smarter.is_on_base(message[2])
