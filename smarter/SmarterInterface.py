@@ -2537,7 +2537,7 @@ class SmarterClient:
             for i in g:
                 a = config.get(section+"."+i, "Active")
                 s = config.get(section+"."+i, "State")
-                self.triggerGroups += [(i,Smarter.string_to_bool(a),Smarter.triggerCheckBooleans(s))]
+                self.triggerGroups += [[i,Smarter.string_to_bool(a),Smarter.triggerCheckBooleans(s)]]
                 
                 for j in Smarter.triggersKettle:
                     try:
@@ -2629,6 +2629,7 @@ class SmarterClient:
         if self.__isGroup(group):
             print "Trigger group enabled " + group
             self.triggerGroups[self.__findGroup(group)][1] = True
+            self.__write_triggers()
             return
         raise SmarterErrorOld("Trigger group not found")
 
@@ -2637,6 +2638,7 @@ class SmarterClient:
         if self.__isGroup(group):
             print "Trigger group disabled " + group
             self.triggerGroups[self.__findGroup(group)][1] = False
+            self.__write_triggers()
             return
         raise SmarterErrorOld("Trigger group not found")
 
@@ -2646,6 +2648,7 @@ class SmarterClient:
         if self.__isGroup(group):
             print "Trigger group " + group + "setting state type " + Smarter.triggerCheckBooleans(bools)
             self.triggerGroups[self.__findGroup(group)][2] = Smarter.triggerCheckBooleans(bools)
+            self.__write_triggers()
             return
         raise SmarterErrorOld("Trigger group not found")
                 
