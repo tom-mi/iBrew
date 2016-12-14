@@ -98,6 +98,7 @@ class iBrewConsole:
                 self.web.run(port,self.client.dump,self.client.host)
             else:
                 self.web = iBrewWeb()
+                self.web.events = self.client.events
                 self.web.run(port,self.client.dump)
         except Exception, e:
             logging.debug(e)
@@ -329,18 +330,17 @@ class iBrewConsole:
 
             if command == "events":
                 if self.console:
-                    print command
                     if self.client.events == False:
                         self.client.events = True
                         print "iBrew: Trigger events enabled"
                     else:
+                        print "HERE1"
                         self.client.events = False
                         print "iBrew: Trigger events disabled"
                     return
                 elif numarg != 0:
                     self.client.events = True
                     command = arguments[0].lower()
-                    print command
                     arguments = arguments[1:]
                     numarg -= 1
                     

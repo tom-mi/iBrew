@@ -2595,7 +2595,6 @@ class SmarterClient:
 
     def triggerSet(self,group,trigger,action):
         id = Smarter.triggerID(trigger)
-        print id
         if id in self.triggersKettle:
             if len(self.triggersKettle[id]) != 0:
                 for i in range(0,len(self.triggersKettle[id])):
