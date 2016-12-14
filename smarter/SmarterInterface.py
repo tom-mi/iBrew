@@ -716,6 +716,7 @@ class SmarterClient:
                         if monitorCount % timeout == timeout - 9:
                             if self.isKettle:   self.kettle_calibrate_base()
                             if self.isCoffee:   self.coffee_carafe_required()
+                            self.__read_triggers()
      
                         if monitorCount % timeout == timeout - 19:
                             if self.isCoffee:   self.coffee_mode()
@@ -735,6 +736,7 @@ class SmarterClient:
                             if self.WifiFirmware == "":
                                 self.wifi_firmware()
                             pass #self.device_history()
+                            self.__read_block()
                             
                     except SmarterError, e:
                         if not self.monitor_run:
