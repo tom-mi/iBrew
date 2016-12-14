@@ -4,6 +4,9 @@ iKettle, [iKettle 2.0](http://smarter.am/ikettle) and [Smarter Coffee](http://sm
 
 ## Hot! News
 
+__Trigger! You can now push your data or run commands!__
+It is now possible to push sensor values and states of the appliances to other smarthome controllers using http or run commands!
+
 _Legacy iKettle command line support (alpha)_
 
 __Homekit [Cmdswitch2](https://github.com/luisiam/homebridge-cmdswitch2/) Homebridge Polling!__ 
@@ -31,6 +34,7 @@ __For smarthome fans!__
  * No tracking!
  * Stand alone or bridge mode!
  * HomeKit Support
+ * HTTP push!
  
 __iBrew Interfaces & Bridges__
  * Command Line (now with iKettle Legacy support) 
@@ -614,7 +618,9 @@ You can pull values and states with the JSON REST api with it also possible to p
 
 To add
 
-`ibrew trigger add Domotic` Temperature http://127.0.0.1:8080/json.htm?type=command&param=udevice&idx=155&nvalue=0&svalue=$N 10.0.0.99`
+`ibrew trigger add Domotic Temperature http://127.0.0.1:8080/json.htm?type=command&param=udevice&idx=155&nvalue=0&svalue=$N 10.0.0.99`
+
+where Domoticz is the group (one action per trigger per group) and $N is the new value and $O is the old value.
 
 To see all triggers
 
@@ -631,6 +637,18 @@ monitor the trigger event system
 or use the web server with auto re-connect :-)
 
 `ibrew dump events web 10.0.0.99`
+
+It is possible to set boolean type to various formats (on/off, 1/0, enabled/disabled,...)
+
+`ibrew trigger Domoticz state on`
+
+And enable disable entire groups
+
+`ibrew trigger Domoticz off`
+
+See for group overview
+
+`ibrew trigger groups`
 
 Alpha!
 

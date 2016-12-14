@@ -163,7 +163,9 @@ You can pull values and states with the JSON REST api with it also possible to p
 
 To add
 
-`ibrew trigger add Domotic` Temperature http://127.0.0.1:8080/json.htm?type=command&param=udevice&idx=155&nvalue=0&svalue=$N 10.0.0.99`
+`ibrew trigger add Domotic Temperature http://127.0.0.1:8080/json.htm?type=command&param=udevice&idx=155&nvalue=0&svalue=$N 10.0.0.99`
+
+where Domoticz is the group (one action per trigger per group) and $N is the new value and $O is the old value.
 
 To see all triggers
 
@@ -180,6 +182,18 @@ monitor the trigger event system
 or use the web server with auto re-connect :-)
 
 `ibrew dump events web 10.0.0.99`
+
+It is possible to set boolean type to various formats (on/off, 1/0, enabled/disabled,...)
+
+`ibrew trigger Domoticz state on`
+
+And enable disable entire groups
+
+`ibrew trigger Domoticz off`
+
+See for group overview
+
+`ibrew trigger groups`
 
 Alpha!
 

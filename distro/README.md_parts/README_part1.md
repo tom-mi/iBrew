@@ -4,6 +4,9 @@ iKettle, [iKettle 2.0](http://smarter.am/ikettle) and [Smarter Coffee](http://sm
 
 ## Hot! News
 
+__Trigger! You can now push your data or run commands!__
+It is now possible to push sensor values and states of the appliances to other smarthome controllers using http or run commands!
+
 _Legacy iKettle command line support (alpha)_
 
 __Homekit [Cmdswitch2](https://github.com/luisiam/homebridge-cmdswitch2/) Homebridge Polling!__ 
@@ -31,6 +34,7 @@ __For smarthome fans!__
  * No tracking!
  * Stand alone or bridge mode!
  * HomeKit Support
+ * HTTP push!
  
 __iBrew Interfaces & Bridges__
  * Command Line (now with iKettle Legacy support) 
