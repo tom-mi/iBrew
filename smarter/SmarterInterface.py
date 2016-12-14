@@ -2646,7 +2646,7 @@ class SmarterClient:
     
     def boolsGroup(self,group,bools):
         if self.__isGroup(group):
-            print "Trigger group " + group + "setting state type " + Smarter.triggerCheckBooleans(bools)
+            print "Trigger group " + group + " setting state type " + "/".join(Smarter.triggerCheckBooleans(bools))
             self.triggerGroups[self.__findGroup(group)][2] = Smarter.triggerCheckBooleans(bools)
             self.__write_triggers()
             return

@@ -1597,11 +1597,13 @@ class SmarterProtocol:
     
     
     def triggerCheckBooleans(self,boolean):
-        if self.string_to_bool(boolean):
-            for i in self.triggerBooleans:
-                if i[0] == boolean or i[1] == boolean:
-                    return i
-        raise SmarterErrorOld("Trigger state does not exists")
+        try:
+            self.string_to_bool(boolean)
+        except:
+            SmarterErrorOld("Trigger state not recognized")
+        for i in self.triggerBooleans:
+            if i[0] == boolean or i[1] == boolean:
+                return i
         
 
     def print_triggers(self):
