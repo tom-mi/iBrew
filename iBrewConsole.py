@@ -499,7 +499,7 @@ class iBrewConsole:
             if command == "monitor":
                 self.client.fast = False
 
-            if (command == "relay" and not self.console) or ((not self.client.connected or self.haveHost) and command != "help" and command != "?" and command != "list" and command != "message" and command != "usage" and command != "commands" and command != "web" and command != "joke" and command != "license" and command != "protocol" and command != "structure" and command != "notes" and command != "groups" and command != "group" and command != "examples" and command != "messages" and command != "rules" and command != "rule"):
+            if (command == "relay" and not self.console) or ((not self.client.connected or self.haveHost) and command != "help" and command != "?" and command != "list" and command != "message" and command != "usage" and command != "commands" and command != "web" and command != "joke" and command != "license" and command != "protocol" and command != "structure" and command != "notes" and command != "groups" and command != "group" and command != "examples" and command != "states" and command != "triggers" and command != "messages" and command != "rules" and command != "rule"):
 
 
                 if not self.haveHost and command != "relay":
@@ -610,7 +610,44 @@ class iBrewConsole:
                                                 
                                             else:
                                                 print "iBrew: Use additional command: info, block or unblock"
-            
+            elif command == "triggers":     Smarter.print_triggers()
+            elif command == "states":     Smarter.print_states()
+            elif command == "trigger":
+                                            if numarg == 0:
+                                                self.client.print_triggers()
+                                            else:
+                                                if arguments[0] == "groups":
+                                                    self.client.print_groups()
+                                                elif arguments[0] == "add" and numarg == 3:
+                                                    self.client.triggerAdd(arguments[1],arguments[2])
+                                                elif arguments[0] == "add" and numarg != 3:
+                                                    print "iBrew: trigger add need a group name and a trigger action"
+                                                elif arguments[0][0:3] == "del":
+                                                    if numarg == 3 or numarg == 2:
+                                                        if numarg == 2:
+                                                            self.client.triggerGroupDelete(arguments[1])
+                                                        else:
+                                                            self.client.triggerDelete(arguments[1],arguments[2])
+                                                    else:
+                                                        print "iBrew: trigger delete need a group name or a group name and a trigger action"
+                                                else:
+                                                    if numarg == 1:
+                                                        self.client.print_group(arguments[0])
+                                                    elif numarg == 2:
+                                                        if arguments[1] == "state":
+                                                            print "iBrew: Missing arguments, which duality?"
+                                                        else:
+                                                            try:
+                                                                state = Smarter.string_to_bool(arguments[1])
+                                                                if state: self.client.enableGroup(arguments[0])
+                                                                else: self.client.disableGroup(arguments[0])
+                                                            except:
+                                                                print "iBrew: failed to get state"
+                                                    elif arguments[1] == "state":
+                                                        self.client.boolsGroup(arguments[0],arguments[2])
+                                                    else:
+                                                        print "iBrew: missing arguments, about time for some peace and quite :-)"
+                                                            
             elif command == "relay":
                                             if numarg >= 1:
                                                 if arguments[0] == "stop":
@@ -1070,9 +1107,25 @@ class iBrewConsole:
         print
         print "  Wireless Network Commands"
         print "    direct                 enable direct mode access"
-        print "    join [net] [pass]      connect to wireless network"
+        print "    join [net] (pass)      connect to wireless network"
         print "    rejoin                 rejoins current wireless network [not in direct mode]"
         print "    scan                   scan wireless networks"
+        print
+        print "  Triggers"
+        print "    trigger add [group] [trigger] [action] add trigger to a group"
+        print "    trigger delete group (trigger) delete trigger or group triggers"
+        print "    trigger groups         show list of groups"
+        print "    trigger [group]        show triggers of group"
+        print "    trigger                show all triggers"
+        print "    trigger [group] [bool] enabled/disable trigger group"
+        print "    trigger [group] state [bool] set group state output"
+        print
+        print "  Actions can either be a path to a command or url"
+        print
+        print "  Trigger actions examples:"
+        print "    C:\SCRIPTS\SENSOR.BAT $O $N"
+        print "    /home/pi/iBrew/scripts/smarthome.sh 'Temperature' $O $N"
+        print "    http://smarthome.local/?idx=34&value=$N"
         print
         print "  Smarter Network Commands [console only]"
         print "    connect (host) (rules&modifiers) connect to appliance"
@@ -1146,13 +1199,15 @@ class iBrewConsole:
         
         print "  Help Commands"
         print "    examples               show examples of commands"
-        print "    groups                 show all groups"
+        print "    groups                 show all message groups"
         print "    group                  show messages in group"
         print "    messages               show all known protocol messages"
         print "    message [id]           show protocol message detail of message [id]"
         print "    notes                  show developer notes on the appliances"
         print "    protocol               show all protocol information available"
+        print "    states                 show various forms of trigger states"
         print "    structure              show protocol structure information"
+        print "    triggers               show triggers"
         print
         print "  iBrew Commands"
         print "    console (rules) (modifiers) start console [command line only]"

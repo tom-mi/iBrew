@@ -1209,7 +1209,6 @@ class SmarterClient:
         return (a,r)
 
 
-
     def string_rules(self,rules):
         groups, ids = Smarter.idsListEncode(rules)
         return Smarter.groupsString(groups) + " " + Smarter.ids_to_string(ids)
@@ -2394,92 +2393,55 @@ class SmarterClient:
     #------------------------------------------------------
 
 
-    # Kettle
-    triggerBusyKettle                   = 9
-    triggerDefaultTemperature           = 10
-    triggerDefaultFormulaTemperature    = 11
-    triggerDefaultKeepWarmTime          = 12
-    triggerWaterSensorBase              = 13
-    triggerKeepWarm                     = 14
-    triggerHeaterKettle                 = 15
-    triggerFormulaCooling               = 16
-    triggerTemperature                  = 17
-    triggerWaterSensor                  = 18
-    triggerOnBase                       = 19
-    triggerUnknownKettle                = 20
-
-    # Coffee
-    triggerMode                         = 21
-    triggerDefaultStrength              = 22
-    triggerDefaultCups                  = 23
-    triggerDefaultGrind                 = 24
-    triggerDefaultHotplate              = 25
-    triggerGrind                        = 26
-    triggerReady                        = 27
-    triggerWorking                      = 28
-    triggerTimerEvent                   = 29
-    triggerWaterLevel                   = 30
-    triggerWaterEnough                  = 31
-    triggerStrength                     = 32
-    triggerCups                         = 33
-    triggerCupsBrew                     = 34
-    triggerUnknownCoffee                = 35
-    triggerCarafe                       = 36
-    triggerGrinder                      = 37
-    triggerHotPlate                     = 38
-    triggerHeaterCoffee                 = 39
-    triggerCarafeRequired               = 40
-    triggerBusyCoffee                   = 41
-
+    # format Name,Active,Bool format
+    triggerGroups = [("Domoticz",False,2),("Domoticz",True,2)]
     
     # format {(group,sensorid,command),...(group,sensorid,command)}
     triggersKettle = {
     
         # Operational sensors (boolean)
-        triggerBusyKettle                   : ["Busy",[]],
-        triggerKeepWarm                     : ["Keep warm",[]],
-        triggerHeaterKettle                 : ["Heater",[]],
-        triggerFormulaCooling               : ["Formula cooling",[]],
-
+        Smarter.triggerBusyKettle                   : [],
+        Smarter.triggerKeepWarm                     : [],
+        Smarter.triggerHeaterKettle                 : [],
+        Smarter.triggerFormulaCooling               : [],
+        Smarter.triggerOnBase                       : [],
+        
         # Data sensors
-        triggerWaterSensorBase              : ["Base",[]],
-        triggerOnBase                       : ["On base",[]],
-        triggerDefaultKeepWarmTime          : ["Default keep warm time",[]],
-        triggerDefaultTemperature           : ["Default temperature",[]],
-        triggerDefaultFormulaTemperature    : ["Default formula temperature",[]],
-        triggerTemperature                  : ["Temperature",[]],
-        triggerWaterSensor                  : ["Water sensor",[]],
-        triggerUnknownKettle                : ["Unknown",[]]
+        Smarter.triggerWaterSensorBase              : [],
+        Smarter.triggerDefaultKeepWarmTime          : [],
+        Smarter.triggerDefaultTemperature           : [],
+        Smarter.triggerDefaultFormulaTemperature    : [],
+        Smarter.triggerTemperature                  : [],
+        Smarter.triggerWaterSensor                  : [],
+        Smarter.triggerUnknownKettle                : []
     }
 
     triggersCoffee = {
         # Operational sensors (boolean)
-        triggerGrinder                      : ["Grinder",[]],
-        triggerTimerEvent                   : ["Timer",[]],
-        triggerBusyCoffee                   : ["Busy",[]],
-        triggerReady                        : ["Ready",[]],
-        triggerWorking                      : ["Working",[]],
-        triggerHotPlate                     : ["Hotplate",[]],
-        triggerHeaterCoffee                 : ["Heater",[]],
+        Smarter.triggerGrinder                      : [],
+        Smarter.triggerTimerEvent                   : [],
+        Smarter.triggerBusyCoffee                   : [],
+        Smarter.triggerReady                        : [],
+        Smarter.triggerWorking                      : [],
+        Smarter.triggerHotPlate                     : [],
+        Smarter.triggerHeaterCoffee                 : [],
 
         # Data sensors
-        triggerCarafeRequired               : ["Carafe required",[]],
-        triggerMode                         : ["Mode",[]],
-        triggerGrind                        : ["Grind",[]],
-        triggerWaterEnough                  : ["Enough water",[]],
-        triggerCarafe                       : ["Carafe",[]],
-        triggerWaterLevel                   : ["Waterlevel",[]],
-        triggerStrength                     : ["Strength",[]],
-        triggerCups                         : ["Cups",[]],
-        triggerCupsBrew                     : ["Cups brew",[]],
-        triggerUnknownCoffee                : ["Unknown",[]],
-        triggerDefaultStrength              : ["Default strength",[]],
-        triggerDefaultCups                  : ["Default cups",[]],
-        triggerDefaultGrind                 : ["Default grind",[]],
-        triggerDefaultHotplate              : ["Default hotplate time",[]]
+        Smarter.triggerCarafeRequired               : [],
+        Smarter.triggerMode                         : [],
+        Smarter.triggerGrind                        : [],
+        Smarter.triggerWaterEnough                  : [],
+        Smarter.triggerCarafe                       : [],
+        Smarter.triggerWaterLevel                   : [],
+        Smarter.triggerStrength                     : [],
+        Smarter.triggerCups                         : [],
+        Smarter.triggerCupsBrew                     : [],
+        Smarter.triggerUnknownCoffee                : [],
+        Smarter.triggerDefaultStrength              : [],
+        Smarter.triggerDefaultCups                  : [],
+        Smarter.triggerDefaultGrind                 : [],
+        Smarter.triggerDefaultHotplate              : []
     }
-
-    triggerGroups = []
 
     @_threadsafe_function
     def __write_triggers(self):
@@ -2504,22 +2466,25 @@ class SmarterClient:
         except DuplicateSectionError:
             pass
 
+
+        try:
+            pass #config.set(section, groups, ','.join(self.groups[i][1]))
+        except Exception:
+            pass
+        
         if self.isKettle:
             for i in self.triggersKettle:
-            
-                print i
                 try:
-                    config.set(section, self.triggersKettle[i][0], ','.join(self.triggersKettle[i][1]))
+                    config.set(section, Smarter.triggerName(i), ','.join(self.triggersKettle[i][1]))
                 except Exception:
-                    config.set(section, self.triggersKettle[i][0], ','.join(self.triggersKettle[i][1]))
+                    pass
                 
         if self.isCoffee:
             for i in self.triggersCoffee:
                 try:
-                    config.set(section, self.triggersCoffee[i][0], ','.join(self.triggersCoffee[i][1]))
+                    config.set(section, Smarter.triggerName(i), ','.join(self.triggersCoffee[i][1]))
                 except Exception:
-                    config.set(section, self.triggersCoffee[i][0], ','.join(self.triggersCoffee[i][1]))
-        
+                    pass
 
         with open(self.settingsPath+'ibrew.conf', 'w') as f:
             config.write(f)
@@ -2550,10 +2515,8 @@ class SmarterClient:
 
         if self.isKettle:
             for i in self.triggersKettle:
-                print i
                 try:
-                    
-                    s = config.get(section, self.triggersKettle[i][0])
+                    s = config.get(section, Smarter.triggerName(i))
                     self.triggersKettle[i][1] = s.split(",")
                 except Exception:
                     pass
@@ -2561,37 +2524,51 @@ class SmarterClient:
         if self.isCoffee:
             for i in self.triggersCoffee:
                 try:
-                    s = config.get(section, self.triggersCoffee[i][0])
+                    s = config.get(section, Smarter.triggerName(i))
                     self.triggersCoffee[i][1] = s.split(",")
                 except Exception:
                     pass
 
 
     def triggerAdd(self,group,trigger,action):
+        # check group exists
+        # check if trigger exitst
+        # delete existing trigger
+        # not group exitst create group
+        # add trigger with action
         self.__write_triggers()
 
 
     def triggerGroupDelete(self,group):
-        pass
+        self.__write_triggers()
     
     
     def triggerDelete(self,group,trigger):
         self.__write_triggers()
     
+    def enableGroup(self,group):
+        pass
     
-    """
-    typeONOFF      "ON" "OFF"
-    typeOnOff      "On" "Off"
-    typeonoff
-    typeTrueFalse
-    typeTRUEFALSE
-    typetruefalse
-    typeOneZero     "1" "0"
-    typeInt
-    typeString
+    def disableGroup(self,group):
+        pass
     
-    def sendorType(self)
-    """
+     
+    
+    def boolsGroup(self,group,bools):
+        for i in self.triggerBooleans:
+            if i[0] == bools:
+                pass # update group with index i
+                
+
+    
+    def print_groups(self):
+        pass
+    
+    def print_group(self,group):
+        pass
+    
+    def print_triggers(self):
+        pass
     
     def __trigger(self,trigger,old,new):
         
