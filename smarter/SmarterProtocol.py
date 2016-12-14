@@ -1537,7 +1537,7 @@ class SmarterProtocol:
         triggerDefaultTemperature           : ["DefaultTemperature","NUMBER (0..100)"],
         triggerDefaultFormulaTemperature    : ["DefaultFormulaTemperature","NUMBER (0..100)"],
         triggerTemperature                  : ["Temperature","NUMBER"],
-        triggerWaterSensor                  : ["Water sensor","NUMBER"],
+        triggerWaterSensor                  : ["WaterSensor","NUMBER"],
         triggerUnknownKettle                : ["Unknown","NUMBER"]
     }
     
@@ -1569,22 +1569,32 @@ class SmarterProtocol:
     }
 
 
-    def triggerName(trigger):
-        if group in triggersKettle:
-            return self.triggersKettle[group][0]
-        if group in triggersCoffee:
-            return self.triggersCoffee[group][0]
+    def triggerName(self,trigger):
+        if trigger in triggersKettle:
+            return self.triggersKettle[trigger][0]
+        if trigger in triggersCoffee:
+            return self.triggersCoffee[trigger][0]
         raise SmarterErrorOld("Trigger does not exists")
 
-    def triggerDescription(group):
-        if group in triggersKettle:
-            return self.triggersKettle[group][1]
-        if group in triggersCoffee:
-            return self.triggersCoffee[group][1]
+    def triggerDescription(self,trigger):
+        if trigger in triggersKettle:
+            return self.triggersKettle[trigger][1]
+        if trigger in triggersCoffee:
+            return self.triggersCoffee[trigger][1]
         raise SmarterErrorOld("Trigger does not exists")
 
-    triggerBooleans = [("ON","OFF"),("On","Off"),("on","off"),("1","0"),("TRUE","FALSE"),("True","False"),("true","false")]
+
+    triggerBooleans = [("ON","OFF"),("On","Off"),("on","off"),("1","0"),("TRUE","FALSE"),("True","False"),("true","false"),("ENABLED","DISABLED"),("Enabled,Disabled"),("enabled","disabled")]
     
+    
+    def triggerCheckBooleans(self,boolean):
+        if self.string_to_bool(boolean):
+            for i in self.triggerBooleans:
+                if i[0] == boolean or i[1] == boolean:
+                    return i
+        raise SmarterErrorOld("Trigger state does not exists")
+        
+
     def print_triggers(self):
         print
         print "Trigger actions"

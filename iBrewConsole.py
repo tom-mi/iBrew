@@ -641,7 +641,8 @@ class iBrewConsole:
                                                                 state = Smarter.string_to_bool(arguments[1])
                                                                 if state: self.client.enableGroup(arguments[0])
                                                                 else: self.client.disableGroup(arguments[0])
-                                                            except:
+                                                            except Exception, e:
+                                                                #print str(e)
                                                                 print "iBrew: failed to get state"
                                                     elif arguments[1] == "state":
                                                         self.client.boolsGroup(arguments[0],arguments[2])

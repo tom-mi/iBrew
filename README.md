@@ -346,9 +346,25 @@ you can also use them on the command line as arguments, note that [] are mandito
 
   Wireless Network Commands
     direct                 enable direct mode access
-    join [net] [pass]      connect to wireless network
+    join [net] (pass)      connect to wireless network
     rejoin                 rejoins current wireless network [not in direct mode]
     scan                   scan wireless networks
+
+  Triggers
+    trigger add [group] [trigger] [action] add trigger to a group
+    trigger delete group (trigger) delete trigger or group triggers
+    trigger groups         show list of groups
+    trigger [group]        show triggers of group
+    trigger                show all triggers
+    trigger [group] [bool] enabled/disable trigger group
+    trigger [group] state [bool] set group state output
+
+  Actions can either be a path to a command or url
+
+  Trigger actions examples:
+    C:\SCRIPTS\SENSOR.BAT $O $N
+    /home/pi/iBrew/scripts/smarthome.sh 'Temperature' $O $N
+    http://smarthome.local/?idx=34&value=$N
 
   Smarter Network Commands [console only]
     connect (host) (rules&modifiers) connect to appliance
@@ -386,13 +402,15 @@ you can also use them on the command line as arguments, note that [] are mandito
 
   Help Commands
     examples               show examples of commands
-    groups                 show all groups
+    groups                 show all message groups
     group                  show messages in group
     messages               show all known protocol messages
     message [id]           show protocol message detail of message [id]
     notes                  show developer notes on the appliances
     protocol               show all protocol information available
+    states                 show various forms of trigger states
     structure              show protocol structure information
+    triggers               show triggers
 
   iBrew Commands
     console (rules) (modifiers) start console [command line only]

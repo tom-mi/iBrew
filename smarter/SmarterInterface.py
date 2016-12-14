@@ -2394,7 +2394,7 @@ class SmarterClient:
 
 
     # format Name,Active,Bool format
-    triggerGroups = [("Domoticz",False,2),("Domoticz",True,2)]
+    triggerGroups = [["Domoticz",False,('On','Off')],["OpenHAB",True,('1','0')]]
     
     # format {(group,sensorid,command),...(group,sensorid,command)}
     triggersKettle = {
@@ -2445,7 +2445,8 @@ class SmarterClient:
 
     @_threadsafe_function
     def __write_triggers(self):
-        
+
+
         section = self.host + ".triggers"
         if self.isKettle:
             section += ".kettle"
@@ -2468,24 +2469,43 @@ class SmarterClient:
 
 
         try:
-            pass #config.set(section, groups, ','.join(self.groups[i][1]))
+            g = []
+            for i in self.triggerGroups:
+                g += [i[0]]
+            
+            config.set(section, "groups", ','.join(g))
         except Exception:
             pass
-        
-        if self.isKettle:
-            for i in self.triggersKettle:
-                try:
-                    config.set(section, Smarter.triggerName(i), ','.join(self.triggersKettle[i][1]))
-                except Exception:
-                    pass
-                
-        if self.isCoffee:
-            for i in self.triggersCoffee:
-                try:
-                    config.set(section, Smarter.triggerName(i), ','.join(self.triggersCoffee[i][1]))
-                except Exception:
-                    pass
 
+        for i in g:
+            try:
+                config.add_section(section+"."+i)
+            except DuplicateSectionError:
+                pass
+            try:
+                config.set(section+"."+i, "Active", str(self.triggerGroups[self.__findGroup(i)][0]))
+                config.set(section+"."+i, "State", str(self.triggerGroups[self.__findGroup(i)][2][0]))
+            except Exception:
+                pass
+
+            if self.isKettle:
+                for j in Smarter.triggersKettle:
+                    print section+"."+i
+                    print Smarter.triggerName(j)
+                    #print ','.join(Smarter.triggersKettle[j][1])
+            """
+                    try:
+                        config.set(section+"."+i, Smarter.triggerName(j), ','.join(Smarter.triggersKettle[j][1]))
+                    except Exception:
+                        pass
+                    
+            if self.isCoffee:
+                for j in Smarter.triggersCoffee:
+                    try:
+                        config.set(section+"."+i, Smarter.triggerName(j), ','.join(Smarter.triggersCoffee[j][1]))
+                    except Exception:
+                        pass
+            """
         with open(self.settingsPath+'ibrew.conf', 'w') as f:
             config.write(f)
 
@@ -2504,7 +2524,7 @@ class SmarterClient:
         config = SafeConfigParser()
 
         if not os.path.exists(self.settingsPath):
-                os.makedirs(self.settingsPath)
+            os.makedirs(self.settingsPath)
         
         config.read(self.settingsPath+'ibrew.conf')
         
@@ -2514,7 +2534,7 @@ class SmarterClient:
             pass
 
         if self.isKettle:
-            for i in self.triggersKettle:
+            for i in Smarter.triggersKettle:
                 try:
                     s = config.get(section, Smarter.triggerName(i))
                     self.triggersKettle[i][1] = s.split(",")
@@ -2522,7 +2542,7 @@ class SmarterClient:
                     pass
             
         if self.isCoffee:
-            for i in self.triggersCoffee:
+            for i in Smarter.triggersCoffee:
                 try:
                     s = config.get(section, Smarter.triggerName(i))
                     self.triggersCoffee[i][1] = s.split(",")
@@ -2546,42 +2566,97 @@ class SmarterClient:
     def triggerDelete(self,group,trigger):
         self.__write_triggers()
     
+    
+    def __isGroup(self,group):
+        for i in self.triggerGroups:
+            if i[0] == group:
+                return True
+        return False
+
+
+    def __findGroup(self,group):
+        for i in range(0,len(self.triggerGroups)):
+            if self.triggerGroups[i][0] == group:
+                return i
+        raise SmarterErrorOld("Trigger group not found")
+        
+
     def enableGroup(self,group):
-        pass
-    
+        if self.__isGroup(group):
+            print "Enabled " + group
+            self.triggerGroups[self.__findGroup(group)][1] = True
+            return
+        raise SmarterErrorOld("Trigger group not found")
+
+
     def disableGroup(self,group):
-        pass
-    
+        if self.__isGroup(group):
+            print "Disabled " + group
+            self.triggerGroups[self.__findGroup(group)][1] = False
+            return
+        raise SmarterErrorOld("Trigger group not found")
+
      
     
     def boolsGroup(self,group,bools):
-        for i in self.triggerBooleans:
-            if i[0] == bools:
-                pass # update group with index i
+        if self.__isGroup(group):
+            print Smarter.triggerCheckBooleans(bools)
+            self.triggerGroups[self.__findGroup(group)][2] = Smarter.triggerCheckBooleans(bools)
+            return
+        raise SmarterErrorOld("Trigger group not found")
                 
 
     
     def print_groups(self):
-        pass
-    
+        print "Trigger Groups"
+        print
+        print "Name".rjust(18,' ') + "        Boolean State"
+        print "".rjust(18,'_') + "_____________________"
+        for i in self.triggerGroups:
+            s = ""
+            if i[1]: s = "Active "
+            else: s = "       "
+            print i[0].rjust(18,' ') + " " + s + ":".join(i[2])
+            print
+
+
     def print_group(self,group):
-        pass
-    
+        print "Trigger Group"
+        print
+        print "Name".rjust(18,' ') + "        Boolean State"
+        print "".rjust(18,'_') + "_____________________"
+        for i in self.triggerGroups:
+            if i[0] == group:
+                s = ""
+                if i[1]: s = "Active "
+                else: s = "       "
+                print i[0].rjust(18,' ') + " " + s + ":".join(i[2])
+                print
+                return
+        raise SmarterErrorOld("Trigger action group not found")
+
+
     def print_triggers(self):
+        print
+        print "Triggers"
+        print "FIX"
         pass
+
     
+    @_threadsafe_function
     def __trigger(self,trigger,old,new):
         
-        #if self.isKettle:
-        #    print "Trigger: " + self.triggersKettle[trigger][0] + " - old:" + str(old) + " new:" + str(new)
+        if self.dump and self.dump_status:
+            if self.isKettle:
+                logging.debug("Trigger: " + Smarter.triggersKettle[trigger][0] + " - old:" + str(old) + " new:" + str(new))
+                
+            if self.isCoffee:
+                logging.debug("Trigger: " + Smarter.triggersCoffee[trigger][0] + " - old:" + str(old) + " new:" + str(new))
             
-        #if self.isCoffee:
-        #    print "Trigger: " + self.triggersCoffee[trigger][0] + " - old:" + str(old) + " new:" + str(new)
-        
-        
-        
-        
-        # you can add delays here, I probably should move over code from the monitor to here ;-)
+            
+            
+            
+            # you can add delays here, I probably should move over code from the monitor to here ;-)
         
         # Something like?
         
@@ -2665,17 +2740,17 @@ class SmarterClient:
     def __decode_KettleSettings(self,message):
         v = Smarter.raw_to_number(message[2])
         if v != self.defaultKeepWarmTime:
-            self.__trigger(self.triggerDefaultKeepWarmTime,self.defaultKeepWarmTime,v)
+            self.__trigger(Smarter.triggerDefaultKeepWarmTime,self.defaultKeepWarmTime,v)
             self.defaultKeepWarmTime = v
         
         v = Smarter.raw_to_temperature(message[1])
         if v != self.defaultTemperature:
-            self.__trigger(self.triggerDefaultTemperature,self.defaultTemperature,v)
+            self.__trigger(Smarter.triggerDefaultTemperature,self.defaultTemperature,v)
             self.defaultTemperature = v
         
         v = Smarter.raw_to_number(message[3])
         if v != self.defaultFormulaTemperature:
-            self.__trigger(self.triggerDefaultFormulaTemperature,self.defaultFormulaTemperature,v)
+            self.__trigger(Smarter.triggerDefaultFormulaTemperature,self.defaultFormulaTemperature,v)
             self.defaultFormulaTemperature = v
 
 
@@ -2683,22 +2758,22 @@ class SmarterClient:
     def __decode_CoffeeSettings(self,message):
         v = Smarter.raw_to_cups(message[1])
         if v != self.defaultCups:
-            self.__trigger(self.triggerDefaultCups,self.defaultCups,v)
+            self.__trigger(Smarter.triggerDefaultCups,self.defaultCups,v)
             self.defaultCups = v
         
         v = Smarter.raw_to_strength(message[2])
         if v != self.defaultStrength:
-            self.__trigger(self.triggerDefaultStrength,self.defaultStrength,v)
+            self.__trigger(Smarter.triggerDefaultStrength,self.defaultStrength,v)
             self.defaultStrength = v
         
         v = Smarter.raw_to_bool(message[3])
         if v != self.defaultGrind:
-            self.__trigger(self.triggerDefaultGrind,self.defaultGrind,v)
+            self.__trigger(Smarter.triggerDefaultGrind,self.defaultGrind,v)
             self.defaultGrind  = v
         
         v =  Smarter.raw_to_hotplate(message[4],self.version)
         if v != self.defaultHotPlate:
-            self.__trigger(self.triggerDefaultHotplate,self.defaultHotPlate,v)
+            self.__trigger(Smarter.triggerDefaultHotplate,self.defaultHotPlate,v)
             self.defaultHotPlate = v
 
 
@@ -2708,88 +2783,88 @@ class SmarterClient:
             
         if self.kettleStatus == Smarter.KettleHeating:
             if not self.heaterOn:
-                self.__trigger(self.triggerHeaterKettle,False,True)
+                self.__trigger(Smarter.triggerHeaterKettle,False,True)
                 heaterOn = True
             if self.keepWarmOn == True:
                 self.keepWarmOn = False
-                self.__trigger(self.triggerKeepWarm,True,False)
+                self.__trigger(Smarter.triggerKeepWarm,True,False)
                 self.countKeepWarm += 1
             if self.formulaCoolingOn == True:
                 self.formulaCoolingOn = False
-                self.__trigger(self.triggerFormulaCooling,True,False)
+                self.__trigger(Smarter.triggerFormulaCooling,True,False)
                 self.countFormulaCooling+= 1
             if not self.busy:
-                self.__trigger(self.triggerBusyKettle,False,True)
+                self.__trigger(Smarter.triggerBusyKettle,False,True)
                 self.busy = True
 
         elif self.kettleStatus == Smarter.KettleFormulaCooling:
             if not self.formulaCoolingOn:
                 self.formulaCoolingOn = True
-                self.__trigger(self.triggerFormulaCooling,False,True)
+                self.__trigger(Smarter.triggerFormulaCooling,False,True)
             if self.heaterOn == True:
-                self.__trigger(self.triggerHeaterKettle,True,False)
+                self.__trigger(Smarter.triggerHeaterKettle,True,False)
                 self.heaterOn = False
                 self.countHeater += 1
             if self.keepWarmOn == True:
                 self.keepWarmOn = False
-                self.__trigger(self.triggerKeepWarm,True,False)
+                self.__trigger(Smarter.triggerKeepWarm,True,False)
                 self.countKeepWarm += 1
             if not self.busy:
-                self.__trigger(self.triggerBusyKettle,False,True)
+                self.__trigger(Smarter.triggerBusyKettle,False,True)
                 self.busy = True
         
         elif self.kettleStatus == Smarter.KettleKeepWarm:
             if not self.keepWarmOn:
                 self.keepWarmOn = True
-                self.__trigger(self.triggerKeepWarm,False,True)
+                self.__trigger(Smarter.triggerKeepWarm,False,True)
             if self.heaterOn == True:
-                self.__trigger(self.triggerHeaterKettle,True,False)
+                self.__trigger(Smarter.triggerHeaterKettle,True,False)
                 self.heaterOn = False
                 self.countHeater += 1
             if self.formulaCoolingOn == True:
                 self.formulaCoolingOn = False
-                self.__trigger(self.triggerFormulaCooling,True,False)
+                self.__trigger(Smarter.triggerFormulaCooling,True,False)
                 self.countFormulaCooling+= 1
             if self.busy:
-                self.__trigger(self.triggerBusyKettle,True,False)
+                self.__trigger(Smarter.triggerBusyKettle,True,False)
                 self.busy = False
         else:
             if self.keepWarmOn == True:
-                self.__trigger(self.triggerKeepWarm,True,False)
+                self.__trigger(Smarter.triggerKeepWarm,True,False)
                 self.keepWarmOn = False
                 self.countKeepWarm += 1
             if self.heaterOn == True:
                 self.heaterOn = False
-                self.__trigger(self.triggerHeaterKettle,True,False)
+                self.__trigger(Smarter.triggerHeaterKettle,True,False)
                 self.countHeater+= 1
             if self.formulaCoolingOn == True:
                 self.formulaCoolingOn = False
-                self.__trigger(self.triggerFormulaCooling,True,False)
+                self.__trigger(Smarter.triggerFormulaCooling,True,False)
                 self.countFormulaCooling+= 1
             if self.busy:
-                self.__trigger(self.triggerBusyKettle,True,False)
+                self.__trigger(Smarter.triggerBusyKettle,True,False)
                 self.busy = False
 
         v = Smarter.raw_to_temperature(message[2])
         if v != self.temperature:
-            self.__trigger(self.triggerTemperature,self.temperature,v)
+            self.__trigger(Smarter.triggerTemperature,self.temperature,v)
             self.temperature = v
 
         v = Smarter.raw_to_watersensor(message[3],message[4])
         if v != self.waterSensor:
-            self.__trigger(self.triggerTemperature,self.waterSensor,v)
+            self.__trigger(Smarter.triggerTemperature,self.waterSensor,v)
             self.waterSensor = v
 
         v = Smarter.is_on_base(message[2])
         if self.onBase != v:
             if self.onBase:
                 self.countKettleRemoved += 1
-            self.__trigger(self.triggerOnBase,self.onBase,v)
+            self.__trigger(Smarter.triggerOnBase,self.onBase,v)
             self.onBase = v
 
         v = Smarter.raw_to_number(message[5])
         if v != self.unknown:
-            self.__trigger(self.triggerUnknownKettle,self.unknown,v)
+            self.__trigger(Smarter.triggerUnknownKettle,self.unknown,v)
             self.unknown = v
 
 
@@ -2803,59 +2878,59 @@ class SmarterClient:
 
         v = is_set(coffeeStatus,2)
         if v != self.ready:
-            self.__trigger(self.triggerReady,self.ready,v)
+            self.__trigger(Smarter.triggerReady,self.ready,v)
             self.ready = v
 
         v = is_set(coffeeStatus,1)
         if v != self.grind :
-            self.__trigger(self.triggerGrind,self.grind ,v)
+            self.__trigger(Smarter.triggerGrind,self.grind ,v)
             self.grind  = v
 
         v = is_set(coffeeStatus,5)
         if v != self.working:
-            self.__trigger(self.triggerWorking,self.working,v)
+            self.__trigger(Smarter.triggerWorking,self.working,v)
             self.working = v
 
         v = is_set(coffeeStatus,7)
         if v != self.timerEvent:
-            self.__trigger(self.triggerTimerEvent,self.timerEvent,v)
+            self.__trigger(Smarter.triggerTimerEvent,self.timerEvent,v)
             self.timerEvent = v
 
         v = Smarter.raw_to_waterlevel(message[2])
         if v != self.waterLevel:
-            self.__trigger(self.triggerWaterLevel,self.waterLevel,v)
+            self.__trigger(Smarter.triggerWaterLevel,self.waterLevel,v)
             self.waterLevel = v
 
         v = Smarter.raw_to_waterlevel_bit(message[2])
         if v != self.waterEnough:
-            self.__trigger(self.triggerWaterEnough,self.waterEnough,v)
+            self.__trigger(Smarter.triggerWaterEnough,self.waterEnough,v)
             self.waterEnough = v
 
         v = Smarter.raw_to_strength(message[4])
         if v != self.strength:
-            self.__trigger(self.triggerStrength,self.strength,v)
+            self.__trigger(Smarter.triggerStrength,self.strength,v)
             self.strength = v
 
         v = Smarter.raw_to_cups(message[5])
         if v != self.cups:
-            self.__trigger(self.triggerCups,self.cups,v)
+            self.__trigger(Smarter.triggerCups,self.cups,v)
             self.cups = v
 
         v = Smarter.raw_to_cups_brew(message[5])
         if v != self.cupsBrew:
-            self.__trigger(self.triggerCupsBrew,self.cupsBrew,v)
+            self.__trigger(Smarter.triggerCupsBrew,self.cupsBrew,v)
             self.cupsBrew = v
 
         v = Smarter.raw_to_number(message[3])
         if v != self.unknown:
-            self.__trigger(self.triggerUnknownCoffee,self.unknown,v)
+            self.__trigger(Smarter.triggerUnknownCoffee,self.unknown,v)
             self.unknown = v
 
         v = is_set(coffeeStatus,0)
         if self.carafe != v:
             if not self.carafe:
                  self.countCarafeRemoved += 1
-            self.__trigger(self.triggerCarafe,self.carafe,v)
+            self.__trigger(Smarter.triggerCarafe,self.carafe,v)
             self.carafe = v
 
         v = is_set(coffeeStatus,4)
@@ -2865,14 +2940,14 @@ class SmarterClient:
             else:
                 # what happens when it fails?? or stopped
                 self.countCupsBrew += self.cupsBrew
-            self.__trigger(self.triggerHeaterCoffee,self.heaterOn,v)
+            self.__trigger(Smarter.triggerHeaterCoffee,self.heaterOn,v)
 
             if self.busy and not v:
-                self.__trigger(self.triggerBusyCoffee,True,False)
+                self.__trigger(Smarter.triggerBusyCoffee,True,False)
                 self.busy = False
 
             if not self.busy and v:
-                self.__trigger(self.triggerBusyCoffee,False,True)
+                self.__trigger(Smarter.triggerBusyCoffee,False,True)
                 self.busy = True
             
             self.heaterOn = v
@@ -2881,21 +2956,21 @@ class SmarterClient:
         if self.hotPlateOn != v:
             if not self.hotPlateOn:
                 self.countHotPlateOn += 1
-            self.__trigger(self.triggerHotPlate,self.hotPlateOn,v)
+            self.__trigger(Smarter.triggerHotPlate,self.hotPlateOn,v)
             self.hotPlateOn = v
 
         v = is_set(coffeeStatus,3)
         if self.grinderOn != v:
             if not self.grinderOn:
                 self.countGrinderOn += 1
-            self.__trigger(self.triggerGrinder,self.grinderOn,v)
+            self.__trigger(Smarter.triggerGrinder,self.grinderOn,v)
 
             if self.busy and not v:
-                self.__trigger(self.triggerBusyCoffee,True,False)
+                self.__trigger(Smarter.triggerBusyCoffee,True,False)
                 self.busy = False
 
             if not self.busy and v:
-                self.__trigger(self.triggerBusyCoffee,False,True)
+                self.__trigger(Smarter.triggerBusyCoffee,False,True)
                 self.busy = True
             
             self.grinderOn = v
@@ -2946,7 +3021,7 @@ class SmarterClient:
         v = Smarter.raw_to_watersensor(message[1],message[2])
         if v != self.waterSensorBase:
             # trigger
-            self.__trigger(self.triggerWaterSensorBase,self.waterSensorBase,v)
+            self.__trigger(Smarter.triggerWaterSensorBase,self.waterSensorBase,v)
             self.waterSensorBase = v
         
 
@@ -2955,7 +3030,7 @@ class SmarterClient:
         v = not Smarter.raw_to_bool(message[1])
         if v != self.carafeRequired:
             # trigger
-            self.__trigger(self.triggerCarafeRequired,self.carafeRequired,v)
+            self.__trigger(Smarter.triggerCarafeRequired,self.carafeRequired,v)
             self.carafeRequired = v
   
 
@@ -2964,7 +3039,7 @@ class SmarterClient:
         v = Smarter.raw_to_bool(message[1])
         if v != self.mode:
             # trigger
-            self.__trigger(self.triggerMode,self.mode,v)
+            self.__trigger(Smarter.triggerMode,self.mode,v)
             self.mode = v
 
 
