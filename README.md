@@ -265,9 +265,8 @@ See the console section for the commands.
 
   iBrew Web Server
 
-  Usage: ibrew (energy) (dump) (fahrenheid) web (port) (rules) (modifiers) (host(:port))
+  Usage: ibrew (dump) (fahrenheid) web (port) (rules) (modifiers) (host(:port))
 
-    energy                 energy saver (stats not possible)
     dump                   dump message enabled
     fahrenheid             use fahrenheid
     web                    start web interface & rest api
@@ -279,10 +278,10 @@ See the console section for the commands.
 
   iBrew Command Line
 
-  Usage: ibrew (energy) (dump) (shout|slow) (coffee|kettle) (fahrenheid) [command] (host(:port))
+  Usage: ibrew (events) (dump) (shout|slow) (coffee|kettle) (fahrenheid) [command] (host(:port))
 
     dump                   dump message enabled
-    energy                 NOT IMPLEMENTED energy saver (stats not possible)
+    events                 enable trigger events (monitor, relay, console)
     shout                  sends commands and quits not waiting for a reply
     slow                   fully inits everything before action
     coffee                 assumes coffee machine
@@ -352,7 +351,7 @@ you can also use them on the command line as arguments, note that [] are mandito
 
   Triggers
     trigger add [group] [trigger] [action] add trigger to a group
-    trigger delete group (trigger) delete trigger or group triggers
+    trigger delete [group] (trigger) delete trigger or group triggers
     trigger groups         show list of groups
     trigger [group]        show triggers of group
     trigger                show all triggers
@@ -366,10 +365,11 @@ you can also use them on the command line as arguments, note that [] are mandito
     /home/pi/iBrew/scripts/smarthome.sh 'Temperature' $O $N
     http://smarthome.local/?idx=34&value=$N
 
-  Smarter Network Commands [console only]
+  Smarter Network Commands
     connect (host) (rules&modifiers) connect to appliance
     block [rules]          block messages with groups or ids
     disconnect             disconnect connected appliance
+    events                 start trigger events only
     relay ((ip:)port)      start relay
     relay stop             stop relay
     remote info            info on remote relay
@@ -610,14 +610,29 @@ appliance.disconnect()
 
 #### Smarthome controller software
 
-You can always patch or hack in your favorite Smarthome controller (if they have a python interface) into the following functions of SmarterInterface.py. 
+You can pull values and states with the JSON REST api with it also possible to push values and state with the trigger events system.
 
-```
-# all decode functions
-def __decode_???(self,.)
-```
+To add
 
-And start up the monitor with a command like ```ibrew dump monitor 10.0.0.99```  ;-) 
+`ibrew trigger add Domotic` Temperature http://127.0.0.1:8080/json.htm?type=command&param=udevice&idx=155&nvalue=0&svalue=$N 10.0.0.99`
+
+To see all triggers
+
+`ibrew triggers`
+
+To see all active triggers
+
+`ibrew trigger`
+
+monitor the trigger event system
+ 
+`ibrew dump events 10.0.0.99`
+
+or use the web server with auto re-connect :-)
+
+`ibrew dump events web 10.0.0.99`
+
+Alpha!
 
 #### Domoticz
 

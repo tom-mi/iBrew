@@ -159,14 +159,29 @@ appliance.disconnect()
 
 #### Smarthome controller software
 
-You can always patch or hack in your favorite Smarthome controller (if they have a python interface) into the following functions of SmarterInterface.py. 
+You can pull values and states with the JSON REST api with it also possible to push values and state with the trigger events system.
 
-```
-# all decode functions
-def __decode_???(self,.)
-```
+To add
 
-And start up the monitor with a command like ```ibrew dump monitor 10.0.0.99```  ;-) 
+`ibrew trigger add Domotic` Temperature http://127.0.0.1:8080/json.htm?type=command&param=udevice&idx=155&nvalue=0&svalue=$N 10.0.0.99`
+
+To see all triggers
+
+`ibrew triggers`
+
+To see all active triggers
+
+`ibrew trigger`
+
+monitor the trigger event system
+ 
+`ibrew dump events 10.0.0.99`
+
+or use the web server with auto re-connect :-)
+
+`ibrew dump events web 10.0.0.99`
+
+Alpha!
 
 #### Domoticz
 

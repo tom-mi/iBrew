@@ -2726,7 +2726,7 @@ class SmarterClient:
                         r = os.popen(s).read()
                         if self.dump:
                             print r
-                    if self.dump and not self.dump_status:
+                    if self.dump and self.dump_status:
                         logging.debug("Trigger: " + Smarter.triggersKettle[trigger][0] + " - old:" + str(old) + " new:" + str(new) + " " + i[0] + " " + s)
 
 

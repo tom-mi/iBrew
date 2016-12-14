@@ -60,27 +60,6 @@ class iBrewConsole:
     def monitor(self):
         print "iBrew: Press ctrl-c to stop"
         
-        
-        dump = self.client.dump
-        self.client.dump_status = True
-        self.client.dump = True
-        
-        while True:
-            try:
-                x = raw_input("")
-            except KeyboardInterrupt:
-                self.quit = True
-                break
-            except Exception, e:
-                self.quit = True
-                logging.debug(traceback.format_exc())
-                logging.debug(str(e))
-                break
-        self.client.dump = dump
-        self.client.dump_status = False
-        print
-        
-    def rootmonitor(self):
         dump = self.client.dump
         self.client.dump_status = True
         self.client.dump = True
@@ -99,7 +78,8 @@ class iBrewConsole:
                 break
         self.client.dump = dump
         self.client.dump_status = False
-
+        print
+   
 
 
     #------------------------------------------------------
@@ -123,7 +103,7 @@ class iBrewConsole:
             logging.info("iBrew: Failed to run Web Interface & REST API on port " + str(port))
             return
         logging.info("iBrew: Starting Web Interface & REST API on port " + str(port) + ". Press ctrl-c to stop")
-        self.rootmonitor()
+        self.monitor()
         self.web.kill()
         logging.info("iBrew: Stopped Web Interface & REST API on port " + str(port))
  
@@ -326,18 +306,15 @@ class iBrewConsole:
 
 
             if command == "events":
-                if not self.console or numarg == 0:
-                    print "iBrew: And now what?"
-                    return
-                elif self.console:
-                    if self.client.events = False:
+                if self.console:
+                    if self.client.events == False:
                         self.client.events = True
                         print "iBrew: Trigger events enabled"
                     else:
                         self.client.events = False
                         print "iBrew: Trigger events disabled"
                     return
-                else:
+                elif numarg != 0:
                     self.client.events = True
                     command = arguments[0].lower()
                     arguments = arguments[1:]
@@ -510,12 +487,12 @@ class iBrewConsole:
                 self.client.disconnect()
                 return
 
-            if command == "connect" or command == "console" or ((command == "relay" or command == "sweep" or command == "monitor" or command == "web") and not self.console):
+            if command == "connect" or command == "console" or ((command == "relay" or command == "sweep" or command == "events" or command == "monitor" or command == "web") and not self.console):
                 self.app_info()
                 self.joke()
 
 
-            if command == "monitor":
+            if command == "monitor" or command == "events":
                 self.client.fast = False
 
             if (command == "relay" and not self.console) or ((not self.client.connected or self.haveHost) and command != "help" and command != "?" and command != "list" and command != "message" and command != "usage" and command != "commands" and command != "web" and command != "joke" and command != "license" and command != "protocol" and command != "structure" and command != "notes" and command != "groups" and command != "group" and command != "examples" and command != "states" and command != "triggers" and command != "messages" and command != "rules" and command != "rule"):
@@ -575,7 +552,7 @@ class iBrewConsole:
                     return
 
 
-            if command == "connect" or command == "console" or ((command == "relay" or command == "sweep" or command == "monitor") and not self.console):
+            if command == "connect" or command == "console" or ((command == "relay" or command == "sweep" or command == "monitor" or command == "events") and not self.console):
  
                 try:
                     self.client.device_all_settings()
@@ -685,11 +662,11 @@ class iBrewConsole:
                                                     except IndexError:
                                                         pass
                                                     self.client.relay_start()
-                                                    self.rootmonitor()
+                                                    self.monitor()
                                                     
                                             else:
                                                 self.client.relay_start()
-                                                self.rootmonitor()
+                                                self.monitor()
             
             elif command == "commands":     self.commands()
             elif command == "protocol":     print Smarter.protocol()
@@ -897,6 +874,9 @@ class iBrewConsole:
 
               # Console Commands
             elif command == "monitor":      self.monitor()
+            elif command == "events":
+                                            self.client.events = True
+                                            self.monitor()
             elif command == "sweep":
                                             if numarg >= 1:
                                                  self.sweep(Smarter.code_to_number(arguments[0]))
@@ -1150,10 +1130,11 @@ class iBrewConsole:
         print "    /home/pi/iBrew/scripts/smarthome.sh 'Temperature' $O $N"
         print "    http://smarthome.local/?idx=34&value=$N"
         print
-        print "  Smarter Network Commands [console only]"
+        print "  Smarter Network Commands"
         print "    connect (host) (rules&modifiers) connect to appliance"
         print "    block [rules]          block messages with groups or ids"
         print "    disconnect             disconnect connected appliance"
+        print "    events                 start trigger events only"
         print "    relay ((ip:)port)      start relay"
         print "    relay stop             stop relay"
         print "    remote info            info on remote relay"
