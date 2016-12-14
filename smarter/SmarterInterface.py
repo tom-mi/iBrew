@@ -2511,7 +2511,6 @@ class SmarterClient:
 
     @_threadsafe_function
     def __read_triggers(self):
-        
         section = self.host + ".triggers"
         #if self.isKettle:
         #    section += ".kettle"

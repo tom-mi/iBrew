@@ -287,7 +287,7 @@ class DeviceHandler(GenericAPIHandler):
 
 class DevicesHandler(GenericAPIHandler):
     def get(self):
-        devices, relay = SmarterClient().find_devices()
+        devices, relay = SmarterClient(AppFolders.settings() + "/").find_devices()
         response = {}
         for device in devices:
             x = -1
@@ -957,8 +957,8 @@ class iBrewWeb(tornado.web.Application):
         
         #if not self.isRunning:
         #    return
-        devices, relay = SmarterClient().find_devices()
-        SmarterClient().print_devices_found(devices,relay)
+        devices, relay = SmarterClient(AppFolders.settings() + "/").find_devices()
+        SmarterClient(AppFolders.settings() + "/").print_devices_found(devices,relay)
         
         reconnect = 7
         
