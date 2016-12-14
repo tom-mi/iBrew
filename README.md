@@ -676,7 +676,7 @@ The IP of the kettle is `10.0.0.99`
 
 Lets start!
 
-Go to `Setup -> Hardware`
+Go to `Setup -> Hardware` and create a new dummy hardware called `Smarter`
 
 ![hardware](https://raw.githubusercontent.com/Tristan79/iBrew/master/distro/images/domoticz/hardware.png)
 
@@ -684,7 +684,7 @@ Click on _Create Virtual Sensors_
 
 ![sensor](https://raw.githubusercontent.com/Tristan79/iBrew/master/distro/images/domoticz/sensor.png)
 
-Create a temperature sensor (for other types see below for an overview)
+Create a temperature sensor
 
 ![temperature](https://raw.githubusercontent.com/Tristan79/iBrew/master/distro/images/domoticz/temperature.png)
 
@@ -694,15 +694,17 @@ Go to `Setup -> Devices` and look up your new sensor.
 
 Use the _idx_ of the sensor to add a trigger
 
-`ibrew trigger add Domotic Temperature http://127.0.0.1:8080/json.htm?type=command&param=udevice&idx=155&nvalue=0&svalue=$N 10.0.0.99`
+```
+ibrew trigger add Domotic Temperature http://127.0.0.1:8080/json.htm?type=command&param=udevice&idx=155&nvalue=0&svalue=$N 10.0.0.99
+```
 
-Now we also add a on base motion sensor 
+Now we also add an on base motion sensor 
 
 ![switch](https://raw.githubusercontent.com/Tristan79/iBrew/master/distro/images/domoticz/switch.png)
 
 Go to `Switches` and look up your new sensor.
 
-![switches](https://raw.githubusercontent.com/Tristan79/iBrew/master/distro/images/domoticz/devices.png)
+![switches](https://raw.githubusercontent.com/Tristan79/iBrew/master/distro/images/domoticz/switches.png)
 
 Edit it!
 
@@ -716,7 +718,9 @@ Look up the idx in `Setup -> Devices`
 
 Use the _idx_ of the sensor to add a trigger
 
-`ibrew trigger add Domotic OnBase http://127.0.0.1:8080/json.htm?type=command&param=switchlight&idx=99&switchcmd=$N 10.0.0.99`
+```
+ibrew trigger add Domotic OnBase http://127.0.0.1:8080/json.htm?type=command&param=switchlight&idx=99&switchcmd=$N 10.0.0.99
+```
 
 We need to set up the right boolean state, domoticz uses the format _On_ or _Off_
 
