@@ -323,7 +323,26 @@ class iBrewConsole:
             #    print "NOT LICENSED"
             #    return
             self.username = "NOT LICENSED"
-            
+
+
+            if command == "events":
+                if not self.console or numarg == 0:
+                    print "iBrew: And now what?"
+                    return
+                elif self.console:
+                    if self.client.events = False:
+                        self.client.events = True
+                        print "iBrew: Trigger events enabled"
+                    else:
+                        self.client.events = False
+                        print "iBrew: Trigger events disabled"
+                    return
+                else:
+                    self.client.events = True
+                    command = arguments[0].lower()
+                    arguments = arguments[1:]
+                    numarg -= 1
+
             if command == "dump":
                 if numarg == 0 and not self.console:
                     print "iBrew: Do I look like a civet cat to you?"
@@ -1031,9 +1050,10 @@ class iBrewConsole:
         print
         print "  iBrew Web Server"
         print
-        print "  Usage: ibrew (energy) (dump) (fahrenheid) web (port) (rules) (modifiers) (host(:port))"
+        print "  Usage: ibrew (dump) (fahrenheid) web (port) (rules) (modifiers) (host(:port))"
+#        print "  Usage: ibrew (energy) (dump) (fahrenheid) web (port) (rules) (modifiers) (host(:port))"
         print
-        print "    energy                 energy saver (stats not possible)"
+     #   print "    energy                 energy saver (stats not possible)"
         print "    dump                   dump message enabled"
         print "    fahrenheid             use fahrenheid"
         print "    web                    start web interface & rest api"
@@ -1045,10 +1065,12 @@ class iBrewConsole:
         print
         print "  iBrew Command Line"
         print
-        print "  Usage: ibrew (energy) (dump) (shout|slow) (coffee|kettle) (fahrenheid) [command] (host(:port))"
+        #print "  Usage: ibrew (energy) (dump) (shout|slow) (coffee|kettle) (fahrenheid) [command] (host(:port))"
+        print "  Usage: ibrew (events) (dump) (shout|slow) (coffee|kettle) (fahrenheid) [command] (host(:port))"
         print
         print "    dump                   dump message enabled"
-        print "    energy                 NOT IMPLEMENTED energy saver (stats not possible)"
+        print "    events                 enable trigger events (monitor, relay, console)"
+        #print "    energy                 NOT IMPLEMENTED energy saver (stats not possible)"
         print "    shout                  sends commands and quits not waiting for a reply"
         print "    slow                   fully inits everything before action"
         print "    coffee                 assumes coffee machine"

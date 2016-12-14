@@ -209,7 +209,7 @@ class SmarterClient:
         Initializing SmarterClient
         """
         self.settingsPath                 = setting_path
-
+        self.events                     = False
         self.serverHost                 = ''
         self.serverPort                 = Smarter.Port
         self.isKettle                   = False
@@ -2699,6 +2699,7 @@ class SmarterClient:
         
     @_threadsafe_function
     def __trigger(self,trigger,old,new):
+        if not self.events: return
         
         if self.dump and self.dump_status:
             if self.isKettle:
@@ -2709,23 +2710,24 @@ class SmarterClient:
 
 
         for i in self.triggerGroups:
-            s = self.triggerGet(i[0],Smarter.triggerName(trigger))
-            if s != "":
-                s = s.replace("$O",str(old)).replace("$N",str(new))
-                
-                # replace False, True with boolean.. FIX
-                
-                if s[0:4] == "http":
-                    try:
-                        response = urllib.urlopen(s)
-                    except Exception, e:
-                        print str(e)
-                else:
-                    r = os.popen(s).read()
-                    if self.dump:
-                        print r
-                if self.dump and not self.dump_status:
-                    logging.debug("Trigger: " + Smarter.triggersKettle[trigger][0] + " - old:" + str(old) + " new:" + str(new) + " " + i[0] + " " + s)
+            if i[1]:
+                s = self.triggerGet(i[0],Smarter.triggerName(trigger))
+                if s != "":
+                    s = s.replace("$O",str(old)).replace("$N",str(new))
+                    
+                    # replace False, True with boolean.. FIX
+                    
+                    if s[0:4] == "http":
+                        try:
+                            response = urllib.urlopen(s)
+                        except Exception, e:
+                            print str(e)
+                    else:
+                        r = os.popen(s).read()
+                        if self.dump:
+                            print r
+                    if self.dump and not self.dump_status:
+                        logging.debug("Trigger: " + Smarter.triggersKettle[trigger][0] + " - old:" + str(old) + " new:" + str(new) + " " + i[0] + " " + s)
 
 
 
