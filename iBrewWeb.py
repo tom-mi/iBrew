@@ -994,14 +994,13 @@ class iBrewWeb(tornado.web.Application):
                 try:
                     if self.dump:
                         logging.info("[" + device[0] + "] Adding Web Device")
-                    client = SmarterClient()
+                    client = SmarterClient(AppFolders.settings() + "/")
                     client.deviceId = device[1]
                     client.device = Smarter.device_to_string(device[1])
                     client.version = device[2]
                     client.dump = self.dump
                     client.dump_status = self.dump
                     client.host = device[0]
-                    client.settingsPath = AppFolders.settings() + "/"
                     client.connect()
                     self.clients[device[0]] = client
                     threading.Thread(target=client.device_all_settings)
@@ -1024,11 +1023,10 @@ class iBrewWeb(tornado.web.Application):
                 try:
                     if self.dump:
                         logging.info("[" + ip + "] Adding Web Device")
-                    client = SmarterClient()
+                    client = SmarterClient(AppFolders.settings() + "/")
                     client.host = self.host
                     client.dump = self.dump
                     client.dump_status = self.dump
-                    client.settingsPath = AppFolders.settings() + "/"
                     client.connect()
                     self.clients[ip] = client
                     client.device_all_settings()

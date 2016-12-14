@@ -4,6 +4,9 @@ iKettle, [iKettle 2.0](http://smarter.am/ikettle) and [Smarter Coffee](http://sm
 
 ## Hot! News
 
+__Trigger! You can now push your data or run commands!__
+It is now possible to push sensor values and states of the appliances to other smarthome controllers using http or run commands!
+
 _Legacy iKettle command line support (alpha)_
 
 __Homekit [Cmdswitch2](https://github.com/luisiam/homebridge-cmdswitch2/) Homebridge Polling!__ 
@@ -31,6 +34,7 @@ __For smarthome fans!__
  * No tracking!
  * Stand alone or bridge mode!
  * HomeKit Support
+ * HTTP push!
  
 __iBrew Interfaces & Bridges__
  * Command Line (now with iKettle Legacy support) 
@@ -265,9 +269,8 @@ See the console section for the commands.
 
   iBrew Web Server
 
-  Usage: ibrew (energy) (dump) (fahrenheid) web (port) (rules) (modifiers) (host(:port))
+  Usage: ibrew (dump) (fahrenheid) web (port) (rules) (modifiers) (host(:port))
 
-    energy                 energy saver (stats not possible)
     dump                   dump message enabled
     fahrenheid             use fahrenheid
     web                    start web interface & rest api
@@ -279,10 +282,10 @@ See the console section for the commands.
 
   iBrew Command Line
 
-  Usage: ibrew (energy) (dump) (shout|slow) (coffee|kettle) (fahrenheid) [command] (host(:port))
+  Usage: ibrew (events) (dump) (shout|slow) (coffee|kettle) (fahrenheid) [command] (host(:port))
 
     dump                   dump message enabled
-    energy                 NOT IMPLEMENTED energy saver (stats not possible)
+    events                 enable trigger events (monitor, relay, console)
     shout                  sends commands and quits not waiting for a reply
     slow                   fully inits everything before action
     coffee                 assumes coffee machine
@@ -346,14 +349,31 @@ you can also use them on the command line as arguments, note that [] are mandito
 
   Wireless Network Commands
     direct                 enable direct mode access
-    join [net] [pass]      connect to wireless network
+    join [net] (pass)      connect to wireless network
     rejoin                 rejoins current wireless network [not in direct mode]
     scan                   scan wireless networks
 
-  Smarter Network Commands [console only]
+  Triggers
+    trigger add [group] [trigger] [action] add trigger to a group
+    trigger delete [group] (trigger) delete trigger or group triggers
+    trigger groups         show list of groups
+    trigger [group]        show triggers of group
+    trigger                show all triggers
+    trigger [group] [bool] enabled/disable trigger group
+    trigger [group] state [bool] set group state output
+
+  Actions can either be a path to a command or url
+
+  Trigger actions examples:
+    C:\SCRIPTS\SENSOR.BAT $O $N
+    /home/pi/iBrew/scripts/smarthome.sh 'Temperature' $O $N
+    http://smarthome.local/?idx=34&value=$N
+
+  Smarter Network Commands
     connect (host) (rules&modifiers) connect to appliance
     block [rules]          block messages with groups or ids
     disconnect             disconnect connected appliance
+    events                 start trigger events only
     relay ((ip:)port)      start relay
     relay stop             stop relay
     remote info            info on remote relay
@@ -386,13 +406,15 @@ you can also use them on the command line as arguments, note that [] are mandito
 
   Help Commands
     examples               show examples of commands
-    groups                 show all groups
+    groups                 show all message groups
     group                  show messages in group
     messages               show all known protocol messages
     message [id]           show protocol message detail of message [id]
     notes                  show developer notes on the appliances
     protocol               show all protocol information available
+    states                 show various forms of trigger states
     structure              show protocol structure information
+    triggers               show triggers
 
   iBrew Commands
     console (rules) (modifiers) start console [command line only]
@@ -575,7 +597,7 @@ JavaScript for use with iBrew JSON REST API [Javascript iBrew interface](https:/
 
 The [Python Smarter Interface](https://github.com/Tristan79/iBrew/blob/master/smarter/) to the iKettle 2.0 and the Smarter Coffee is located in the Smarter folder. Use __pydoc__ or any other python doc app to see the help on [SmarterInterface.py](https://github.com/Tristan79/iBrew/blob/master/smarter/SmarterInterface.py) and [SmarterProtocol.py](https://github.com/Tristan79/iBrew/blob/master/smarter/SmarterProtocol.py). There are a lot of options and functions you can use!
 
-#### Basic Example
+#### Basic example
 
 ```
 from smarter.SmarterInterface import *
@@ -590,16 +612,55 @@ appliance.disconnect()
 
 ```
 
-#### Smarthome controller software
+### Smarthome controller push
 
-You can always patch or hack in your favorite Smarthome controller (if they have a python interface) into the following functions of SmarterInterface.py. 
+You can pull values and states with the JSON REST api with it also possible to push values and state with the trigger events system.
+
+To add
 
 ```
-# all decode functions
-def __decode_???(self,.)
+ibrew trigger add Domotic Temperature http://127.0.0.1:8080/json.htm?type=command&param=udevice&idx=155&nvalue=0&svalue=$N 10.0.0.99
+
+ibrew trigger add Scripts KettleBusy "C:\SCRIPTS\SENSOR.BAT $N" 10.0.0.99
+
+ibrew trigger add Scripts KettleBusy "/home/pi/iBrew/scripts/sensor.sh $O $N" 10.0.0.99
 ```
 
-And start up the monitor with a command like ```ibrew dump monitor 10.0.0.99```  ;-) 
+where Domoticz is the group (one action per trigger per group) and $N is the new value and $O is the old value.
+
+To see all triggers
+
+`ibrew triggers`
+
+To see all active triggers
+
+`ibrew trigger`
+
+monitor the trigger event system
+ 
+`ibrew dump events 10.0.0.99`
+
+or use the web server with auto re-connect :-)
+
+`ibrew dump events web 10.0.0.99`
+
+It is possible to set boolean type to various formats (on/off, 1/0, enabled/disabled,...)
+
+
+`ibrew trigger Domoticz state on`
+
+See  `ibrew states` for an overview
+
+
+And enable disable entire groups
+
+`ibrew trigger Domoticz off`
+
+See for group overview
+
+`ibrew trigger groups`
+
+Alpha!
 
 #### Domoticz
 
@@ -662,7 +723,7 @@ Fill in your own device host (either IP address or hostname) and location to iBr
 			"name": "iKettle 2",
 			"on_cmd": "/Users/Tristan/Coding/iBrew/ibrew start 10.0.0.99",
 			"off_cmd": "/Users/Tristan/Coding/iBrew/ibrew stop 10.0.0.99",
-			"state_cmd": "/Users/Tristan/Coding/iBrew/ibrew shortstatus 10.0.0.99 | grep 'heating'",
+			"state_cmd": "/Users/Tristan/Coding/iBrew/ibrew shortstatus 10.0.0.99 | grep 'busy'",
             "manufacturer": "iBrew",
             "model": "iKettle 2.0 Intermezzo",
             "serial": "44DE2AD79BC",
@@ -680,7 +741,7 @@ Fill in your own device host (either IP address or hostname) and location to iBr
 			"name": "Smarter Coffee",
 			"on_cmd": "/Users/Tristan/Coding/iBrew/ibrew start 10.0.0.89",
 			"off_cmd": "/Users/Tristan/Coding/iBrew/ibrew stop 10.0.0.89",
-			"state_cmd": "/Users/Tristan/Coding/iBrew/ibrew shortstatus 10.0.0.89 | grep 'grinding\|brewing'",
+			"state_cmd": "/Users/Tristan/Coding/iBrew/ibrew shortstatus 10.0.0.89 | grep 'busy'",
             "manufacturer": "iBrew",
             "model": "Smarter Coffee Intermezzo",
             "serial": "44DE3AD79BC",
@@ -714,7 +775,7 @@ example config file for iKettle 2.0.
 			"name": "iKettle 2",
 			"on_cmd": "/Users/Tristan/Coding/iBrew/ibrew start 10.0.0.99",
 			"off_cmd": "/Users/Tristan/Coding/iBrew/ibrew stop 10.0.0.99",
-			"state_cmd": "/Users/Tristan/Coding/iBrew/ibrew shortstatus 10.0.0.99 | grep 'heating'",
+			"state_cmd": "/Users/Tristan/Coding/iBrew/ibrew shortstatus 10.0.0.99 | grep 'busy'",
             "manufacturer": "iBrew",
             "model": "iKettle 2.0 Intermezzo",
             "serial": "44DE2AD79BC",

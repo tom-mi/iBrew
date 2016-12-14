@@ -631,7 +631,7 @@ class SmarterProtocol:
         return self.idsMin(ids + addids)
 
     def ids_to_string(self,ids):
-        return " ".join([str(i) for i in ids])
+        return " ".join([Smarter.number_to_code(i) for i in ids])
 
     def groupsListDecode(self,list):
         """
@@ -1123,12 +1123,12 @@ class SmarterProtocol:
 
 
     def string_to_bool(self,boolean):
-        if boolean.lower() == "on" or boolean.lower() == "true" or boolean.lower() == "1":
+        if boolean.lower() == "on" or boolean.lower() == "true" or boolean.lower() == "1" or boolean.lower() == "enabled":
             return True
-        if boolean.lower() == "off" or boolean.lower() == "false" or boolean.lower() == "0":
+        if boolean.lower() == "off" or boolean.lower() == "false" or boolean.lower() == "0" or boolean.lower() == "disabled":
             return False
         else:
-            raise SmarterErrorOld("Unknown boolean [true/1/on/false/0/off]: " + str(boolean))
+            raise SmarterErrorOld("Unknown boolean [true,false 1,0 on,off enabled,disabled]: " + str(boolean))
 
     #------------------------------------------------------
     # CUPS ARGUMENT WRAPPER
@@ -1478,6 +1478,158 @@ class SmarterProtocol:
 
 
 
+    #------------------------------------------------------
+    # TRIGGERS
+    #------------------------------------------------------
+
+
+    # Kettle
+    triggerBusyKettle                   = 9
+    triggerDefaultTemperature           = 10
+    triggerDefaultFormulaTemperature    = 11
+    triggerDefaultKeepWarmTime          = 12
+    triggerWaterSensorBase              = 13
+    triggerKeepWarm                     = 14
+    triggerHeaterKettle                 = 15
+    triggerFormulaCooling               = 16
+    triggerTemperature                  = 17
+    triggerWaterSensor                  = 18
+    triggerOnBase                       = 19
+    triggerUnknownKettle                = 20
+
+    # Coffee
+    triggerMode                         = 21
+    triggerDefaultStrength              = 22
+    triggerDefaultCups                  = 23
+    triggerDefaultGrind                 = 24
+    triggerDefaultHotplate              = 25
+    triggerGrind                        = 26
+    triggerReady                        = 27
+    triggerWorking                      = 28
+    triggerTimerEvent                   = 29
+    triggerWaterLevel                   = 30
+    triggerWaterEnough                  = 31
+    triggerStrength                     = 32
+    triggerCups                         = 33
+    triggerCupsBrew                     = 34
+    triggerUnknownCoffee                = 35
+    triggerCarafe                       = 36
+    triggerGrinder                      = 37
+    triggerHotPlate                     = 38
+    triggerHeaterCoffee                 = 39
+    triggerCarafeRequired               = 40
+    triggerBusyCoffee                   = 41
+
+    
+    # format {(group,sensorid,command),...(group,sensorid,command)}
+    triggersKettle = {
+    
+        # Operational sensors (boolean)
+        triggerBusyKettle                   : ["KettleBusy","STATE true if either heater or formula cooling"],
+        triggerKeepWarm                     : ["KeepWarm","STATE"],
+        triggerHeaterKettle                 : ["KettleHeater","STATE"],
+        triggerFormulaCooling               : ["FormulaCooling","STATE"],
+        triggerOnBase                       : ["OnBase","STATE"],
+        
+        # Data sensors
+        triggerWaterSensorBase              : ["Base","NUMBER"],
+        triggerDefaultKeepWarmTime          : ["DefaultKeepWarm","NUMBER"],
+        triggerDefaultTemperature           : ["DefaultTemperature","NUMBER (0..100)"],
+        triggerDefaultFormulaTemperature    : ["DefaultFormulaTemperature","NUMBER (0..100)"],
+        triggerTemperature                  : ["Temperature","NUMBER"],
+        triggerWaterSensor                  : ["WaterSensor","NUMBER"],
+        triggerUnknownKettle                : ["KettleUnknown","NUMBER"]
+    }
+    
+    triggersCoffee = {
+        # Operational sensors (boolean)
+        triggerGrinder                      : ["Grinder","STATE"],
+        triggerTimerEvent                   : ["Timer","STATE"],
+        triggerBusyCoffee                   : ["CoffeeBusy","STATE"],
+        triggerReady                        : ["Ready","STATE"],
+        triggerWorking                      : ["Working","STATE"],
+        triggerHotPlate                     : ["Hotplate","STATE"],
+        triggerHeaterCoffee                 : ["CoffeeHeater","STATE"],
+
+        # Data sensors
+        triggerCarafeRequired               : ["Carafe required","STATE: if carafe is needed"],
+        triggerMode                         : ["Mode","STATE false is carafe mode, true is cup mode"],
+        triggerGrind                        : ["Grind","STATE false is filter, true if beans"],
+        triggerWaterEnough                  : ["EnoughWater","STATE if there is enough water"],
+        triggerCarafe                       : ["Carafe","STATE if carafe is present"],
+        triggerWaterLevel                   : ["Waterlevel","NUMBER (0..3) representing empty .. full"],
+        triggerStrength                     : ["Strength","NUMBER (0..2) representing (weak,normal,strong)"],
+        triggerCups                         : ["Cups","NUMBER (1..12) or (1..3) in cup mode"],
+        triggerCupsBrew                     : ["CupsBrew","NUMBER"],
+        triggerUnknownCoffee                : ["CoffeeUnknown","NUMBER"],
+        triggerDefaultStrength              : ["DefaultStrength","NUMBER (0..2) representing (weak,normal,strong)"],
+        triggerDefaultCups                  : ["DefaultCups","NUMBER (1..12)"],
+        triggerDefaultGrind                 : ["DefaultGrind","STATE false is filter, true if beans"],
+        triggerDefaultHotplate              : ["DefaultHotplate","NUMBER 0,5-35 minutes in v21 and below or 0,5-40 minutes in v22"]
+    }
+
+    def triggerID(self,trigger):
+        for i in self.triggersCoffee.keys():
+            if trigger == self.triggersCoffee[i][0]:
+                return i
+        for i in self.triggersKettle.keys():
+            if trigger == self.triggersKettle[i][0]:
+                return i
+        raise SmarterErrorOld("Trigger does not exists")
+
+
+    def triggerName(self,trigger):
+        if trigger in self.triggersKettle:
+            return self.triggersKettle[trigger][0]
+        if trigger in self.triggersCoffee:
+            return self.triggersCoffee[trigger][0]
+        raise SmarterErrorOld("Trigger does not exists")
+
+    def triggerDescription(self,trigger):
+        if trigger in self.triggersKettle:
+            return self.triggersKettle[trigger][1]
+        if trigger in self.triggersCoffee:
+            return self.triggersCoffee[trigger][1]
+        raise SmarterErrorOld("Trigger does not exists")
+
+
+    triggerBooleans = [("ON","OFF"),("On","Off"),("on","off"),("1","0"),("TRUE","FALSE"),("True","False"),("true","false"),("ENABLED","DISABLED"),("Enabled,Disabled"),("enabled","disabled")]
+    
+    
+    def triggerCheckBooleans(self,boolean):
+        try:
+            self.string_to_bool(boolean)
+        except:
+            SmarterErrorOld("Trigger state not recognized")
+        for i in self.triggerBooleans:
+            if i[0] == boolean or i[1] == boolean:
+                return i
+        
+
+    def print_triggers(self):
+        print
+        print "Trigger actions"
+        print
+        print "Smarter Coffee Trigger".rjust(25, ' ') + " Sensor Description"
+        print "______________________".rjust(25, ' ') + "___________________"
+        for i in self.triggersCoffee:
+            print self.triggersCoffee[i][0].rjust(25, ' ') + " " + self.triggersCoffee[i][1]
+        print
+        print "iKettle 2.0 Trigger".rjust(25, ' ') + " Sensor Description"
+        print "___________________".rjust(25, ' ') + "___________________"
+        for i in self.triggersKettle:
+            print self.triggersKettle[i][0].rjust(25, ' ') + " " + self.triggersKettle[i][1]
+        print
+
+
+    def print_states(self):
+        print
+        print "State types for trigger actions"
+        print
+        for i in self.triggerBooleans:
+            print i[0] + ": (" + i[0] + "," + i[1] + ")"
+        print
+        
     #------------------------------------------------------
     #
     # Protocol Information

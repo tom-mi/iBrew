@@ -142,7 +142,7 @@ JavaScript for use with iBrew JSON REST API [Javascript iBrew interface](https:/
 
 The [Python Smarter Interface](https://github.com/Tristan79/iBrew/blob/master/smarter/) to the iKettle 2.0 and the Smarter Coffee is located in the Smarter folder. Use __pydoc__ or any other python doc app to see the help on [SmarterInterface.py](https://github.com/Tristan79/iBrew/blob/master/smarter/SmarterInterface.py) and [SmarterProtocol.py](https://github.com/Tristan79/iBrew/blob/master/smarter/SmarterProtocol.py). There are a lot of options and functions you can use!
 
-#### Basic Example
+#### Basic example
 
 ```
 from smarter.SmarterInterface import *
@@ -157,16 +157,55 @@ appliance.disconnect()
 
 ```
 
-#### Smarthome controller software
+### Smarthome controller push
 
-You can always patch or hack in your favorite Smarthome controller (if they have a python interface) into the following functions of SmarterInterface.py. 
+You can pull values and states with the JSON REST api with it also possible to push values and state with the trigger events system.
+
+To add
 
 ```
-# all decode functions
-def __decode_???(self,.)
+ibrew trigger add Domotic Temperature http://127.0.0.1:8080/json.htm?type=command&param=udevice&idx=155&nvalue=0&svalue=$N 10.0.0.99
+
+ibrew trigger add Scripts KettleBusy "C:\SCRIPTS\SENSOR.BAT $N" 10.0.0.99
+
+ibrew trigger add Scripts KettleBusy "/home/pi/iBrew/scripts/sensor.sh $O $N" 10.0.0.99
 ```
 
-And start up the monitor with a command like ```ibrew dump monitor 10.0.0.99```  ;-) 
+where Domoticz is the group (one action per trigger per group) and $N is the new value and $O is the old value.
+
+To see all triggers
+
+`ibrew triggers`
+
+To see all active triggers
+
+`ibrew trigger`
+
+monitor the trigger event system
+ 
+`ibrew dump events 10.0.0.99`
+
+or use the web server with auto re-connect :-)
+
+`ibrew dump events web 10.0.0.99`
+
+It is possible to set boolean type to various formats (on/off, 1/0, enabled/disabled,...)
+
+
+`ibrew trigger Domoticz state on`
+
+See  `ibrew states` for an overview
+
+
+And enable disable entire groups
+
+`ibrew trigger Domoticz off`
+
+See for group overview
+
+`ibrew trigger groups`
+
+Alpha!
 
 #### Domoticz
 
@@ -229,7 +268,7 @@ Fill in your own device host (either IP address or hostname) and location to iBr
 			"name": "iKettle 2",
 			"on_cmd": "/Users/Tristan/Coding/iBrew/ibrew start 10.0.0.99",
 			"off_cmd": "/Users/Tristan/Coding/iBrew/ibrew stop 10.0.0.99",
-			"state_cmd": "/Users/Tristan/Coding/iBrew/ibrew shortstatus 10.0.0.99 | grep 'heating'",
+			"state_cmd": "/Users/Tristan/Coding/iBrew/ibrew shortstatus 10.0.0.99 | grep 'busy'",
             "manufacturer": "iBrew",
             "model": "iKettle 2.0 Intermezzo",
             "serial": "44DE2AD79BC",
@@ -247,7 +286,7 @@ Fill in your own device host (either IP address or hostname) and location to iBr
 			"name": "Smarter Coffee",
 			"on_cmd": "/Users/Tristan/Coding/iBrew/ibrew start 10.0.0.89",
 			"off_cmd": "/Users/Tristan/Coding/iBrew/ibrew stop 10.0.0.89",
-			"state_cmd": "/Users/Tristan/Coding/iBrew/ibrew shortstatus 10.0.0.89 | grep 'grinding\|brewing'",
+			"state_cmd": "/Users/Tristan/Coding/iBrew/ibrew shortstatus 10.0.0.89 | grep 'busy'",
             "manufacturer": "iBrew",
             "model": "Smarter Coffee Intermezzo",
             "serial": "44DE3AD79BC",
@@ -281,7 +320,7 @@ example config file for iKettle 2.0.
 			"name": "iKettle 2",
 			"on_cmd": "/Users/Tristan/Coding/iBrew/ibrew start 10.0.0.99",
 			"off_cmd": "/Users/Tristan/Coding/iBrew/ibrew stop 10.0.0.99",
-			"state_cmd": "/Users/Tristan/Coding/iBrew/ibrew shortstatus 10.0.0.99 | grep 'heating'",
+			"state_cmd": "/Users/Tristan/Coding/iBrew/ibrew shortstatus 10.0.0.99 | grep 'busy'",
             "manufacturer": "iBrew",
             "model": "iKettle 2.0 Intermezzo",
             "serial": "44DE2AD79BC",

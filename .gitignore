@@ -18,3 +18,5 @@ ibrew.py
 *.dmg
 
 *.log
+
+*.spec

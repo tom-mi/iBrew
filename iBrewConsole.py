@@ -60,27 +60,6 @@ class iBrewConsole:
     def monitor(self):
         print "iBrew: Press ctrl-c to stop"
         
-        
-        dump = self.client.dump
-        self.client.dump_status = True
-        self.client.dump = True
-        
-        while True:
-            try:
-                x = raw_input("")
-            except KeyboardInterrupt:
-                self.quit = True
-                break
-            except Exception, e:
-                self.quit = True
-                logging.debug(traceback.format_exc())
-                logging.debug(str(e))
-                break
-        self.client.dump = dump
-        self.client.dump_status = False
-        print
-        
-    def rootmonitor(self):
         dump = self.client.dump
         self.client.dump_status = True
         self.client.dump = True
@@ -99,7 +78,8 @@ class iBrewConsole:
                 break
         self.client.dump = dump
         self.client.dump_status = False
-
+        print
+   
 
 
     #------------------------------------------------------
@@ -123,7 +103,7 @@ class iBrewConsole:
             logging.info("iBrew: Failed to run Web Interface & REST API on port " + str(port))
             return
         logging.info("iBrew: Starting Web Interface & REST API on port " + str(port) + ". Press ctrl-c to stop")
-        self.rootmonitor()
+        self.monitor()
         self.web.kill()
         logging.info("iBrew: Stopped Web Interface & REST API on port " + str(port))
  
@@ -323,7 +303,23 @@ class iBrewConsole:
             #    print "NOT LICENSED"
             #    return
             self.username = "NOT LICENSED"
-            
+
+
+            if command == "events":
+                if self.console:
+                    if self.client.events == False:
+                        self.client.events = True
+                        print "iBrew: Trigger events enabled"
+                    else:
+                        self.client.events = False
+                        print "iBrew: Trigger events disabled"
+                    return
+                elif numarg != 0:
+                    self.client.events = True
+                    command = arguments[0].lower()
+                    arguments = arguments[1:]
+                    numarg -= 1
+
             if command == "dump":
                 if numarg == 0 and not self.console:
                     print "iBrew: Do I look like a civet cat to you?"
@@ -491,15 +487,15 @@ class iBrewConsole:
                 self.client.disconnect()
                 return
 
-            if command == "connect" or command == "console" or ((command == "relay" or command == "sweep" or command == "monitor" or command == "web") and not self.console):
+            if command == "connect" or command == "console" or ((command == "relay" or command == "sweep" or command == "events" or command == "monitor" or command == "web") and not self.console):
                 self.app_info()
                 self.joke()
 
 
-            if command == "monitor":
+            if command == "monitor" or command == "events":
                 self.client.fast = False
 
-            if (command == "relay" and not self.console) or ((not self.client.connected or self.haveHost) and command != "help" and command != "?" and command != "list" and command != "message" and command != "usage" and command != "commands" and command != "web" and command != "joke" and command != "license" and command != "protocol" and command != "structure" and command != "notes" and command != "groups" and command != "group" and command != "examples" and command != "messages" and command != "rules" and command != "rule"):
+            if (command == "relay" and not self.console) or ((not self.client.connected or self.haveHost) and command != "help" and command != "?" and command != "list" and command != "message" and command != "usage" and command != "commands" and command != "web" and command != "joke" and command != "license" and command != "protocol" and command != "structure" and command != "notes" and command != "groups" and command != "group" and command != "examples" and command != "states" and command != "triggers" and command != "messages" and command != "rules" and command != "rule"):
 
 
                 if not self.haveHost and command != "relay":
@@ -556,7 +552,7 @@ class iBrewConsole:
                     return
 
 
-            if command == "connect" or command == "console" or ((command == "relay" or command == "sweep" or command == "monitor") and not self.console):
+            if command == "connect" or command == "console" or ((command == "relay" or command == "sweep" or command == "monitor" or command == "events") and not self.console):
  
                 try:
                     self.client.device_all_settings()
@@ -610,7 +606,45 @@ class iBrewConsole:
                                                 
                                             else:
                                                 print "iBrew: Use additional command: info, block or unblock"
-            
+            elif command == "triggers":     Smarter.print_triggers()
+            elif command == "states":     Smarter.print_states()
+            elif command == "trigger":
+                                            if numarg == 0:
+                                                self.client.print_triggers()
+                                            else:
+                                                if arguments[0] == "groups":
+                                                    self.client.print_groups()
+                                                elif arguments[0] == "add" and numarg == 4:
+                                                    self.client.triggerAdd(arguments[1],arguments[2],arguments[3])
+                                                elif arguments[0] == "add" and numarg != 4:
+                                                    print "iBrew: trigger add need a group name and a trigger action"
+                                                elif arguments[0][0:3] == "del":
+                                                    if numarg == 3 or numarg == 2:
+                                                        if numarg == 2:
+                                                            self.client.triggerGroupDelete(arguments[1])
+                                                        else:
+                                                            self.client.triggerDelete(arguments[1],arguments[2])
+                                                    else:
+                                                        print "iBrew: trigger delete need a group name or a group name and a trigger action"
+                                                else:
+                                                    if numarg == 1:
+                                                        self.client.print_group(arguments[0])
+                                                    elif numarg == 2:
+                                                        if arguments[1] == "state":
+                                                            print "iBrew: Missing arguments, which duality?"
+                                                        else:
+                                                            try:
+                                                                state = Smarter.string_to_bool(arguments[1])
+                                                                if state: self.client.enableGroup(arguments[0])
+                                                                else: self.client.disableGroup(arguments[0])
+                                                            except Exception, e:
+                                                                print str(e)
+                                                                print "iBrew: failed to get state"
+                                                    elif arguments[1] == "state":
+                                                        self.client.boolsGroup(arguments[0],arguments[2])
+                                                    else:
+                                                        print "iBrew: missing arguments, about time for some peace and quite :-)"
+                                                            
             elif command == "relay":
                                             if numarg >= 1:
                                                 if arguments[0] == "stop":
@@ -628,11 +662,11 @@ class iBrewConsole:
                                                     except IndexError:
                                                         pass
                                                     self.client.relay_start()
-                                                    self.rootmonitor()
+                                                    self.monitor()
                                                     
                                             else:
                                                 self.client.relay_start()
-                                                self.rootmonitor()
+                                                self.monitor()
             
             elif command == "commands":     self.commands()
             elif command == "protocol":     print Smarter.protocol()
@@ -840,6 +874,9 @@ class iBrewConsole:
 
               # Console Commands
             elif command == "monitor":      self.monitor()
+            elif command == "events":
+                                            self.client.events = True
+                                            self.monitor()
             elif command == "sweep":
                                             if numarg >= 1:
                                                  self.sweep(Smarter.code_to_number(arguments[0]))
@@ -916,7 +953,7 @@ class iBrewConsole:
         logger.setLevel(logging.DEBUG)
         formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
         
-        log_file = os.path.join(AppFolders.logs(), "iBrewConsole.log")
+        log_file = os.path.join(AppFolders.logs(), "ibrew.log")
         
         fh = logging.handlers.RotatingFileHandler(log_file, maxBytes=1048576, backupCount=4, encoding="UTF8")
         fh.setLevel(logging.DEBUG)
@@ -934,9 +971,8 @@ class iBrewConsole:
         
         self.console = False
         self.quit = True
-        self.client = SmarterClient()
+        self.client = SmarterClient(AppFolders.settings() + "/")
         
-        self.client.settingsPath = AppFolders.settings() + "/"
         self.client.fast = True
         try:
             self.execute(arguments)
@@ -994,9 +1030,10 @@ class iBrewConsole:
         print
         print "  iBrew Web Server"
         print
-        print "  Usage: ibrew (energy) (dump) (fahrenheid) web (port) (rules) (modifiers) (host(:port))"
+        print "  Usage: ibrew (dump) (fahrenheid) web (port) (rules) (modifiers) (host(:port))"
+#        print "  Usage: ibrew (energy) (dump) (fahrenheid) web (port) (rules) (modifiers) (host(:port))"
         print
-        print "    energy                 energy saver (stats not possible)"
+     #   print "    energy                 energy saver (stats not possible)"
         print "    dump                   dump message enabled"
         print "    fahrenheid             use fahrenheid"
         print "    web                    start web interface & rest api"
@@ -1008,10 +1045,12 @@ class iBrewConsole:
         print
         print "  iBrew Command Line"
         print
-        print "  Usage: ibrew (energy) (dump) (shout|slow) (coffee|kettle) (fahrenheid) [command] (host(:port))"
+        #print "  Usage: ibrew (energy) (dump) (shout|slow) (coffee|kettle) (fahrenheid) [command] (host(:port))"
+        print "  Usage: ibrew (events) (dump) (shout|slow) (coffee|kettle) (fahrenheid) [command] (host(:port))"
         print
         print "    dump                   dump message enabled"
-        print "    energy                 NOT IMPLEMENTED energy saver (stats not possible)"
+        print "    events                 enable trigger events (monitor, relay, console)"
+        #print "    energy                 NOT IMPLEMENTED energy saver (stats not possible)"
         print "    shout                  sends commands and quits not waiting for a reply"
         print "    slow                   fully inits everything before action"
         print "    coffee                 assumes coffee machine"
@@ -1071,14 +1110,31 @@ class iBrewConsole:
         print
         print "  Wireless Network Commands"
         print "    direct                 enable direct mode access"
-        print "    join [net] [pass]      connect to wireless network"
+        print "    join [net] (pass)      connect to wireless network"
         print "    rejoin                 rejoins current wireless network [not in direct mode]"
         print "    scan                   scan wireless networks"
         print
-        print "  Smarter Network Commands [console only]"
+        print "  Triggers"
+        print "    trigger add [group] [trigger] [action] add trigger to a group"
+        print "    trigger delete [group] (trigger) delete trigger or group triggers"
+        print "    trigger groups         show list of groups"
+        print "    trigger [group]        show triggers of group"
+        print "    trigger                show all triggers"
+        print "    trigger [group] [bool] enabled/disable trigger group"
+        print "    trigger [group] state [bool] set group state output"
+        print
+        print "  Actions can either be a path to a command or url"
+        print
+        print "  Trigger actions examples:"
+        print "    C:\SCRIPTS\SENSOR.BAT $O $N"
+        print "    /home/pi/iBrew/scripts/smarthome.sh 'Temperature' $O $N"
+        print "    http://smarthome.local/?idx=34&value=$N"
+        print
+        print "  Smarter Network Commands"
         print "    connect (host) (rules&modifiers) connect to appliance"
         print "    block [rules]          block messages with groups or ids"
         print "    disconnect             disconnect connected appliance"
+        print "    events                 start trigger events only"
         print "    relay ((ip:)port)      start relay"
         print "    relay stop             stop relay"
         print "    remote info            info on remote relay"
@@ -1147,13 +1203,15 @@ class iBrewConsole:
         
         print "  Help Commands"
         print "    examples               show examples of commands"
-        print "    groups                 show all groups"
+        print "    groups                 show all message groups"
         print "    group                  show messages in group"
         print "    messages               show all known protocol messages"
         print "    message [id]           show protocol message detail of message [id]"
         print "    notes                  show developer notes on the appliances"
         print "    protocol               show all protocol information available"
+        print "    states                 show various forms of trigger states"
         print "    structure              show protocol structure information"
+        print "    triggers               show triggers"
         print
         print "  iBrew Commands"
         print "    console (rules) (modifiers) start console [command line only]"
