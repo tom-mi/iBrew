@@ -1568,18 +1568,27 @@ class SmarterProtocol:
         triggerDefaultHotplate              : ["DefaultHotplate","NUMBER 0,5-35 minutes in v21 and below or 0,5-40 minutes in v22"]
     }
 
+    def triggerID(self,trigger):
+        for i in self.triggersCoffee.keys():
+            if trigger == self.triggersCoffee[i][0]:
+                return i
+        for i in self.triggersKettle.keys():
+            if trigger == self.triggersKettle[i][0]:
+                return i
+        raise SmarterErrorOld("Trigger does not exists")
+
 
     def triggerName(self,trigger):
-        if trigger in triggersKettle:
+        if trigger in self.triggersKettle:
             return self.triggersKettle[trigger][0]
-        if trigger in triggersCoffee:
+        if trigger in self.triggersCoffee:
             return self.triggersCoffee[trigger][0]
         raise SmarterErrorOld("Trigger does not exists")
 
     def triggerDescription(self,trigger):
-        if trigger in triggersKettle:
+        if trigger in self.triggersKettle:
             return self.triggersKettle[trigger][1]
-        if trigger in triggersCoffee:
+        if trigger in self.triggersCoffee:
             return self.triggersCoffee[trigger][1]
         raise SmarterErrorOld("Trigger does not exists")
 

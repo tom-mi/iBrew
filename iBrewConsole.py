@@ -618,9 +618,9 @@ class iBrewConsole:
                                             else:
                                                 if arguments[0] == "groups":
                                                     self.client.print_groups()
-                                                elif arguments[0] == "add" and numarg == 3:
-                                                    self.client.triggerAdd(arguments[1],arguments[2])
-                                                elif arguments[0] == "add" and numarg != 3:
+                                                elif arguments[0] == "add" and numarg == 4:
+                                                    self.client.triggerAdd(arguments[1],arguments[2],arguments[3])
+                                                elif arguments[0] == "add" and numarg != 4:
                                                     print "iBrew: trigger add need a group name and a trigger action"
                                                 elif arguments[0][0:3] == "del":
                                                     if numarg == 3 or numarg == 2:

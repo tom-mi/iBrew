@@ -207,6 +207,7 @@ class SmarterClient:
         """
         Initializing SmarterClient
         """
+        self.settingsPath                 = setting_path
 
         self.serverHost                 = ''
         self.serverPort                 = Smarter.Port
@@ -272,8 +273,7 @@ class SmarterClient:
 
 
         self.__init()
-        self.settingsPath                 = setting_path
-    
+
 
 
         try:
@@ -2400,11 +2400,11 @@ class SmarterClient:
     triggersKettle = {
     
         # Operational sensors (boolean)
-        Smarter.triggerBusyKettle                   : [],
-        Smarter.triggerKeepWarm                     : [],
-        Smarter.triggerHeaterKettle                 : [],
-        Smarter.triggerFormulaCooling               : [],
-        Smarter.triggerOnBase                       : [],
+        Smarter.triggerBusyKettle                   : [("Domoticz","http://www.google.com/$N&$O"),("OpenHAB","/e/x")],
+        Smarter.triggerKeepWarm                     : [("Domoticz","http://www.google.com/$N&$O"),("OpenHAB","/e/x")],
+        Smarter.triggerHeaterKettle                 : [("Domoticz","http://www.google.com/$N&$O"),("OpenHAB","/e/x")],
+        Smarter.triggerFormulaCooling               : [("Domoticz","http://www.google.com/$N&$O"),("OpenHAB","/e/x")],
+        Smarter.triggerOnBase                       : [("Domoticz","http://www.google.com/$N&$O"),("OpenHAB","/e/x")],
         
         # Data sensors
         Smarter.triggerWaterSensorBase              : [],
@@ -2418,10 +2418,10 @@ class SmarterClient:
 
     triggersCoffee = {
         # Operational sensors (boolean)
-        Smarter.triggerGrinder                      : [],
-        Smarter.triggerTimerEvent                   : [],
-        Smarter.triggerBusyCoffee                   : [],
-        Smarter.triggerReady                        : [],
+        Smarter.triggerGrinder                      : [("Domoticz","http://www.google.com/$N&$O"),("OpenHAB","/e/x")],
+        Smarter.triggerTimerEvent                   : [("Domoticz","http://www.google.com/$N&$O"),("OpenHAB","/e/x")],
+        Smarter.triggerBusyCoffee                   : [("Domoticz","http://www.google.com/$N&$O"),("OpenHAB","/e/x")],
+        Smarter.triggerReady                        : [("Domoticz","http://www.google.com/$N&$O"),("OpenHAB","/e/x")],
         Smarter.triggerWorking                      : [],
         Smarter.triggerHotPlate                     : [],
         Smarter.triggerHeaterCoffee                 : [],
@@ -2446,14 +2446,13 @@ class SmarterClient:
     @_threadsafe_function
     def __write_triggers(self):
 
-
         section = self.host + ".triggers"
-        if self.isKettle:
-            section += ".kettle"
-        elif self.isCoffee:
-            section += ".coffee"
-        else:
-            return
+        #if self.isKettle:
+        #    section += ".kettle"
+        #elif self.isCoffee:
+        #    section += ".coffee"
+        #else:
+        #    return
 
         config = SafeConfigParser()
 
@@ -2483,29 +2482,25 @@ class SmarterClient:
             except DuplicateSectionError:
                 pass
             try:
-                config.set(section+"."+i, "Active", str(self.triggerGroups[self.__findGroup(i)][0]))
+                config.set(section+"."+i, "Active", str(self.triggerGroups[self.__findGroup(i)][1]))
                 config.set(section+"."+i, "State", str(self.triggerGroups[self.__findGroup(i)][2][0]))
             except Exception:
                 pass
 
             if self.isKettle:
                 for j in Smarter.triggersKettle:
-                    print section+"."+i
-                    print Smarter.triggerName(j)
-                    #print ','.join(Smarter.triggersKettle[j][1])
-            """
                     try:
-                        config.set(section+"."+i, Smarter.triggerName(j), ','.join(Smarter.triggersKettle[j][1]))
+                        config.set(section+"."+i, Smarter.triggerName(j),self.triggerGet(i,Smarter.triggerName(j)))
                     except Exception:
                         pass
                     
             if self.isCoffee:
                 for j in Smarter.triggersCoffee:
                     try:
-                        config.set(section+"."+i, Smarter.triggerName(j), ','.join(Smarter.triggersCoffee[j][1]))
+                        config.set(section+"."+i, Smarter.triggerName(j),self.triggerGet(i,Smarter.triggerName(j)))
                     except Exception:
                         pass
-            """
+        
         with open(self.settingsPath+'ibrew.conf', 'w') as f:
             config.write(f)
 
@@ -2514,12 +2509,12 @@ class SmarterClient:
     def __read_triggers(self):
         
         section = self.host + ".triggers"
-        if self.isKettle:
-            section += ".kettle"
-        elif self.isCoffee:
-            section += ".coffee"
-        else:
-            return
+        #if self.isKettle:
+        #    section += ".kettle"
+        #elif self.isCoffee:
+        #    section += ".coffee"
+        #else:
+        #    return
 
         config = SafeConfigParser()
 
@@ -2567,6 +2562,18 @@ class SmarterClient:
         self.__write_triggers()
     
     
+    def triggerGet(self,group,trigger):
+        id = Smarter.triggerID(trigger)
+        if id in self.triggersKettle:
+            if self.triggersKettle[id] is not None:
+                for i in self.triggersKettle[id]:
+                    if i[0] == group: return i[1]
+        if id in self.triggersCoffee:
+            if self.triggersCoffee[id] is not None:
+                for i in self.triggersCoffee[id]:
+                    if i[0] == group: return i[1]
+
+
     def __isGroup(self,group):
         for i in self.triggerGroups:
             if i[0] == group:
@@ -2583,7 +2590,7 @@ class SmarterClient:
 
     def enableGroup(self,group):
         if self.__isGroup(group):
-            print "Enabled " + group
+            print "Trigger group enabled " + group
             self.triggerGroups[self.__findGroup(group)][1] = True
             return
         raise SmarterErrorOld("Trigger group not found")
@@ -2591,7 +2598,7 @@ class SmarterClient:
 
     def disableGroup(self,group):
         if self.__isGroup(group):
-            print "Disabled " + group
+            print "Trigger group disabled " + group
             self.triggerGroups[self.__findGroup(group)][1] = False
             return
         raise SmarterErrorOld("Trigger group not found")
@@ -2600,7 +2607,7 @@ class SmarterClient:
     
     def boolsGroup(self,group,bools):
         if self.__isGroup(group):
-            print Smarter.triggerCheckBooleans(bools)
+            print "Trigger group " + group + "setting state type " + Smarter.triggerCheckBooleans(bools)
             self.triggerGroups[self.__findGroup(group)][2] = Smarter.triggerCheckBooleans(bools)
             return
         raise SmarterErrorOld("Trigger group not found")
