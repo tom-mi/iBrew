@@ -631,7 +631,7 @@ class SmarterProtocol:
         return self.idsMin(ids + addids)
 
     def ids_to_string(self,ids):
-        return " ".join([str(i) for i in ids])
+        return " ".join([Smarter.number_to_code(i) for i in ids])
 
     def groupsListDecode(self,list):
         """
