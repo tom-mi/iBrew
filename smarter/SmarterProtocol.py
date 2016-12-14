@@ -1525,9 +1525,9 @@ class SmarterProtocol:
     triggersKettle = {
     
         # Operational sensors (boolean)
-        triggerBusyKettle                   : ["Busy","STATE true if either heater or formula cooling"],
+        triggerBusyKettle                   : ["KettleBusy","STATE true if either heater or formula cooling"],
         triggerKeepWarm                     : ["KeepWarm","STATE"],
-        triggerHeaterKettle                 : ["Heater","STATE"],
+        triggerHeaterKettle                 : ["KettleHeater","STATE"],
         triggerFormulaCooling               : ["FormulaCooling","STATE"],
         triggerOnBase                       : ["OnBase","STATE"],
         
@@ -1538,30 +1538,30 @@ class SmarterProtocol:
         triggerDefaultFormulaTemperature    : ["DefaultFormulaTemperature","NUMBER (0..100)"],
         triggerTemperature                  : ["Temperature","NUMBER"],
         triggerWaterSensor                  : ["WaterSensor","NUMBER"],
-        triggerUnknownKettle                : ["Unknown","NUMBER"]
+        triggerUnknownKettle                : ["KettleUnknown","NUMBER"]
     }
     
     triggersCoffee = {
         # Operational sensors (boolean)
         triggerGrinder                      : ["Grinder","STATE"],
         triggerTimerEvent                   : ["Timer","STATE"],
-        triggerBusyCoffee                   : ["Busy","STATE"],
+        triggerBusyCoffee                   : ["CoffeeBusy","STATE"],
         triggerReady                        : ["Ready","STATE"],
         triggerWorking                      : ["Working","STATE"],
         triggerHotPlate                     : ["Hotplate","STATE"],
-        triggerHeaterCoffee                 : ["Heater","STATE"],
+        triggerHeaterCoffee                 : ["CoffeeHeater","STATE"],
 
         # Data sensors
         triggerCarafeRequired               : ["Carafe required","STATE: if carafe is needed"],
         triggerMode                         : ["Mode","STATE false is carafe mode, true is cup mode"],
         triggerGrind                        : ["Grind","STATE false is filter, true if beans"],
-        triggerWaterEnough                  : ["Enough water","STATE if there is enough water"],
+        triggerWaterEnough                  : ["EnoughWater","STATE if there is enough water"],
         triggerCarafe                       : ["Carafe","STATE if carafe is present"],
         triggerWaterLevel                   : ["Waterlevel","NUMBER (0..3) representing empty .. full"],
         triggerStrength                     : ["Strength","NUMBER (0..2) representing (weak,normal,strong)"],
         triggerCups                         : ["Cups","NUMBER (1..12) or (1..3) in cup mode"],
         triggerCupsBrew                     : ["CupsBrew","NUMBER"],
-        triggerUnknownCoffee                : ["Unknown","NUMBER"],
+        triggerUnknownCoffee                : ["CoffeeUnknown","NUMBER"],
         triggerDefaultStrength              : ["DefaultStrength","NUMBER (0..2) representing (weak,normal,strong)"],
         triggerDefaultCups                  : ["DefaultCups","NUMBER (1..12)"],
         triggerDefaultGrind                 : ["DefaultGrind","STATE false is filter, true if beans"],

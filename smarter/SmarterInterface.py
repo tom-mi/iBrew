@@ -2557,20 +2557,26 @@ class SmarterClient:
             pass
             
     def triggerAdd(self,group,trigger,action):
-        # check group exists
-        # check if trigger exitst
-        # delete existing trigger
-        # not group exitst create group
-        # add trigger with action
+        if not self.__isGroup(group):
+            self.triggerGroups += [(group,True,"1")]
+        self.triggerSet(group,trigger,action)
         self.__write_triggers()
 
 
     def triggerGroupDelete(self,group):
-        self.__write_triggers()
+        if self.__isGroup(self,group):
+            #..
+            self.__write_triggers()
+        else:
+            raise SmarterErrorOld("Trigger group not found")
     
     
     def triggerDelete(self,group,trigger):
-        self.__write_triggers()
+        if self.__isGroup(self,group):
+            #..
+            self.__write_triggers()
+        else:
+            raise SmarterErrorOld("Trigger group not found")
 
     
     def triggerGet(self,group,trigger):
@@ -2584,6 +2590,25 @@ class SmarterClient:
                 for i in self.triggersCoffee[id]:
                     if i[0] == group: return i[1]
         return ""
+
+
+    def triggerSet(self,group,trigger,action):
+        id = Smarter.triggerID(trigger)
+        print id
+        if id in self.triggersKettle:
+            if len(self.triggersKettle[id]) != 0:
+                for i in range(0,len(self.triggersKettle[id])):
+                    if self.triggersKettle[id][i][0] == group:
+                        del self.triggersKettle[id][i]
+            self.triggersKettle[id] += [(group,action)]
+        
+        if id in self.triggersCoffee:
+            if len(self.triggersCoffee[id]) != 0:
+                for i in range(0,len(self.triggersCoffee[id])):
+                    if self.triggersCoffee[id][i][0] == group:
+                        del self.triggersCoffee[id][i]
+            self.triggersCoffee[id] += [(group,action)]
+        self.__write_triggers()
 
 
     def __isGroup(self,group):
