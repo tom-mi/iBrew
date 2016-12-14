@@ -142,7 +142,7 @@ JavaScript for use with iBrew JSON REST API [Javascript iBrew interface](https:/
 
 The [Python Smarter Interface](https://github.com/Tristan79/iBrew/blob/master/smarter/) to the iKettle 2.0 and the Smarter Coffee is located in the Smarter folder. Use __pydoc__ or any other python doc app to see the help on [SmarterInterface.py](https://github.com/Tristan79/iBrew/blob/master/smarter/SmarterInterface.py) and [SmarterProtocol.py](https://github.com/Tristan79/iBrew/blob/master/smarter/SmarterProtocol.py). There are a lot of options and functions you can use!
 
-#### Basic Example
+#### Basic example
 
 ```
 from smarter.SmarterInterface import *
@@ -157,13 +157,17 @@ appliance.disconnect()
 
 ```
 
-#### Smarthome controller software
+### Smarthome controller push
 
 You can pull values and states with the JSON REST api with it also possible to push values and state with the trigger events system.
 
 To add
 
 `ibrew trigger add Domotic Temperature http://127.0.0.1:8080/json.htm?type=command&param=udevice&idx=155&nvalue=0&svalue=$N 10.0.0.99`
+
+`ibrew trigger add Scripts KettleBusy "C:\SCRIPTS\SENSOR.BAT $N" 10.0.0.99`
+
+`ibrew trigger add Scripts KettleBusy "/home/pi/iBrew/scripts/sensor.sh $O $N" 10.0.0.99`
 
 where Domoticz is the group (one action per trigger per group) and $N is the new value and $O is the old value.
 
@@ -185,7 +189,11 @@ or use the web server with auto re-connect :-)
 
 It is possible to set boolean type to various formats (on/off, 1/0, enabled/disabled,...)
 
+
 `ibrew trigger Domoticz state on`
+
+See  `ibrew states` for an overview
+
 
 And enable disable entire groups
 
