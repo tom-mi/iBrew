@@ -662,16 +662,73 @@ See for group overview
 
 Alpha!
 
-#### Domoticz
-
-Link to old [domoticz alpha python interface](https://github.com/Tristan79/iBrew/tree/6014cbf0a8cd551e74cbc8bfcf3f0f97389359c2/domoticz). This link contains old example [code](https://github.com/Tristan79/iBrew/blob/927c43e347b7c8aa1c2d897936ac51c34fa80e7e/iBrewTerminal.py) for a monitor (look for domoticz) which can be reused
-
-
 ## Guides
 
-### Domoticz
+### [Domoticz](http://www.domoticz.com/)
 
-Coming soon!
+Lets set up a kettle temperature sensor and a on base sensor!
+
+For this example the base url of domoticz is 
+
+`http://127.0.0.1:8080/`
+
+The IP of the kettle is `10.0.0.99`
+
+Lets start!
+
+Go to `Setup -> Hardware`
+
+![hardware](https://raw.githubusercontent.com/Tristan79/iBrew/master/distro/images/domoticz/hardware.png)
+
+Click on _Create Virtual Sensors_
+
+![sensor](https://raw.githubusercontent.com/Tristan79/iBrew/master/distro/images/domoticz/sensor.png)
+
+Create a temperature sensor (for other types see below for an overview)
+
+![temperature](https://raw.githubusercontent.com/Tristan79/iBrew/master/distro/images/domoticz/temperature.png)
+
+Go to `Setup -> Devices` and look up your new sensor.
+
+![devices](https://raw.githubusercontent.com/Tristan79/iBrew/master/distro/images/domoticz/devices.png)
+
+Use the _idx_ of the sensor to add a trigger
+
+`ibrew trigger add Domotic Temperature http://127.0.0.1:8080/json.htm?type=command&param=udevice&idx=155&nvalue=0&svalue=$N 10.0.0.99`
+
+Now we also add a on base motion sensor 
+
+![switch](https://raw.githubusercontent.com/Tristan79/iBrew/master/distro/images/domoticz/switch.png)
+
+Go to `Switches` and look up your new sensor.
+
+![switches](https://raw.githubusercontent.com/Tristan79/iBrew/master/distro/images/domoticz/devices.png)
+
+Edit it!
+
+![motion](https://raw.githubusercontent.com/Tristan79/iBrew/master/distro/images/domoticz/motion.png)
+
+Select motion 
+
+![edit](https://raw.githubusercontent.com/Tristan79/iBrew/master/distro/images/domoticz/edit.png)
+
+Look up the idx in `Setup -> Devices`
+
+Use the _idx_ of the sensor to add a trigger
+
+`ibrew trigger add Domotic OnBase http://127.0.0.1:8080/json.htm?type=command&param=switchlight&idx=99&switchcmd=$N 10.0.0.99`
+
+We need to set up the right boolean state, domoticz uses the format _On_ or _Off_
+
+`ibrew trigger Domoticz state On 10.0.0.99`
+
+start any server with the events enables like
+
+`ibrew dump events web`
+
+To see it in action!
+
+For more information on [JSON used by domoticz!](https://www.domoticz.com/wiki/Domoticz_API/JSON_URL's)
 
 ### HomeKit ~ HomeBridge 
 
