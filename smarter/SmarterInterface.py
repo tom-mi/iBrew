@@ -2395,7 +2395,7 @@ class SmarterClient:
 
 
     # format Name,Active,Bool format
-    triggerGroups = [] # [["Domoticz",False,('On','Off')],["OpenHAB",True,('1','0')]]
+    triggerGroups = []
     
     # format {(group,sensorid,command),...(group,sensorid,command)}
     triggersKettle = {
@@ -2488,20 +2488,21 @@ class SmarterClient:
             except Exception:
                 pass
 
-            if self.isKettle:
-                for j in Smarter.triggersKettle:
-                    try:
-                        config.set(section+"."+i, Smarter.triggerName(j),self.triggerGet(i,Smarter.triggerName(j)))
-                    except Exception:
-                        pass
-                    
-            if self.isCoffee:
-                for j in Smarter.triggersCoffee:
-                    try:
-                        config.set(section+"."+i, Smarter.triggerName(j),self.triggerGet(i,Smarter.triggerName(j)))
-                    except Exception:
-                        pass
-        
+            #if self.isKettle:
+            for j in Smarter.triggersKettle:
+                try:
+                    config.set(section+"."+i, Smarter.triggerName(j),self.triggerGet(i,Smarter.triggerName(j)))
+                except Exception:
+                    pass
+
+
+            #if self.isCoffee:
+            for j in Smarter.triggersCoffee:
+                try:
+                    config.set(section+"."+i, Smarter.triggerName(j),self.triggerGet(i,Smarter.triggerName(j)))
+                except Exception:
+                    pass
+    
         with open(self.settingsPath+'ibrew.conf', 'w') as f:
             config.write(f)
 
