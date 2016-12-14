@@ -76,6 +76,8 @@ class SmarterClient:
     
     
     def __init(self):
+    
+        self.__read_triggers()
         self.__simulation_default()
     
     
@@ -163,7 +165,7 @@ class SmarterClient:
         self.__deltaCountHotPlateOn       = 0
         self.__deltaCountKettleRemoved    = 0
         self.__deltaCountHeater           = 0
-        self.__deltaCountFormulaCooling      = 0
+        self.__deltaCountFormulaCooling   = 0
         self.__deltaCountKeepWarm         = 0
         self.__deltaSessionCount          = 0
 
@@ -177,7 +179,7 @@ class SmarterClient:
         self.readBytesCount             = 0
 
         self.countHeater                = 0
-        self.countFormulaCooling           = 0
+        self.countFormulaCooling        = 0
 
         # coffee session counters
         self.countCarafeRemoved         = 0
@@ -197,7 +199,7 @@ class SmarterClient:
    
    
     
-    def __init__(self):
+    def __init__(self,setting_path=""):
         """
         Initializing SmarterClient
         """
@@ -220,7 +222,7 @@ class SmarterClient:
         self.totalCountHotPlateOn            = 0
         self.totalCountKettleRemoved         = 0
         self.totalCountHeater                = 0
-        self.totalCountFormulaCooling           = 0
+        self.totalCountFormulaCooling        = 0
         self.totalCountKeepWarm              = 0
         self.totalSessionCount               = 0
         
@@ -261,7 +263,7 @@ class SmarterClient:
         self.relayVersion                 = 1
         
         self.__init()
-        self.settingsPath                 = ""
+        self.settingsPath                 = setting_path
     
         # firewall or message blocking rules
         self.rulesIn                 = Smarter.MessagesDebug + Smarter.MessagesRest
@@ -290,7 +292,7 @@ class SmarterClient:
     @_threadsafe_function
     def __write_stats(self):
         
-        section = "stats"
+        section = self.host + ".statistics"
         if self.isKettle:
             section += ".kettle"
         elif self.isCoffee:
@@ -303,7 +305,7 @@ class SmarterClient:
         if not os.path.exists(self.settingsPath):
                 os.makedirs(self.settingsPath)
         
-        config.read(self.settingsPath+self.host+'.conf')
+        config.read(self.settingsPath+'ibrew.conf')
         
         try:
             config.add_section(section)
@@ -402,7 +404,7 @@ class SmarterClient:
             config.set(section, 'sessions', str(self.sessionCount))
 
         
-        with open(self.settingsPath+self.host+'.conf', 'w') as f:
+        with open(self.settingsPath+'ibrew.conf', 'w') as f:
             config.write(f)
 
         
@@ -2354,48 +2356,146 @@ class SmarterClient:
 
     
     # format {(group,sensorid,command),...(group,sensorid,command)}
-    actions = {
-        triggerBusyKettle                   : {},
-        triggerBusyCoffee                   : {},
-        triggerDefaultTemperature           : {},
-        triggerDefaultFormulaTemperature    : {},
-        triggerDefaultKeepWarmTime          : {},
-        triggerDefaultStrength              : {},
-        triggerDefaultCups                  : {},
-        triggerDefaultGrind                 : {},
-        triggerDefaultHotplate              : {},
-        triggerWaterSensorBase              : {},
-        triggerCarafeRequired               : {},
-        triggerMode                         : {},
-        triggerGrind                        : {},
-        triggerReady                        : {},
-        triggerWorking                      : {},
-        triggerTimerEvent                   : {},
-        triggerWaterLevel                   : {},
-        triggerWaterEnough                  : {},
-        triggerStrength                     : {},
-        triggerCups                         : {},
-        triggerCupsBrew                     : {},
-        triggerUnknownCoffee                : {},
-        triggerCarafe                       : {},
-        triggerGrinder                      : {},
-        triggerHotPlate                     : {},
-        triggerHeaterCoffee                 : {},
-        triggerKeepWarm                     : {},
-        triggerHeaterKettle                 : {},
-        triggerFormulaCooling               : {},
-        triggerTemperature                  : {},
-        triggerWaterSensor                  : {},
-        triggerOnBase                       : {},
-        triggerUnknownKettle                : {}
+    actionsKettle = {
+    
+        # Operational sensors (boolean)
+        triggerBusyKettle                   : ["Busy",[]],
+        triggerKeepWarm                     : ["Keep warm",[]],
+        triggerHeaterKettle                 : ["Heater",[]],
+        triggerFormulaCooling               : ["Formula cooling",[]],
+
+        # Data sensors
+        triggerWaterSensorBase              : ["Base",[]],
+        triggerOnBase                       : ["On base",[]],
+        triggerDefaultKeepWarmTime          : ["Default keep warm time",[]],
+        triggerDefaultTemperature           : ["Default temperature",[]],
+        triggerDefaultFormulaTemperature    : ["Default formula temperature",[]],
+        triggerTemperature                  : ["Temperature",[]],
+        triggerWaterSensor                  : ["Water sensor",[]],
+        triggerUnknownKettle                : ["Unknown",[]]
+    }
+
+    actionsCoffee = {
+        # Operational sensors (boolean)
+        triggerGrinder                      : ["Grinder",[]],
+        triggerTimerEvent                   : ["Timer",[]],
+        triggerBusyCoffee                   : ["Busy",[]],
+        triggerReady                        : ["Ready",[]],
+        triggerWorking                      : ["Working",[]],
+        triggerHotPlate                     : ["Hotplate",[]],
+        triggerHeaterCoffee                 : ["Heater",[]],
+
+        # Data sensors
+        triggerCarafeRequired               : ["Carafe required",[]],
+        triggerMode                         : ["Mode",[]],
+        triggerGrind                        : ["Grind",[]],
+        triggerWaterEnough                  : ["Enough water",[]],
+        triggerCarafe                       : ["Carafe",[]],
+        triggerWaterLevel                   : ["Waterlevel",[]],
+        triggerStrength                     : ["Strength",[]],
+        triggerCups                         : ["Cups",[]],
+        triggerCupsBrew                     : ["Cups brew",[]],
+        triggerUnknownCoffee                : ["Unknown",[]],
+        triggerDefaultStrength              : ["Default strength",[]],
+        triggerDefaultCups                  : ["Default cups",[]],
+        triggerDefaultGrind                 : ["Default grind",[]],
+        triggerDefaultHotplate              : ["Default hotplate time",[]]
     }
 
 
+    @_threadsafe_function
+    def __write_triggers(self):
+        
+        section = self.host + ".triggers"
+        if self.isKettle:
+            section += ".kettle"
+        elif self.isCoffee:
+            section += ".coffee"
+        else:
+            return
+
+        config = SafeConfigParser()
+
+        if not os.path.exists(self.settingsPath):
+                os.makedirs(self.settingsPath)
+        
+        config.read(self.settingsPath+'ibrew.conf')
+        
+        try:
+            config.add_section(section)
+        except DuplicateSectionError:
+            pass
+
+        if self.isKettle:
+            for i in self.actionsKettle:
+            
+                print i
+                try:
+                    config.set(section, self.actionsKettle[i][0], ','.join(self.actionsKettle[i][1]))
+                except Exception:
+                    config.set(section, self.actionsKettle[i][0], ','.join(self.actionsKettle[i][1]))
+                
+        if self.isCoffee:
+            for i in self.actionsCoffee:
+                try:
+                    config.set(section, self.actionsCoffee[i][0], ','.join(self.actionsCoffee[i][1]))
+                except Exception:
+                    config.set(section, self.actionsCoffee[i][0], ','.join(self.actionsCoffee[i][1]))
+        
+
+        with open(self.settingsPath+'ibrew.conf', 'w') as f:
+            config.write(f)
+
+
+    @_threadsafe_function
+    def __read_triggers(self):
+        
+        section = self.host + ".triggers"
+        if self.isKettle:
+            section += ".kettle"
+        elif self.isCoffee:
+            section += ".coffee"
+        else:
+            return
+
+        config = SafeConfigParser()
+
+        if not os.path.exists(self.settingsPath):
+                os.makedirs(self.settingsPath)
+        
+        config.read(self.settingsPath+'ibrew.conf')
+        
+        try:
+            config.add_section(section)
+        except DuplicateSectionError:
+            pass
+
+        if self.isKettle:
+            for i in self.actionsKettle:
+                print i
+                try:
+                    
+                    s = config.get(section, self.actionsKettle[i][0])
+                    self.actionsKettle[i][1] = s.split(",")
+                except Exception:
+                    pass
+            
+        if self.isCoffee:
+            for i in self.actionsCoffee:
+                try:
+                    s = config.get(section, self.actionsCoffee[i][0])
+                    self.actionsCoffee[i][1] = s.split(",")
+                except Exception:
+                    pass
+
+
     def actionAdd(self,group,trigger,sensorID,action):
+        self.__write_triggers()
         pass
 
 
     def actionDelete(self,group,trigger):
+        self.__write_triggers()
         pass
 
     """
@@ -2413,7 +2513,14 @@ class SmarterClient:
     """
     
     def action(self,trigger,old,new):
-        print "Trigger: " + str(trigger) + " old:" + str(old) + " new:" + str(new)
+        
+        #if self.isKettle:
+        #    print "Trigger: " + self.actionsKettle[trigger][0] + " - old:" + str(old) + " new:" + str(new)
+            
+        #if self.isCoffee:
+        #    print "Trigger: " + self.actionsCoffee[trigger][0] + " - old:" + str(old) + " new:" + str(new)
+        
+        
         
         
         # you can add delays here, I probably should move over code from the monitor to here ;-)

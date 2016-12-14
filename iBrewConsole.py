@@ -916,7 +916,7 @@ class iBrewConsole:
         logger.setLevel(logging.DEBUG)
         formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
         
-        log_file = os.path.join(AppFolders.logs(), "iBrewConsole.log")
+        log_file = os.path.join(AppFolders.logs(), "ibrew.log")
         
         fh = logging.handlers.RotatingFileHandler(log_file, maxBytes=1048576, backupCount=4, encoding="UTF8")
         fh.setLevel(logging.DEBUG)
@@ -934,9 +934,8 @@ class iBrewConsole:
         
         self.console = False
         self.quit = True
-        self.client = SmarterClient()
+        self.client = SmarterClient(AppFolders.settings() + "/")
         
-        self.client.settingsPath = AppFolders.settings() + "/"
         self.client.fast = True
         try:
             self.execute(arguments)
