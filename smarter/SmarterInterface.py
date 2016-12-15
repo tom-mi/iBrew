@@ -498,7 +498,8 @@ class SmarterClient:
 
     def __broadcast_device_stop(self):
         self.__utp_ResponseDeviceInfo = False
-        logging.info("Stopping UDP (" + self.serverHost + ":" + str(self.serverPort) + ")")
+        if self.dump:
+            logging.info("Stopping UDP (" + self.serverHost + ":" + str(self.serverPort) + ")")
 
 
 
@@ -644,7 +645,8 @@ class SmarterClient:
 
 
     def relay_stop(self):
-        logging.info("Stopping Relay (" + self.serverHost + ":" + str(self.serverPort) + ")")
+        if self.dump:
+            logging.info("Stopping Relay (" + self.serverHost + ":" + str(self.serverPort) + ")")
         self.__broadcast_device_stop()
         self.relay = False
 
