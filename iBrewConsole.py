@@ -1179,15 +1179,23 @@ class iBrewConsole:
         print "    stats                  show traffic statistics"
         print "    unblock [rules]        unblock messages groups or ids"
         print
-        
         print "  Block Rules"
         print "    Consists of rules, in: is for outgoing connection to the appliance, out: is for incomming connection from relay client."
         print
-        print "    [in:|out:]rule(,[in:|out:]rule)*"
+        print "    [in:|out:]rule(,[in:|out:]RULE)*"
         print
-        print "    rule:"
+        print "    RULE"
         print "      message id"
         print "      group name"
+        print
+        print "  Patch Rules"
+        print "    Patches additional functionality"
+        print
+        print "    [mod:]VAR=VALUE(,[mod:]VAR=VALUE)*"
+        print
+        print "    VAR                VALUE"
+        print "    temperaturelimit   STATE or [0..100]  kettle can not heat above VALUE degrees"
+        print "    childprotection    STATE              kettle can not heat above 45 degrees"
         print
         print "  Debug Commands"
         print "    time [time]            set the appliance time"
@@ -1200,18 +1208,14 @@ class iBrewConsole:
         print "    simulate               start kettle (or coffee simulation)"
         print "    sweep (id)             [developer only] try (all or start with id) unknown command codes"
         print
-        
+
+
         """
-        print "  NOT IMPLEMENTED Modifiers Rules"
-        print "    [in:|out:]var=(value)(,[in:|out:]var=(value))*"
-        print
-        print "    VAR           VALUE"
         print "    version       [00..FF]               override appliance firmware version"
         print "    heater        disable                coffee machine or kettle heater disabled"
         print
         print "    base          [00..4000]             override default calibration base"
         print "    formula       [0..100]               override default formula temperature"
-        print "    temperature   [0..100]               override default temperature"
         print "    keepwarm      off or [5..?]          override default keepwarm time"
         print "    formula       disable/enabled        override formula mode"
         print
@@ -1225,9 +1229,7 @@ class iBrewConsole:
         print "    limit         [1..12]                limit the number of cups to be selected"
         print "    grinder       disable                force use of filter"
         print "    hotplate      disable                coffee machine hotplate disabled"
-        print "    child         lock                   kettle can not heat above 45 degrees"
         print
-        print "    if no value it clears the patch"
         print
         print "  NOT IMPLEMENTED Debug Coffee Timer"
         print "    timer [index] (erase|[time]) set/erase timer"
@@ -1276,7 +1278,6 @@ class iBrewConsole:
         print "    cups 3                   Set number of cups to brew"
         print "    mode cup                 Set cup mode"
         print "    block in:wifi,in:02          Block wifi and [" + Smarter.message_description(02) + "] command to appliance"
-       # print "    patch relay out:version=12] Patches [" + Smarter.message_description(Smarter.ResponseDeviceInfo) + "] argument version to clients"
         print "    brew 4 10 beans strong   Brew 4 cups of strong coffee using the beans keeping the hotplate on for 10 minutes"
         print "    join MyWifi p@ssw0rd     Joins MyWifi wireless network using p@ssw0rd as credential"
         print "    settings 100 20 True 75  Set default user settings for the kettle to..."

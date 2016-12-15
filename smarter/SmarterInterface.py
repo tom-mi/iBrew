@@ -578,7 +578,7 @@ class SmarterClient:
                     #print Smarter.raw_to_text(data[0:])
                     self.__modifiers(Smarter.raw_to_text(data[0:]))
                     response = self.__encode_RelayModifiersInfo(self.string_block())
-                elif command == Smarter.CommandRelayUnblock or command = Smarter.CommandRelayUnpatch:
+                elif command == Smarter.CommandRelayUnblock or command == Smarter.CommandRelayUnpatch:
                     #FIX
                     #print Smarter.raw_to_text(data[0:])
                     self.__unmodifiers(Smarter.raw_to_text(data[0:]))
@@ -1359,6 +1359,7 @@ class SmarterClient:
         self.__write_block()
 
         """
+        patches:
         childprotection
         temperaturelimit
         """
@@ -2973,10 +2974,9 @@ class SmarterClient:
         v = Smarter.raw_to_temperature(message[2])
         if v != self.temperature:
         
-        
             self.__trigger(Smarter.triggerTemperature,self.temperature,v)
             
-            # patch temperature limit
+            # patch!
             if self.patchTemperatureLimit and self.patchTemperatureLimitValue > v:
                 self.kettle_stop()
             if self.patchChildProtection and self.patchChildProtectionValue > v:
@@ -3617,8 +3617,16 @@ class SmarterClient:
         if keepwarm == -1:  kw = self.defaultKeepWarmTime
         else:               kw = keepwarm
         
+        # patch!
+        if self.patchTemperatureLimit and self.patchTemperatureLimitValue <= temperature:
+            t = self.patchTemperatureLimitValue
+        elif self.patchChildProtection and self.patchChildProtectionValue <= temperature:
+            t = self.patchChildProtectionValue
+        else:
+            t = temperature
+        
         if self.fast or self.isKettle:
-            self.__send_command(Smarter.CommandHeat,Smarter.temperature_to_raw(temperature)+Smarter.keepwarm_to_raw(kw))
+            self.__send_command(Smarter.CommandHeat,Smarter.temperature_to_raw(t)+Smarter.keepwarm_to_raw(kw))
         else:
             raise SmarterError(Smarter.KettleNoMachineHeat,"You need a kettle to heat it")
 

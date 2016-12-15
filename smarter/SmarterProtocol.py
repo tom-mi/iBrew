@@ -170,7 +170,7 @@ class SmarterProtocol:
     ResponseKettleHistory     = 0x29
     ResponseDeviceInfo        = 0x65
     ResponseRelayInfo         = 0x71
-    ResponseRelayModifiersInfo    = 0x75
+    ResponseRelayModifiersInfo = 0x75
     ResponseWifiFirmware      = 0x6b
 
     # coffee
