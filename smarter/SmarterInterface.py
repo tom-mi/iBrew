@@ -2678,20 +2678,16 @@ class SmarterClient:
 
 
     def __triggerHeartBeats(self):
-        for i in self.triggerGroups:
-            for j in Smarter.triggersKettle:
-                self.__triggerHeartBeat(i[0],j)
-            for j in Smarter.triggersCoffee:
-                self.__triggerHeartBeat(i[0],j)
+        for j in Smarter.triggersKettle:
+            self.__triggerHeartBeat(j)
+        for j in Smarter.triggersCoffee:
+            self.__triggerHeartBeat(j)
 
-    def __triggerHeartBeat(self,group,triggerID):
-        
+    def __triggerHeartBeat(self,triggerID):
         def fire(triggerID,x): self.__trigger(triggerID,x,x)
         
         # Kettle
-        if triggerID == Smarter.triggerTemperatureStable:
-            fire(triggerID,self.temperatureStable)
-            print "HIER"
+        if triggerID == Smarter.triggerTemperatureStable:            fire(triggerID,self.temperatureStable)
         if triggerID == Smarter.triggerWaterSensorStable:            fire(triggerID,self.waterSensorStable)
         if triggerID == Smarter.triggerBusyKettle:                   fire(triggerID,self.busy)
         if triggerID == Smarter.triggerDefaultTemperature:           fire(triggerID,self.defaultTemperature)
@@ -2738,6 +2734,7 @@ class SmarterClient:
                     if self.triggersKettle[id][i][0] == group:
                         del self.triggersKettle[id][i]
             self.triggersKettle[id] += [(group,action)]
+            print "FFF"
             self.__triggerHeartBeat(group,id)
     
         
@@ -2841,7 +2838,7 @@ class SmarterClient:
             print
         
     @_threadsafe_function
-    def __trigger(self,trigger,old,new):
+    def __trigger(self,triggerID,old,new):
         if not self.events: return
         
         #if self.dump and self.dump_status:
@@ -2854,7 +2851,7 @@ class SmarterClient:
 
         for i in self.triggerGroups:
             if i[1]:
-                s = self.triggerGet(i[0],Smarter.triggerName(trigger))
+                s = self.triggerGet(i[0],Smarter.triggerName(triggerID))
                 if s != "":
                     s = s.replace("§O",str(old)).replace("§N",str(new))
                     
@@ -2872,7 +2869,7 @@ class SmarterClient:
                             print r
                 
                     if self.dump and self.dump_status:
-                        logging.debug("Trigger: " + Smarter.triggersKettle[trigger][0] + " - old:" + str(old) + " new:" + str(new) + " " + i[0] + " " + s)
+                        logging.debug("Trigger: " + Smarter.triggersKettle[triggerID][0] + " - old:" + str(old) + " new:" + str(new) + " " + i[0] + " " + s)
 
 
 
