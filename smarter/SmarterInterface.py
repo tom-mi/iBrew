@@ -2611,7 +2611,6 @@ class SmarterClient:
                     if self.triggersCoffee[id][i][0] == group:
                         del self.triggersCoffee[id][i]
             self.triggersCoffee[id] += [(group,action)]
-        self.print_triggers()
         self.__write_triggers()
 
 
