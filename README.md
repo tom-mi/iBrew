@@ -458,6 +458,8 @@ you can also use them on the command line as arguments, note that [] are mandito
 
 ### iKettle legacy support
 
+It has no event trigger system no rest api, only a command line interface but its good enough for Homebrigde ;-)
+
 ```
 
 Usage: ibrewlegacy command host
@@ -477,9 +479,7 @@ Commands
 
     host  ip or host address of the iKettle
 
-
 ```
-
 
 ### Relay
 
@@ -513,6 +513,18 @@ To change the firewall rules of a relay server already running, use
 To see the rules use
 
 ```ibrew remote rules 127.0.0.1:3081```
+
+
+### Firewall 
+
+You can block messages either in (from the appliance) or out (from the relay), this can be usefull to disable calibration or other options like wifi and is internally used to speed things up :-)
+
+```ibrew rules 10.0.0.99```
+
+```ibrew unblock in:ADMIN,out:ADMIN 10.0.0.99```
+
+```ibrew block in:DEBUG,out:DEBUG 10.0.0.99```
+
 
 ### Simulation
 
@@ -642,7 +654,12 @@ monitor the trigger event system
 
 or use the web server with auto re-connect :-)
 
-`ibrew dump events web 10.0.0.99`
+`ibrew dump events web`
+
+If you run the webserver as daemon/service add sudo to all your ibrew commands such that the right config file gets updated!
+
+So instead of `ibrew trigger Domoticz state On 10.0.0.99` run `sudo ibrew trigger Domoticz state On 10.0.0.99`
+
 
 It is possible to set boolean type to various formats (on/off, 1/0, enabled/disabled,...)
 
@@ -729,6 +746,10 @@ We need to set up the right boolean state, domoticz uses the format _On_ or _Off
 start any server with the events enables like
 
 `ibrew dump events web`
+
+If you run the webserver as daemon/service add sudo to all your ibrew commands such that the right config file gets updated!
+
+So instead of `ibrew trigger Domoticz state On 10.0.0.99` run `sudo ibrew trigger Domoticz state On 10.0.0.99`
 
 To see it in action!
 
