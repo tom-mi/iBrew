@@ -379,8 +379,11 @@ you can also use them on the command line as arguments, note that [] are mandito
     relay stop             stop relay
     remote info            info on remote relay
     remote block [rules]   remote block messages with groups or ids
+    remote patch [rules]   remote patch
+    remote patches (full)  show remote patches rules
     remote rules (full)    show remote blocking rules
     remote unblock [rules] remote unblock messages groups or ids
+    remote unpatch [rules] remote unpatch patches
     rules (full)           show blocking rules
     stats                  show traffic statistics
     unblock [rules]        unblock messages groups or ids
@@ -388,11 +391,20 @@ you can also use them on the command line as arguments, note that [] are mandito
   Block Rules
     Consists of rules, in: is for outgoing connection to the appliance, out: is for incomming connection from relay client.
 
-    [in:|out:]rule(,[in:|out:]rule)*
+    [in:|out:]rule(,[in:|out:]RULE)*
 
-    rule:
+    RULE
       message id
       group name
+
+  Patch Rules
+    Patches additional functionality
+
+    [mod:]VAR=VALUE(,[mod:]VAR=VALUE)*
+
+    VAR                VALUE
+    temperaturelimit   STATE or [0..100]  kettle can not heat above VALUE degrees
+    childprotection    STATE              kettle can not heat above 45 degrees
 
   Debug Commands
     time [time]            set the appliance time
