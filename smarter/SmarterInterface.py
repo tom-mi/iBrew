@@ -274,7 +274,7 @@ class SmarterClient:
 
 
         self.patchTemperatureLimitValue = 70
-        self.patchTemperatureLimit      = True
+        self.patchTemperatureLimit      = False
         self.patchChildProtectionValue  = 45
         self.patchChildProtection       = False
         """
