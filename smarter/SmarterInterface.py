@@ -2538,7 +2538,7 @@ class SmarterClient:
             for i in g:
                 a = config.get(section+"."+i, "Active")
                 s = config.get(section+"."+i, "State")
-                self.triggerGroups += [[i.upper(),Smarter.string_to_bool(a),Smarter.triggerCheckBooleans(s)]]
+                self.triggerGroups += [[i,Smarter.string_to_bool(a),Smarter.triggerCheckBooleans(s)]]
                 
                 for j in Smarter.triggersKettle:
                     try:
