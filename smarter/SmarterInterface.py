@@ -802,7 +802,6 @@ class SmarterClient:
                 # debug
                 #print "[" + Smarter.number_to_code(id) + "]",
                 minlength = Smarter.message_response_length(id)
-                
                 i = 1
                 while raw != Smarter.number_to_raw(Smarter.MessageTail) or (minlength > 0 and raw == Smarter.number_to_raw(Smarter.MessageTail) and i < minlength):
                     message += raw
@@ -811,10 +810,8 @@ class SmarterClient:
                     
                     # debug
                     #print "[" + Smarter.raw_to_code(raw) + "]" + str(raw)
-                    #print "len = " + str(i)
                     i += 1
-                print "len = " + str(i)
-                print "needed = " + str(minlength)
+            
                 message += raw
                 
                 self.readCount += 1

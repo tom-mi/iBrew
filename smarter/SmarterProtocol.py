@@ -298,7 +298,7 @@ class SmarterProtocol:
 
 
     def message_response_length(self,id):
-        if self.message_is_response(id):
+        if self.message_is_response(id) or self.message_is_status(id):
             return self.ResponseMessages[id][2]
         return 0
     
@@ -2010,7 +2010,7 @@ class SmarterProtocol:
                 elif self.message_is_command(id):
                     s += "  Response messages: " + d + "\n"
             s += "\n  " + self.message_kettle_supported(id) + " " + self.DeviceStringKettle +  " " + self.message_coffee_supported(id) + " " + self.DeviceStringCoffee + "\n"
-            if self.message_is_response(id):
+            if self.message_is_response(id) or self.message_is_status(id):
                 length = self.message_response_length(id)
                 if length > 0:
                     s += "\n  Message size: " + str(length) + " bytes\n"
