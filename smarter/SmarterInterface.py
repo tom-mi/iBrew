@@ -2680,9 +2680,9 @@ class SmarterClient:
     def __triggerHeartBeats(self):
         for i in self.triggerGroups:
             for j in Smarter.triggersKettle:
-                self.__triggerHeartBeat(i[0],Smarter.triggersKettle[j])
+                self.__triggerHeartBeat(i[0],j)
             for j in Smarter.triggersCoffee:
-                self.__triggerHeartBeat(i[0],Smarter.triggersCoffee[j])
+                self.__triggerHeartBeat(i[0],j)
 
     def __triggerHeartBeat(self,group,triggerID):
         
@@ -2704,7 +2704,7 @@ class SmarterClient:
         if triggerID == Smarter.triggerTemperature:                  fire(triggerID,self.temperature)
         if triggerID == Smarter.triggerWaterSensor:                  fire(triggerID,self.waterSensor)
         if triggerID == Smarter.triggerOnBase:                       fire(triggerID,self.onBase)
-        if triggerID == Smarter.triggerUnknownKettle:                fire(triggerID,self.Unknown)
+        if triggerID == Smarter.triggerUnknownKettle:                fire(triggerID,self.unknown)
 
         # Coffee
         if triggerID == Smarter.triggerMode:                         fire(triggerID,self.mode)
@@ -2721,7 +2721,7 @@ class SmarterClient:
         if triggerID == Smarter.triggerStrength:                     fire(triggerID,self.strength)
         if triggerID == Smarter.triggerCups:                         fire(triggerID,self.cups)
         if triggerID == Smarter.triggerCupsBrew:                     fire(triggerID,self.cupsBrew)
-        if triggerID == Smarter.triggerUnknownCoffee:                fire(triggerID,self.Unknown)
+        if triggerID == Smarter.triggerUnknownCoffee:                fire(triggerID,self.unknown)
         if triggerID == Smarter.triggerCarafe:                       fire(triggerID,self.carafe)
         if triggerID == Smarter.triggerGrinder:                      fire(triggerID,self.grinderOn)
         if triggerID == Smarter.triggerHotPlate:                     fire(triggerID,self.hotPlateOn)
