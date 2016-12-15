@@ -1488,6 +1488,8 @@ class SmarterProtocol:
 
 
     # Kettle
+    triggerTemperatureStable            = 7
+    triggerWaterSensorStable            = 8
     triggerBusyKettle                   = 9
     triggerDefaultTemperature           = 10
     triggerDefaultFormulaTemperature    = 11
@@ -1540,8 +1542,10 @@ class SmarterProtocol:
         triggerDefaultKeepWarmTime          : ["DefaultKeepWarm","NUMBER"],
         triggerDefaultTemperature           : ["DefaultTemperature","NUMBER (0..100)"],
         triggerDefaultFormulaTemperature    : ["DefaultFormulaTemperature","NUMBER (0..100)"],
-        triggerTemperature                  : ["Temperature","NUMBER"],
-        triggerWaterSensor                  : ["WaterSensor","NUMBER"],
+        triggerTemperature                  : ["TemperatureRaw","NUMBER"],
+        triggerWaterSensor                  : ["WaterSensorRaw","NUMBER"],
+        triggerTemperatureStable            : ["Temperature","NUMBER"],
+        triggerWaterSensorStable            : ["WaterSensor","NUMBER"],
         triggerUnknownKettle                : ["KettleUnknown","NUMBER"]
     }
     

@@ -277,8 +277,13 @@ class SmarterClient:
         self.patchTemperatureLimit      = True
         self.patchChildProtectionValue  = 45
         self.patchChildProtection       = False
+        """
+        self.patchHotplateMinutes       = 80
+        self.extendedHotplate           = 0
+        self.extendedHotplateLeft       = 0
+        self.patchHotplate              = True
+        """
         
-
         self.__init()
 
 
@@ -449,8 +454,6 @@ class SmarterClient:
             command = Smarter.number_to_raw(Smarter.CommandDeviceInfo) + Smarter.number_to_raw(Smarter.MessageTail)
             #command = '\x64\x7e'
 
-            #command = Smarter.number_to_raw(Smarter.CommandRelayInfo) + Smarter.number_to_raw(Smarter.MessageTail)
-  
             cs.sendto(command, ('255.255.255.255', self.port))
             cs.settimeout(4)
 
@@ -765,13 +768,18 @@ class SmarterClient:
 
 
                 if previousWaterSensor - 3 > self.waterSensor or previousWaterSensor + 3 < self.waterSensor:
-                    self.waterSensorStable = self.waterSensor
+                    if self.waterSensorStable != self.waterSensor:
+                        self.__trigger(Smarter.triggerWaterSensorStable,self.waterSensorStable,self.waterSensor)
+                        self.waterSensorStable = self.waterSensor
+            
                     previousWaterSensor = self.waterSensor
                 
                 average = int(round(float((float(previousTemperature) + float(prevPreviousTemperature) + float(self.temperature))/3),0))
 
                 if previousAverage != average:
-                    self.temperatureStable = average
+                    if self.temperatureStable != average:
+                        self.__trigger(Smarter.triggerTemperatureStable,self.self.temperatureStable,average)
+                        self.temperatureStable = average
                     previousAverage = average
 
                 prevPreviousTemperature = previousTemperature
@@ -2468,7 +2476,9 @@ class SmarterClient:
         Smarter.triggerDefaultTemperature           : [],
         Smarter.triggerDefaultFormulaTemperature    : [],
         Smarter.triggerTemperature                  : [],
+        Smarter.triggerTemperatureStable            : [],
         Smarter.triggerWaterSensor                  : [],
+        Smarter.triggerWaterSensorStable            : [],
         Smarter.triggerUnknownKettle                : []
     }
 
@@ -2977,13 +2987,14 @@ class SmarterClient:
             self.__trigger(Smarter.triggerTemperature,self.temperature,v)
             
             # patch!
-            if self.patchTemperatureLimit and self.patchTemperatureLimitValue > v:
-                self.kettle_stop()
-            if self.patchChildProtection and self.patchChildProtectionValue > v:
-                self.kettle_stop()
+            if self.heaterOn:
+                if self.patchTemperatureLimit and self.patchTemperatureLimitValue > v:
+                    self.kettle_stop()
+                if self.patchChildProtection and self.patchChildProtectionValue > v:
+                    self.kettle_stop()
             
             self.temperature = v
-
+            
         v = Smarter.raw_to_watersensor(message[3],message[4])
         if v != self.waterSensor:
             self.__trigger(Smarter.triggerWaterSensor,self.waterSensor,v)
@@ -3090,6 +3101,29 @@ class SmarterClient:
         if self.hotPlateOn != v:
             if not self.hotPlateOn:
                 self.countHotPlateOn += 1
+            """
+            else:
+                # patch!
+                if self.patchHotplate:
+                    if self.extendedHotplateLeft == 0 and self.extendedHotplate != 0:
+                        self.extendedHotplate = 0
+
+                    if self.extendedHotplate == 0:
+                        self.extendedHotplateLeft = self.patchHotplateMinutes
+                    # assume old firmware
+                    if self.extendedHotplateLeft > 35:
+                        if self.extendedHotplateLeft > 40:
+                            self.extendedHotplate = 35
+                            self.extendedHotplateLeft -= 35
+                        else:
+                            self.extendedHotplate = 30
+                            self.extendedHotplateLeft -= 30
+                    else:
+                        self.extendedHotplate = self.extendedHotplateLeft
+                        self.extendedHotplateLeft = 0
+                    
+                    self.coffee_hotplate_on(self.extendedHotplate)
+            """
             self.__trigger(Smarter.triggerHotPlate,self.hotPlateOn,v)
             self.hotPlateOn = v
 
