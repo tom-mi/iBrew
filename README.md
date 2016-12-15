@@ -269,9 +269,10 @@ See the console section for the commands.
 
   iBrew Web Server
 
-  Usage: ibrew (dump) (fahrenheid) web (port) (rules) (modifiers) (host(:port))
+  Usage: ibrew (dump) (events) (fahrenheid) web (port) (rules) (modifiers) (host(:port))
 
     dump                   dump message enabled
+    events                 enable trigger events (monitor, relay, console)
     fahrenheid             use fahrenheid
     web                    start web interface & rest api
     port                   optional port number, default 2082
@@ -365,9 +366,9 @@ you can also use them on the command line as arguments, note that [] are mandito
   Actions can either be a path to a command or url
 
   Trigger actions examples:
-    C:\SCRIPTS\SENSOR.BAT $O $N
-    /home/pi/iBrew/scripts/smarthome.sh 'Temperature' $O $N
-    http://smarthome.local/?idx=34&value=$N
+    C:\SCRIPTS\SENSOR.BAT %O% §N
+    /home/pi/iBrew/scripts/smarthome.sh Temperature %O% §N
+    http://smarthome.local/?idx=34&value=§N
 
   Smarter Network Commands
     connect (host) (rules&modifiers) connect to appliance
@@ -619,14 +620,14 @@ You can pull values and states with the JSON REST api with it also possible to p
 To add
 
 ```
-ibrew trigger add Domotic Temperature http://127.0.0.1:8080/json.htm?type=command&param=udevice&idx=155&nvalue=0&svalue=%N% 10.0.0.99
+ibrew trigger add Domotic Temperature http://127.0.0.1:8080/json.htm?type=command&param=udevice&idx=155&nvalue=0&svalue=§N 10.0.0.99
 
-ibrew trigger add Scripts KettleBusy "C:\SCRIPTS\SENSOR.BAT %N%" 10.0.0.99
+ibrew trigger add Scripts KettleBusy "C:\SCRIPTS\SENSOR.BAT §N" 10.0.0.99
 
-ibrew trigger add Scripts KettleBusy "/home/pi/iBrew/scripts/sensor.sh %O% %N%" 10.0.0.99
+ibrew trigger add Scripts KettleBusy "/home/pi/iBrew/scripts/sensor.sh %O% §N" 10.0.0.99
 ```
 
-where Domoticz is the group (one action per trigger per group) and %N% is the new value and %O% is the old value.
+where Domoticz is the group (one action per trigger per group) and §N is the new value and %O% is the old value.
 
 To see all triggers
 
@@ -695,7 +696,7 @@ Go to `Setup -> Devices` and look up your new sensor.
 Use the _idx_ of the sensor to add a trigger
 
 ```
-ibrew trigger add Domotic Temperature http://127.0.0.1:8080/json.htm?type=command&param=udevice&idx=155&nvalue=0&svalue=%N% 10.0.0.99
+ibrew trigger add Domotic Temperature http://127.0.0.1:8080/json.htm?type=command&param=udevice&idx=155&nvalue=0&svalue=§N 10.0.0.99
 ```
 
 Now we also add an on base motion sensor 
@@ -719,7 +720,7 @@ Look up the idx in `Setup -> Devices`
 Use the _idx_ of the sensor to add a trigger
 
 ```
-ibrew trigger add Domotic OnBase http://127.0.0.1:8080/json.htm?type=command&param=switchlight&idx=99&switchcmd=%%N% 10.0.0.99
+ibrew trigger add Domotic OnBase http://127.0.0.1:8080/json.htm?type=command&param=switchlight&idx=99&switchcmd=%§N 10.0.0.99
 ```
 
 We need to set up the right boolean state, domoticz uses the format _On_ or _Off_

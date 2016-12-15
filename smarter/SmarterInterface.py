@@ -604,7 +604,7 @@ class SmarterClient:
  
         self.__broadcast_device_start()
 
-        logging.info("iBrew Server (" + self.serverHost + ":" + str(self.serverPort) + ")")
+        logging.info("Relay Server (" + self.serverHost + ":" + str(self.serverPort) + ")")
         
         while self.relay:
             try:
@@ -2494,7 +2494,7 @@ class SmarterClient:
             for j in Smarter.triggersKettle:
                 try:
                     config.set(section+"."+i, Smarter.triggerName(j),self.triggerGet(i,Smarter.triggerName(j)))
-                except Exception:
+                except Exception, e:
                     pass
 
 
@@ -2538,7 +2538,7 @@ class SmarterClient:
             for i in g:
                 a = config.get(section+"."+i, "Active")
                 s = config.get(section+"."+i, "State")
-                self.triggerGroups += [[i,Smarter.string_to_bool(a),Smarter.triggerCheckBooleans(s)]]
+                self.triggerGroups += [[i.upper(),Smarter.string_to_bool(a),Smarter.triggerCheckBooleans(s)]]
                 
                 for j in Smarter.triggersKettle:
                     try:
@@ -2556,12 +2556,14 @@ class SmarterClient:
 
         except Exception:
             pass
-            
+
+
     def triggerAdd(self,group,trigger,action):
-        print action
         if not self.__isGroup(group):
             self.triggerGroups += [(group,True,"1")]
-        self.triggerSet(group,trigger,action)
+        self.triggerSet(group,trigger.upper(),action)
+        if self.dump:
+            logging.debug("Added: " + group + ":" + trigger.upper() + ":" + action )
         self.__write_triggers()
 
 
@@ -2595,11 +2597,10 @@ class SmarterClient:
 
 
     def triggerSet(self,group,trigger,action):
-        id = Smarter.triggerID(trigger)
+        id = Smarter.triggerID(trigger.upper())
         if id in self.triggersKettle:
             if len(self.triggersKettle[id]) != 0:
                 for i in range(0,len(self.triggersKettle[id])-1):
-                    print i
                     if self.triggersKettle[id][i][0] == group:
                         del self.triggersKettle[id][i]
             self.triggersKettle[id] += [(group,action)]
@@ -2610,6 +2611,7 @@ class SmarterClient:
                     if self.triggersCoffee[id][i][0] == group:
                         del self.triggersCoffee[id][i]
             self.triggersCoffee[id] += [(group,action)]
+        self.print_triggers()
         self.__write_triggers()
 
 
@@ -2692,11 +2694,11 @@ class SmarterClient:
             print "Triggers " + j[0]
             print "_".rjust(25, "_")
             for i in Smarter.triggersKettle:
-                s = self.triggerGet(j[0],Smarter.triggersKettle[i][0])
+                s = self.triggerGet(j[0],Smarter.triggersKettle[i][0].upper())
                 if s != "":
                     print Smarter.triggersKettle[i][0].rjust(25,' ') + " " + s
             for i in Smarter.triggersCoffee:
-                s = self.triggerGet(j[0],Smarter.triggersCoffee[i][0])
+                s = self.triggerGet(j[0],Smarter.triggersCoffee[i][0].upper())
                 if s != "":
                     print Smarter.triggersCoffee[i][0].rjust(25,' ') + " " + s
             print
@@ -2718,7 +2720,7 @@ class SmarterClient:
             if i[1]:
                 s = self.triggerGet(i[0],Smarter.triggerName(trigger))
                 if s != "":
-                    s = s.replace("%O%",str(old)).replace("%N%",str(new))
+                    s = s.replace("§O",str(old)).replace("§N",str(new))
                     
                     # replace False, True with boolean.. FIX
                     
@@ -2732,6 +2734,7 @@ class SmarterClient:
                         r = os.popen(s).read()
                         if self.dump:
                             print r
+                
                     if self.dump and self.dump_status:
                         logging.debug("Trigger: " + Smarter.triggersKettle[trigger][0] + " - old:" + str(old) + " new:" + str(new) + " " + i[0] + " " + s)
 

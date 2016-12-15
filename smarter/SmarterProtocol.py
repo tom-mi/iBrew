@@ -1571,19 +1571,19 @@ class SmarterProtocol:
 
     def triggerID(self,trigger):
         for i in self.triggersCoffee.keys():
-            if trigger == self.triggersCoffee[i][0]:
+            if trigger.upper() == self.triggersCoffee[i][0].upper():
                 return i
         for i in self.triggersKettle.keys():
-            if trigger == self.triggersKettle[i][0]:
+            if trigger.upper() == self.triggersKettle[i][0].upper():
                 return i
         raise SmarterErrorOld("Trigger does not exists")
 
 
     def triggerName(self,trigger):
         if trigger in self.triggersKettle:
-            return self.triggersKettle[trigger][0]
+            return self.triggersKettle[trigger][0].upper()
         if trigger in self.triggersCoffee:
-            return self.triggersCoffee[trigger][0]
+            return self.triggersCoffee[trigger][0].upper()
         raise SmarterErrorOld("Trigger does not exists")
 
     def triggerDescription(self,trigger):
@@ -1614,12 +1614,12 @@ class SmarterProtocol:
         print "Smarter Coffee Trigger".rjust(25, ' ') + " Sensor Description"
         print "______________________".rjust(25, ' ') + "___________________"
         for i in self.triggersCoffee:
-            print self.triggersCoffee[i][0].rjust(25, ' ') + " " + self.triggersCoffee[i][1]
+            print self.triggersCoffee[i][0].upper().rjust(25, ' ') + " " + self.triggersCoffee[i][1]
         print
         print "iKettle 2.0 Trigger".rjust(25, ' ') + " Sensor Description"
         print "___________________".rjust(25, ' ') + "___________________"
         for i in self.triggersKettle:
-            print self.triggersKettle[i][0].rjust(25, ' ') + " " + self.triggersKettle[i][1]
+            print self.triggersKettle[i][0].upper().rjust(25, ' ') + " " + self.triggersKettle[i][1]
         print
 
 

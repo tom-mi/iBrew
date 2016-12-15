@@ -617,18 +617,20 @@ class iBrewConsole:
                                                 if arguments[0] == "groups":
                                                     self.client.print_groups()
                                                 elif arguments[0] == "add" and numarg == 4:
-                                                    print arguments[3]
-                                                    self.client.triggerAdd(arguments[1],arguments[2],arguments[3])
+                                                    self.client.triggerAdd(arguments[1],arguments[2].upper(),arguments[3])
+                                                    print "iBrew: Added trigger " + arguments[2].upper() + " to group " + arguments[1] + " with action " + arguments[3]
                                                 elif arguments[0] == "add" and numarg != 4:
-                                                    print "iBrew: trigger add need a group name and a trigger action"
+                                                    print "iBrew: Trigger add need a group name and a trigger action"
                                                 elif arguments[0][0:3] == "del":
                                                     if numarg == 3 or numarg == 2:
                                                         if numarg == 2:
                                                             self.client.triggerGroupDelete(arguments[1])
+                                                            print "iBrew: Trigger group " + arguments[1] + " deleted"
                                                         else:
-                                                            self.client.triggerDelete(arguments[1],arguments[2])
+                                                            self.client.triggerDelete(arguments[1],arguments[2].upper())
+                                                            print "iBrew: Trigger " + arguments[2].upper() + " of group " + arguments[1] + " deleted"
                                                     else:
-                                                        print "iBrew: trigger delete need a group name or a group name and a trigger action"
+                                                        print "iBrew: Trigger delete need a group name or a group name and a trigger action"
                                                 else:
                                                     if numarg == 1:
                                                         self.client.print_group(arguments[0])
@@ -638,13 +640,18 @@ class iBrewConsole:
                                                         else:
                                                             try:
                                                                 state = Smarter.string_to_bool(arguments[1])
-                                                                if state: self.client.enableGroup(arguments[0])
-                                                                else: self.client.disableGroup(arguments[0])
+                                                                if state:
+                                                                    self.client.enableGroup(arguments[0])
+                                                                    print "iBrew: Trigger group " + arguments[0] + " enabled"
+                                                                else:
+                                                                    self.client.disableGroup(arguments[0])
+                                                                    print "iBrew: Trigger group " + arguments[0] + " enabled"
                                                             except Exception, e:
                                                                 print str(e)
                                                                 print "iBrew: failed to get state"
                                                     elif arguments[1] == "state":
                                                         self.client.boolsGroup(arguments[0],arguments[2])
+                                                        print "iBrew: Trigger group " + arguments[0] + " boolean state " + arguments[2]
                                                     else:
                                                         print "iBrew: missing arguments, about time for some peace and quite :-)"
                                                             
@@ -1033,11 +1040,12 @@ class iBrewConsole:
         print
         print "  iBrew Web Server"
         print
-        print "  Usage: ibrew (dump) (fahrenheid) web (port) (rules) (modifiers) (host(:port))"
+        print "  Usage: ibrew (dump) (events) (fahrenheid) web (port) (rules) (modifiers) (host(:port))"
 #        print "  Usage: ibrew (energy) (dump) (fahrenheid) web (port) (rules) (modifiers) (host(:port))"
         print
      #   print "    energy                 energy saver (stats not possible)"
         print "    dump                   dump message enabled"
+        print "    events                 enable trigger events (monitor, relay, console)"
         print "    fahrenheid             use fahrenheid"
         print "    web                    start web interface & rest api"
         print "    port                   optional port number, default 2082"
@@ -1129,9 +1137,9 @@ class iBrewConsole:
         print "  Actions can either be a path to a command or url"
         print
         print "  Trigger actions examples:"
-        print "    C:\SCRIPTS\SENSOR.BAT $O $N"
-        print "    /home/pi/iBrew/scripts/smarthome.sh 'Temperature' $O $N"
-        print "    http://smarthome.local/?idx=34&value=$N"
+        print "    C:\SCRIPTS\SENSOR.BAT §O §N"
+        print "    /home/pi/iBrew/scripts/smarthome.sh Temperature §O §N"
+        print "    http://smarthome.local/?idx=34&value=§N"
         print
         print "  Smarter Network Commands"
         print "    connect (host) (rules&modifiers) connect to appliance"
