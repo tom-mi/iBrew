@@ -2568,19 +2568,38 @@ class SmarterClient:
 
 
     def triggerGroupDelete(self,group):
-        if self.__isGroup(self,group):
-            #..
-            self.__write_triggers()
+        for k in Smarter.triggersKettle:
+            self.__triggerDelete(group,Smarter.triggersKettle[k][0])
+        for c in Smarter.triggersCoffee:
+             self.__triggerDelete(group,Smarter.triggersCoffee[c][0])
+        
+        for i in range(0,len(self.triggerGroups)):
+            if group == self.triggerGroups[i][0]:
+                del self.triggerGroups[i]
+                break
+        
+        self.__write_triggers()
+    
+
+    def __triggerDelete(self,group,trigger):
+        id = Smarter.triggerID(trigger.upper())
+        if self.__isGroup(group):
+            if id in self.triggersKettle:
+                if len(self.triggersKettle[id]) != 0:
+                    for i in range(0,len(self.triggersKettle[id])):
+                        if self.triggersKettle[id][i][0] == group:
+                            del self.triggersKettle[id][i]
+            if id in self.triggersCoffee:
+                if len(self.triggersCoffee[id]) != 0:
+                    for i in range(0,len(self.triggersCoffee[id])):
+                        if self.triggersCoffee[id][i][0] == group:
+                            del self.triggersCoffee[id][i]
         else:
             raise SmarterErrorOld("Trigger group not found")
-    
-    
+            
     def triggerDelete(self,group,trigger):
-        if self.__isGroup(self,group):
-            #..
-            self.__write_triggers()
-        else:
-            raise SmarterErrorOld("Trigger group not found")
+        self.__triggerDelete(group,trigger)
+        self.__write_triggers()
 
     
     def triggerGet(self,group,trigger):
@@ -2600,14 +2619,14 @@ class SmarterClient:
         id = Smarter.triggerID(trigger.upper())
         if id in self.triggersKettle:
             if len(self.triggersKettle[id]) != 0:
-                for i in range(0,len(self.triggersKettle[id])-1):
+                for i in range(0,len(self.triggersKettle[id])):
                     if self.triggersKettle[id][i][0] == group:
                         del self.triggersKettle[id][i]
             self.triggersKettle[id] += [(group,action)]
         
         if id in self.triggersCoffee:
             if len(self.triggersCoffee[id]) != 0:
-                for i in range(0,len(self.triggersCoffee[id])-1):
+                for i in range(0,len(self.triggersCoffee[id])):
                     if self.triggersCoffee[id][i][0] == group:
                         del self.triggersCoffee[id][i]
             self.triggersCoffee[id] += [(group,action)]
