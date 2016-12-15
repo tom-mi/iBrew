@@ -302,6 +302,7 @@ class SmarterClient:
 
     def stop(self):
         self.simulator_run = False
+        self.relay_stop()
         self.disconnect()
         self.simulator = None
 
@@ -497,6 +498,7 @@ class SmarterClient:
 
     def __broadcast_device_stop(self):
         self.__utp_ResponseDeviceInfo = False
+        logging.info("Stopping UDP (" + self.serverHost + ":" + str(self.serverPort) + ")")
 
 
 
@@ -581,7 +583,7 @@ class SmarterClient:
                     #print Smarter.raw_to_text(data[0:])
                     self.__modifiers(Smarter.raw_to_text(data[0:]))
                     response = self.__encode_RelayModifiersInfo(self.string_block())
-                elif command == Smarter.CommandRelayUnblock or command == Smarter.CommandRelayUnpatch:
+                elif command == Smarter.CommandRelayUnblock:
                     #FIX
                     #print Smarter.raw_to_text(data[0:])
                     self.__unmodifiers(Smarter.raw_to_text(data[0:]))
@@ -642,7 +644,7 @@ class SmarterClient:
 
 
     def relay_stop(self):
-    
+        logging.info("Stopping Relay (" + self.serverHost + ":" + str(self.serverPort) + ")")
         self.__broadcast_device_stop()
         self.relay = False
 
@@ -1326,12 +1328,6 @@ class SmarterClient:
 
     def patch(self,string):
         self.__modifiers(string)
-        if self.dump:
-            self.print_patches_short()
-
-
-    def unpatch(self,string):
-        self.__unmodifiers(string)
         if self.dump:
             self.print_patches_short()
 
@@ -3457,14 +3453,6 @@ class SmarterClient:
         Set remote relay message block
         """
         self.__send_command(Smarter.CommandRelayPatch,patch)
-    
-
-
-    def relay_unblock(self,unpatch):
-        """
-        Set remote relay message unblock
-        """
-        self.__send_command(Smarter.CommandRelayUnpatch,unpatch)
     
 
 

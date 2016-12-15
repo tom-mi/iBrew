@@ -375,16 +375,15 @@ you can also use them on the command line as arguments, note that [] are mandito
     block [rules]          block messages with groups or ids
     disconnect             disconnect connected appliance
     events                 start trigger events only
+    patch [rules]          patch messages
     relay ((ip:)port)      start relay
     relay stop             stop relay
     remote info            info on remote relay
     remote block [rules]   remote block messages with groups or ids
     remote patch [rules]   remote patch
-    remote patches (full)  show remote patches rules
-    remote rules (full)    show remote blocking rules
+    remote rules (full)    show remote blocking and patching rules
     remote unblock [rules] remote unblock messages groups or ids
-    remote unpatch [rules] remote unpatch patches
-    rules (full)           show blocking rules
+    rules (full)           show blocking & patching rules
     stats                  show traffic statistics
     unblock [rules]        unblock messages groups or ids
 
@@ -413,7 +412,6 @@ you can also use them on the command line as arguments, note that [] are mandito
     [hexdata]              send raw data to appliance (e.g. '64 7e')
     dump                   toggle 'dump raw messages'
     monitor                monitor incomming traffic
-    modify (modifiers)     patch or unpatch messages
     simulate               start kettle (or coffee simulation)
     sweep (id)             [developer only] try (all or start with id) unknown command codes
 

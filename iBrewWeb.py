@@ -859,21 +859,6 @@ class PatchHandler(GenericAPIHandler):
         self.write(response)
 
 
-class UnpatchHandler(GenericAPIHandler):
-    def get(self,ip,unpatch):
-        if ip in self.application.clients:
-            client = self.application.clients[ip]
-            if unpatch[-1] == '/':
-                unpatch = unpatch[0:-1]
-            client.unpatch(unpatch)
-            response = encodePatch()
-        else:
-            response = { 'error': 'no device' }
-        self.setContentType()
-        self.write(response)
-
-
-
 class PatchesHandler(GenericAPIHandler):
     def get(self,ip):
         if ip in self.application.clients:
@@ -1202,7 +1187,6 @@ class iBrewWeb(tornado.web.Application):
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/unblock/(.+)/?",UnblockHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/patches/?",PatchesHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/patch/(.+)/?",PatchHandler),
-                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/unpatch/(.+)/?",UnpatchHandler),
                 
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/?",SettingsHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/default/?",SettingsDefaultHandler),

@@ -161,7 +161,6 @@ class SmarterProtocol:
     CommandRelayUnblock   = 0x73
     CommandRelayModifiersInfo = 0x74
     CommandRelayPatch     = 0x76
-    CommandRelayUnpatch   = 0x77
 
 
     # device
@@ -193,7 +192,6 @@ class SmarterProtocol:
         CommandRelayBlock       : (True,True,[ResponseRelayModifiersInfo],"iBrew block relay message"),
         CommandRelayUnblock     : (True,True,[ResponseRelayModifiersInfo],"iBrew unblock relay message"),
         CommandRelayPatch       : (True,True,[ResponseRelayModifiersInfo],"iBrew patch relay message"),
-        CommandRelayUnpatch     : (True,True,[ResponseRelayModifiersInfo],"iBrew unpatch relay message"),
         CommandDeviceTime       : (True,True,[ResponseCommandStatus],"Set appliance time"),
         CommandWifiNetwork      : (True,True,[ResponseCommandStatus],"Set wireless network name"),
         CommandWifiPassword     : (True,True,[ResponseCommandStatus],"Set wireless network password"),
@@ -286,7 +284,7 @@ class SmarterProtocol:
         ResponseKettleStatus    : (True,False,7,[],"Kettle status",[]),
         ResponseDeviceInfo      : (True,True,4,[CommandDeviceInfo],"Appliance info",[]),
         ResponseRelayInfo       : (True,True,0,[CommandRelayInfo],"iBrew remote relay info",[]),
-        ResponseRelayModifiersInfo  : (True,True,0,[CommandRelayModifiersInfo,CommandRelayBlock,CommandRelayUnblock,CommandRelayPatch,CommandRelayUnpatch],"iBrew relay rules block messages info",[]),
+        ResponseRelayModifiersInfo  : (True,True,0,[CommandRelayModifiersInfo,CommandRelayBlock,CommandRelayUnblock,CommandRelayPatch],"iBrew relay rules block messages info",[]),
         ResponseWifiFirmware    : (True,True,0,[CommandWifiFirmware],"Wifi firmware info",[]),
         ResponseCarafe          : (False,True,3,[CommandCarafe],"Carafe required",[]),
         ResponseCoffeeStatus    : (False,True,7,[],"Coffee machine status",[]),
@@ -465,7 +463,7 @@ class SmarterProtocol:
     MessagesUser        = MessagesNormal
 
     GroupRelay         = 40
-    MessagesRelay      = [CommandRelayInfo, ResponseRelayInfo, CommandRelayPatch, CommandRelayUnpatch, CommandRelayBlock, CommandRelayUnblock, CommandRelayModifiersInfo, ResponseRelayModifiersInfo]
+    MessagesRelay      = [CommandRelayInfo, ResponseRelayInfo, CommandRelayPatch, CommandRelayBlock, CommandRelayUnblock, CommandRelayModifiersInfo, ResponseRelayModifiersInfo]
 
     GroupAdmin          = 19
     MessagesAdmin       = MessagesSetup + MessagesNormal + MessagesRelay
@@ -1754,7 +1752,6 @@ class SmarterProtocol:
         CommandRelayBlock           : ('PROTOCOL',[ArgRelayModifiers],"","[in:|out:]rule(,[in:|out:]rule)* where rule: message id, group name"),
         CommandRelayUnblock         : ('PROTOCOL',[ArgRelayModifiers],"","[in:|out:]rule(,[in:|out:]rule)* where rule: message id, group name"),
         CommandRelayPatch           : ('PROTOCOL',[ArgRelayModifiers],"","[mod:]rule(,[mod:]rule)* where rule is a patch"),
-        CommandRelayUnpatch         : ('PROTOCOL',[ArgRelayModifiers],"","[mod:]rule(,[mod:]rule)* where rule is a patch"),
 
         CommandUpdate               : ('PROTOCOL',[],"","Disables wifi and creates a 'iKettle Update' wireless network and opens port 6000. A hard appliance reset (hold power button for 10 seconds) is sometimes required to fix this state, or just unplug the power for a moment."),
         Command69                   : ('PROTOCOL',[ArgUnknown],"00",""),  #REPEAT?

@@ -592,8 +592,7 @@ class iBrewConsole:
                                                 self.client.print_patches_short()
             elif command == "unblock":      self.client.unblock(arguments[0])
             elif command == "block":        self.client.block(arguments[0])
-            elif command == "unpatch":      self.client.unpatch(arguments[0])
-            elif command == "patch":        self.client.patch(arguments[0])
+            elif command == "patch":       self.client.patch(arguments[0])
             elif command == "remote":
                                             if numarg == 1 and arguments[0] == "info":
                                                 self.client.relay_info()
@@ -614,10 +613,6 @@ class iBrewConsole:
                                                 self.client.relay_patch(arguments[1])
                                                 if not self.client.dump: self.client.print_remote_patches_short()
                                         
-                                            elif numarg == 2 and arguments[0] == "unpatch":
-                                                self.client.relay_unpatch(arguments[1])
-                                                if not self.client.dump: self.client.print_remote_patches_short()
-                                
                                             elif numarg == 2 and arguments[0] == "block":
                                                 self.client.relay_block(arguments[1])
                                                 if not self.client.dump: self.client.print_remote_rules_short()
@@ -1166,16 +1161,15 @@ class iBrewConsole:
         print "    block [rules]          block messages with groups or ids"
         print "    disconnect             disconnect connected appliance"
         print "    events                 start trigger events only"
+        print "    patch [rules]          patch messages"
         print "    relay ((ip:)port)      start relay"
         print "    relay stop             stop relay"
         print "    remote info            info on remote relay"
         print "    remote block [rules]   remote block messages with groups or ids"
         print "    remote patch [rules]   remote patch"
-        print "    remote patches (full)  show remote patches rules"
-        print "    remote rules (full)    show remote blocking rules"
+        print "    remote rules (full)    show remote blocking and patching rules"
         print "    remote unblock [rules] remote unblock messages groups or ids"
-        print "    remote unpatch [rules] remote unpatch patches"
-        print "    rules (full)           show blocking rules"
+        print "    rules (full)           show blocking & patching rules"
         print "    stats                  show traffic statistics"
         print "    unblock [rules]        unblock messages groups or ids"
         print
@@ -1204,7 +1198,6 @@ class iBrewConsole:
         print "    [hexdata]              send raw data to appliance (e.g. \'64 7e\')"
         print "    dump                   toggle \'dump raw messages\'"
         print "    monitor                monitor incomming traffic"
-        print "    modify (modifiers)     patch or unpatch messages"
         print "    simulate               start kettle (or coffee simulation)"
         print "    sweep (id)             [developer only] try (all or start with id) unknown command codes"
         print
