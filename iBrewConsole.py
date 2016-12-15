@@ -334,7 +334,6 @@ class iBrewConsole:
                         self.client.events = True
                         print "iBrew: Trigger events enabled"
                     else:
-                        print "HERE1"
                         self.client.events = False
                         print "iBrew: Trigger events disabled"
                     return
@@ -618,6 +617,7 @@ class iBrewConsole:
                                                 if arguments[0] == "groups":
                                                     self.client.print_groups()
                                                 elif arguments[0] == "add" and numarg == 4:
+                                                    print arguments[3]
                                                     self.client.triggerAdd(arguments[1],arguments[2],arguments[3])
                                                 elif arguments[0] == "add" and numarg != 4:
                                                     print "iBrew: trigger add need a group name and a trigger action"

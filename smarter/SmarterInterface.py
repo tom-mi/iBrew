@@ -2558,6 +2558,7 @@ class SmarterClient:
             pass
             
     def triggerAdd(self,group,trigger,action):
+        print action
         if not self.__isGroup(group):
             self.triggerGroups += [(group,True,"1")]
         self.triggerSet(group,trigger,action)
@@ -2597,14 +2598,15 @@ class SmarterClient:
         id = Smarter.triggerID(trigger)
         if id in self.triggersKettle:
             if len(self.triggersKettle[id]) != 0:
-                for i in range(0,len(self.triggersKettle[id])):
+                for i in range(0,len(self.triggersKettle[id])-1):
+                    print i
                     if self.triggersKettle[id][i][0] == group:
                         del self.triggersKettle[id][i]
             self.triggersKettle[id] += [(group,action)]
         
         if id in self.triggersCoffee:
             if len(self.triggersCoffee[id]) != 0:
-                for i in range(0,len(self.triggersCoffee[id])):
+                for i in range(0,len(self.triggersCoffee[id])-1):
                     if self.triggersCoffee[id][i][0] == group:
                         del self.triggersCoffee[id][i]
             self.triggersCoffee[id] += [(group,action)]
@@ -2704,25 +2706,26 @@ class SmarterClient:
     def __trigger(self,trigger,old,new):
         if not self.events: return
         
-        if self.dump and self.dump_status:
-            if self.isKettle:
-                logging.debug("Trigger: " + Smarter.triggersKettle[trigger][0] + " - old:" + str(old) + " new:" + str(new))
+        #if self.dump and self.dump_status:
+        #    if self.isKettle:
+        #        logging.debug("Trigger: " + Smarter.triggersKettle[trigger][0] + " - old:" + str(old) + " new:" + str(new))
                 
-            if self.isCoffee:
-                logging.debug("Trigger: " + Smarter.triggersCoffee[trigger][0] + " - old:" + str(old) + " new:" + str(new))
+        #    if self.isCoffee:
+        #        logging.debug("Trigger: " + Smarter.triggersCoffee[trigger][0] + " - old:" + str(old) + " new:" + str(new))
 
 
         for i in self.triggerGroups:
             if i[1]:
                 s = self.triggerGet(i[0],Smarter.triggerName(trigger))
                 if s != "":
-                    s = s.replace("$O",str(old)).replace("$N",str(new))
+                    s = s.replace("%O%",str(old)).replace("%N%",str(new))
                     
                     # replace False, True with boolean.. FIX
                     
                     if s[0:4] == "http":
                         try:
                             response = urllib.urlopen(s)
+            
                         except Exception, e:
                             print str(e)
                     else:
