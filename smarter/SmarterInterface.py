@@ -802,7 +802,7 @@ class SmarterClient:
                 # debug
                 #print "[" + Smarter.number_to_code(id) + "]",
                 minlength = Smarter.message_response_length(id)
-                #print minlength
+                
                 i = 1
                 while raw != Smarter.number_to_raw(Smarter.MessageTail) or (minlength > 0 and raw == Smarter.number_to_raw(Smarter.MessageTail) and i < minlength):
                     message += raw
@@ -813,7 +813,8 @@ class SmarterClient:
                     #print "[" + Smarter.raw_to_code(raw) + "]" + str(raw)
                     #print "len = " + str(i)
                     i += 1
-                #print "len = " + str(i)
+                print "len = " + str(i)
+                print "needed = " + str(minlength)
                 message += raw
                 
                 self.readCount += 1
@@ -1220,8 +1221,6 @@ class SmarterClient:
             
         
     def __splitrules(self,string):
-        print string
-        print "DDDDD"
         s = string.lower().split(",")
         a = []
         r = []
@@ -1233,8 +1232,6 @@ class SmarterClient:
                 r += [i[4:]]
             if i[0:4] == "mod:":
                 p += [i[4:]]
-        print r
-        print a
         return (a,r,p)
 
 
@@ -1361,9 +1358,7 @@ class SmarterClient:
         d, r, p = self.__splitrules(string)
         did = Smarter.groupsListDecode(d)
         rid = Smarter.groupsListDecode(r)
-        print string
-        print d
-        print r
+
         self.rulesIn = Smarter.idsAdd(self.rulesIn,did)
         self.rulesOut = Smarter.idsAdd(self.rulesOut,rid)
         
@@ -3237,8 +3232,6 @@ class SmarterClient:
 
 
     def __decode_RelayModifiersInfo(self,message):
-        print message[0:]
-        print "SSS"
         d, r, p = self.__splitrules(Smarter.raw_to_text(message[0:]).upper())
         did = Smarter.groupsListDecode(d)
         rid = Smarter.groupsListDecode(r)
