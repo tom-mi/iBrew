@@ -3344,8 +3344,6 @@ class SmarterClient:
         Retreive the default values
         """
         
-        threading.currentThread()
-        
         self.__sendLock.acquire()
         try:
             self.fast = False
