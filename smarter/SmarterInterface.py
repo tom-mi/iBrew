@@ -2734,7 +2734,6 @@ class SmarterClient:
                     if self.triggersKettle[id][i][0] == group:
                         del self.triggersKettle[id][i]
             self.triggersKettle[id] += [(group,action)]
-            print "FFF"
             self.__triggerHeartBeat(group,id)
     
         
