@@ -11,7 +11,7 @@ import random
 #
 # Copyright © 2016 Tristan (@monkeycat.nl)
 #
-# Intermezzo
+# The conundrum struggle
 #------------------------------------------------------
 
 

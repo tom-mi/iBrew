@@ -23,7 +23,7 @@ from iBrewWeb import *
 #
 # Copyright © 2016 Tristan (@monkeycat.nl)
 #
-# Intermezzo
+# The conundrum struggle
 #------------------------------------------------------
 
 class Launcher():    

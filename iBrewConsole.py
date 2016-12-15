@@ -32,7 +32,7 @@ import traceback
 #
 # Copyright © 2016 Tristan (@monkeycat.nl)
 #
-# Intermezzo
+# The conundrum struggle
 #------------------------------------------------------
 
 
@@ -43,8 +43,8 @@ import traceback
 
 
 iBrewApp          = "iBrew: iKettle 2.0 & Smarter Coffee Interface"
-iBrewInfo         = "iBrew: Intermezzo © 2016 Tristan (@monkeycat.nl)"
-iBrewContribute   = "Please DONATE! Food, jokes, hugs and fun toys!\n\nContribute any discoveries on https://github.com/Tristan79/iBrew/issues"
+iBrewInfo         = "iBrew: The conundrum struggle © 2016 Tristan (@monkeycat.nl)"
+iBrewContribute   = "Please DONATE! Food, jokes, hugs and fun toys! To someone who deserves it!\n\nContribute any discoveries on https://github.com/Tristan79/iBrew/issues"
 
 class iBrewConsole:
 

@@ -23,7 +23,7 @@ from iBrewFolders import AppFolders
 #
 # Copyright © 2016 Tristan (@monkeycat.nl)
 #
-# Intermezzo
+# The conundrum struggle
 #------------------------------------------------------
 
 class WinGui(object):

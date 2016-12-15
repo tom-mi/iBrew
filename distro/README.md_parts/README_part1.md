@@ -1,11 +1,11 @@
-# iBrew: Intermezzo!
+# iBrew: The conundrum struggle!
 
 iKettle, [iKettle 2.0](http://smarter.am/ikettle) and [Smarter Coffee](http://smarter.am/coffee) Interface
 
 ## Hot! News
 
 __Trigger! You can now push your data or run commands!__
-It is now possible to push sensor values and states of the appliances to other smarthome controllers using http or run commands!
+It is now possible to push sensor values and states of the appliances to other smarthome controllers using HTTP or run commands!
 
 _Legacy iKettle command line support (alpha)_
 

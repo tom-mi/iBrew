@@ -12,7 +12,7 @@ import platform
 #
 # Copyright © 2016 Tristan (@monkeycat.nl)
 #
-# Intermezzo
+# The conundrum struggle
 #------------------------------------------------------
 
 appname = 'iBrew'

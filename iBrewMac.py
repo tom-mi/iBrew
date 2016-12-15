@@ -16,7 +16,7 @@ import webbrowser
 #
 # Copyright © 2016 Tristan (@monkeycat.nl)
 #
-# Intermezzo
+# The conundrum struggle
 #------------------------------------------------------
 
 rumps.debug_mode(False)  # turn on command line logging information for development - default is off

@@ -26,7 +26,7 @@ import traceback
 #
 # Copyright © 2016 Tristan (@monkeycat.nl)
 #
-# Intermezzo
+# The conundrum struggle
 #------------------------------------------------------
 
 
@@ -947,7 +947,7 @@ class VersionHandler(GenericAPIHandler):
 
 class iBrewWeb(tornado.web.Application):
 
-    version = '0.80'
+    version = '0.81'
     
     def start(self):
         tornado.ioloop.IOLoop.instance().start()

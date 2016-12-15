@@ -8,13 +8,13 @@ from operator import itemgetter
 #------------------------------------------------------
 # SMARTER PROTOCOL INTERFACE
 #
-# Python protocol interface to iKettle 2.0 & Smarter Coffee Devices
+# Python protocol interface to iKettle 2.0 & Smarter Coffee Appliances
 #
 # https://github.com/Tristan79/iBrew
 #
 # Copyright © 2016 Tristan (@monkeycat.nl)
 #
-# Intermezzo
+# The conundrum struggle
 #------------------------------------------------------
 
 # In the end I should have made classes of the types...

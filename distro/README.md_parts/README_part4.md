@@ -279,6 +279,8 @@ To see it in action!
 
 For more information on [JSON used by domoticz!](https://www.domoticz.com/wiki/Domoticz_API/JSON_URL's)
 
+Next step is creating and filling in buttons actions using either script:// or iBrew JSON Rest API!...
+
 ### HomeKit ~ HomeBridge 
 
 Yes, you can! Connect your iKettle or Smarter Coffee to HomeKit... just follow the following steps!
@@ -326,7 +328,7 @@ Fill in your own device host (either IP address or hostname) and location to iBr
 	"platforms": [{
 		"platform": "cmdSwitch2",
 		"switches": [{
-			"name": "iKettle 2",
+			"name": "iKettle 2.0",
 			"on_cmd": "/Users/Tristan/Coding/iBrew/ibrew start 10.0.0.99",
 			"off_cmd": "/Users/Tristan/Coding/iBrew/ibrew stop 10.0.0.99",
 			"state_cmd": "/Users/Tristan/Coding/iBrew/ibrew shortstatus 10.0.0.99 | grep 'busy'",
@@ -378,7 +380,7 @@ example config file for iKettle 2.0.
 	"platforms": [{
 		"platform": "cmdSwitch2",
 		"switches": [{
-			"name": "iKettle 2",
+			"name": "iKettle 2.0",
 			"on_cmd": "/Users/Tristan/Coding/iBrew/ibrew start 10.0.0.99",
 			"off_cmd": "/Users/Tristan/Coding/iBrew/ibrew stop 10.0.0.99",
 			"state_cmd": "/Users/Tristan/Coding/iBrew/ibrew shortstatus 10.0.0.99 | grep 'busy'",
@@ -404,11 +406,13 @@ Have any links, info or help on other Smarthome controller software, please post
  * PHASE 3: [PROTOCOL]      v0.2 Tea Noire Sweet 
  * PHASE 4: [CONSOLE]       v0.3 Kettle Rattle 
  * PHASE 5: [WEB]           v0.4 Brewing on the 7th day 
- *                          v0.4.4 Intermezzo! <-- We are here!
+ *          [CORE]          v0.4.4 Intermezzo!
  * PHASE 6: [PRERELEASE]    v0.5 The conundrum struggle
  * PHASE 7: [FINALCUT]      v1.0 Out of order!
 
-### Fixes 
+### Changelog 
+ * 15-12-2016 Fixed various bugs, added event trigger system (alpha)
+ * 13-12-2016 Fixed various bugs, added firewall control
  * 13-11-2016 Fixed firewall added coffee machine and kettle simulator
  * 10-11-2016 Fixed relay so you can simulate an smarter coffee or ikettle
  *  4-11-2016 Fixed status not working for homebridge :-)
@@ -443,7 +447,6 @@ Interfaces
  * PYTHON: filter out wrong responses... of know commands??? or atleast acknowledge them, (03 responses)
  * PYTHON: Beverages should be able to override keepwarm time... xCLI/REST
  * CLI: make on/off true/false universal with string_to_bool
- * CLI: relay has no port neither has ibrew, we need port numbers...
  * CLI: Fix Simulation command and relay...
  * CLI: Currently the default values in fast mode are not initalized use slow or give all values
  * CLI: Sometimes it does not quit :-)
