@@ -3745,15 +3745,15 @@ class SmarterClient:
         else:               kw = keepwarm
 
         # patch!
-        if self.patchTemperatureLimit and self.patchTemperatureLimitValue <= temperature:
+        if self.patchTemperatureLimit and self.patchTemperatureLimitValue <= formulaTemperature :
             t = self.patchTemperatureLimitValue
-        elif self.patchChildProtection and self.patchChildProtectionValue <= temperature:
+        elif self.patchChildProtection and self.patchChildProtectionValue <= formulaTemperature :
             t = self.patchChildProtectionValue
         else:
-            t = temperature
+            t = formulaTemperature 
         
         if self.fast or self.isKettle:
-            self.__send_command(Smarter.CommandHeatFormula,Smarter.temperature_to_raw(formulaTemperature)+Smarter.keepwarm_to_raw(kw))
+            self.__send_command(Smarter.CommandHeatFormula,Smarter.temperature_to_raw(t)+Smarter.keepwarm_to_raw(kw))
         else:
             raise SmarterError(Smarter.KettleNoMachineHeatFormula,"You need a kettle to heat in formula mode")
 
