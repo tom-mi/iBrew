@@ -3540,7 +3540,7 @@ class SmarterClient:
         """
         Heat water to temperature right for green tea
         """
-        self.kettle_heat(80)
+        self.kettle_heat(65)
 
 
 
@@ -3548,7 +3548,7 @@ class SmarterClient:
         """
         Heat water to temperature right for white tea
         """
-        self.kettle_heat(85)
+        self.kettle_heat(80)
 
 
 

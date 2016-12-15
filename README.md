@@ -322,14 +322,14 @@ you can also use them on the command line as arguments, note that [] are mandito
     base                   show watersensor base value
     base [base]            store watersensor base value
     boil                   heat till 100°C
-    kettlecoffee           warms water for coffee
+    kettlecoffee           warms water for coffee 95°C
     calibrate              calibrates watersensor
     celsius                use celsius °C [console only]
     fahrenheid             use fahrenheid °F [console only]
     formula (temperature (keepwarm))] heat kettle in formula mode
     heat (temperature)(keepwarm))    heat kettle
     settings [temperature] [keepwarm] [formula] [formulatemperature] store kettle user settings
-    tea [white,green,black,oelong] warms water for tea
+    tea [green,white,oelong,black] warms water for tea 65°C,80°C,90°C,100°C
 
   Smarter Coffee  Commands
     beans                  use beans for coffee
