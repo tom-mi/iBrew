@@ -304,7 +304,6 @@ class SmarterClient:
         self.simulator_run = False
         self.relay_stop()
         self.disconnect()
-        self.simulator = None
 
 
     #------------------------------------------------------
@@ -497,9 +496,9 @@ class SmarterClient:
 
 
     def __broadcast_device_stop(self):
-        self.__utp_ResponseDeviceInfo = False
-        if self.dump:
+        if self.dump and self.__utp_ResponseDeviceInfo:
             logging.info("Stopping UDP (" + self.serverHost + ":" + str(self.serverPort) + ")")
+        self.__utp_ResponseDeviceInfo = False
 
 
 
@@ -619,7 +618,7 @@ class SmarterClient:
  
         self.__broadcast_device_start()
 
-        logging.info("Relay Server (" + self.serverHost + ":" + str(self.serverPort) + ")")
+        logging.info("[" + self.host + "] Relay Server (" + self.serverHost + ":" + str(self.serverPort) + ")")
         
         while self.relay:
             try:
@@ -645,8 +644,8 @@ class SmarterClient:
 
 
     def relay_stop(self):
-        if self.dump:
-            logging.info("Stopping Relay (" + self.serverHost + ":" + str(self.serverPort) + ")")
+        if self.relay and self.dump:
+            logging.info("[" + self.host + "] Stopping Relay (" + self.serverHost + ":" + str(self.serverPort) + ")")
         self.__broadcast_device_stop()
         self.relay = False
 
@@ -1579,7 +1578,7 @@ class SmarterClient:
         self.simulator_run = True
         time.sleep(0.25)
         if self.dump:
-            logging.info("Simulation Running")
+            logging.info("[" + self.host + "] Simulation Running")
         while self.simulator_run:
             if self.deviceId == Smarter.DeviceKettle:
             
@@ -1673,7 +1672,7 @@ class SmarterClient:
             elif self.deviceId == Smarter.DeviceCoffee:
             
                 if self.sim_grinderOn:
-                    print "Grinding"
+                    #print "Grinding"
                     if (self.sim_grinder_timeout * self.sim_setStrength) <= self.sim_grinder_timer:
                         self.sim_grinderOn = False
                         self.sim_grinder_timer = 0
@@ -1682,7 +1681,7 @@ class SmarterClient:
                         self.sim_grinder_timer += 1
                     
                 elif self.sim_heaterOn:
-                    print "Heating"
+                    #print "Heating"
                     if (self.sim_heating_timeout + self.sim_heating_cup_timeout * self.sim_setCups) <= self.sim_heating_timer:
                         self.sim_heaterOn = False
                         self.sim_heating_timer = 0
@@ -1711,7 +1710,7 @@ class SmarterClient:
 
             
         if self.dump:
-            logging.info("Simulation Stopped")
+            logging.info("[" + self.host + "] Simulation Stopped")
 
     
     #------------------------------------------------------

@@ -985,6 +985,7 @@ class iBrewWeb(tornado.web.Application):
     
     
     def autoconnect(self):
+        print "HERE"
         
         #if not self.isRunning:
         #    return
@@ -1026,7 +1027,6 @@ class iBrewWeb(tornado.web.Application):
                     if self.dump:
                         logging.info("[" + device[0] + "] Adding Web Device")
                     client = SmarterClient(AppFolders.settings() + "/")
-                    print self.events
                     client.events = self.events
                     client.deviceId = device[1]
                     client.device = Smarter.device_to_string(device[1])
@@ -1098,7 +1098,7 @@ class iBrewWeb(tornado.web.Application):
             pass
         try:
             for ip in self.clients:
-                self.clients[ip].disconnect()
+                self.clients[ip].stop()
         except Exception:
             raise SmarterError(WebServerStopMonitor,"Web Server: Could not stop monitors")
             
@@ -1123,6 +1123,7 @@ class iBrewWeb(tornado.web.Application):
                     self.thread.join()
         except Exception:
             raise SmarterError(WebServerStopWeb,"Web Server: Could not stop webserver")
+        print "DONE"
 
 
     def run(self,port,dump=False,host=""):
