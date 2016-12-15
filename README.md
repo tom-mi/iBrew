@@ -366,8 +366,8 @@ you can also use them on the command line as arguments, note that [] are mandito
   Actions can either be a path to a command or url
 
   Trigger actions examples:
-    C:\SCRIPTS\SENSOR.BAT %O% §N
-    /home/pi/iBrew/scripts/smarthome.sh Temperature %O% §N
+    C:\SCRIPTS\SENSOR.BAT §O §N
+    /home/pi/iBrew/scripts/smarthome.sh Temperature §O §N
     http://smarthome.local/?idx=34&value=§N
 
   Smarter Network Commands
@@ -624,10 +624,10 @@ ibrew trigger add Domotic Temperature http://127.0.0.1:8080/json.htm?type=comman
 
 ibrew trigger add Scripts KettleBusy "C:\SCRIPTS\SENSOR.BAT §N" 10.0.0.99
 
-ibrew trigger add Scripts KettleBusy "/home/pi/iBrew/scripts/sensor.sh %O% §N" 10.0.0.99
+ibrew trigger add Scripts KettleBusy "/home/pi/iBrew/scripts/sensor.sh §O §N" 10.0.0.99
 ```
 
-where Domoticz is the group (one action per trigger per group) and §N is the new value and %O% is the old value.
+where Domoticz is the group (one action per trigger per group) and §N is the new value and §O is the old value.
 
 To see all triggers
 
