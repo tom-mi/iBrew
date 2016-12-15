@@ -3007,6 +3007,7 @@ class SmarterClient:
             self.__trigger(Smarter.triggerOnBase,self.onBase,v)
             self.onBase = v
 
+        print message[5]
         v = Smarter.raw_to_number(message[5])
         if v != self.unknown:
             self.__trigger(Smarter.triggerUnknownKettle,self.unknown,v)
@@ -3750,7 +3751,7 @@ class SmarterClient:
         elif self.patchChildProtection and self.patchChildProtectionValue <= formulaTemperature :
             t = self.patchChildProtectionValue
         else:
-            t = formulaTemperature 
+            t = formulaTemperature
         
         if self.fast or self.isKettle:
             self.__send_command(Smarter.CommandHeatFormula,Smarter.temperature_to_raw(t)+Smarter.keepwarm_to_raw(kw))

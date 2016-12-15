@@ -726,7 +726,7 @@ class SmarterProtocol:
         # FIX ERROR CHECKING + CODE
         return
         # I DID EDIT THIS WITH -1 TEST FIX
-        for i in range(0,len(text)-1):
+        for i in range(0,len(text)):
             raw =+ number_to_raw(text[i])
         return raw
 
@@ -734,7 +734,7 @@ class SmarterProtocol:
     def raw_to_text(self,raw):
         # FIX ERROR CHECKING + CODE
         s = ""
-        for i in range(1,len(raw)-1):
+        for i in range(1,len(raw)):
             x = str(raw[i])
             if x in string.printable:
                 s += x
