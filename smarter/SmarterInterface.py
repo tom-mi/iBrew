@@ -286,8 +286,6 @@ class SmarterClient:
         
         self.__init()
 
-
-
         try:
             self.simulator = threading.Thread(target=self.__simulate_device)
             self.simulator.start()
@@ -304,6 +302,7 @@ class SmarterClient:
         self.simulator_run = False
         self.relay_stop()
         self.disconnect()
+    
 
 
     #------------------------------------------------------
@@ -439,41 +438,6 @@ class SmarterClient:
     #------------------------------------------------------
 
 
-
-    
-    def find_devices(self):
-        """
-        Find devices using udp
-        """
-        devices = []
-        relay = []
-        try:
-            cs = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            cs.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            cs.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-            command = Smarter.number_to_raw(Smarter.CommandDeviceInfo) + Smarter.number_to_raw(Smarter.MessageTail)
-            #command = '\x64\x7e'
-
-            cs.sendto(command, ('255.255.255.255', self.port))
-            cs.settimeout(4)
-
-            # support up to 100 devices
-            for i in range (0,100):
-                message, server = cs.recvfrom(1024)
-                # '0x64 type version 0x7e
-                if Smarter.raw_to_number(message[0]) == Smarter.ResponseDeviceInfo and Smarter.raw_to_number(message[3]) == Smarter.MessageTail:
-                    devices.append((server[0],Smarter.raw_to_number(message[1]),Smarter.raw_to_number(message[2])))
-                if Smarter.raw_to_number(message[0]) == Smarter.ResponseRelayInfo:
-                    relay.append((server[0],Smarter.raw_to_number(message[1]),Smarter.raw_to_text(message[1:])))
-        except socket.error, e:
-            # FIX
-            pass #print 'iBrew:' + str(e)
-        finally:
-            cs.close()
-        return devices, relay
-
-
-
     def __broadcast_device(self):
         self.__utp_ResponseDeviceInfo = True
         while self.__utp_ResponseDeviceInfo:
@@ -528,27 +492,27 @@ class SmarterClient:
 
 
     def __serverMonitor(self,clientsock,addr):
-            while self.relay:
-                time.sleep(1)
-                if  not self.__clients[(clientsock, addr)].locked():
-                    self.__clients[(clientsock, addr)].acquire()
-                    
-                    # BLOCKING HERE FIX
-                    if self.isKettle:
-                        if Smarter.ResponseKettleStatus in self.rulesOut:
-                            logging.debug("Blocked relay kettle status")
-                            r = self.__simulate_KettleStatus()
-                        else:
-                            r = self.__encode_KettleStatus(self.kettleStatus,self.temperature,self.waterSensor, self.onBase, self.unknown)
-                    elif self.isCoffee:
-                        if Smarter.ResponseCoffeeStatus in self.rulesOut:
-                            logging.debug("Blocked relay coffee status")
-                            r = self.__simulate_CoffeeStatus()
-                        else:
-                            r = self.__encode_CoffeeStatus(self.cups,self.strength,self.cupsBrew,self.waterLevel,self.waterEnough,self.carafe, self.grind, self.ready, self.grinderOn, self.heaterOn, self.hotPlateOn,self.working,self.timerEvent)
-                    clientsock.send(r[0])
-                    self.__clients[(clientsock, addr)].release()
-                    logging.info(addr[0] + ":" + str(addr[1]) + " Status [" + Smarter.message_to_codes(r[0]) + "]")
+        while self.relay:
+            time.sleep(1)
+            if  not self.__clients[(clientsock, addr)].locked():
+                self.__clients[(clientsock, addr)].acquire()
+                
+                # BLOCKING HERE FIX
+                if self.isKettle:
+                    if Smarter.ResponseKettleStatus in self.rulesOut:
+                        logging.debug("Blocked relay kettle status")
+                        r = self.__simulate_KettleStatus()
+                    else:
+                        r = self.__encode_KettleStatus(self.kettleStatus,self.temperature,self.waterSensor, self.onBase, self.unknown)
+                elif self.isCoffee:
+                    if Smarter.ResponseCoffeeStatus in self.rulesOut:
+                        logging.debug("Blocked relay coffee status")
+                        r = self.__simulate_CoffeeStatus()
+                    else:
+                        r = self.__encode_CoffeeStatus(self.cups,self.strength,self.cupsBrew,self.waterLevel,self.waterEnough,self.carafe, self.grind, self.ready, self.grinderOn, self.heaterOn, self.hotPlateOn,self.working,self.timerEvent)
+                clientsock.send(r[0])
+                self.__clients[(clientsock, addr)].release()
+                logging.info(addr[0] + ":" + str(addr[1]) + " Status [" + Smarter.message_to_codes(r[0]) + "]")
 
 
 
@@ -3380,6 +3344,8 @@ class SmarterClient:
         Retreive the default values
         """
         
+        threading.currentThread()
+        
         self.__sendLock.acquire()
         try:
             self.fast = False
@@ -4476,19 +4442,6 @@ class SmarterClient:
     def print_connect_status(self):
         print self.string_connect_status()
     
-
-
-    def print_devices_found(self,devices,relay):
-        for i in range(0,len(devices)):
-            s = ""
-            for j in range(0,len(relay)):
-                if devices[i][0] == relay[j][0]:
-                    s = "Relay v" + str(relay[j][1]) + " (" + relay[j][2] + ") "
-            print "[" + devices[i][0] +  ":" + '{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()) + "] Found " + s + Smarter.device_info(devices[i][1],devices[i][2])
-        if len(devices) == 0:
-            print "No coffee machine or kettle found"
-
-
 
     def print_stats(self):
         print

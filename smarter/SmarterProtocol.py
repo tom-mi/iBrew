@@ -3,6 +3,11 @@
 import traceback
 import struct
 import string
+import socket
+import datetime
+import os
+import sys
+
 from operator import itemgetter
 
 #------------------------------------------------------
@@ -1475,6 +1480,51 @@ class SmarterProtocol:
 
         return "%s %s" % (formatted_size, suffix)
 
+
+    #------------------------------------------------------
+    # UDP Find Devices
+    #------------------------------------------------------
+
+    def find_devices(self,port):
+        """
+        Find devices using udp
+        """
+        devices = []
+        relay = []
+        try:
+            cs = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            cs.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            cs.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+            command = self.number_to_raw(self.CommandDeviceInfo) + self.number_to_raw(self.MessageTail)
+            #command = '\x64\x7e'
+
+            cs.sendto(command, ('255.255.255.255', port))
+            cs.settimeout(2)
+
+            # support up to 100 devices
+            for i in range (0,100):
+                message, server = cs.recvfrom(1024)
+                # '0x64 type version 0x7e
+                if self.raw_to_number(message[0]) == self.ResponseDeviceInfo and self.raw_to_number(message[3]) == self.MessageTail:
+                    devices.append((server[0],self.raw_to_number(message[1]),self.raw_to_number(message[2])))
+                if self.raw_to_number(message[0]) == self.ResponseRelayInfo:
+                    relay.append((server[0],self.raw_to_number(message[1]),self.raw_to_text(message[1:])))
+        except socket.error, e:
+            # FIX
+            pass #print 'iBrew:' + str(e)
+        finally:
+            cs.close()
+        return devices, relay
+
+    def print_devices_found(self,devices,relay):
+        for i in range(0,len(devices)):
+            s = ""
+            for j in range(0,len(relay)):
+                if devices[i][0] == relay[j][0]:
+                    s = "Relay v" + str(relay[j][1]) + " (" + relay[j][2] + ") "
+            print "[" + devices[i][0] +  ":" + '{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()) + "] Found " + s + Smarter.device_info(devices[i][1],devices[i][2])
+        if len(devices) == 0:
+            print "No coffee machine or kettle found"
 
 
     #------------------------------------------------------

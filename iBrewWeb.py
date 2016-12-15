@@ -7,6 +7,7 @@ import tornado.web
 import socket
 import time
 import threading
+import datetime
 
 import os
 from smarter.SmarterInterface import *
@@ -287,7 +288,7 @@ class DeviceHandler(GenericAPIHandler):
 
 class DevicesHandler(GenericAPIHandler):
     def get(self):
-        devices, relay = SmarterClient(AppFolders.settings() + "/").find_devices()
+        devices, relay = Smarter.find_devices(Smarter.Port)
         response = {}
         for device in devices:
             x = -1
@@ -985,12 +986,11 @@ class iBrewWeb(tornado.web.Application):
     
     
     def autoconnect(self):
-        print "HERE"
         
         #if not self.isRunning:
         #    return
-        devices, relay = SmarterClient(AppFolders.settings() + "/").find_devices()
-        SmarterClient(AppFolders.settings() + "/").print_devices_found(devices,relay)
+        devices, relay = Smarter.find_devices(Smarter.Port)
+        Smarter.print_devices_found(devices,relay)
         
         reconnect = 7
         
@@ -1036,7 +1036,8 @@ class iBrewWeb(tornado.web.Application):
                     client.host = device[0]
                     client.connect()
                     self.clients[device[0]] = client
-                    threading.Thread(target=client.device_all_settings)
+                    #client.device_all_settings()
+                    threading.Thread(client.device_all_settings())
                     self.reconnect_count[device[0]] = 0
                     logging.info("iBrew Web Server: " + client.string_connect_status())
                 except Exception:
@@ -1064,7 +1065,8 @@ class iBrewWeb(tornado.web.Application):
                     client.dump_status = self.dump
                     client.connect()
                     self.clients[ip] = client
-                    client.device_all_settings()
+                    #client.device_all_settings()
+                    threading.Thread(client.device_all_settings())
                     self.reconnect_count[ip] = 0
                     logging.info("iBrew Web Server: " + client.string_connect_status())
                 except Exception:
@@ -1123,7 +1125,6 @@ class iBrewWeb(tornado.web.Application):
                     self.thread.join()
         except Exception:
             raise SmarterError(WebServerStopWeb,"Web Server: Could not stop webserver")
-        print "DONE"
 
 
     def run(self,port,dump=False,host=""):
@@ -1139,8 +1140,7 @@ class iBrewWeb(tornado.web.Application):
             raise SmarterError(WebServerListen,"Web Server: Couldn't open socket on port " + str(self.port))
             return
     
-    
-        
+
         self.autoconnect()
         
 
