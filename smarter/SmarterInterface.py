@@ -778,7 +778,7 @@ class SmarterClient:
 
                 if previousAverage != average:
                     if self.temperatureStable != average:
-                        self.__trigger(Smarter.triggerTemperatureStable,self.self.temperatureStable,average)
+                        self.__trigger(Smarter.triggerTemperatureStable,self.temperatureStable,average)
                         self.temperatureStable = average
                     previousAverage = average
 
@@ -3743,6 +3743,14 @@ class SmarterClient:
         """
         if keepwarm == -1:  kw = self.defaultKeepWarmTime
         else:               kw = keepwarm
+
+        # patch!
+        if self.patchTemperatureLimit and self.patchTemperatureLimitValue <= temperature:
+            t = self.patchTemperatureLimitValue
+        elif self.patchChildProtection and self.patchChildProtectionValue <= temperature:
+            t = self.patchChildProtectionValue
+        else:
+            t = temperature
         
         if self.fast or self.isKettle:
             self.__send_command(Smarter.CommandHeatFormula,Smarter.temperature_to_raw(formulaTemperature)+Smarter.keepwarm_to_raw(kw))
