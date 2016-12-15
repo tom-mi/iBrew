@@ -1253,7 +1253,7 @@ class iBrewConsole:
         print "    cups 3                   Set number of cups to brew"
         print "    mode cup                 Set cup mode"
         print "    block in:wifi,in:02          Block wifi and [" + Smarter.message_description(02) + "] command to appliance"
-        print "    patch relay out:version=12] Patches [" + Smarter.message_description(Smarter.ResponseDeviceInfo) + "] argument version to clients"
+       # print "    patch relay out:version=12] Patches [" + Smarter.message_description(Smarter.ResponseDeviceInfo) + "] argument version to clients"
         print "    brew 4 10 beans strong   Brew 4 cups of strong coffee using the beans keeping the hotplate on for 10 minutes"
         print "    join MyWifi p@ssw0rd     Joins MyWifi wireless network using p@ssw0rd as credential"
         print "    settings 100 20 True 75  Set default user settings for the kettle to..."
