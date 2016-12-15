@@ -265,6 +265,17 @@
         <div class="CellApiDesc">Unblock</div>
         <div class="CellApi"><a href="/api/{{ escape(ip) }}/unblock/out:DEBUG">/unblock/(rules)</a></div>
     </div>
+
+    <div class="tRow">
+        <div class="CellApiDesc">Patch</div>
+        <div class="CellApi"><a href="/api/{{ escape(ip) }}/patch/mod:KettleTemperature=45">/block/(rules)</a></div>
+    </div>
+    
+    <div class="tRow">
+        <div class="CellApiDesc">Unpatch</div>
+        <div class="CellApi"><a href="/api/{{ escape(ip) }}/unpatch/mod:KettleTemperature">/unpatch/(rules)</a></div>
+    </div>
+
  </div>
 <br>
 {% end %}

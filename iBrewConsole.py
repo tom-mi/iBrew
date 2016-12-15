@@ -585,19 +585,39 @@ class iBrewConsole:
                                                 self.client.print_rules()
                                             else:
                                                 self.client.print_rules_short()
+            elif command == "patches":
+                                            if numarg >= 1:
+                                                self.client.print_patches()
+                                            else:
+                                                self.client.print_patches_short()
             elif command == "unblock":      self.client.unblock(arguments[0])
             elif command == "block":        self.client.block(arguments[0])
+            elif command == "unpatch":      self.client.unpatch(arguments[0])
+            elif command == "patch":        self.client.patch(arguments[0])
             elif command == "remote":
                                             if numarg == 1 and arguments[0] == "info":
                                                 self.client.relay_info()
                                                 if not self.client.dump: self.client.print_info_relay()
                                             elif numarg >= 1 and arguments[0] == "rules":
-                                                self.client.relay_block_info()
+                                                self.client.relay_modifiers_info()
                                                 if numarg == 2:
                                                     self.client.print_remote_rules()
                                                 else:
                                                     if not self.client.dump: self.client.print_remote_rules_short()
-                                                
+                                            elif numarg >= 1 and arguments[0] == "patches":
+                                                self.client.relay_modifiers_info()
+                                                if numarg == 2:
+                                                    self.client.print_remote_patches()
+                                                else:
+                                                    if not self.client.dump: self.client.print_remote_patches_short()
+                                            elif numarg == 2 and arguments[0] == "patch":
+                                                self.client.relay_patch(arguments[1])
+                                                if not self.client.dump: self.client.print_remote_patches_short()
+                                        
+                                            elif numarg == 2 and arguments[0] == "unpatch":
+                                                self.client.relay_unpatch(arguments[1])
+                                                if not self.client.dump: self.client.print_remote_patches_short()
+                                
                                             elif numarg == 2 and arguments[0] == "block":
                                                 self.client.relay_block(arguments[1])
                                                 if not self.client.dump: self.client.print_remote_rules_short()
@@ -1150,8 +1170,11 @@ class iBrewConsole:
         print "    relay stop             stop relay"
         print "    remote info            info on remote relay"
         print "    remote block [rules]   remote block messages with groups or ids"
+        print "    remote patch [rules]   remote patch"
+        print "    remote patches (full)  show remote patches rules"
         print "    remote rules (full)    show remote blocking rules"
         print "    remote unblock [rules] remote unblock messages groups or ids"
+        print "    remote unpatch [rules] remote unpatch patches"
         print "    rules (full)           show blocking rules"
         print "    stats                  show traffic statistics"
         print "    unblock [rules]        unblock messages groups or ids"

@@ -273,6 +273,12 @@ class SmarterClient:
         self.rulesOut                = Smarter.MessagesDebug + Smarter.MessagesRest + Smarter.MessagesWifi + Smarter.MessagesDeviceInfo + Smarter.MessagesCalibrateOnly # use only after setup so speed up ... + Smarter.MessagesGet + Smarter.MessagesModesGet
 
 
+        self.patchTemperatureLimitValue = 70
+        self.patchTemperatureLimit      = True
+        self.patchChildProtectionValue  = 45
+        self.patchChildProtection       = False
+        
+
         self.__init()
 
 
@@ -294,6 +300,10 @@ class SmarterClient:
         self.disconnect()
         self.simulator = None
 
+
+    #------------------------------------------------------
+    # STATS
+    #------------------------------------------------------
 
 
     @_threadsafe_function
@@ -562,18 +572,17 @@ class SmarterClient:
                         response = self.__encode_RelayInfo(self.relayVersion,self.host)
                     else:
                         response = self.__encode_RelayInfo(self.relayVersion,"")
-                elif command == Smarter.CommandRelayBlockInfo:
-                    response = self.__encode_RelayBlockInfo(self.string_block())
-                elif command == Smarter.CommandRelayBlock:
+                elif command == Smarter.CommandRelayModifiersInfo:
+                    response = self.__encode_RelayModifiersInfo(self.string_block())
+                elif command == Smarter.CommandRelayBlock or command == Smarter.CommandRelayPatch:
                     #print Smarter.raw_to_text(data[0:])
-                    self.block(Smarter.raw_to_text(data[0:]))
-                    response = self.__encode_RelayBlockInfo(self.string_block())
-                elif command == Smarter.CommandRelayUnblock:
+                    self.__modifiers(Smarter.raw_to_text(data[0:]))
+                    response = self.__encode_RelayModifiersInfo(self.string_block())
+                elif command == Smarter.CommandRelayUnblock or command = Smarter.CommandRelayUnpatch:
                     #FIX
-                    print "unblock"
                     #print Smarter.raw_to_text(data[0:])
-                    self.unblock(Smarter.raw_to_text(data[0:]))
-                    response = self.__encode_RelayBlockInfo(self.string_block())
+                    self.__unmodifiers(Smarter.raw_to_text(data[0:]))
+                    response = self.__encode_RelayModifiersInfo(self.string_block())
                 else:
                     response = self.__send(data)
             self.mode = not self.mode
@@ -1187,7 +1196,7 @@ class SmarterClient:
 
         try:
             s = config.get(section, "blocks")
-            d, r  = self.__splitrules(s)
+            d, r, p  = self.__splitrules(s)
             did = Smarter.groupsListDecode(d)
             rid = Smarter.groupsListDecode(r)
             
@@ -1204,12 +1213,15 @@ class SmarterClient:
         s = string.lower().split(",")
         a = []
         r = []
+        p = []
         for i in s:
             if i[0:3] == "in:":
                 a += [i[3:]]
             if i[0:4] == "out:":
                 r += [i[4:]]
-        return (a,r)
+            if i[0:4] == "mod:":
+                p += [i[4:]]
+            return (a,r,p)
 
 
     def string_rules(self,rules):
@@ -1232,6 +1244,22 @@ class SmarterClient:
     #------------------------------------------------------
     
 
+    def print_patches_short(self):
+        pass
+
+
+    def print_patches(self):
+        pass
+
+
+    def print_remote_patches_short(self):
+        pass
+
+
+    def print_remote_patches(self):
+        pass
+    
+    
     def print_rules_short(self):
         print "Appliance blocks (in): " + self.string_rules(self.rulesIn)
         print "Relay blocks (out): " + self.string_rules(self.rulesOut)
@@ -1287,12 +1315,36 @@ class SmarterClient:
     # Firewall Interface
     #------------------------------------------------------
     
-    
+
+    def patch(self,string):
+        self.__modifiers(string)
+        if self.dump:
+            self.print_patches_short()
+
+
+    def unpatch(self,string):
+        self.__unmodifiers(string)
+        if self.dump:
+            self.print_patches_short()
+
+
     def block(self,string):
+        self.__modifiers(string)
+        if self.dump:
+            self.print_rules_short()
+
+
+    def unblock(self,string):
+        self.__unmodifiers(string)
+        if self.dump:
+            self.print_rules_short()
+
+
+    def __modifiers(self,string):
         """
         Block messages from the list of ids
         """
-        d, r  = self.__splitrules(string)
+        d, r, p = self.__splitrules(string)
         did = Smarter.groupsListDecode(d)
         rid = Smarter.groupsListDecode(r)
         
@@ -1303,17 +1355,19 @@ class SmarterClient:
             logging.info("Blocked: " + " ".join(d).upper())
         if rid != []:
             logging.info("Blocked relay: " + " ".join(r).upper())
-        if self.dump:
-            self.print_rules_short()
-        
+
         self.__write_block()
-            
+
+        """
+        childprotection
+        temperaturelimit
+        """
     
-    def unblock(self,string):
+    def __unmodifiers(self,string):
         """
         Block messages from the list of ids
         """
-        d, r  = self.__splitrules(string.upper())
+        d, r, p  = self.__splitrules(string.upper())
         did = Smarter.groupsListDecode(d)
         rid = Smarter.groupsListDecode(r)
         
@@ -2247,13 +2301,11 @@ class SmarterClient:
 
 
 
-    def __encode_RelayBlockInfo(self,block):
+    def __encode_RelayModifiersInfo(self,modifiers):
         """
         Encode relay device info response message
         """
-        return [Smarter.number_to_raw(Smarter.ResponseRelayBlockInfo) + Smarter.text_to_raw(block) + Smarter.number_to_raw(Smarter.MessageTail)]
-
-
+        return [Smarter.number_to_raw(Smarter.ResponseRelayModifiersInfo) + Smarter.text_to_raw(modifiers) + Smarter.number_to_raw(Smarter.MessageTail)]
 
 
 
@@ -2790,7 +2842,7 @@ class SmarterClient:
             elif id == Smarter.ResponseCoffeeSettings:  self.__decode_CoffeeSettings(message)
             elif id == Smarter.ResponseDeviceInfo:      self.__decode_DeviceInfo(message)
             elif id == Smarter.ResponseRelayInfo:       self.__decode_RelayInfo(message)
-            elif id == Smarter.ResponseRelayBlockInfo:  self.__decode_RelayBlockInfo(message)
+            elif id == Smarter.ResponseRelayModifiersInfo:  self.__decode_RelayModifiersInfo(message)
             elif id == Smarter.ResponseWifiFirmware:    self.__decode_WifiFirmware(message)
             elif id == Smarter.ResponseWirelessNetworks:self.__decode_WirelessNetworks(message)
         
@@ -2920,7 +2972,16 @@ class SmarterClient:
 
         v = Smarter.raw_to_temperature(message[2])
         if v != self.temperature:
+        
+        
             self.__trigger(Smarter.triggerTemperature,self.temperature,v)
+            
+            # patch temperature limit
+            if self.patchTemperatureLimit and self.patchTemperatureLimitValue > v:
+                self.kettle_stop()
+            if self.patchChildProtection and self.patchChildProtectionValue > v:
+                self.kettle_stop()
+            
             self.temperature = v
 
         v = Smarter.raw_to_watersensor(message[3],message[4])
@@ -3079,8 +3140,8 @@ class SmarterClient:
 
 
 
-    def __decode_RelayBlockInfo(self,message):
-        d, r  = self.__splitrules(Smarter.raw_to_text(message[0:]).upper())
+    def __decode_RelayModifiersInfo(self,message):
+        d, r, p = self.__splitrules(Smarter.raw_to_text(message[0:]).upper())
         did = Smarter.groupsListDecode(d)
         rid = Smarter.groupsListDecode(r)
         self.remoteRulesIn = []
@@ -3280,11 +3341,11 @@ class SmarterClient:
     
     
 
-    def relay_block_info(self):
+    def relay_modifiers_info(self):
         """
         Retrieve remote relay message block info
         """
-        self.__send_command(Smarter.CommandRelayBlockInfo)
+        self.__send_command(Smarter.CommandRelayModifiersInfo)
     
 
 
@@ -3301,6 +3362,22 @@ class SmarterClient:
         Set remote relay message unblock
         """
         self.__send_command(Smarter.CommandRelayUnblock,unblock)
+    
+
+
+    def relay_patch(self,patch):
+        """
+        Set remote relay message block
+        """
+        self.__send_command(Smarter.CommandRelayPatch,patch)
+    
+
+
+    def relay_unblock(self,unpatch):
+        """
+        Set remote relay message unblock
+        """
+        self.__send_command(Smarter.CommandRelayUnpatch,unpatch)
     
 
 
@@ -4395,7 +4472,7 @@ class SmarterClient:
         elif id == Smarter.ResponseMode:            self.print_mode()
         elif id == Smarter.ResponseDeviceInfo:      self.print_info_device()
         elif id == Smarter.ResponseRelayInfo:       self.print_info_relay()
-        elif id == Smarter.ResponseRelayBlockInfo:  self.print_remote_rules_short()
+        elif id == Smarter.ResponseRelayModifiersInfo:  self.print_remote_rules_short()
         elif id == Smarter.ResponseBase:            self.print_watersensor_base()
         elif id == Smarter.ResponseKettleStatus:    self.print_short_kettle_status()
         elif id == Smarter.ResponseCoffeeStatus:    self.print_short_coffee_status()

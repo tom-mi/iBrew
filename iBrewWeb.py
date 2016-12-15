@@ -809,6 +809,12 @@ def encodeRules(rulesIn,rulesOut):
                      }
             }
 
+
+def encodeRules():
+    #FIX
+    return { 'patch' :  'not implemented yet' }
+
+
 class BlockHandler(GenericAPIHandler):
     def get(self,ip,block):
         if ip in self.application.clients:
@@ -822,6 +828,7 @@ class BlockHandler(GenericAPIHandler):
             response = { 'error': 'no device' }
         self.setContentType()
         self.write(response)
+
 
 class UnblockHandler(GenericAPIHandler):
     def get(self,ip,unblock):
@@ -837,6 +844,45 @@ class UnblockHandler(GenericAPIHandler):
         self.setContentType()
         self.write(response)
 
+
+class PatchHandler(GenericAPIHandler):
+    def get(self,ip,patch):
+        if ip in self.application.clients:
+            client = self.application.clients[ip]
+            if patch[-1] == '/':
+                patch = patch[0:-1]
+            client.patch(patch)
+            response = encodePatch()
+        else:
+            response = { 'error': 'no device' }
+        self.setContentType()
+        self.write(response)
+
+
+class UnpatchHandler(GenericAPIHandler):
+    def get(self,ip,unpatch):
+        if ip in self.application.clients:
+            client = self.application.clients[ip]
+            if unpatch[-1] == '/':
+                unpatch = unpatch[0:-1]
+            client.unpatch(unpatch)
+            response = encodePatch()
+        else:
+            response = { 'error': 'no device' }
+        self.setContentType()
+        self.write(response)
+
+
+
+class PatchesHandler(GenericAPIHandler):
+    def get(self,ip):
+        if ip in self.application.clients:
+            client = self.application.clients[ip]
+            response = encodePatch(client.rulesIn,client.rulesOut)
+        else:
+            response = { 'error': 'no device' }
+        self.setContentType()
+        self.write(response)
 
 class RulesHandler(GenericAPIHandler):
     def get(self,ip):
@@ -1154,6 +1200,9 @@ class iBrewWeb(tornado.web.Application):
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/rules/?",RulesHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/block/(.+)/?",BlockHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/unblock/(.+)/?",UnblockHandler),
+                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/patches/?",PatchesHandler),
+                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/patch/(.+)/?",PatchHandler),
+                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/unpatch/(.+)/?",UnpatchHandler),
                 
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/?",SettingsHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/default/?",SettingsDefaultHandler),
