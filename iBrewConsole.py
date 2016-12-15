@@ -457,11 +457,11 @@ class iBrewConsole:
                 if self.client.isCoffee:
                     self.client.switch_coffee_device()
                     numarg = 1
-                    arguments = ["out:GOD,in:32"]
+                    arguments = ["in:GOD,out:32"]
                 else:
                     self.client.switch_kettle_device()
                     numarg = 1
-                    arguments = ["out:GOD,in:14"]
+                    arguments = ["in:GOD,out:14"]
 
             self.haveHost = False
             

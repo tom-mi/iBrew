@@ -574,7 +574,7 @@ class SmarterClient:
                     if self.connected:
                         response = self.__encode_RelayInfo(self.relayVersion,self.host)
                     else:
-                        response = self.__encode_RelayInfo(self.relayVersion,"")
+                        response = self.__encode_RelayInfo(self.relayVersion,Smarter.DirectHost)
                 elif command == Smarter.CommandRelayModifiersInfo:
                     response = self.__encode_RelayModifiersInfo(self.string_block())
                 elif command == Smarter.CommandRelayBlock or command == Smarter.CommandRelayPatch:
@@ -802,6 +802,7 @@ class SmarterClient:
                 # debug
                 #print "[" + Smarter.number_to_code(id) + "]",
                 minlength = Smarter.message_response_length(id)
+                #print minlength
                 i = 1
                 while raw != Smarter.number_to_raw(Smarter.MessageTail) or (minlength > 0 and raw == Smarter.number_to_raw(Smarter.MessageTail) and i < minlength):
                     message += raw
@@ -809,8 +810,10 @@ class SmarterClient:
                     raw = self.__socket.recv(1)
                     
                     # debug
-                    #print "[" + Smarter.raw_to_code(raw) + "]",
+                    #print "[" + Smarter.raw_to_code(raw) + "]" + str(raw)
+                    #print "len = " + str(i)
                     i += 1
+                #print "len = " + str(i)
                 message += raw
                 
                 self.readCount += 1
@@ -1181,7 +1184,6 @@ class SmarterClient:
 
     @_threadsafe_function
     def __read_block(self):
-        
         section = self.host
         if self.isKettle:
             section += ".kettle"
@@ -1218,6 +1220,8 @@ class SmarterClient:
             
         
     def __splitrules(self,string):
+        print string
+        print "DDDDD"
         s = string.lower().split(",")
         a = []
         r = []
@@ -1229,7 +1233,9 @@ class SmarterClient:
                 r += [i[4:]]
             if i[0:4] == "mod:":
                 p += [i[4:]]
-            return (a,r,p)
+        print r
+        print a
+        return (a,r,p)
 
 
     def string_rules(self,rules):
@@ -1355,7 +1361,9 @@ class SmarterClient:
         d, r, p = self.__splitrules(string)
         did = Smarter.groupsListDecode(d)
         rid = Smarter.groupsListDecode(r)
-        
+        print string
+        print d
+        print r
         self.rulesIn = Smarter.idsAdd(self.rulesIn,did)
         self.rulesOut = Smarter.idsAdd(self.rulesOut,rid)
         
@@ -2678,6 +2686,57 @@ class SmarterClient:
         return ""
 
 
+    def __triggerHeartBeats(self):
+        for i in self.triggerGroups:
+            for j in Smarter.triggersKettle:
+                self.__triggerHeartBeat(i[0],j[0])
+            for j in Smarter.triggersCoffee:
+                self.__triggerHeartBeat(i[0],j[0])
+
+    def __triggerHeartBeat(self,group,triggerID):
+        
+        def fire(triggerID,x): self.__trigger(triggerID,x,x)
+        
+        # Kettle
+        if triggerID == triggerTemperatureStable:            fire(triggerID,self.temperatureStable)
+        if triggerID == triggerWaterSensorStable:            fire(triggerID,self.waterSensorStable)
+        if triggerID == triggerBusyKettle:                   fire(triggerID,self.busy)
+        if triggerID == triggerDefaultTemperature:           fire(triggerID,self.defaultTemperature)
+        if triggerID == triggerDefaultFormulaTemperature:    fire(triggerID,self.defaultFormulaTemperature)
+        if triggerID == triggerDefaultKeepWarmTime:          fire(triggerID,self.defaultKeepWarmTime)
+        if triggerID == triggerWaterSensorBase:              fire(triggerID,self.waterSensorBase)
+        if triggerID == triggerKeepWarm:                     fire(triggerID,self.keepWarmOn)
+        if triggerID == triggerHeaterKettle:                 fire(triggerID,self.heaterOn)
+        if triggerID == triggerFormulaCooling:               fire(triggerID,self.formulaCoolingOn)
+        if triggerID == triggerTemperature:                  fire(triggerID,self.temperature)
+        if triggerID == triggerWaterSensor:                  fire(triggerID,self.waterSensor)
+        if triggerID == triggerOnBase:                       fire(triggerID,self.onBase)
+        if triggerID == triggerUnknownKettle:                fire(triggerID,self.Unknown)
+
+        # Coffee
+        if triggerID == triggerMode:                         fire(triggerID,self.mode)
+        if triggerID == triggerDefaultStrength:              fire(triggerID,self.defaultStrength)
+        if triggerID == triggerDefaultCups:                  fire(triggerID,self.defaultCups)
+        if triggerID == triggerDefaultGrind:                 fire(triggerID,self.defaultGrind)
+        if triggerID == triggerDefaultHotplate:              fire(triggerID,self.defaultHotPlate)
+        if triggerID == triggerGrind:                        fire(triggerID,self.grind)
+        if triggerID == triggerReady:                        fire(triggerID,self.ready)
+        if triggerID == triggerWorking:                      fire(triggerID,self.working)
+        if triggerID == triggerTimerEvent:                   fire(triggerID,self.timerEvent)
+        if triggerID == triggerWaterLevel:                   fire(triggerID,self.waterLevel)
+        if triggerID == triggerWaterEnough:                  fire(triggerID,self.waterEnough)
+        if triggerID == triggerStrength:                     fire(triggerID,self.strength)
+        if triggerID == triggerCups:                         fire(triggerID,self.cups)
+        if triggerID == triggerCupsBrew:                     fire(triggerID,self.cupsBrew)
+        if triggerID == triggerUnknownCoffee:                fire(triggerID,self.Unknown)
+        if triggerID == triggerCarafe:                       fire(triggerID,self.carafe)
+        if triggerID == triggerGrinder:                      fire(triggerID,self.grinderOn)
+        if triggerID == triggerHotPlate:                     fire(triggerID,self.hotPlateOn)
+        if triggerID == triggerHeaterCoffee:                 fire(triggerID,self.heaterOn)
+        if triggerID == triggerCarafeRequired:               fire(triggerID,self.carafeRequired)
+        if triggerID == triggerBusyCoffee:                   fire(triggerID,self.busy)
+    
+    
     def triggerSet(self,group,trigger,action):
         id = Smarter.triggerID(trigger.upper())
         if id in self.triggersKettle:
@@ -2686,6 +2745,8 @@ class SmarterClient:
                     if self.triggersKettle[id][i][0] == group:
                         del self.triggersKettle[id][i]
             self.triggersKettle[id] += [(group,action)]
+            self.__triggerHeartBeat(group,id)
+    
         
         if id in self.triggersCoffee:
             if len(self.triggersCoffee[id]) != 0:
@@ -2693,6 +2754,7 @@ class SmarterClient:
                     if self.triggersCoffee[id][i][0] == group:
                         del self.triggersCoffee[id][i]
             self.triggersCoffee[id] += [(group,action)]
+            self.__triggerHeartBeat(group,id)
         self.__write_triggers()
 
 
@@ -3006,8 +3068,7 @@ class SmarterClient:
                 self.countKettleRemoved += 1
             self.__trigger(Smarter.triggerOnBase,self.onBase,v)
             self.onBase = v
-
-        print message[5]
+            
         v = Smarter.raw_to_number(message[5])
         if v != self.unknown:
             self.__trigger(Smarter.triggerUnknownKettle,self.unknown,v)
@@ -3176,6 +3237,8 @@ class SmarterClient:
 
 
     def __decode_RelayModifiersInfo(self,message):
+        print message[0:]
+        print "SSS"
         d, r, p = self.__splitrules(Smarter.raw_to_text(message[0:]).upper())
         did = Smarter.groupsListDecode(d)
         rid = Smarter.groupsListDecode(r)
@@ -3338,6 +3401,7 @@ class SmarterClient:
             self.fast = False
             self.shout = False
             self.device_info()
+            
             if self.isKettle:
                 self.kettle_settings()
                 self.kettle_calibrate_base()
@@ -3348,6 +3412,7 @@ class SmarterClient:
                 self.coffee_carafe_required()
             #self.wifi_firmware()
             self.relay_info()
+            self.__triggerHeartBeats()
         except SmarterError, e:
             raise e
         finally:

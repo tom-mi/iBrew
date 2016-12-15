@@ -289,7 +289,7 @@ class SmarterProtocol:
         ResponseRelayModifiersInfo  : (True,True,0,[CommandRelayModifiersInfo,CommandRelayBlock,CommandRelayUnblock,CommandRelayPatch,CommandRelayUnpatch],"iBrew relay rules block messages info",[]),
         ResponseWifiFirmware    : (True,True,0,[CommandWifiFirmware],"Wifi firmware info",[]),
         ResponseCarafe          : (False,True,3,[CommandCarafe],"Carafe required",[]),
-        ResponseCoffeeStatus    : (False,True,0,[],"Coffee machine status",[]),
+        ResponseCoffeeStatus    : (False,True,7,[],"Coffee machine status",[]),
         ResponseCoffeeSettings  : (False,True,6,[CommandCoffeeSettings],"Default coffee machine user settings",[]),
         ResponseMode   : (False,True,3,[CommandMode],"Mode",[]),
         ResponseTimers          : (False,True,0,[CommandTimers],"Stored timers",[])
@@ -723,20 +723,17 @@ class SmarterProtocol:
 
     def text_to_raw(self,text):
         return text
-        # FIX ERROR CHECKING + CODE
-        return
-        # I DID EDIT THIS WITH -1 TEST FIX
-        for i in range(0,len(text)):
-            raw =+ number_to_raw(text[i])
-        return raw
-
-
+    
     def raw_to_text(self,raw):
+        #TEXT ENDS WITH MessageTail 7E then 7E is removed
         # FIX ERROR CHECKING + CODE
         s = ""
-        for i in range(1,len(raw)):
+        for i in range(1,len(raw)-1):
             x = str(raw[i])
             if x in string.printable:
+                s += x
+        if raw[-1] != Smarter.number_to_raw(self.MessageTail):
+            if raw[-1] in string.printable:
                 s += x
         return s
 
