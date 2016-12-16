@@ -1140,10 +1140,16 @@ class iBrewWeb(tornado.web.Application):
             raise SmarterError(WebServerListen,"Web Server: Couldn't open socket on port " + str(self.port))
             return
     
-
-        self.autoconnect()
+    
+      
         
 
+        try:
+            self.autoconnect()
+        except KeyboardInterrupt:
+            self.kill()
+            raise SmarterError(WebServerStartFailed,"Web Server: Couldn't start on port " + str(self.port))
+            
         try:
             settings = {
                 "debug"         : True,

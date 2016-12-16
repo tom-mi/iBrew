@@ -297,7 +297,6 @@ class SmarterClient:
             raise SmarterError(0,"Could not start simulator")
 
 
-
     def stop(self):
         self.simulator_run = False
         self.relay_stop()
@@ -791,7 +790,7 @@ class SmarterClient:
                 return message
             except socket.error, msg:
                 raise SmarterError(0,"Could not read message") # (" + msg + ")")
-            except AttributeError:
+            except AttributeError, msg:
                 raise SmarterError(0,"Disconnected")
         raise SmarterError(0,"Disconnected")
 
@@ -3349,7 +3348,6 @@ class SmarterClient:
             self.fast = False
             self.shout = False
             self.device_info()
-            
             if self.isKettle:
                 self.kettle_settings()
                 self.kettle_calibrate_base()

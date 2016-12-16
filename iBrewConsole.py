@@ -100,6 +100,7 @@ class iBrewConsole:
                 self.web = iBrewWeb()
                 self.web.events = self.client.events
                 self.web.run(port,self.client.dump)
+        
         except Exception, e:
             logging.debug(e)
             logging.info("iBrew: Failed to run Web Interface & REST API on port " + str(port))
@@ -553,7 +554,6 @@ class iBrewConsole:
                     print "iBrew: Could not init values"
                     return
 
-
             if command == "connect" or command == "console" or ((command == "relay" or command == "sweep" or command == "monitor" or command == "events") and not self.console):
  
                 try:
@@ -573,7 +573,6 @@ class iBrewConsole:
                 return
 
 
-            
             if command == "help" or command == "?":
                                             self.app_info()
                                             self.usage()
@@ -592,7 +591,7 @@ class iBrewConsole:
                                                 self.client.print_patches_short()
             elif command == "unblock":      self.client.unblock(arguments[0])
             elif command == "block":        self.client.block(arguments[0])
-            elif command == "patch":       self.client.patch(arguments[0])
+            elif command == "patch":        self.client.patch(arguments[0])
             elif command == "remote":
                                             if numarg == 1 and arguments[0] == "info":
                                                 self.client.relay_info()
@@ -996,30 +995,35 @@ class iBrewConsole:
         
         self.console = False
         self.quit = True
-        self.client = SmarterClient(AppFolders.settings() + "/")
         
-        self.client.fast = True
         try:
-            self.execute(arguments)
-        except Exception:
-            self.console = False
-    
-        if self.console:
-            self.quit = False
-        
-        while not self.quit:
+            self.client = SmarterClient(AppFolders.settings() + "/")
+            
+            self.client.fast = True
             try:
-                cursor = self.client.host + ":" + self.client.device + "$"
-                self.execute(raw_input(cursor).strip().split())
-            except KeyboardInterrupt:
-                self.quit = True
+                self.execute(arguments)
             except Exception, e:
                 self.quit = True
-                logging.debug(traceback.format_exc())
-                logging.debug(str(e))
-
+                self.console = False
+        
+            if self.console:
+                self.quit = False
+            
+            while not self.quit:
+                try:
+                    cursor = self.client.host + ":" + self.client.device + "$"
+                    self.execute(raw_input(cursor).strip().split())
+                except KeyboardInterrupt:
+                    self.quit = True
+                except Exception, e:
+                    self.quit = True
+                    logging.debug(traceback.format_exc())
+                    logging.debug(str(e))
+        except KeyboardInterrupt:
+            pass
         self.client.disconnect()
         self.client.stop()
+                
         
                      
 #------------------------------------------------------
