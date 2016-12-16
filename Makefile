@@ -21,7 +21,6 @@ buildwin:
 	@del /S build     
 	@del /S dist     
 	@echo Please install upx with: brew install upx
-	@pyinstaller ibrewui -s -w -n iBrew --noupx
 	@pyinstaller -c -i resources\favicon.ico ibrewlegacy
 	@pyinstaller -c -i resources\favicon.ico ibrew
 	
