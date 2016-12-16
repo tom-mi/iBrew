@@ -7,14 +7,6 @@ iKettle, [iKettle 2.0](http://smarter.am/ikettle) and [Smarter Coffee](http://sm
 __Trigger! You can now push your data or run commands!__
 It is now possible to push sensor values and states of the appliances to other smarthome controllers using HTTP or run commands!
 
-_Legacy iKettle command line support (alpha)_
-
-__Homekit [Cmdswitch2](https://github.com/luisiam/homebridge-cmdswitch2/) Homebridge Polling!__ 
-
-[iSamsungTV](https://github.com/Tristan79/iSamsungTV) the command line interface to Samsung TV series C, D, E, F and Blue Ray Disc Players with Smart Hub feature.
-
-_Smarter Coffee & iKettle 2.0 Simulation!_
-
 __Please post links, information or help on interfacing with smarthome controllers software in the issues! There are too many out there for me to test and write guides for them all!__.
 If you are a plugin coder or scripter and you do not have an iKettle or Smarter Coffee, __just simulate one!__
 
@@ -50,9 +42,12 @@ __iBrew Interfaces & Bridges__
  * Message relay (works with Smarter app!)
  
 __Connection Guides__
- * __HomeKit__ (using HomeBridge)  (coming soon!)
- * [Domoticz](http://www.domoticz.com/) (coming soon!)
- * Improve your connection with a relay server (coming soon!)
+ * __HomeKit__ (using HomeBridge)  
+ * [Domoticz](http://www.domoticz.com/) 
+ * [Home Assistant](https://home-assistant.io)
+ * [OpenHAB](http://www.openhab.org) 
+ * [Smartthings](https://www.smartthings.com)
+ * Improve your connection with a relay server 
  * Please share your favorite smarthome controller setup!
 
 _No tracking of you or your appliances usage!_
@@ -98,6 +93,10 @@ Since the console it nearly done, protocol almost fully mapped out. It is time t
 <tristan@monkeycat.nl>
 
 If you have jokes on coffee, tea, hot chocolade, coffee machines or kettles, please post in the issues!
+
+### Other stuff 
+
+[iSamsungTV](https://github.com/Tristan79/iSamsungTV) the command line interface to Samsung TV series C, D, E, F and Blue Ray Disc Players with Smart Hub feature.
 
  
 ## Installing

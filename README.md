@@ -7,14 +7,6 @@ iKettle, [iKettle 2.0](http://smarter.am/ikettle) and [Smarter Coffee](http://sm
 __Trigger! You can now push your data or run commands!__
 It is now possible to push sensor values and states of the appliances to other smarthome controllers using HTTP or run commands!
 
-_Legacy iKettle command line support (alpha)_
-
-__Homekit [Cmdswitch2](https://github.com/luisiam/homebridge-cmdswitch2/) Homebridge Polling!__ 
-
-[iSamsungTV](https://github.com/Tristan79/iSamsungTV) the command line interface to Samsung TV series C, D, E, F and Blue Ray Disc Players with Smart Hub feature.
-
-_Smarter Coffee & iKettle 2.0 Simulation!_
-
 __Please post links, information or help on interfacing with smarthome controllers software in the issues! There are too many out there for me to test and write guides for them all!__.
 If you are a plugin coder or scripter and you do not have an iKettle or Smarter Coffee, __just simulate one!__
 
@@ -50,9 +42,12 @@ __iBrew Interfaces & Bridges__
  * Message relay (works with Smarter app!)
  
 __Connection Guides__
- * __HomeKit__ (using HomeBridge)  (coming soon!)
- * [Domoticz](http://www.domoticz.com/) (coming soon!)
- * Improve your connection with a relay server (coming soon!)
+ * __HomeKit__ (using HomeBridge)  
+ * [Domoticz](http://www.domoticz.com/) 
+ * [Home Assistant](https://home-assistant.io)
+ * [OpenHAB](http://www.openhab.org) 
+ * [Smartthings](https://www.smartthings.com)
+ * Improve your connection with a relay server 
  * Please share your favorite smarthome controller setup!
 
 _No tracking of you or your appliances usage!_
@@ -98,6 +93,10 @@ Since the console it nearly done, protocol almost fully mapped out. It is time t
 <tristan@monkeycat.nl>
 
 If you have jokes on coffee, tea, hot chocolade, coffee machines or kettles, please post in the issues!
+
+### Other stuff 
+
+[iSamsungTV](https://github.com/Tristan79/iSamsungTV) the command line interface to Samsung TV series C, D, E, F and Blue Ray Disc Players with Smart Hub feature.
 
  
 ## Installing
@@ -738,6 +737,7 @@ Alpha!
 ## Guides
 
 ### [Domoticz](http://www.domoticz.com/)
+[iBrew Forum Thread](http://domoticz.com/forum/viewtopic.php?f=56&t=12985)
 
 Lets set up a kettle temperature sensor and a on base sensor!
 
@@ -813,7 +813,7 @@ For more information on [JSON used by domoticz!](https://www.domoticz.com/wiki/D
 
 Next step is creating and filling in buttons actions using either script:// or iBrew JSON Rest API!...
 
-### HomeKit ~ HomeBridge 
+### HomeKit ~ [HomeBridge](https://github.com/nfarina/homebridge)
 
 Yes, you can! Connect your iKettle or Smarter Coffee to HomeKit... just follow the following steps!
 
@@ -927,6 +927,53 @@ example config file for iKettle 2.0.
 }
 ```
 
+### [Home Assistant](https://home-assistant.io]
+[iBrew Forum Thread](https://community.home-assistant.io/t/smarter-coffee-ikettle/1870)
+
+configuration.yaml:
+
+```
+switch:
+  - platform: command_line
+    switches:
+      my_kettle:
+        command_on: "/home/hass/ibrewcontrol.sh start"
+        command_off: "/home/hass/ibrewcontrol.sh stop"
+        command_state: "/home/hass/ibrewstatus.sh"
+        friendly_name: Kettle
+```
+
+ibrewcontrol.sh
+```
+#!/bin/bash
+COMMAND=$1
+ibrew $COMMAND <your Kettle IP>
+```
+
+ibrewstatus.sh
+
+```
+#!/bin/bash
+CMD=`ibrew shortstatus <your kettle IP> |grep busy`
+if [ -z "$CMD" ];then
+        exit 1
+else
+        exit 0
+fi
+```
+
+
+### [OpenHAB](http://www.openhab.org) 
+[iBrew Forum Thread](https://community.openhab.org/t/smarter-coffee-machine-control-with-tcp-binding/12831)
+
+
+### [Smartthings](https://www.smartthings.com) 
+[iBrew Forum Thread](https://community.smartthings.com/t/smarter-coffee/22776/11)
+
+## iBrew Mentioned
+https://knx-user-forum.de/forum/supportforen/smarthome-py/1019085-logik-trigger-via-seitenaufruf
+https://www.reddit.com/r/amazonecho/comments/54vpum/echo_with_kettle/
+http://forum.micasaverde.com/index.php?topic=30336.30
 
 ### Other
 
