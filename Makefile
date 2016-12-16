@@ -1,6 +1,8 @@
 all:
 	@echo "iBrew setup (linux & mac)"
 	@echo use \"make setup\" to fetch requirements
+	@echo use \"make setupmac\" to fetch mac requirements
+	@echo use \"make setupwin\" to fetch windows requirements
 	@echo use \"make cleanlin\" to clean temp files
 	@echo use \"make cleanmac\" to clean temp files
 	@echo use \"make cleanwin\" to clean temp files
@@ -8,9 +10,20 @@ all:
 	@echo use \"make readme\" to create a new README.md
 	@echo use \"make bonjour\" to download bonjour
 	@echo use \"make pyinstaller\" to download already patched osx pyinstaller
+	@echo use \"make win\" to make a windows release
 
 mac:	cleanlin buildmac cleanmac diskimage
 
+win:	cleanlin buildwin
+
+buildwin:
+	@echo iBrew: Building Windows package
+	@rm -rf build     
+	@echo Please install upx with: brew install upx
+	@pyinstaller ibrewui -s -w -n iBrew --noupx
+	@pyinstaller -c -i resources\favicon.ico ibrewlegacy
+	@pyinstaller -c -i resources\favicon.ico ibrew
+	
 readme:
 	@python ibrew license > LICENSE
 	@echo iBrew: Generating README.md
@@ -33,8 +46,11 @@ cleanlin:
 	@rm -rf build
 	@rm -rf test
 
-windows:
+setupwin:
 	@pip install win-inet-pton
+
+setupmac:
+	@pip install -q -r distro/mac/requirements.txt
 
 bonjour:
 	@curl https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/pybonjour/pybonjour-1.1.1.zip > pybonjour-1.1.1.zip
@@ -61,7 +77,6 @@ cleanmac:
 	
 buildmac:
 	@echo iBrew: Building MacOS package
-	@pip install -q -r distro/mac/requirements-mac.txt
 	@rm -rf build     
 	@echo Please install upx with: brew install upx
 	@pyinstaller ibrewui -s -w -n iBrew --noupx
