@@ -14,7 +14,7 @@ all:
 
 mac:	cleanlin buildmac cleanmac diskimage
 
-win:	cleanlin buildwin
+win:	cleanwin buildwin
 
 buildwin:
 	@echo iBrew: Building Windows package
