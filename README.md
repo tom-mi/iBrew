@@ -895,29 +895,19 @@ Have any links, info or help on other Smarthome controller software, please post
  *          [CORE]          v0.4.4 Intermezzo!
  * PHASE 6: [PRERELEASE]    v0.5 The conundrum struggle
  * PHASE 7: [FINALCUT]      v1.0 Out of order!
-
-### Changelog 
- * 15-12-2016 Fixed various bugs, added event trigger system (alpha)
- * 13-12-2016 Fixed various bugs, added firewall control
- * 13-11-2016 Fixed firewall added coffee machine and kettle simulator
- * 10-11-2016 Fixed relay so you can simulate an smarter coffee or ikettle
- *  4-11-2016 Fixed status not working for homebridge :-)
- *  4-11-2016 Example Homebridge config file!
+ * PHASE 8: [BUGS]          v1.1 Ant trail!
  
 ### Upcoming for the last 3 versions  
 
 Protocol
  * PROTOCOL: History message is not finished
  * PROTOCOL: Modifiers/patches!!! 
- * PROCOCOL: Script or url events
  * PROCOCOL: Time arguments (have not figured that out)
- * PYTHON: Better error handling
- * PYTHON: There is no length check on message... could crash thing :-)
  * IKETTLE20: Fahrenheid not finished, please to not use.
  * IKETTLE20: Watersensor to something usefull (like the stupid left or right side handle, cuz the kettle weight balance is off, its inaccurate as fuck even in the smarter app :-/)
  * SMARTER COFFEE: Have not looked at single cup... needs a remote coffee machine session ;-)
  * SMARTER COFFEE: Did I accidently switch carafe required bit?
- * SMARTER COFFEE: Cups from the status and cups from the display setting is differen 
+ * SMARTER COFFEE: Cups from the status and cups from the display setting is different 
  * SMARTER COFFEE: Timers protocol
  * SMARTER COFFEE: v0.5 Missing Coffee Smarter codes (working bit only?)
  * SMARTER COFFEE: Descaling data bit? (the smarter app has it...)
@@ -932,23 +922,13 @@ Interfaces
  * PYTHON: fix wireless with the same name
  * PYTHON: filter out wrong responses... of know commands??? or atleast acknowledge them, (03 responses)
  * PYTHON: Beverages should be able to override keepwarm time... xCLI/REST
- * CLI: make on/off true/false universal with string_to_bool
- * CLI: Fix Simulation command and relay...
- * CLI: Currently the default values in fast mode are not initalized use slow or give all values
- * CLI: Sometimes it does not quit :-)
- * CLI: Connecting in console mode... fails sometimes, and after reconnect is had strange data... stupid threads... missing...
- * CLI: # Bug in ./iBrew slow dump calibrate 10.0.0.3
- * WEB: it also hangs if you scan wifi too much (luckily it reconnects, can not fix this)
  * WEB: Web interface 
  * WEB: Auto relay when in web mode
  * WEB: API key, login
  * WEB: Settings iBrew (like blocking, patches, other stuff)
  * WEB: All REST api has no error check...
  * JAVASCRIPT: JSON Rest API
- * OTHER: Guides to Smarthome controllers
- * RELAY: `ibrew dump relay 10.0.0.99 :3081`
  * ME: hugs!
-
 
 ## LICENSE
 

@@ -430,14 +430,7 @@ Have any links, info or help on other Smarthome controller software, please post
  *          [CORE]          v0.4.4 Intermezzo!
  * PHASE 6: [PRERELEASE]    v0.5 The conundrum struggle
  * PHASE 7: [FINALCUT]      v1.0 Out of order!
-
-### Changelog 
- * 15-12-2016 Fixed various bugs, added event trigger system (alpha)
- * 13-12-2016 Fixed various bugs, added firewall control
- * 13-11-2016 Fixed firewall added coffee machine and kettle simulator
- * 10-11-2016 Fixed relay so you can simulate an smarter coffee or ikettle
- *  4-11-2016 Fixed status not working for homebridge :-)
- *  4-11-2016 Example Homebridge config file!
+ * PHASE 8: [BUGS]          v1.1 Ant trail!
  
 ### Upcoming for the last 3 versions  
 
