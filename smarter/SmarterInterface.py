@@ -267,6 +267,8 @@ class SmarterClient:
         self.__utp_ResponseDeviceInfo     = False
         self.relay                        = False
         self.relayVersion                 = 1
+        
+        self.simulate                   = False
 
         # firewall or message blocking rules
         self.rulesIn                 = Smarter.MessagesDebug + Smarter.MessagesRest
@@ -311,8 +313,9 @@ class SmarterClient:
 
     @_threadsafe_function
     def __write_stats(self):
+       
+        section = self.host + "." + str(self.port) + ".statistics"
         
-        section = self.host + ".statistics"
         if self.isKettle:
             section += ".kettle"
         elif self.isCoffee:
@@ -1116,8 +1119,11 @@ class SmarterClient:
 
     @_threadsafe_function
     def __write_block(self):
+
+        if self.simulate:
+            return
         
-        section = self.host
+        section = self.host + "." + str(self.port)
         if self.isKettle:
             section += ".kettle"
         elif self.isCoffee:
@@ -1148,7 +1154,11 @@ class SmarterClient:
 
     @_threadsafe_function
     def __read_block(self):
-        section = self.host
+    
+        if self.simulate:
+            return
+       
+        section = self.host + "." + str(self.port)
         if self.isKettle:
             section += ".kettle"
         elif self.isCoffee:
@@ -2135,7 +2145,7 @@ class SmarterClient:
         """
         Simulate response on commandWifiScan encode simulated one wifi access point with random dBm response message
         """
-        return self.__encode_WifiScan('iBrew Relay '+self.host+',-'+str(random.randint(70,90))+'}')
+        return self.__encode_WifiScan('iBrew Relay: ('+self.host+':'+str(self.port)+'),-'+str(random.randint(70,90))+'}')
 
 
 
@@ -2472,7 +2482,8 @@ class SmarterClient:
     @_threadsafe_function
     def __write_triggers(self):
 
-        section = self.host + ".triggers"
+        section = self.host + "." + str(self.port) + ".triggers"
+
         #if self.isKettle:
         #    section += ".kettle"
         #elif self.isCoffee:
@@ -2534,7 +2545,8 @@ class SmarterClient:
 
     @_threadsafe_function
     def __read_triggers(self):
-        section = self.host + ".triggers"
+
+        section = self.host + "." + str(self.port) + ".triggers"
         #if self.isKettle:
         #    section += ".kettle"
         #elif self.isCoffee:
@@ -2694,16 +2706,17 @@ class SmarterClient:
                     if self.triggersKettle[id][i][0] == group:
                         del self.triggersKettle[id][i]
             self.triggersKettle[id] += [(group,action)]
-            self.__triggerHeartBeat(group,id)
+            # it should be the trigger of the group only.. FU!
+            self.__triggerHeartBeat(id)
     
-        
         if id in self.triggersCoffee:
             if len(self.triggersCoffee[id]) != 0:
                 for i in range(0,len(self.triggersCoffee[id])):
                     if self.triggersCoffee[id][i][0] == group:
                         del self.triggersCoffee[id][i]
             self.triggersCoffee[id] += [(group,action)]
-            self.__triggerHeartBeat(group,id)
+            # it should be the trigger of the group only.. FU!
+            self.__triggerHeartBeat(id)
         self.__write_triggers()
 
 

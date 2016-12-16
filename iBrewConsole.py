@@ -451,18 +451,18 @@ class iBrewConsole:
                         print "iBrew: Temperature in celsius"
                         return
 
-            self.simulate = False
             if command == "simulate":
-                self.simulate = True
+                self.client.simulate = True
+                self.client.host = "simulation"
                 command = "relay"
                 if self.client.isCoffee:
                     self.client.switch_coffee_device()
                     numarg = 1
-                    arguments = ["in:GOD,out:32"]
+                    arguments = ["in:GOD,out:32,out:relay"]
                 else:
                     self.client.switch_kettle_device()
                     numarg = 1
-                    arguments = ["in:GOD,out:14"]
+                    arguments = ["in:GOD,out:14,out:relay"]
 
             self.haveHost = False
             
@@ -498,7 +498,7 @@ class iBrewConsole:
             if command == "monitor" or command == "events":
                 self.client.fast = False
 
-            if (command == "relay" and not self.console) or ((not self.client.connected or self.haveHost) and command != "help" and command != "?" and command != "list" and command != "message" and command != "usage" and command != "commands" and command != "web" and command != "joke" and command != "license" and command != "protocol" and command != "structure" and command != "notes" and command != "groups" and command != "group" and command != "examples" and command != "states" and command != "triggers" and command != "messages" and command != "rules" and command != "rule"):
+            if (command == "relay" and not self.console) or ((not self.client.connected or self.haveHost) and command != "help" and command != "?" and command != "list" and command != "message" and command != "usage" and command != "commands" and command != "web" and command != "joke" and command != "license" and command != "protocol" and command != "structure" and command != "notes" and command != "groups" and command != "group" and command != "examples" and command != "states" and command != "triggers" and command != "messages" and command != "rules" and command != "rule" and command != "trigger"):
 
 
                 if not self.haveHost and command != "relay":
@@ -520,7 +520,7 @@ class iBrewConsole:
                         print
                         print "  Starting please wait..."
                         print
-                    if not (self.console and command == "relay") and not self.simulate:
+                    if not (self.console and command == "relay") and not self.client.simulate:
                         self.client.connect()
                     
                     

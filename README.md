@@ -541,7 +541,18 @@ You can block messages either in (from the appliance) or out (from the relay), t
 * Simulates iKettle 2.0 ```ibrew coffee simulate```
 * Simulates Smarter Coffee machine ```ibrew kettle simulate```
 
-You can use to dump actionto see more info...
+You can use to dump action to see more info what is going on.
+
+_Note that message blocking is disabled!_
+
+
+
+You can add triggers by replacing the host (ip) with the word simulation and start it with the evens system enabled, if you want to try out triggers...
+
+```
+ibrew trigger add Domoticz Temperature http://127.0.0.1:8080/json.htm?type=command&param=udevice&idx=155&nvalue=0&svalue=§N simulation
+ibrew events kettle simulate
+```
 
 ### Web
 
@@ -641,7 +652,7 @@ You can pull values and states with the JSON REST api with it also possible to p
 To add
 
 ```
-ibrew trigger add Domotic Temperature http://127.0.0.1:8080/json.htm?type=command&param=udevice&idx=155&nvalue=0&svalue=§N 10.0.0.99
+ibrew trigger add Domoticz Temperature http://127.0.0.1:8080/json.htm?type=command&param=udevice&idx=155&nvalue=0&svalue=§N 10.0.0.99
 
 ibrew trigger add Scripts KettleBusy "C:\SCRIPTS\SENSOR.BAT §N" 10.0.0.99
 
@@ -722,7 +733,7 @@ Go to `Setup -> Devices` and look up your new sensor.
 Use the _idx_ of the sensor to add a trigger
 
 ```
-ibrew trigger add Domotic Temperature http://127.0.0.1:8080/json.htm?type=command&param=udevice&idx=155&nvalue=0&svalue=§N 10.0.0.99
+ibrew trigger add Domoticz Temperature http://127.0.0.1:8080/json.htm?type=command&param=udevice&idx=155&nvalue=0&svalue=§N 10.0.0.99
 ```
 
 Now we also add an on base motion sensor 
@@ -746,7 +757,7 @@ Look up the idx in `Setup -> Devices`
 Use the _idx_ of the sensor to add a trigger
 
 ```
-ibrew trigger add Domotic OnBase http://127.0.0.1:8080/json.htm?type=command&param=switchlight&idx=99&switchcmd=%§N 10.0.0.99
+ibrew trigger add Domoticz OnBase http://127.0.0.1:8080/json.htm?type=command&param=switchlight&idx=99&switchcmd=%§N 10.0.0.99
 ```
 
 We need to set up the right boolean state, domoticz uses the format _On_ or _Off_
