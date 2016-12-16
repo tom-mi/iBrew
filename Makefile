@@ -23,7 +23,12 @@ buildwin:
 	@echo Please install upx with: brew install upx
 	@pyinstaller -c -i resources\favicon.ico ibrewlegacy
 	@pyinstaller -c -i resources\favicon.ico ibrew
-	
+	@pyinstaller -c -i resources\favicon.ico ibrewui
+	@mkdir dist\ibrew\resources
+	@mkdir dist\ibrew\web
+	@xcopy /S resources dist\ibrew\resources
+	@xcopy /S web dist\ibrew\web
+  
 readme:
 	@python ibrew license > LICENSE
 	@echo iBrew: Generating README.md
@@ -61,10 +66,10 @@ pyinstaller:
 
 cleanwin:
 	@echo iBrew: Cleaning up [Windows]
-	@del *.pyc 
+	@del /S *.pyc 
 	@del smarter\*.pyc
-	@del *.tmp
-	@del *.spec 
+	@del /S *.tmp
+	@del /S *.spec 
 
 cleanmac:
 	@echo iBrew: Cleaning up [MacOS]
