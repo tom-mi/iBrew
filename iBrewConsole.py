@@ -565,7 +565,7 @@ class iBrewConsole:
                     return
                 self.client.print_connect_status()
                 self.client.print_status()
-                
+
             if command == "console" or command == "connect" or (command == "relay" and not self.console):
                 self.intro()
             

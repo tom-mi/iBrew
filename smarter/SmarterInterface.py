@@ -46,9 +46,9 @@ def _threadsafe_function(fn):
         try:
             r = fn(*args, **kwargs)
         except Exception as e:
-            s = traceback.format_exc()
-            logging.debug(s)
-            logging.debug(e)
+            #s = traceback.format_exc()
+            #logging.debug(s)
+            #logging.debug(e)
             raise e
         finally:
             lock.release()
@@ -806,8 +806,8 @@ class SmarterClient:
         try:
             self.__readLock.acquire()
         except threading.ThreadError:
-            logging.debug(str(e))
-            logging.debug(traceback.format_exc())
+            #logging.debug(str(e))
+            #logging.debug(traceback.format_exc())
             raise SmarterError(0,"Could not read message (lock)")
     
         if self.connected:
@@ -828,8 +828,8 @@ class SmarterClient:
             try:
                 self.__decode(message)
             except SmarterError, e:
-                logging.debug(str(e))
-                logging.debug(traceback.format_exc())
+                #logging.debug(str(e))
+                #logging.debug(traceback.format_exc())
                 raise SmarterError(0,"Could not read message (convert failure)")
 
             if self.unknown != 0:
@@ -1087,7 +1087,7 @@ class SmarterClient:
                     if self.__readLock.locked():
                         self.__readLock.release()
             except threading.ThreadError:
-                raise SmarterError(Smarter.SmarterClientFailedStopThread,"Could not disconnect from " + self.host)
+                raise SmarterError(SmarterClientFailedStopThread,"Could not disconnect from " + self.host)
 
             self.monitor = None
 
@@ -1098,7 +1098,7 @@ class SmarterClient:
             # FIX: Also except thread exceptions..
             except socket.error, msg:
                 self.__socket = None
-                raise SmarterError(Smarter.SmarterClientFailedStop,"Could not disconnect from " + self.host + " (" + msg[1] + ")")
+                raise SmarterError(SmarterClientFailedStop,"Could not disconnect from " + self.host + " (" + msg[1] + ")")
             self.__socket = None
 
 
@@ -3629,9 +3629,9 @@ class SmarterClient:
                 self.defaultFormulaTemperature  = formulaTemperature
                 self.defaultTemperature         = temperature
             else:
-               SmarterError(Smarter.KettleFailedStoreSettings,"Could not store kettle machine settings")
+               raise SmarterError(KettleFailedStoreSettings,"Could not store kettle machine settings")
         else:
-            raise SmarterError(Smarter.KettleNoMachineStoreSettings,"You need a Kettle machine to store settings")
+            raise SmarterError(KettleNoMachineStoreSettings,"You need a Kettle machine to store settings")
 
 
 
@@ -3642,7 +3642,7 @@ class SmarterClient:
         if self.fast or self.isKettle:
             self.__send_command(Smarter.CommandKettleSettings)
         else:
-            raise SmarterError(Smarter.KettleNoMachineSettings,"You need a Kettle machine to get its settings")
+            raise SmarterError(KettleNoMachineSettings,"You need a Kettle machine to get its settings")
 
 
 
@@ -3666,7 +3666,7 @@ class SmarterClient:
         if self.fast or self.isKettle:
             self.__send_command(Smarter.CommandHeat,Smarter.temperature_to_raw(t)+Smarter.keepwarm_to_raw(kw))
         else:
-            raise SmarterError(Smarter.KettleNoMachineHeat,"You need a kettle to heat it")
+            raise SmarterError(KettleNoMachineHeat,"You need a kettle to heat it")
 
 
 
@@ -3735,7 +3735,7 @@ class SmarterClient:
         if self.fast or self.isKettle:
             self.__send_command(Smarter.CommandHeatDefault)
         else:
-            raise SmarterError(Smarter.KettleNoMachineHeat,"You need a kettle to heat it")
+            raise SmarterError(KettleNoMachineHeat,"You need a kettle to heat it")
 
 
 
@@ -3759,7 +3759,7 @@ class SmarterClient:
         if self.fast or self.isKettle:
             self.__send_command(Smarter.CommandHeatFormula,Smarter.temperature_to_raw(t)+Smarter.keepwarm_to_raw(kw))
         else:
-            raise SmarterError(Smarter.KettleNoMachineHeatFormula,"You need a kettle to heat in formula mode")
+            raise SmarterError(KettleNoMachineHeatFormula,"You need a kettle to heat in formula mode")
 
 
 
@@ -3770,7 +3770,7 @@ class SmarterClient:
         if self.fast or self.isKettle:
             self.__send_command(Smarter.CommandKettleStop)
         else:
-            raise SmarterError(Smarter.KettleNoMachineStop,"You need a kettle to stop heating")
+            raise SmarterError(KettleNoMachineStop,"You need a kettle to stop heating")
 
 
 
@@ -3781,7 +3781,7 @@ class SmarterClient:
         if self.fast or self.isKettle:
             self.__send_command(Smarter.CommandKettleHistory)
         else:
-            raise SmarterError(Smarter.KettleNoMachineHistory,"You need a kettle machine to get its history")
+            raise SmarterError(KettleNoMachineHistory,"You need a kettle machine to get its history")
 
 
 
@@ -3799,7 +3799,7 @@ class SmarterClient:
         if self.fast or self.isKettle:
             self.__send_command(Smarter.CommandCalibrate)
         else:
-            raise SmarterError(Smarter.KettleNoMachineSettings,"You need a Kettle to calibrate")
+            raise SmarterError(KettleNoMachineSettings,"You need a Kettle to calibrate")
 
 
     def kettle_calibrate_offbase(self):
@@ -3810,9 +3810,9 @@ class SmarterClient:
             if self.onBase:
                 self.__send_command(Smarter.CommandCalibrate)
             else:
-                raise SmarterError(0,"Can not calibrate with the kettle on the base, please remove")
+                raise SmarterError(0,"Can not calibrate with the kettle off the base, please place it on the base")
         else:
-            raise SmarterError(Smarter.KettleNoMachineSettings,"You need a Kettle to calibrate")
+            raise SmarterError(KettleNoMachineSettings,"You need a Kettle to calibrate")
 
 
 
@@ -3823,7 +3823,7 @@ class SmarterClient:
         if self.fast or self.isKettle:
             self.__send_command(Smarter.CommandBase)
         else:
-            raise SmarterError(Smarter.KettleNoMachineSettings,"You need a Kettle to get its calibration base value")
+            raise SmarterError(KettleNoMachineSettings,"You need a Kettle to get its calibration base value")
 
 
 
@@ -3837,7 +3837,7 @@ class SmarterClient:
             self.__send_command(Smarter.CommandStoreBase,Smarter.watersensor_to_raw(base))
             self.waterSensorBase = base
         else:
-            raise SmarterError(Smarter.KettleNoMachineSettings,"You need a Kettle to set its calibration base value")
+            raise SmarterError(KettleNoMachineSettings,"You need a Kettle to set its calibration base value")
 
 
 
@@ -3853,7 +3853,7 @@ class SmarterClient:
         if self.fast or self.isCoffee:
             self.__send_command(Smarter.CommandCoffeeSettings)
         else:
-            raise SmarterError(Smarter.CoffeeNoMachineSettings,"You need a coffee machine to get its settings")
+            raise SmarterError(CoffeeNoMachineSettings,"You need a coffee machine to get its settings")
 
 
 
@@ -3864,7 +3864,7 @@ class SmarterClient:
         if self.fast or self.isCoffee:
             self.__send_command(Smarter.CommandCoffeeHistory)
         else:
-            raise SmarterError(Smarter.CoffeeNoMachineHistory,"You need a coffee machine to get its history")
+            raise SmarterError(CoffeeNoMachineHistory,"You need a coffee machine to get its history")
 
 
 
@@ -3875,7 +3875,7 @@ class SmarterClient:
         if self.fast or self.isCoffee:
             self.__send_command(Smarter.CommandCoffeeStop)
         else:
-            raise SmarterError(Smarter.CoffeeNoMachineStop,"You need a coffee machine to stop brewing coffee")
+            raise SmarterError(CoffeeNoMachineStop,"You need a coffee machine to stop brewing coffee")
 
 
 
@@ -3886,7 +3886,7 @@ class SmarterClient:
         if self.fast or self.isCoffee:
             self.__send_command(Smarter.CommandMode)
         else:
-            raise SmarterError(Smarter.CoffeeNoMachineCup,"You need a coffee machine to get its mode")
+            raise SmarterError(CoffeeNoMachineCup,"You need a coffee machine to get its mode")
 
 
 
@@ -3899,7 +3899,7 @@ class SmarterClient:
             self.__send_command(Smarter.CommandSetMode,not self.mode)
             self.mode = not self.mode
         else:
-            raise SmarterError(Smarter.CoffeeNoMachineCup,"You need a coffee machine to toggle its mode")
+            raise SmarterError(CoffeeNoMachineCup,"You need a coffee machine to toggle its mode")
 
 
 
@@ -3912,7 +3912,7 @@ class SmarterClient:
             self.__send_command(Smarter.CommandSetMode,Smarter.bool_to_raw(True))
             self.mode = True
         else:
-            raise SmarterError(Smarter.CoffeeNoMachineCup,"You need a coffee machine to set cup mode")
+            raise SmarterError(CoffeeNoMachineCup,"You need a coffee machine to set cup mode")
 
 
     @_threadsafe_function
@@ -3924,7 +3924,7 @@ class SmarterClient:
             self.__send_command(Smarter.CommandSetMode,Smarter.bool_to_raw(False))
             self.mode = False
         else:
-            raise SmarterError(Smarter.CoffeeNoMachineCup,"You need a coffee machine to set carafe mode")
+            raise SmarterError(CoffeeNoMachineCup,"You need a coffee machine to set carafe mode")
 
 
 
@@ -3935,7 +3935,7 @@ class SmarterClient:
         if self.fast or self.isCoffee:
             self.__send_command(Smarter.CommandCarafe)
         else:
-            raise SmarterError(Smarter.CoffeeNoMachineCarafe,"You need a coffee machine to get its carafe required status")
+            raise SmarterError(CoffeeNoMachineCarafe,"You need a coffee machine to get its carafe required status")
 
 
 
@@ -3948,7 +3948,7 @@ class SmarterClient:
             self.__send_command(Smarter.CommandSetCarafe,self.carafeRequired)
             self.carafeRequired = not self.carafeRequired
         else:
-            raise SmarterError(Smarter.CoffeeNoMachineCarafe,"You need a coffee machine to set carafe required on")
+            raise SmarterError(CoffeeNoMachineCarafe,"You need a coffee machine to set carafe required on")
 
 
 
@@ -3961,7 +3961,7 @@ class SmarterClient:
             self.__send_command(Smarter.CommandSetCarafe,Smarter.bool_to_raw(False))
             self.carafeRequired = True
         else:
-            raise SmarterError(Smarter.CoffeeNoMachineCarafe,"You need a coffee machine to set carafe required on")
+            raise SmarterError(CoffeeNoMachineCarafe,"You need a coffee machine to set carafe required on")
 
 
 
@@ -3974,7 +3974,7 @@ class SmarterClient:
             self.__send_command(Smarter.CommandSetCarafe,Smarter.bool_to_raw(True))
             self.carafeRequired = False
         else:
-            raise SmarterError(Smarter.CoffeeNoMachineCarafe,"You need a coffee machine to set carafe required off")
+            raise SmarterError(CoffeeNoMachineCarafe,"You need a coffee machine to set carafe required off")
 
 
 
@@ -3992,10 +3992,10 @@ class SmarterClient:
                 self.defaultGrind = grind
                 self.defaultHotPlate = hotplate
             else:
-                raise SmarterError(Smarter.CoffeeFailedStoreSettings,"Could not store coffee machine settings")
+                raise SmarterError(CoffeeFailedStoreSettings,"Could not store coffee machine settings")
 
         else:
-            raise SmarterError(Smarter.CoffeeNoMachineStoreSettings,"You need a coffee machine to store settings")
+            raise SmarterError(CoffeeNoMachineStoreSettings,"You need a coffee machine to store settings")
     
 
 
@@ -4015,7 +4015,7 @@ class SmarterClient:
         if self.fast or self.isCoffee:
             self.__send_command(Smarter.CommandBrewDefault)
         else:
-            raise SmarterError(Smarter.CoffeeNoMachineBrew,"You need a coffee machine to brew coffee")
+            raise SmarterError(CoffeeNoMachineBrew,"You need a coffee machine to brew coffee")
 
 
 
@@ -4027,7 +4027,7 @@ class SmarterClient:
         if self.fast or self.isCoffee:
             self.__send_command(Smarter.CommandBrew,Smarter.cups_to_raw(cups)+Smarter.strength_to_raw(strength)+Smarter.hotplate_to_raw(hotplate,self.version)+Smarter.bool_to_raw(grind))
         else:
-            raise SmarterError(Smarter.CoffeeNoMachineBrew,"You need a coffee machine to brew coffee")
+            raise SmarterError(CoffeeNoMachineBrew,"You need a coffee machine to brew coffee")
 
 
 
@@ -4040,9 +4040,9 @@ class SmarterClient:
                 try:
                     self.coffee_brew(12,0,False,Smarter.CoffeeWeak)
                 except:
-                    raise SmarterError(Smarter.CoffeeNoMachineBrew,"Descaling failed")
-            raise SmarterError(Smarter.CoffeeNoMachineBrew,"Not enough water, please fill to full")
-        raise SmarterError(Smarter.CoffeeNoMachineBrew,"You need a coffee machine to descale it")
+                    raise SmarterError(CoffeeNoMachineBrew,"Descaling failed")
+            raise SmarterError(CoffeeNoMachineBrew,"Not enough water, please fill to full")
+        raise SmarterError(CoffeeNoMachineBrew,"You need a coffee machine to descale it")
     
     
     @_threadsafe_function
@@ -4054,7 +4054,7 @@ class SmarterClient:
             self.__send_command(Smarter.CommandHotplateOff)
             self.hotPlate = self.defaultHotPlate
         else:
-            raise SmarterError(Smarter.CoffeeNoMachineHotplateOff,"You need a coffee machine to turn off the hotplate")
+            raise SmarterError(CoffeeNoMachineHotplateOff,"You need a coffee machine to turn off the hotplate")
 
 
 
@@ -4075,7 +4075,7 @@ class SmarterClient:
                 self.__send_command(Smarter.CommandHotplateOn,Smarter.hotplate_to_raw(minutes,self.version))
                 self.hotPlate = minutes
         else:
-            raise SmarterError(Smarter.CoffeeNoMachineHotplateOn,"You need a coffee machine to turn on the hotplate")
+            raise SmarterError(CoffeeNoMachineHotplateOn,"You need a coffee machine to turn on the hotplate")
 
 
 
@@ -4088,7 +4088,7 @@ class SmarterClient:
         if self.isCoffee and self.grind:
             self.__send_command(Smarter.CommandTimers)
         else:
-            raise SmarterError(Smarter.CoffeeNoMachineGrinder,"You need a coffee machine to use timers")
+            raise SmarterError(CoffeeNoMachineGrinder,"You need a coffee machine to use timers")
 
 
 
@@ -4101,7 +4101,7 @@ class SmarterClient:
         if self.isCoffee and self.grind:
             pass #self.__send_command(Smarter.CommandDisableTimer)
         else:
-            raise SmarterError(Smarter.CoffeeNoMachineGrinder,"You need a coffee machine to use timers")
+            raise SmarterError(CoffeeNoMachineGrinder,"You need a coffee machine to use timers")
 
 
 
@@ -4114,7 +4114,7 @@ class SmarterClient:
         if self.isCoffee and self.grind:
             pass #self.__send_command(Smarter.CommandStoreTimer)
         else:
-            raise SmarterError(Smarter.CoffeeNoMachineGrinder,"You need a coffee machine to use timers")
+            raise SmarterError(CoffeeNoMachineGrinder,"You need a coffee machine to use timers")
 
 
 
@@ -4127,7 +4127,7 @@ class SmarterClient:
             self.__send_command(Smarter.CommandCups,Smarter.cups_to_raw(cups))
             self.cups = cups
         else:
-            raise SmarterError(Smarter.CoffeeNoMachineCups,"You need a coffee machine to select the number of cups to brew")
+            raise SmarterError(CoffeeNoMachineCups,"You need a coffee machine to select the number of cups to brew")
 
 
 
@@ -4142,7 +4142,7 @@ class SmarterClient:
             self.__send_command(Smarter.CommandGrinder)
             self.grind = not self.grind
         else:
-            raise SmarterError(Smarter.CoffeeNoMachineGrinder,"You need a coffee machine to toggle the grinder")
+            raise SmarterError(CoffeeNoMachineGrinder,"You need a coffee machine to toggle the grinder")
 
 
 
@@ -4186,7 +4186,7 @@ class SmarterClient:
                 self.__send_command(Smarter.CommandGrinder)
                 self.grind = True
         else:
-            raise SmarterError(Smarter.CoffeeNoMachineGrinder,"You need a coffee machine to use the grinder to grind the beans")
+            raise SmarterError(CoffeeNoMachineGrinder,"You need a coffee machine to use the grinder to grind the beans")
 
 
 
@@ -4204,7 +4204,7 @@ class SmarterClient:
                 self.__send_command(Smarter.CommandGrinder)
                 self.grind = False
         else:
-            raise SmarterError(Smarter.CoffeeNoMachineGrinder,"You need a coffee machine to use the pre grind beans in the filter")
+            raise SmarterError(CoffeeNoMachineGrinder,"You need a coffee machine to use the pre grind beans in the filter")
 
 
 
@@ -4217,7 +4217,7 @@ class SmarterClient:
             self.__send_command(Smarter.CommandStrength ,Smarter.strength_to_raw(strength))
             self.strength = strength
         else:
-            raise SmarterError(Smarter.CoffeeNoMachineStrength,"You need a coffee machine to select the coffee strength")
+            raise SmarterError(CoffeeNoMachineStrength,"You need a coffee machine to select the coffee strength")
 
 
 
