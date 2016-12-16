@@ -963,7 +963,7 @@ class VersionHandler(GenericAPIHandler):
     def get(self):
         response = { 'description': 'iBrew Smarter REST API',
                      'version'    : self.application.version,
-                     'copyright'  : { 'year'   : '2016',
+                     'copyright'  : { 'year'   : '2016-2017',
                                       'holder' : 'Tristan Crispijn'
                                     }
                     }
@@ -979,7 +979,7 @@ class VersionHandler(GenericAPIHandler):
 
 class iBrewWeb(tornado.web.Application):
 
-    version = '0.81'
+    version = '0.82'
     
     def start(self):
         tornado.ioloop.IOLoop.instance().start()
@@ -1059,7 +1059,6 @@ class iBrewWeb(tornado.web.Application):
                         logging.info("[" + ip + "] Adding Web Device")
                     client = SmarterClient(AppFolders.settings() + "/")
                     client.events = self.events
-                    print self.events
                     client.host = self.host
                     client.dump = self.dump
                     client.dump_status = self.dump

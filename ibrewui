@@ -80,7 +80,7 @@ class Launcher():
         logger.setLevel(logging.DEBUG)
         formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
         
-        log_file = os.path.join(AppFolders.logs(), "iBrewWeb.log")
+        log_file = os.path.join(AppFolders.logs(), "ibrewui.log")
         
         fh = logging.handlers.RotatingFileHandler(log_file, maxBytes=1048576, backupCount=4, encoding="UTF8")
         fh.setLevel(logging.DEBUG)
@@ -103,6 +103,7 @@ class Launcher():
         self.t.start()
         logging.info("GUI Started")
         try:
+            self.web.events = True
             if platform.system() == "Darwin":
                 from iBrewMac import MacGui
                 self.ui = MacGui(self.web)
