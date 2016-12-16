@@ -467,23 +467,24 @@ class iBrewConsole:
             self.haveHost = False
             
             if numarg > 0:
-                connection = str.split(arguments[numarg-1],':')
-                if self.is_valid_ipv4_address(connection[0]) or self.is_valid_ipv6_address(connection[0]):
-                    self.client.host = connection[0]
-                    try:
-                        p = int(connection[1])
-                        self.client.port = p
-                    except ValueError:
-                        pass
-                    except IndexError:
-                        pass
-                    self.haveHost = True
-                    numarg -= 1
-                    arguments = arguments[0:numarg]
-                    self.client.disconnect()
-                    # still wong...
                 if arguments[numarg-1] == "simulation":
                     self.host = "simulation"
+                else:
+                    connection = str.split(arguments[numarg-1],':')
+                    if self.is_valid_ipv4_address(connection[0]) or self.is_valid_ipv6_address(connection[0]):
+                        self.client.host = connection[0]
+                        try:
+                            p = int(connection[1])
+                            self.client.port = p
+                        except ValueError:
+                            pass
+                        except IndexError:
+                            pass
+                        self.haveHost = True
+                        numarg -= 1
+                        arguments = arguments[0:numarg]
+                        self.client.disconnect()
+                        # still wong...
               
             if command == "console" or command == "connect":
                 self.client.disconnect()
