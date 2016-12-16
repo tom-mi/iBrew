@@ -482,6 +482,8 @@ class iBrewConsole:
                     arguments = arguments[0:numarg]
                     self.client.disconnect()
                     # still wong...
+                if arguments[numarg-1] == "simulation":
+                    self.host = "simulation"
               
             if command == "console" or command == "connect":
                 self.client.disconnect()
