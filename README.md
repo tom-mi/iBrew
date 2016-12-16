@@ -927,7 +927,7 @@ example config file for iKettle 2.0.
 }
 ```
 
-### [Home Assistant](https://home-assistant.io]
+### [Home Assistant](https://home-assistant.io)
 [iBrew Forum Thread](https://community.home-assistant.io/t/smarter-coffee-ikettle/1870)
 
 configuration.yaml:
