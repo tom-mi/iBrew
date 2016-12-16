@@ -21,11 +21,13 @@ buildwin:
 	@echo Please install upx with: brew install upx
 	@pyinstaller -c -i resources\favicon.ico ibrewlegacy
 	@pyinstaller -c -i resources\favicon.ico ibrew
-	@pyinstaller -c -i resources\favicon.ico ibrewui
+	@pyinstaller -w -i resources\favicon.ico ibrewui
 	@mkdir dist\ibrew\resources
 	@mkdir dist\ibrew\web
 	@xcopy /S resources dist\ibrew\resources
 	@xcopy /S web dist\ibrew\web
+	@copy /Y dist\ibrewlegacy\*.* dist\ibrew
+	@copy /Y dist\ibrewui\*.* dist\ibrew
   
 readme:
 	@python ibrew license > LICENSE
