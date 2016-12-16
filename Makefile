@@ -68,8 +68,8 @@ cleanwin:
 	@del /Q smarter\*.pyc
 	@del /Q /S *.tmp
 	@del /Q /S *.spec 
-	@del /Q /S build     
-	@del /Q /S dist
+	@rmdir /Q /S build     
+	@rmdir /Q /S dist
  
 cleanmac:
 	@echo iBrew: Cleaning up [MacOS]
