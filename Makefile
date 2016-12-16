@@ -23,7 +23,7 @@ win:
 	@echo Please install upx with: brew install upx
 	@pyinstaller -c -i resources\favicon.ico ibrewlegacy
 	@pyinstaller -c -i resources\favicon.ico ibrew
-	@pyinstaller -i resources\favicon.ico ibrewui
+	@pyinstaller -w -i resources\favicon.ico ibrewui
 	@mkdir dist\ibrew\resources
 	@mkdir dist\ibrew\web
 	@xcopy /S resources dist\ibrew\resources
