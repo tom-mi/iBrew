@@ -21,6 +21,11 @@ If you are a plugin coder or scripter and you do not have an iKettle or Smarter 
 * Simulates iKettle 2.0 ```ibrew simulate```
 * Simulates Smarter Coffee machine ```ibrew simulate```
 
+## Downloads
+  * [Windows](https://dl.dropboxusercontent.com/u/12474226/iBrew.zip)
+  * [MacOS]  (https://dl.dropboxusercontent.com/u/12474226/iBrew.dmg)
+  * [Source] (https://github.com/Tristan79/iBrew/archive/master.zip)
+
 ## Introduction
 iBrew is an interface to the iKettle 2.0 and Smarter Coffee devices (and has legacy support for the original iKettle, see below). 
 
@@ -95,17 +100,32 @@ Since the console it nearly done, protocol almost fully mapped out. It is time t
 If you have jokes on coffee, tea, hot chocolade, coffee machines or kettles, please post in the issues!
 
  
-## Downloads & Setup
+## Installing
 
-Other systems than MacOS running python see download from source section.
-  
+Other systems than Windows, MacOS or Pi that are running python see download from source section.
+
+### Windows 
+  * [Windows]  (https://dl.dropboxusercontent.com/u/12474226/iBrew.zip)
+
+#### Windows and source
+For the requirements either use ```pip install -r requirements.txt``` or install make from somewhere.
+On windows download the additional [win32 package](https://sourceforge.net/projects/pywin32/files/pywin32/).
+Start `ibrewui` with python to get a taskbar icon. 
+
+
 ### MacOS
-  * [MacOS]  (https://dl.dropboxusercontent.com/u/12474226/iBrew.dmg) (note that the web interface is NOT finished, only the rest api is, I hope :-)
+  * [MacOS]  (https://dl.dropboxusercontent.com/u/12474226/iBrew.dmg)
 
 Once you start the app from the MacOS package (drag it to your application folder first) it will auto link iBrew in your terminal.
 Open a terminal and run ```ibrew``` and you're all set, good to go!
 
 _it creates a soft symlink to /usr/local/bin/ibrew,... :-)_
+
+#### MacOS and source
+Use `make setupmac` to install the additional requirements
+
+### Linux
+See section download for source or use your modified pi steps below
 
 ### Raspberry Pi Jessy (light)
 
@@ -193,7 +213,24 @@ You can download and unpack the [source](https://github.com/Tristan79/iBrew/arch
 git clone https://github.com/Tristan79/iBrew.git
 ```
 
-Run `sudo make setup` (or use the requirements file) to configure the python packages.
+You can configure stuff with running `make` in the iBrew folder
+
+```
+iBrew setup (linux & mac)
+use "make setup" to fetch requirements
+use "make setupmac" to fetch mac requirements
+use "make setupwin" to fetch windows requirements
+use "make cleanlin" to clean temp files
+use "make cleanmac" to clean temp files
+use "make cleanwin" to clean temp files
+use "make mac" to make a mac release
+use "make readme" to create a new README.md
+use "make bonjour" to download bonjour
+use "make pyinstaller" to download already patched osx pyinstaller
+use "make win" to make a windows release
+```
+
+Run `sudo make setup` (or use the requirements file) to configure the python packages for bare bones operation.
 
 #### Update 
 
@@ -204,10 +241,6 @@ cd ~/iBrew
 git pull
 ```
 
-### Windows and source
-For the requirements either use ```pip install requirements.txt``` or install make from somewhere.
-On windows download the additional [win32 package](https://sourceforge.net/projects/pywin32/files/pywin32/).
-Start iBrewUI with python to get a taskbar icon. I failed to create a working package :-)
 
 #### Troubleshooting
 
