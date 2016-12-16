@@ -971,9 +971,9 @@ fi
 [iBrew Forum Thread](https://community.smartthings.com/t/smarter-coffee/22776/11)
 
 ## iBrew Mentioned
-https://knx-user-forum.de/forum/supportforen/smarthome-py/1019085-logik-trigger-via-seitenaufruf
-https://www.reddit.com/r/amazonecho/comments/54vpum/echo_with_kettle/
-http://forum.micasaverde.com/index.php?topic=30336.30
+ * [knx](https://knx-user-forum.de/forum/supportforen/smarthome-py/1019085-logik-trigger-via-seitenaufruf)
+ * [reddit](https://www.reddit.com/r/amazonecho/comments/54vpum/echo_with_kettle/)
+ * [micasaverde](http://forum.micasaverde.com/index.php?topic=30336.30)
 
 ### Other
 
