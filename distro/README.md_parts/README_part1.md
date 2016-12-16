@@ -107,6 +107,8 @@ Other systems than Windows, MacOS or Pi that are running python see download fro
 ### Windows 
   * [Windows]  (https://dl.dropboxusercontent.com/u/12474226/iBrew.zip)
 
+This is alpha! Please report any issues!
+
 #### Windows and source
 For the requirements either use ```pip install -r requirements.txt``` or install make from somewhere.
 On windows download the additional [win32 package](https://sourceforge.net/projects/pywin32/files/pywin32/).
