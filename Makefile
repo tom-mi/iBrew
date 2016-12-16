@@ -1,5 +1,5 @@
 all:
-	@echo "iBrew setup (linux & mac)"
+	@echo "iBrew setup (windows, linux & mac)"
 	@echo use \"make setup\" to fetch requirements
 	@echo use \"make setupmac\" to fetch mac requirements
 	@echo use \"make setupwin\" to fetch windows requirements
@@ -14,14 +14,16 @@ all:
 
 mac:	cleanlin buildmac cleanmac diskimage
 
-win:	cleanwin buildwin
+#win:	cleanwin buildwin
 
-buildwin:
+#buildwin:
+win:
 	@echo iBrew: Building Windows package    
+	@echo iBrew: Please run make cleanwin first!    
 	@echo Please install upx with: brew install upx
 	@pyinstaller -c -i resources\favicon.ico ibrewlegacy
 	@pyinstaller -c -i resources\favicon.ico ibrew
-	@pyinstaller -w -i resources\favicon.ico ibrewui
+	@pyinstaller -i resources\favicon.ico ibrewui
 	@mkdir dist\ibrew\resources
 	@mkdir dist\ibrew\web
 	@xcopy /S resources dist\ibrew\resources
@@ -66,12 +68,13 @@ pyinstaller:
 
 cleanwin:
 	@echo iBrew: Cleaning up [Windows]
+	@rmdir /Q /S build     
+	@rmdir /Q /S dist
 	@del /Q /S *.pyc 
 	@del /Q smarter\*.pyc
 	@del /Q /S *.tmp
 	@del /Q /S *.spec 
-	@rmdir /Q /S build     
-	@rmdir /Q /S dist
+
  
 cleanmac:
 	@echo iBrew: Cleaning up [MacOS]
