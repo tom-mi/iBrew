@@ -18,7 +18,8 @@ win:	cleanwin buildwin
 
 buildwin:
 	@echo iBrew: Building Windows package
-	@rm -rf build     
+	@del /S build     
+	@del /S dist     
 	@echo Please install upx with: brew install upx
 	@pyinstaller ibrewui -s -w -n iBrew --noupx
 	@pyinstaller -c -i resources\favicon.ico ibrewlegacy
@@ -42,6 +43,7 @@ cleanlin:
 	@echo iBrew: Cleaning up
 	@rm -f *.pyc smarter/*.pyc
 	@rm -f *.tmp
+	@rm -rf dist
 	@rm -f *.spec 
 	@rm -rf build
 	@rm -rf test
