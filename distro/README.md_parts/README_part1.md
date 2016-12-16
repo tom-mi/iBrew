@@ -166,7 +166,7 @@ After=multi-user.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/python /home/pi/iBrew/ibrew dump web
+ExecStart=/usr/bin/python /home/pi/iBrew/ibrew events web
 Restart=on-abort
 
 [Install]
