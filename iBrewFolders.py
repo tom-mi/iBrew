@@ -30,7 +30,10 @@ class AppFolders():
 
     @staticmethod
     def runningAtRoolLevel():
-        return os.geteuid() == 0 #False
+        if platform.system() == "Windows":
+            return True
+        else:
+            return os.geteuid() == 0
     
     @staticmethod
     def windowsAppDataFolder():
