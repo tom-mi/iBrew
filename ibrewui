@@ -6,7 +6,7 @@ import os
 import platform
 import signal
 
-import rumps
+#import rumps
 
 import logging
 import logging.handlers
