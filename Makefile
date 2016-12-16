@@ -17,9 +17,7 @@ mac:	cleanlin buildmac cleanmac diskimage
 win:	cleanwin buildwin
 
 buildwin:
-	@echo iBrew: Building Windows package
-	@del /S build     
-	@del /S dist     
+	@echo iBrew: Building Windows package    
 	@echo Please install upx with: brew install upx
 	@pyinstaller -c -i resources\favicon.ico ibrewlegacy
 	@pyinstaller -c -i resources\favicon.ico ibrew
@@ -66,11 +64,13 @@ pyinstaller:
 
 cleanwin:
 	@echo iBrew: Cleaning up [Windows]
-	@del /S *.pyc 
-	@del smarter\*.pyc
-	@del /S *.tmp
-	@del /S *.spec 
-
+	@del /Q /S *.pyc 
+	@del /Q smarter\*.pyc
+	@del /Q /S *.tmp
+	@del /Q /S *.spec 
+	@del /Q /S build     
+	@del /Q /S dist
+ 
 cleanmac:
 	@echo iBrew: Cleaning up [MacOS]
 	@rm -rf ~/Library/Application\ Support/iBrew/logs 
