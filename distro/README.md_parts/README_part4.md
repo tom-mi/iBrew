@@ -41,7 +41,7 @@ __Advantages__
  * Message blocking
  * Message patching
 
-```ibrew dump relay 10.0.0.99```
+```ibrew relay 10.0.0.99```
 
 #### Advance relay options
 
@@ -163,6 +163,8 @@ JavaScript for use with iBrew JSON REST API [Javascript iBrew interface](https:/
  
 ### Python
 
+Python 2.7 only!
+
 The [Python Smarter Interface](https://github.com/Tristan79/iBrew/blob/master/smarter/) to the iKettle 2.0 and the Smarter Coffee is located in the Smarter folder. Use __pydoc__ or any other python doc app to see the help on [SmarterInterface.py](https://github.com/Tristan79/iBrew/blob/master/smarter/SmarterInterface.py) and [SmarterProtocol.py](https://github.com/Tristan79/iBrew/blob/master/smarter/SmarterProtocol.py). There are a lot of options and functions you can use!
 
 #### Basic example
@@ -172,7 +174,7 @@ from smarter.SmarterInterface import *
 from smarter.SmarterProtocol import *
 
 appliance = SmarterClient()
-appliance.host = "10.0.0.99"
+appliance.setHost("10.0.0.99")
 appliance.connect()
 if appliance.isKettle() and not appliance.heaterOn:
     appliance.kettle_heat_default()
@@ -463,10 +465,8 @@ else
 fi
 ```
 
-
 ### [OpenHAB](http://www.openhab.org) 
 [iBrew Forum Thread](https://community.openhab.org/t/smarter-coffee-machine-control-with-tcp-binding/12831)
-
 
 ### [Smartthings](https://www.smartthings.com) 
 [iBrew Forum Thread](https://community.smartthings.com/t/smarter-coffee/22776/11)

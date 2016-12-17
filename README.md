@@ -4,6 +4,13 @@ iKettle, [iKettle 2.0](http://smarter.am/ikettle) and [Smarter Coffee](http://sm
 
 ## Hot! News
 
+Now! macOS & windows apps! With nice icon in the taskbar! :-)
+
+## Downloads
+  * [Windows](https://dl.dropboxusercontent.com/u/12474226/iBrew.exe)
+  * [MacOS]  (https://dl.dropboxusercontent.com/u/12474226/iBrew.dmg)
+  * [Source] (https://github.com/Tristan79/iBrew/archive/master.zip)
+
 __Trigger! You can now push your data or run commands!__
 It is now possible to push sensor values and states of the appliances to other smarthome controllers using HTTP or run commands!
 
@@ -13,10 +20,6 @@ If you are a plugin coder or scripter and you do not have an iKettle or Smarter 
 * Simulates iKettle 2.0 ```ibrew simulate```
 * Simulates Smarter Coffee machine ```ibrew simulate```
 
-## Downloads
-  * [Windows](https://dl.dropboxusercontent.com/u/12474226/iBrew.zip)
-  * [MacOS]  (https://dl.dropboxusercontent.com/u/12474226/iBrew.dmg)
-  * [Source] (https://github.com/Tristan79/iBrew/archive/master.zip)
 
 ## Introduction
 iBrew is an interface to the iKettle 2.0 and Smarter Coffee devices (and has legacy support for the original iKettle, see below). 
@@ -38,7 +41,7 @@ __iBrew Interfaces & Bridges__
  * Web (almost finished, help appreciated!)
  * JSON REST 
  * [Javascript](https://github.com/Tristan79/iBrew/blob/master/resources/ibrew.js) (almost finished :-)
- * [Python] (https://github.com/Tristan79/iBrew/tree/master/smarter) 
+ * [Python 2.7] (https://github.com/Tristan79/iBrew/tree/master/smarter) 
  * Message relay (works with Smarter app!)
  
 __Connection Guides__
@@ -104,15 +107,16 @@ If you have jokes on coffee, tea, hot chocolade, coffee machines or kettles, ple
 Other systems than Windows, MacOS or Pi that are running python see download from source section.
 
 ### Windows 
-  * [Windows]  (https://dl.dropboxusercontent.com/u/12474226/iBrew.zip)
 
-This is alpha! Please report any issues!
+  * [Windows]  (https://dl.dropboxusercontent.com/u/12474226/iBrew.exe)
 
-#### Windows and source
-For the requirements either use ```pip install -r requirements.txt``` or install make from somewhere.
-On windows download the additional [win32 package](https://sourceforge.net/projects/pywin32/files/pywin32/).
-Start `ibrewui` with python to get a taskbar icon. 
+#### From source
+First no python is installed by default so head up over to [python](https://www.python.org/downloads/) and install v2.7 (NOT 3)
+Secondly you need [make](http://gnuwin32.sourceforge.net/packages/make.htm) and the python [win32 package](https://sourceforge.net/projects/pywin32/files/pywin32/)
 
+Use `make setupwin` to setup
+Use `make win` to create a package 
+Use `make cleanwin` to clean up
 
 ### MacOS
   * [MacOS]  (https://dl.dropboxusercontent.com/u/12474226/iBrew.dmg)
@@ -122,15 +126,27 @@ Open a terminal and run ```ibrew``` and you're all set, good to go!
 
 _it creates a soft symlink to /usr/local/bin/ibrew,... :-)_
 
-#### MacOS and source
-Use `make setupmac` to install the additional requirements
+#### From source
+Make sure either the command line or xcode is installed, just run `make` and it will promt for a download!
+
+Use `make setupmac` to setup
+Use `make mac` to create a package 
+Use `make cleanmac` to clean up
 
 ### Linux
-See section download for source or use your modified pi steps below
+
+See Pi section.
+
+### Source
+
+You can run iBrew on systems that run python 2.7. Download and unpack the [source](https://github.com/Tristan79/iBrew/archive/master.zip), download it from github using [Github Desktop](https://desktop.github.com) or manually `git clone https://github.com/Tristan79/iBrew.git`. Finish the setup with running `make setup` in the iBrew folder to configure the python packages for bare bones operation. Update to the latest version of iBrew with `git pull`
 
 ### Raspberry Pi Jessy (light)
 
 Tested on a clean Jessy light image (september 2016). 
+
+Use `make setuplin` to setup
+Use `make cleanlin` to clean up
 
 #### Install 
 
@@ -143,7 +159,7 @@ sudo apt-get install python-setuptools
 sudo easy_install pip
 git clone https://github.com/Tristan79/iBrew.git
 cd ~/iBrew
-sudo make setup
+sudo make setuplin
 sudo ln -s ~/iBrew/ibrew /usr/local/bin/ibrew
 ```
 
@@ -153,10 +169,10 @@ Now you can start ibrew from anywhere :-) Type in your terminal
 ibrew
 ```
 
-Or if you want to start the web interface type 
+Or if you want to start the web interface with event triggers type 
 
 ```
-ibrew web
+ibrew events web
 ```
 
 And surf to your pi on port 2080!
@@ -202,46 +218,6 @@ sudo systemctl enable iBrew.service
 sudo systemctl start iBrew.service
 sudo systemctl status iBrew.service
 ```
-
-
-### Download from source
-
-You can run iBrew on systems that run python 2.7 
-
-You can download and unpack the [source](https://github.com/Tristan79/iBrew/archive/master.zip) or download it from github using [Github Desktop](https://desktop.github.com) or manually:
-
-```
-git clone https://github.com/Tristan79/iBrew.git
-```
-
-You can configure stuff with running `make` in the iBrew folder
-
-```
-iBrew setup (linux & mac)
-use "make setup" to fetch requirements
-use "make setupmac" to fetch mac requirements
-use "make setupwin" to fetch windows requirements
-use "make cleanlin" to clean temp files
-use "make cleanmac" to clean temp files
-use "make cleanwin" to clean temp files
-use "make mac" to make a mac release
-use "make readme" to create a new README.md
-use "make bonjour" to download bonjour
-use "make pyinstaller" to download already patched osx pyinstaller
-use "make win" to make a windows release
-```
-
-Run `sudo make setup` (or use the requirements file) to configure the python packages for bare bones operation.
-
-#### Update 
-
-You can update to the latest version of iBrew with
-
-```
-cd ~/iBrew
-git pull
-```
-
 
 #### Troubleshooting
 
@@ -540,7 +516,7 @@ __Advantages__
  * Message blocking
  * Message patching
 
-```ibrew dump relay 10.0.0.99```
+```ibrew relay 10.0.0.99```
 
 #### Advance relay options
 
@@ -662,6 +638,8 @@ JavaScript for use with iBrew JSON REST API [Javascript iBrew interface](https:/
  
 ### Python
 
+Python 2.7 only!
+
 The [Python Smarter Interface](https://github.com/Tristan79/iBrew/blob/master/smarter/) to the iKettle 2.0 and the Smarter Coffee is located in the Smarter folder. Use __pydoc__ or any other python doc app to see the help on [SmarterInterface.py](https://github.com/Tristan79/iBrew/blob/master/smarter/SmarterInterface.py) and [SmarterProtocol.py](https://github.com/Tristan79/iBrew/blob/master/smarter/SmarterProtocol.py). There are a lot of options and functions you can use!
 
 #### Basic example
@@ -671,7 +649,7 @@ from smarter.SmarterInterface import *
 from smarter.SmarterProtocol import *
 
 appliance = SmarterClient()
-appliance.host = "10.0.0.99"
+appliance.setHost("10.0.0.99")
 appliance.connect()
 if appliance.isKettle() and not appliance.heaterOn:
     appliance.kettle_heat_default()
@@ -962,10 +940,8 @@ else
 fi
 ```
 
-
 ### [OpenHAB](http://www.openhab.org) 
 [iBrew Forum Thread](https://community.openhab.org/t/smarter-coffee-machine-control-with-tcp-binding/12831)
-
 
 ### [Smartthings](https://www.smartthings.com) 
 [iBrew Forum Thread](https://community.smartthings.com/t/smarter-coffee/22776/11)

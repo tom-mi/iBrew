@@ -306,7 +306,7 @@ class SmarterClient:
     
 
     @_threadsafe_function
-    def sethost(self,host):
+    def setHost(self,host):
         self.host = host
         self.__read_block()
         self.__read_triggers()
@@ -1018,7 +1018,7 @@ class SmarterClient:
         self.__write_stats()
         
         if self.host == "":
-            self.sethost(Smarter.DirectHost)
+            self.setHost(Smarter.DirectHost)
         
         if self.host == Smarter.DirectHost:
             if platform.system() == "Darwin" or platform.system() == "Linux":
