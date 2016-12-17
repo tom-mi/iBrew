@@ -22,7 +22,6 @@ installer:
 	@"C:\Program Files (x86)\NSIS\makensis.exe" distro\win\ibrew.nsi
 	@mkdir release
 	@move distro\win\iBrew.exe release
-	@compress 
 
 
 
