@@ -6,7 +6,7 @@ VSVersionInfo(
   ffi=FixedFileInfo(
     # filevers and prodvers should be always a tuple with four items: (1, 2, 3, 4)
     # Set not needed items to zero 0.
-    filevers=(5, 1, 0, 0),
+    filevers=(5, 0, 0, 0),
     prodvers=(5, 0, 0, 1),
     # Contains a bitmask that specifies the valid bits 'flags'r
     mask=0x3f,
@@ -32,12 +32,12 @@ VSVersionInfo(
         [StringStruct(u'CompanyName', u'Tristan Crispijn'),
         StringStruct(u'FileDescription', u'iBrew'),
         StringStruct(u'FileVersion', u'5.1.0.0 (The conundrum struggle)'),
-        StringStruct(u'ProductVersion', u'5.0.0.1')])
+        StringStruct(u'InternalName', u'ibrew'),
         StringStruct(u'LegalCopyright', u'© Tristan Crispijn. All rights reserved.'),
         StringStruct(u'OriginalFilename', u'ibrew'),
         StringStruct(u'ProductName', u'iBrew: The conundrum struggle'),
-        StringStruct(u'InternalName', u'ibrew'),
-      ]),
+        StringStruct(u'ProductVersion', u'5.0.0.1')])
+      ]), 
     VarFileInfo([VarStruct(u'Translation', [1033, 1200])])
   ]
 )
