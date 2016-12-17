@@ -46,7 +46,7 @@
 	;!define  MUI_LICENSEPAGE_TEXT_BOTTOM  $(app_LicensePageTextBottom)
 	;!define  MUI_LICENSEPAGE_CHECKBOX	
 	
-	!define MUI_FINISHPAGE_NOAUTOCLOSE	
+	;!define MUI_FINISHPAGE_NOAUTOCLOSE
 
 	;!define MUI_FINISHPAGE_SHOWREADME "release_notes.txt"
 	;!define MUI_FINISHPAGE_SHOWREADME_TEXT "Show Release Notes"
