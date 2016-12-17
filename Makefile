@@ -83,6 +83,8 @@ bonjourwin:
 
 pyinstaller:
 	@git clone https://github.com/Tristan79/pyinstaller.git
+	@python pyinstaller/bootloader/waf distclean all
+	@python pyinstaller/setup.py install	
 
 cleanwin:
 	@echo iBrew: Cleaning up [Windows]

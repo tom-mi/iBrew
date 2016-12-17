@@ -2,9 +2,7 @@
 *.pyc
 
 *.DS_Store
-
-release/* 
-
+ 
 dist/*
 
 build/*
@@ -28,3 +26,6 @@ distro/win/LICENSE
 *.dmg
 
 *.zip
+pyinstaller/
+
+*.dmg

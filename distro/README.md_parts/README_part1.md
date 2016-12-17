@@ -124,6 +124,8 @@ _it creates a soft symlink to /usr/local/bin/ibrew,... :-)_
 
 #### MacOS and source
 Use `make setupmac` to install the additional requirements
+Use `make cleanmac` to clean all temp files
+Use `make mac` to create a package 
 
 ### Linux
 See section download for source or use your modified pi steps below
