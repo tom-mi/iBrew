@@ -123,7 +123,7 @@ Section "Install Section" SecInstall
 		;Create shortcuts
 		CreateDirectory "$SMPROGRAMS\$StartMenuFolder"
 		CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
-		CreateShortCut "$SMPROGRAMS\$StartMenuFolder\iBrew.lnk" "$INSTDIR\iBrew.exe"
+		CreateShortCut "$SMPROGRAMS\$StartMenuFolder\iBrew.lnk" "$INSTDIR\ibrewui.exe"
 
 	!insertmacro MUI_STARTMENU_WRITE_END
 

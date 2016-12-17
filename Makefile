@@ -19,6 +19,7 @@ win:	cleanwin buildwin installer
 installer:
 	@echo !define RELEASE_STR v5.0.0.1 > distro\win\release.nsh
 	@copy LICENSE distro\win
+	@"C:\Program Files (x86)\NSIS\makensis.exe" distro\win\ibrew.nsi
 
 buildwin:
 	@echo iBrew: Building Windows package    
