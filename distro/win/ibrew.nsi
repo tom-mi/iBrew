@@ -15,6 +15,8 @@
 	;OutFile "iBrew ${RELEASE_STR}.exe"
 	OutFile "iBrew.exe"
 
+    Caption "iBrew: The conundrum struggle! ${RELEASE_STR} Installer"
+
 	;Default installation folder
 	InstallDir "$PROGRAMFILES\iBrew"
 
@@ -44,7 +46,7 @@
 
 	!define  MUI_LICENSEPAGE_TEXT_TOP $(app_LicensePageTextTop)
 	;!define  MUI_LICENSEPAGE_TEXT_BOTTOM  $(app_LicensePageTextBottom)
-	;!define  MUI_LICENSEPAGE_CHECKBOX	
+	!define  MUI_LICENSEPAGE_CHECKBOX
 	
 	;!define MUI_FINISHPAGE_NOAUTOCLOSE
 
