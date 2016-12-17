@@ -1,17 +1,17 @@
 all:
 	@echo "iBrew setup (windows, linux & mac)"
-	@echo use \"make setup\" to fetch requirements
+	@echo use \"make setup\" to fetch requirements (source only no bonjour)
 	@echo use \"make cleanlin\" to clean temp files
 	@echo use \"make cleanmac\" to clean temp files
 	@echo use \"make cleanwin\" to clean temp files
-	@echo use \"make setupmac\" to fetch additional mac requirements for release
-	@echo use \"make setupwin\" to fetch additional windows requirements for release
+	@echo use \"make setuplin\" to fetch additional linux requirements
+	@echo use \"make setupmac\" to fetch additional mac requirements
+	@echo use \"make setupwin\" to fetch additional windows requirementse
 	@echo use \"make mac\" to make a mac release
 	@echo use \"make win\" to make a windows release
 	@echo use \"make readme\" to create a new README.md 
-	@echo use \"make pyinstaller\" to download already patched osx pyinstaller
 
-mac:	cleanlin buildmac cleanmac diskimage
+mac:	cleanmac buildmac diskimage
 
 win:	cleanwin buildwin installer
 
@@ -58,10 +58,11 @@ cleanlin:
 	@rm -f *.spec 
 	@rm -rf build
 	@rm -rf test
+	@rm -rf release
 
-setuplin: setup bonjourwin
+setuplin: setup bonjour
 
-setupwin: setup packwin pyinstaller bonjourwin 
+setupwin: setup packwin bonjourwin 
 
 packwin:
 	@pip install win-inet-pton
@@ -77,14 +78,13 @@ bonjour:
 	@rm pybonjour-1.1.1.zip
 
 bonjourwin:
+	@echo MAKE SURE you have iTUNES or Bonjour 3.0 sdk installed
 	@powershell -command "& { iwr https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/pybonjour/pybonjour-1.1.1.zip -OutFile pybonjour-1.1.1.zip }"
 	@pip install pybonjour-1.1.1.zip
 	@del pybonjour-1.1.1.zip
 
 pyinstaller:
-	@git clone https://github.com/Tristan79/pyinstaller.git
-	@python pyinstaller/bootloader/waf distclean all
-	@python pyinstaller/setup.py install	
+	@distro/mac/pyinstaller.sh
 
 cleanwin:
 	@echo iBrew: Cleaning up [Windows]
@@ -97,8 +97,9 @@ cleanmac:
 	@rm -f *.tmp
 	@rm -f *.spec 
 	@rm -rf build
-	@rm -rf dist/iBrew
-	@rm -rf dist/iBrewConsole
+	@rm -rf test
+	@rm -rf dist
+	@rm -rf release
 	
 buildmac:
 	@echo iBrew: Building MacOS package
