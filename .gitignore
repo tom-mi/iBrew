@@ -1,3 +1,6 @@
+*.dmg
+
+*.zip
 
 *.pyc
 
@@ -20,7 +23,6 @@ test/*
 *.log
 
 *.spec
-
 
 distro/win/release.nsh
 
