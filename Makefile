@@ -30,7 +30,7 @@ win:
 	@xcopy /S web dist\ibrew\web
 	@copy /Y dist\ibrewlegacy\*.* dist\ibrew
 	@copy /Y dist\ibrewui\*.* dist\ibrew
-  
+  	@copy LICENSE dist\ibrew
 readme:
 	@python ibrew license > LICENSE
 	@echo iBrew: Generating README.md
@@ -68,6 +68,8 @@ pyinstaller:
 
 cleanwin:
 	@echo iBrew: Cleaning up [Windows]
+	@rmdir /Q /S build     
+	@rmdir /Q /S dist
 	@rmdir /Q /S build     
 	@rmdir /Q /S dist
 	@del /Q /S *.pyc 
