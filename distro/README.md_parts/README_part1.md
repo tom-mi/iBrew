@@ -2,14 +2,14 @@
 
 iKettle, [iKettle 2.0](http://smarter.am/ikettle) and [Smarter Coffee](http://smarter.am/coffee) Interface
 
-## Hot! News
-
-Now! macOS & windows apps! With nice icon in the taskbar! :-)
-
 ## Downloads
   * [Windows](https://dl.dropboxusercontent.com/u/12474226/iBrew.exe)
   * [MacOS]  (https://dl.dropboxusercontent.com/u/12474226/iBrew.dmg)
   * [Source] (https://github.com/Tristan79/iBrew/archive/master.zip)
+
+## Hot! News
+
+Now! macOS & windows apps! With nice icon in the taskbar! :-)
 
 __Trigger! You can now push your data or run commands!__
 It is now possible to push sensor values and states of the appliances to other smarthome controllers using HTTP or run commands!
