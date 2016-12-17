@@ -295,7 +295,7 @@ Look up the idx in `Setup -> Devices`
 Use the _idx_ of the sensor to add a trigger
 
 ```
-ibrew trigger add Domoticz OnBase "http://127.0.0.1:8080/json.htm?type=command&param=switchlight&idx=99&switchcmd=%§N" 10.0.0.99
+ibrew trigger add Domoticz OnBase "http://127.0.0.1:8080/json.htm?type=command&param=switchlight&idx=99&switchcmd=§N" 10.0.0.99
 ```
 
 We need to set up the right boolean state, domoticz uses the format _On_ or _Off_
