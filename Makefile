@@ -18,9 +18,9 @@ win:	cleanwin buildwin
 
 buildwin:
 	@echo iBrew: Building Windows package    
-	@pyinstaller -c -i resources\favicon.ico ibrewlegacy
-	@pyinstaller -c -i resources\favicon.ico ibrew
-	@pyinstaller -w -i resources\favicon.ico ibrewui
+	@pyinstaller -c --version-file distro\win\version.py -i resources\favicon.ico ibrewlegacy
+	@pyinstaller -c --version-file distro\win\version.py -i resources\favicon.ico ibrew
+	@pyinstaller -w --version-file distro\win\version.py -i resources\favicon.ico ibrewui
 	@mkdir dist\ibrew\resources
 	@mkdir dist\ibrew\web
 	@xcopy /S resources dist\ibrew\resources
