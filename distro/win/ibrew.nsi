@@ -12,7 +12,8 @@
 
 ;General
 	;file name
-	OutFile "iBrew ${RELEASE_STR}.exe"
+	;OutFile "iBrew ${RELEASE_STR}.exe"
+	OutFile "iBrew.exe"
 
 	;Default installation folder
 	InstallDir "$PROGRAMFILES\iBrew"
@@ -148,12 +149,10 @@ FunctionEnd
 Section "Uninstall"
 
 	Delete "$INSTDIR\*"
-	RMDir /r "$INSTDIR\imageformats"
-	RMDir /r "$INSTDIR\PyQt4.uic.widget-plugins"
-	
+
 	Delete "$INSTDIR\Uninstall.exe"
 
-	RMDir "$INSTDIR"
+	RMDir /r "$INSTDIR"
 
     Delete "$DESKTOP\iBrew.lnk"
 
