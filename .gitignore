@@ -3,6 +3,8 @@
 
 *.DS_Store
 
+release/* 
+
 dist/*
 
 build/*
@@ -12,11 +14,14 @@ test/*
 *.conf
 
 .ibrew
-*.tmp
-ibrew.py
 
-*.dmg
+*.tmp
 
 *.log
 
 *.spec
+
+
+distro/win/release.nsh
+
+distro/win/LICENSE
