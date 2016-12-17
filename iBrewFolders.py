@@ -72,7 +72,8 @@ class AppFolders():
             if platform.system() == "Windows":
                 folder = os.path.join( AppFolders.windowsAppDataFolder(), appname )
             else:
-                folder = "/var/log/"+appname
+                folder = "/var/log"
+                #folder = "/var/log/"+appname
         else:
             folder = os.path.join(AppFolders.userFolder(), "logs")
         return folder
@@ -85,7 +86,8 @@ class AppFolders():
             elif platform.system() == "Darwin":
                 folder = os.path.join( '/Library/Application Support/'+appname)
             else:
-                folder = "/etc/"+appname
+                folder = "/etc"
+                #folder = "/etc/"+appname
         else:
             folder = os.path.join(AppFolders.userFolder())
         return folder
