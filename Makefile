@@ -17,9 +17,14 @@ mac:	cleanlin buildmac cleanmac diskimage
 win:	cleanwin buildwin installer
 
 installer:
-	@echo !define RELEASE_STR v5.0.0.1 > distro\win\release.nsh
+	@echo !define RELEASE_STR v0.5.0.1 > distro\win\release.nsh
 	@copy LICENSE distro\win
 	@"C:\Program Files (x86)\NSIS\makensis.exe" distro\win\ibrew.nsi
+	@mkdir -p release
+	@move distro\win\iBrew*.exe release
+	@compress 
+
+
 
 buildwin:
 	@echo iBrew: Building Windows package    

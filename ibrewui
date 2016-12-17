@@ -105,10 +105,14 @@ class Launcher():
         try:
             self.web.events = True
             if platform.system() == "Darwin":
+                # For windows exe with pyinstaller disabled the following 3 lines!
+                #pass
                 from iBrewMac import MacGui
                 self.ui = MacGui(self.web)
                 self.ui.run()
             elif platform.system() == "Windows":
+
+
                 from iBrewWin import WinGui
                 self.ui = WinGui(self.web)
                 self.ui.run()
