@@ -39,17 +39,17 @@ class SmarterProtocolLegacy:
     responseHandshake   = "HELLOAPP"
 
     # Command messages
-    commandStatus       = "get sys status\n"
-    commandHeat         = "set sys output 0x4\n"
-    command65c          = "set sys output 0x200\n"
-    command80c          = "set sys output 0x4000\n"
-    command95c          = "set sys output 0x2\n"
-    command100c         = "set sys output 0x80\n"
-    commandWarm5m       = "set sys output 0x8005\n"
-    commandWarm10m      = "set sys output 0x8010\n"
-    commandWarm20m      = "set sys output 0x8020\n"
-    commandWarm         = "set sys output 0x8\n"
-    commandStop         = "set sys output 0x0\n"
+    commandStatus       = "get sys status"
+    commandHeat         = "set sys output 0x4"
+    command65c          = "set sys output 0x200"
+    command80c          = "set sys output 0x4000"
+    command95c          = "set sys output 0x2"
+    command100c         = "set sys output 0x80"
+    commandWarm5m       = "set sys output 0x8005"
+    commandWarm10m      = "set sys output 0x8010"
+    commandWarm20m      = "set sys output 0x8020"
+    commandWarm         = "set sys output 0x8"
+    commandStop         = "set sys output 0x0"
 
     # Command text
     textHeat            = "Start heating water"
@@ -90,7 +90,7 @@ class SmarterProtocolLegacy:
     statusOverheat      = "sys status 0x2"
     statusKettleRemoved = "sys status 0x1"
     
-    responseStatus         = "sys status key="
+    responseStatus      = "sys status key="
 
     def string_responseStatus(self,status):
 
@@ -155,7 +155,42 @@ class SmarterProtocolLegacy:
         else:
             return "Unknown status! Help! Please post an issues on GitHub" + str([status])
 
-    def string_command(self,action):
+    def command_to_string(self,command):
+        if SmarterLegacy.commandStop == command:      return "Stop"
+        elif SmarterLegacy.command65c == command:     return "65"
+        elif SmarterLegacy.command80c == command:     return "80"
+        elif SmarterLegacy.command95c == command:     return "95"
+        elif SmarterLegacy.command100c == command:    return "100"
+        elif SmarterLegacy.commandWarm == command:    return "Warm"
+        elif SmarterLegacy.commandHeat == command:    return "Heat"
+        elif SmarterLegacy.commandWarm5m == command:  return "5"
+        elif SmarterLegacy.commandWarm10m == command: return "10"
+        elif SmarterLegacy.commandWarm20m == command: return "20"
+        elif SmarterLegacy.commandStatus == command:  return "Status"
+        else:
+            raise SmarterErrorOld("Unknown command: (%s)" % command)
+
+    def string_to_command(self,string):
+        action = string.lower()
+        if action == "stop":                        return SmarterLegacy.commandStop
+        elif action == "heat" or action == "start": return SmarterLegacy.commandHeat
+        elif action == "status":                    return SmarterLegacy.commandStatus
+        elif action == "65":                        return SmarterLegacy.command65c
+        elif action == "80":                        return SmarterLegacy.command80c
+        elif action == "95":                        return SmarterLegacy.command95c
+        elif action == "100":                       return SmarterLegacy.command100c
+        elif action == "warm":                      return SmarterLegacy.commandWarm
+        elif action == "5":                         return SmarterLegacy.commandWarm5m
+        elif action == "10":                        return SmarterLegacy.commandWarm10m
+        elif action == "20":                        return SmarterLegacy.commandWarm20m
+        else:
+            raise SmarterErrorOld("Unknown command: (%s)" % action)
+
+    def command_to_commandText(self,command):
+        return string_to_commandText(self.command_to_string(command))
+
+    def string_to_commandText(self,string):
+        action = string.lower()
         if action == "stop":                        return SmarterLegacy.textStop
         elif action == "heat" or action == "start": return SmarterLegacy.textHeat
         elif action == "status":                    return SmarterLegacy.textStatus
@@ -167,7 +202,8 @@ class SmarterProtocolLegacy:
         elif action == "5":                         return SmarterLegacy.textWarm5m
         elif action == "10":                        return SmarterLegacy.textWarm10m
         elif action == "20":                        return SmarterLegacy.textWarm20m
-        else:                                       return "Unknown command: (%s)" % action
+        else:
+            raise SmarterErrorOld("Unknown command: (%s)" % action)
 
 
 

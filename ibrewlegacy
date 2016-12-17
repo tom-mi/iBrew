@@ -58,8 +58,9 @@ except IndexError:
     sys.exit(2);
 else:
     client = SmarterClientLegacy(ip)
+    client.dump = True
     try:
-        r = client.send(action)
+        r = client.send(SmarterLegacy.string_to_command(action))
         for i in r:
             print "iBrew Legacy: " + SmarterLegacy.string_status(i)
     except Exception, e:

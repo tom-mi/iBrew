@@ -79,14 +79,24 @@ class SmarterClientLegacy():
         self.status             = SmarterLegacy.statusReady
         self.heating            = False
         self.keepwarm           = False
+        self.onBase             = False
     
         self.simTemperature     = SmarterLegacy.status100c
         self.simKeepwarm        = SmarterLegacy.statusWarm10m
         self.simStatus          = SmarterLegacy.statusReady
         self.simHeating         = False
         self.simKeepwarm        = False
+        self.simOnBase          = False
+    
+        self.simulation         = False
+    
+        self.socket             = None
+    
 
     def connect(self,monitor=False):
+        self.disconnect()
+        if self.simulation:
+            return
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             self.socket.settimeout(2)
@@ -104,108 +114,132 @@ class SmarterClientLegacy():
         self.connected = True
 
     def disconnect(self):
-        self.socket.close()
+        if self.socket:
+            self.socket.close()
         self.connected = False
 
-    """
     def sim_response(self,command):
-        if command == SmarterLegacy.commandStop:
-        elif command == SmarterLegacy.commandHeat:
-        elif command == SmarterLegacy.commandStatus
-        elif command == SmarterLegacy.command65c
-        elif command == SmarterLegacy.command80c
-        elif command == SmarterLegacy.command95c
-        elif command == SmarterLegacy.command100c
-        elif command == SmarterLegacy.commandWarm
-        elif command == SmarterLegacy.commandWarm5m
-        elif command == SmarterLegacy.commandWarm10m
-        elif command == SmarterLegacy.commandWarm20m
-    """
+        if raw == SmarterLegacy.commandStop:    response = self.__sim_stop()
+        elif raw == SmarterLegacy.commandHeat:  response = self.__sim_heat()
+        elif raw == SmarterLegacy.commandStatus:response = self.__sim_status()
+        elif raw == SmarterLegacy.command65c or raw == SmarterLegacy.command80c or raw == SmarterLegacy.command95c or raw == SmarterLegacy.command100c:
+                                                response = self.__sim_temperature(raw)
+        elif raw == SmarterLegacy.commandWarm:  response = self.__sim_warm()
+        elif raw == SmarterLegacy.commandWarm5m or raw == SmarterLegacy.commandWarm10m or raw == SmarterLegacy.commandWarm20m:
+                                                response = self.__sim_warm_minutes(raw)
+        else:
+            raise SmarterErrorOld("Legacy command simulation not implemented")
+        return response
     
+    def __sim_heat(self):
+        pass
+
+    def __sim_status(self):
+        pass
+
+    def __sim_stop(self):
+        self.simHeating = False
+        self.simKeepwarm = False
+        self.simStatus = SmarterLegacy.statusReady
+
+    def __sim_temperature(self,command):
+        if command == SmarterLegacy.command65c:
+            self.simTemperature = SmarterLegacy.status65c
+        elif command == SmarterLegacy.command80c:
+            self.simTemperature = SmarterLegacy.status80c
+        elif command == SmarterLegacy.command95c:
+            self.simTemperature = SmarterLegacy.status95c
+        elif command == SmarterLegacy.command100c:
+            self.simTemperature = SmarterLegacy.status100c
+        return self.simTemperature
+
+    def __sim_keepwarm_minutes(self,command):
+        if command == SmarterLegacy.commandWarm5m:
+            self.simKeepwarm = SmarterLegacy.statusWarm5m
+        elif command == SmarterLegacy.commandWarm10m:
+            self.simKeepwarm = SmarterLegacy.statusWarm10m
+        elif command == SmarterLegacy.commandWarm20m:
+            self.simKeepwarm = SmarterLegacy.statusWarm20m
+        return self.simKeepwarm
+
+    def __sim_warm(self):
+        pass
+
     def send_response(self,command):
         pass
     
     def send(self,command):
-        
         if self.dump:
-            print self.host + ":" + str(self.port) + " Sending command: " + SmarterLegacy.string_command(command)
-        if not self.connected:
-            self.connect()
-        if command == "stop":                            self.socket.send(SmarterLegacy.commandStop)
-        elif command == "heat" or command == "start":    self.socket.send(SmarterLegacy.commandHeat)
-        elif command == "status":                        self.socket.send(SmarterLegacy.commandStatus)
-        elif command == "65":                            self.socket.send(SmarterLegacy.command65c)
-        elif command == "80":                            self.socket.send(SmarterLegacy.command80c)
-        elif command == "95":                            self.socket.send(SmarterLegacy.command95c)
-        elif command == "100":                           self.socket.send(SmarterLegacy.command100c)
-        elif command == "warm":                          self.socket.send(SmarterLegacy.commandWarm)
-        elif command == "5":                             self.socket.send(SmarterLegacy.commandWarm5m)
-        elif command == "10":                            self.socket.send(SmarterLegacy.commandWarm10m)
-        elif command == "20":                            self.socket.send(SmarterLegacy.commandWarm20m)
+            print self.host + ":" + str(self.port) + " Sending command: " + SmarterLegacy.command_to_string(command)
+        if self.simulation:
+            response = self.sim_response(command)
         else:
-            raise SmarterErrorOld("Unknown command: (%s)" % command)
-        response = []
-        try:
-            for i in range(0,3):
-                data = self.socket.recv(self.__bufferSize)
-                response += [data[:-1]]
-                if self.dump:
-                    print self.host + ":" + str(self.port) + " Received: " + SmarterLegacy.string_status(data[:-1])
-        except socket.timeout:
-            pass
+            if not self.connected:
+                self.connect()
+            try:
+                self.socket.send(command+"\n")
+            except socket.error:
+                self.disconnect()
+                raise SmarterErrorOld(self.host + ":" + str(self.port) + " Connection timed out")
+            response = []
+            try:
+                for i in range(0,3):
+                    data = self.socket.recv(self.__bufferSize)
+                    response += [data[:-1]]
+                    if self.dump:
+                        print self.host + ":" + str(self.port) + " Received response: " + SmarterLegacy.string_status(data[:-1])
+            except socket.timeout:
+                pass
         return response
     
     def status(self):
-        return self.__send("status")
+        return self.send(SmarterLegacy.commandStatus)
 
     def keepwarm(self):
-        return self.__send("warm")
+        return self.send(SmarterLegacy.commandWarm)
 
     def stop(self):
-        return self.__send("stop")
+        return self.send(SmarterLegacy.commandStop)
 
     def selectKeepwamr20min(self):
-        return self.__send("20")
+        return self.send(SmarterLegacy.commandWarm20m)
 
     def selectKeepwamr10min(self):
-        return self.__send("10")
+        return self.send(SmarterLegacy.commandWarm10m)
 
     def selectKeepwamr5min(self):
-        return self.__send("5")
+        return self.send(SmarterLegacy.commandWarm5m)
 
     def selectTemperature65(self):
-        return self.__send("65")
+        return self.send(SmarterLegacy.command65c)
 
     def selectTemperature80(self):
-        return self.__send("80")
+        return self.send(SmarterLegacy.command80c)
 
     def selectTemperature95(self):
-        return self.__send("95")
+        return self.send(SmarterLegacy.command95c)
 
     def selectTemperature100(self):
-        return self.__send("95")
+        return self.send(SmarterLegacy.command100c)
 
     def boil(self):
-        return self.__send("100")
-        return self.__send("heat")
+        return self.send(SmarterLegacy.command100c)
+        return self.send(SmarterLegacy.commandHeat)
 
     def heat(self):
-        return self.__send("heat")
+        return self.send(SmarterLegacy.commandHeat)
 
-    """
-    def heat_ikettle2(self,temperature=100):
+    def heat_temp(self,temperature=100):
         #Smarter.check_temperature(temperature)
         if temperature < 73:
-            self.__send("65")
+            self.send(SmarterLegacy.command65c)
         elif temperature < 88:
-            self.__send("80")
+            self.send(SmarterLegacy.command80c)
         elif temperature < 97:
-            self.__send("95")
+            self.send(SmarterLegacy.command95c)
         else:
-            self._send("100")
-        self.__send("heat")
-    """
-
+            self.send(SmarterLegacy.command100c)
+        self.send(SmarterLegacy.commandHeat)
 
 class SmarterClient:
     """
