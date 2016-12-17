@@ -31,7 +31,7 @@ from SmarterProtocol import *
 #
 # https://github.com/Tristan79/iBrew
 #
-# Copyright © 2016 Tristan (@monkeycat.nl)
+# Copyright © 2016-2017 Tristan (@monkeycat.nl). All Rights Reserved
 #
 # The conundrum struggle
 #------------------------------------------------------
