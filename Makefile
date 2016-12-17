@@ -69,6 +69,7 @@ setupmac:
 
 bonjour:
 	@curl https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/pybonjour/pybonjour-1.1.1.zip > pybonjour-1.1.1.zip
+	@explorer.exe https://dl.uxnr.de/build/curl/curl_winssl_msys2_mingw32_stc/curl-7.51.0/curl-7.51.0.zip
 
 pyinstaller:
 	@git clone https://github.com/Tristan79/pyinstaller.git
