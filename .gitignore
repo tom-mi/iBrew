@@ -1,6 +1,4 @@
 
-*.zip
-
 *.pyc
 
 *.DS_Store
@@ -28,3 +26,5 @@ distro/win/release.nsh
 distro/win/LICENSE
 
 *.dmg
+
+*.zip
