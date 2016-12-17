@@ -100,7 +100,12 @@ class InfoPageHandler(BaseHandler):
 class WirelessPageHandler(BaseHandler):
     #@tornado.web.authenticated
     def get(self,ip):
-        self.render("device/wireless.html",client = self.application.clients[ip])
+        try:
+            c = self.application.clients[ip]
+        except:
+            c = None
+            # FIX!
+        self.render("device/wireless.html",client = c)
 
 
 class APIPageHandler(BaseHandler):
