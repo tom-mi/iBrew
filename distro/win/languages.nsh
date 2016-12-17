@@ -5,15 +5,15 @@
   
 LangString app_AppName ${LANG_ENGLISH} "iBrew"
 LangString app_WelcomePageTitle ${LANG_ENGLISH} \
-		"iBrew Installer"
+		"iBrew: The conundrum struggle!"
 LangString app_WelcomePageText ${LANG_ENGLISH} \
-        "Release: ${RELEASE_STR}$\n$\r$\n$\r\
-        This installer will guide you through the process of installing iBrew.$\n$\r $\n$\r"
-LangString app_LicensePageTextTop ${LANG_ENGLISH} "iBrew End-user License Agreement"
+        "The conundrum struggle!${RELEASE_STR}$\n$\r$\n$\r\
+          Take a sip! $\n$\r $\n$\r"
+LangString app_LicensePageTextTop ${LANG_ENGLISH} "iBrew License Agreement"
 LangString app_FinishPageTitle ${LANG_ENGLISH} \
-		"iBrew Installer"
+		"iBrew: The conundrum struggle!"
 LangString app_FinishPageText ${LANG_ENGLISH} \
-		"Installation complete!"
+		"Fin!"
 LangString app_FinishPageLink ${LANG_ENGLISH} "iBrew development site"
 
 LangString LicenseFile ${LANG_ENGLISH} 		 "LICENSE"  ;;these two should be the same
