@@ -59,8 +59,8 @@
     FunctionEnd
 
     !define MUI_FINISHPAGE_SHOWREADME ""
-    !define MUI_FINISHPAGE_SHOWREADME_NOTCHECKED
-    !define MUI_FINISHPAGE_SHOWREADME_TEXT "Create Desktop Shortcut"
+    !define MUI_FINISHPAGE_SHOWREADME_CHECKED
+    !define MUI_FINISHPAGE_SHOWREADME_TEXT "iBrew-TEA-Full Desktop Icon"
     !define MUI_FINISHPAGE_SHOWREADME_FUNCTION finishpageaction
 
 	!define MUI_FINISHPAGE_TITLE $(app_FinishPageTitle)
@@ -130,13 +130,13 @@ Section "Install Section" SecInstall
                  "Publisher" "iBrew"
 				 
 	;Create uninstaller
-	WriteUninstaller "$INSTDIR\Uninstall.exe"
+	WriteUninstaller "$INSTDIR\uninstall.exe"
 
 	!insertmacro MUI_STARTMENU_WRITE_BEGIN Application
 
 		;Create shortcuts
 		CreateDirectory "$SMPROGRAMS\$StartMenuFolder"
-		CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
+		CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Uninstall.lnk" "$INSTDIR\uninstall.exe"
 		CreateShortCut "$SMPROGRAMS\$StartMenuFolder\iBrew.lnk" "$INSTDIR\ibrewui.exe"
 
 	!insertmacro MUI_STARTMENU_WRITE_END
@@ -163,7 +163,7 @@ Section "Uninstall"
 
 	Delete "$INSTDIR\*"
 
-	Delete "$INSTDIR\Uninstall.exe"
+	Delete "$INSTDIR\uninstall.exe"
 
 	RMDir /r "$INSTDIR"
 
