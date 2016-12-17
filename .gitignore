@@ -23,9 +23,9 @@ distro/win/release.nsh
 
 distro/win/LICENSE
 
-*.dmg
-
 *.zip
+
 pyinstaller/
 
+release/
 *.dmg

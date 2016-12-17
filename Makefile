@@ -118,7 +118,7 @@ buildmac:
 	@rm -rf dist/iBrewConsoleLegacy.app
 	@mkdir -p test
 	@mv dist/iBrew.app test
-	@rm -rf dist
+	# @rm -rf dist
 
 diskimage:
 	#Set up disk image staging folder
