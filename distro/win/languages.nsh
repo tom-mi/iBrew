@@ -7,7 +7,7 @@ LangString app_AppName ${LANG_ENGLISH} "iBrew"
 LangString app_WelcomePageTitle ${LANG_ENGLISH} \
 		"iBrew"
 LangString app_WelcomePageText ${LANG_ENGLISH} \
-        "If tea is the drink of love then iBrew on!"
+        "If tea is the drink of love, then iBrew on!"
 LangString app_LicensePageTextTop ${LANG_ENGLISH} "iBrew License Agreement"
 LangString app_FinishPageTitle ${LANG_ENGLISH} \
 		"iBrew"
