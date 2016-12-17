@@ -22,7 +22,154 @@ from operator import itemgetter
 # The conundrum struggle
 #------------------------------------------------------
 
-# In the end I should have made classes of the types...
+# In the end I should have made classes of the types... split the simulator, firewall, etc,
+# And yes, i know i really made a mess of it, it was a good learning experience.
+# How divide and conquers wins, but it's HOW you divide! Should have build it differently, o well, next time!
+
+class SmarterProtocolLegacy:
+
+    #------------------------------------------------------
+    # LEGACY
+    #------------------------------------------------------
+
+    Port       = 2000
+    DirectHost = "192.168.4.1"
+
+    commandHandshake    = "HELLOKETTLE\n"
+    responseHandshake   = "HELLOAPP"
+
+    # Command messages
+    commandStatus       = "get sys status\n"
+    commandHeat         = "set sys output 0x4\n"
+    command65c          = "set sys output 0x200\n"
+    command80c          = "set sys output 0x4000\n"
+    command95c          = "set sys output 0x2\n"
+    command100c         = "set sys output 0x80\n"
+    commandWarm5m       = "set sys output 0x8005\n"
+    commandWarm10m      = "set sys output 0x8010\n"
+    commandWarm20m      = "set sys output 0x8020\n"
+    commandWarm         = "set sys output 0x8\n"
+    commandStop         = "set sys output 0x0\n"
+
+    # Command text
+    textHeat            = "Start heating water"
+    textStop            = "Stop heating water"
+    textStatus          = "Kettle status"
+
+    # Shared between status and command
+    text100c            = "100ºC selected"
+    text95c             = "95ºC selected"
+    text80c             = "80ºC selected"
+    text65c             = "65ºC selected"
+    textWarm            = "Keep water warm" # for 30 minutes???
+    textWarm5m          = "Keep water warm timer is set to 5 minutes"
+    textWarm10m         = "Keep water warm timer is set to 10 minutes"
+    textWarm20m         = "Keep water warm timer is set to 20 minutes"
+
+    # Status text
+    textHeating         = "Heating water"
+    textReady           = "Ready"
+    textHeated          = "Water heated"
+    textOverheat        = "Kettle overheated"
+    textKettleRemoved   = "Kettle removed"
+    textWarmFinished    = "Keep water warm finished"
+
+    # Status messages
+    status100c          = "sys status 0x100"
+    status95c           = "sys status 0x95"
+    status80c           = "sys status 0x80"
+    status65c           = "sys status 0x65"
+    statusWarm          = "sys status 0x11"
+    statusWarmFinished  = "sys status 0x10"
+    statusHeating       = "sys status 0x5"
+    statusReady         = "sys status 0x0"
+    statusWarm5m        = "sys status 0x8005"
+    statusWarm10m       = "sys status 0x8010"
+    statusWarm20m       = "sys status 0x8020"
+    statusHeated        = "sys status 0x3"
+    statusOverheat      = "sys status 0x2"
+    statusKettleRemoved = "sys status 0x1"
+    
+    responseStatus         = "sys status key="
+
+    def string_responseStatus(self,status):
+
+        def is_set(x, n):
+            return x & 2**n != 0
+
+        if len(self.responseStatus) == len(status):
+            return self.textReady
+
+        statusdata = Smarter.raw_to_number(status[len(self.responseStatus)])
+
+        statustext = ""
+        if is_set(statusdata,0):
+            statustext += self.textHeating + " "
+        if is_set(statusdata,1):
+            statustext += self.textWarm + " "
+        if is_set(statusdata,2):
+            statustext += self.text65c + " "
+        if is_set(statusdata,3):
+            statustext += self.text80c + " "
+        if is_set(statusdata,4):
+            statustext += self.text95c + " "
+        if is_set(statusdata,5):
+            statustext += self.text100c + " "
+        if is_set(statusdata,6):
+            return "Unknown kettle status 6! Help! Please post an issues on GitHub" + str([status]) + " "
+        if is_set(statusdata,7):
+            return "Unknown kettle status 7! Help! Please post an issues on GitHub" + str([status]) + " "
+        return statustext.strip()
+
+    def string_status(self,status):
+        if status[0:len(self.responseStatus)] == self.responseStatus:
+            return self.string_responseStatus(status)
+        elif status == self.status100c:
+            return self.text100c
+        elif status == self.status95c:
+            return self.text95c
+        elif status == self.status80c:
+            return self.text80c
+        elif status == self.status65c:
+            return self.text65c
+        elif status == self.statusWarm:
+            return self.textWarm
+        elif status == self.statusWarmFinished:
+            return self.textWarmFinished
+        elif status == self.statusHeating:
+            return self.textHeating
+        elif status == self.statusReady:
+            return self.textReady
+        elif status == self.statusWarm5m:
+            return self.textWarm5m
+        elif status == self.statusWarm10m:
+            return self.textWarm10m
+        elif status == self.statusWarm20m:
+            return self.textWarm20m
+        elif status == self.statusHeated:
+            return self.textHeated
+        elif status == self.statusOverheat:
+            return self.textOverheat
+        elif status == self.statusKettleRemoved:
+            return self.textKettleRemoved
+        else:
+            return "Unknown status! Help! Please post an issues on GitHub" + str([status])
+
+    def string_command(self,action):
+        if action == "stop":                        return SmarterLegacy.textStop
+        elif action == "heat" or action == "start": return SmarterLegacy.textHeat
+        elif action == "status":                    return SmarterLegacy.textStatus
+        elif action == "65":                        return SmarterLegacy.text65c
+        elif action == "80":                        return SmarterLegacy.text80c
+        elif action == "95":                        return SmarterLegacy.text95c
+        elif action == "100":                       return SmarterLegacy.text100c
+        elif action == "warm":                      return SmarterLegacy.textWarm
+        elif action == "5":                         return SmarterLegacy.textWarm5m
+        elif action == "10":                        return SmarterLegacy.textWarm10m
+        elif action == "20":                        return SmarterLegacy.textWarm20m
+        else:                                       return "Unknown command: (%s)" % action
+
+
 
 #------------------------------------------------------
 # EXCEPTION CLASS
@@ -79,142 +226,11 @@ class SmarterErrorOld(Exception):
         print(traceback.format_exc())
         self.msg = msg
 
-
 #------------------------------------------------------
 # PROTOCOL CLASS
 #------------------------------------------------------
 
-
 class SmarterProtocol:
-
-
-    #------------------------------------------------------
-    # LEGACY
-    #------------------------------------------------------
-
-
-    legacyPort       = 2000
-
-    legacyCommandHandshake    = "HELLOKETTLE\n"
-    legacyResponseHandshake    = "HELLOAPP"
-
-    # Command messages
-    legacyCommandStatus       = "get sys status\n"
-    legacyCommandHeat         = "set sys output 0x4\n"
-    legacyCommand65c          = "set sys output 0x200\n"
-    legacyCommand80c          = "set sys output 0x4000\n"
-    legacyCommand95c          = "set sys output 0x2\n"
-    legacyCommand100c         = "set sys output 0x80\n"
-    legacyCommandWarm5m       = "set sys output 0x8005\n"
-    legacyCommandWarm10m      = "set sys output 0x8010\n"
-    legacyCommandWarm20m      = "set sys output 0x8020\n"
-    legacyCommandWarm         = "set sys output 0x8\n"
-    legacyCommandStop         = "set sys output 0x0\n"
-
-    # Command text
-    legacyTextHeat            = "Start heating water"
-    legacyTextStop            = "Stop heating water"
-    legacyTextStatus          = "Kettle status"
-
-    # Shared between status and command
-    legacyText100c            = "100ºC selected"
-    legacyText95c             = "95ºC selected"
-    legacyText80c             = "80ºC selected"
-    legacyText65c             = "65ºC selected"
-    legacyTextWarm            = "Keep water warm" # for 30 minutes???
-    legacyTextWarm5m          = "Keep water warm timer is set to 5 minutes"
-    legacyTextWarm10m         = "Keep water warm timer is set to 10 minutes"
-    legacyTextWarm20m         = "Keep water warm timer is set to 20 minutes"
-
-    # Status text
-    legacyTextHeating         = "Heating water"
-    legacyTextReady           = "Ready"
-    legacyTextHeated          = "Water heated"
-    legacyTextOverheat        = "Kettle overheated"
-    legacyTextKettleRemoved   = "Kettle removed"
-    legacyTextWarmFinished    = "Keep water warm finished"
-
-    # Status messages
-    legacyStatus100c          = "sys status 0x100"
-    legacyStatus95c           = "sys status 0x95"
-    legacyStatus80c           = "sys status 0x80"
-    legacyStatus65c           = "sys status 0x65"
-    legacyStatusWarm          = "sys status 0x11"
-    legacyStatusWarmFinished  = "sys status 0x10"
-    legacyStatusHeating       = "sys status 0x5"
-    legacyStatusReady         = "sys status 0x0"
-    legacyStatusWarm5m        = "sys status 0x8005"
-    legacyStatusWarm10m       = "sys status 0x8010"
-    legacyStatusWarm20m       = "sys status 0x8020"
-    legacyStatusHeated        = "sys status 0x3"
-    legacyStatusOverheat      = "sys status 0x2"
-    legacyStatusKettleRemoved = "sys status 0x1"
-    
-    responseStatus         = "sys status key="
-
-
-    def string_responseStatus(self,status):
-
-        def is_set(x, n):
-            return x & 2**n != 0
-
-        if len(self.responseStatus) == len(status):
-            return self.legacyTextReady
-
-        statusdata = self.raw_to_number(status[len(self.responeStatus)])
-
-        statustext = ""
-        if is_set(statusdata,0):
-            statustext += self.legacyTextHeating + " "
-        if is_set(statusdata,1):
-            statustext += self.legacyTextWarm + " "
-        if is_set(statusdata,2):
-            statustext += self.legacyText65c + " "
-        if is_set(statusdata,3):
-            statustext += self.legacyText80c + " "
-        if is_set(statusdata,4):
-            statustext += self.legacyText95c + " "
-        if is_set(statusdata,5):
-            statustext += self.legacyText100c + " "
-        if is_set(statusdata,6):
-            return "Unknown kettle status 6! Help! Please post an issues on GitHub" + str([status]) + " "
-        if is_set(statusdata,7):
-            return "Unknown kettle status 7! Help! Please post an issues on GitHub" + str([status]) + " "
-        return statustext.strip()
-
-    def string_status(self,status):
-        if status[0:len(self.responseStatus)] == self.responseStatus:
-            return self.string_responseStatus(status)
-        elif status == self.legacyStatus100c:
-            return self.legacyText100c
-        elif status == self.legacyStatus95c:
-            return self.legacyText95c
-        elif status == self.legacyStatus80c:
-            return self.legacyText80c
-        elif status == self.legacyStatus65c:
-            return self.legacyText65c
-        elif status == self.legacyStatusWarm:
-            return self.legacyTextWarm
-        elif status == self.legacyStatusWarmFinished:
-            return self.legacyTextWarmFinished
-        elif status == self.legacyStatusHeating:
-            return self.legacyTextHeating
-        elif status == self.legacyStatusReady:
-            return self.legacyTextReady
-        elif status == self.legacyStatusWarm5m:
-            return self.legacyTextWarm5m
-        elif status == self.legacyStatusWarm10m:
-            return self.legacyTextWarm10m
-        elif status == self.legacyStatusWarm20m:
-            return self.legacyTextWarm20m
-        elif status == self.legacyStatusHeated:
-            return self.legacyTextHeated
-        elif status == self.legacyStatusOverheat:
-            return self.legacyTextOverheat
-        elif status == self.legacyStatusKettleRemoved:
-            return self.legacyTextKettleRemoved
-        else:
-            return "Unknown status! Help! Please post an issues on GitHub" + str([status])
 
     #------------------------------------------------------
     # DEFAULT CONSTANTS
@@ -2486,3 +2502,4 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
                """
 
 Smarter = SmarterProtocol()
+SmarterLegacy = SmarterProtocolLegacy()
