@@ -20,7 +20,8 @@ installer:
 	@copy LICENSE distro\win
 	@"C:\Program Files (x86)\NSIS\makensis.exe" distro\win\ibrew.nsi
 	@mkdir release
-	@move distro\win\iBrew.exe release
+	@copy distro\win\iBrew.exe release
+	@del distro\win\iBrew.exe 
 
 buildwin:
 	@echo iBrew: Building Windows package    
