@@ -27,7 +27,7 @@ buildwin:
 	@xcopy /S web dist\ibrew\web
 	@copy /Y dist\ibrewlegacy\*.* dist\ibrew
 	@copy /Y dist\ibrewui\*.* dist\ibrew
-  	@copy LICENSE dist\ibrew
+	@copy LICENSE dist\ibrew
 
 readme:
 	@python ibrew license > LICENSE
