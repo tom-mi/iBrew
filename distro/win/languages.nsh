@@ -16,5 +16,5 @@ LangString app_FinishPageText ${LANG_ENGLISH} \
 		"Installation complete!"
 LangString app_FinishPageLink ${LANG_ENGLISH} "iBrew development site"
 
-LangString LicenseFile ${LANG_ENGLISH} 		 "license.txt"  ;;these two should be the same 
-LicenseLangString LicenseRTF ${LANG_ENGLISH} "license.txt" 
+LangString LicenseFile ${LANG_ENGLISH} 		 "LICENSE"  ;;these two should be the same
+LicenseLangString LicenseRTF ${LANG_ENGLISH} "LICENSE"

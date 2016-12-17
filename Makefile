@@ -14,7 +14,10 @@ all:
 
 mac:	cleanlin buildmac cleanmac diskimage
 
-win:	cleanwin buildwin
+win:	cleanwin buildwin installer
+
+installer:
+	@echo !define RELEASE_STR v5.0.0.1 > distro\win\release.nsh
 
 buildwin:
 	@echo iBrew: Building Windows package    
