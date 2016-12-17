@@ -100,6 +100,7 @@ cleanmac:
 	@rm -rf test
 	@rm -rf dist
 	@rm -rf release
+	@rm -rf dmg
 	
 buildmac:
 	@echo iBrew: Building MacOS package
@@ -132,7 +133,7 @@ diskimage:
 	
 	##generate raw disk image
 	rm -f iBrew.dmg
-	hdiutil create -srcfolder dmg/iBrew -volname iBrew-0.5.0 -format UDRW -ov raw-iBrew.dmg	
+	hdiutil create -srcfolder dmg/iBrew -volname iBrew-0.5.0 -format UDRW -ov dist/raw-iBrew.dmg	
 
 	#remove working files and folders
 	rm -rf dmg/iBrew
@@ -141,7 +142,7 @@ diskimage:
 	
 	# remount it so we can set the volume icon properly
 	mkdir -p dmg/iBrew
-	hdiutil attach raw-iBrew.dmg -mountpoint dmg/iBrew
+	hdiutil attach dist/raw-iBrew.dmg -mountpoint dmg/iBrew
 	SetFile -a C dmg/iBrew
 	
 	hdiutil detach dmg/iBrew
@@ -149,10 +150,10 @@ diskimage:
 	
 	# convert the raw image
 	rm -f iBrew.dmg
-	hdiutil convert raw-iBrew.dmg -format UDZO -o iBrew.dmg
-	rm -f raw-iBrew.dmg
+	hdiutil convert dist/raw-iBrew.dmg -format UDZO -o dist/iBrew.dmg
+	rm -f dist/raw-iBrew.dmg
 	
 	#move finished product to release folder
 	mkdir -p release
-	mv iBrew.dmg release
+	mv dist/iBrew.dmg release
 	
