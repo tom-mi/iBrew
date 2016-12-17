@@ -305,6 +305,12 @@ class SmarterClient:
         self.disconnect()
     
 
+    @_threadsafe_function
+    def sethost(self,host):
+        self.host = host
+        self.__read_block()
+        self.__read_triggers()
+        self.__write_stats()
 
     #------------------------------------------------------
     # STATS
@@ -1012,8 +1018,8 @@ class SmarterClient:
         self.__write_stats()
         
         if self.host == "":
-            self.host = Smarter.DirectHost
-
+            self.sethost(Smarter.DirectHost)
+        
         if self.host == Smarter.DirectHost:
             if platform.system() == "Darwin" or platform.system() == "Linux":
                 # yeah, it only accept one wifi...
@@ -3173,22 +3179,13 @@ class SmarterClient:
         
         self.isCoffee = False
         self.isKettle = False
-        
         self.deviceId = Smarter.raw_to_number(message[1])
         self.version = Smarter.raw_to_number(message[2])
 
         if self.deviceId == Smarter.DeviceKettle:
-            self.isKettle = True
-            self.__read_triggers()
-            self.__read_block()
-            self.device = Smarter.device_to_string(self.deviceId)
-        
+            self.switch_kettle_device()
         if self.deviceId == Smarter.DeviceCoffee:
-            self.isCoffee = True
-            self.__read_triggers()
-            self.__read_block()
-            self.device = Smarter.device_to_string(self.deviceId)
-
+            self.switch_coffee_device()
 
 
     def __decode_RelayInfo(self,message):
@@ -3331,6 +3328,7 @@ class SmarterClient:
                 self.version = 19
             self.isKettle = True
             self.isCoffee = False
+            self.__write_stats()
             self.__read_triggers()
             self.__read_block()
             self.deviceId = Smarter.DeviceKettle
@@ -3344,6 +3342,7 @@ class SmarterClient:
                 self.version = 22
             self.isKettle = False
             self.isCoffee = True
+            self.__write_stats()
             self.__read_triggers()
             self.__read_block()
             self.deviceId = Smarter.DeviceCoffee

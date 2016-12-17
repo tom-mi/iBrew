@@ -1033,7 +1033,7 @@ class iBrewWeb(tornado.web.Application):
                     client.version = device[2]
                     client.dump = self.dump
                     client.dump_status = self.dump
-                    client.host = device[0]
+                    client.sethost(device[0])
                     client.connect()
                     self.clients[device[0]] = client
                     #client.device_all_settings()
@@ -1059,7 +1059,7 @@ class iBrewWeb(tornado.web.Application):
                         logging.info("[" + ip + "] Adding Web Device")
                     client = SmarterClient(AppFolders.settings() + "/")
                     client.events = self.events
-                    client.host = self.host
+                    client.sethost(self.host)
                     client.dump = self.dump
                     client.dump_status = self.dump
                     client.connect()
