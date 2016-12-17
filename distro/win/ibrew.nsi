@@ -33,10 +33,10 @@
 ;--------------------------------
 ;Interface Configuration
 
-	!define MUI_ICON "../../resources/favicon.ico"
-	!define MUI_WELCOMEFINISHPAGE_BITMAP "side_graphic.bmp"  ;shoukd be 164x314
+	!define MUI_ICON "..\..\resources\favicon.ico"
+	!define MUI_WELCOMEFINISHPAGE_BITMAP "side.bmp"  ;shoukd be 164x314
 	!define MUI_HEADERIMAGE
-	!define MUI_HEADERIMAGE_BITMAP "top_graphic.bmp" ; ;should be 150x57
+	!define MUI_HEADERIMAGE_BITMAP "top.bmp" ; ;should be 150x57
 	;!define MUI_ABORTWARNING
 	!define MUI_WELCOMEPAGE_TITLE $(app_WelcomePageTitle)
 	!define MUI_WELCOMEPAGE_TEXT $(app_WelcomePageText) 
@@ -97,7 +97,7 @@
 Section "Install Section" SecInstall
 
 	SetOutPath "$INSTDIR"
-	File /r ..\..\dist\*
+	File /r ..\..\dist\ibrew\*
 	;File ..\..\release_notes.txt
 
 	;Store installation folder
@@ -127,7 +127,7 @@ Section "Install Section" SecInstall
 
 	!insertmacro MUI_STARTMENU_WRITE_END
 
-	CreateShortCut "$DESKTOP\iBrew.lnk" "$INSTDIR\iBrew.exe" ""
+	CreateShortCut "$DESKTOP\iBrew.lnk" "$INSTDIR\ibrewui.exe" ""
 
 	
 SectionEnd
