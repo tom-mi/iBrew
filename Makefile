@@ -1,16 +1,15 @@
 all:
 	@echo "iBrew setup (windows, linux & mac)"
 	@echo use \"make setup\" to fetch requirements
-	@echo use \"make setupmac\" to fetch mac requirements
-	@echo use \"make setupwin\" to fetch windows requirements
 	@echo use \"make cleanlin\" to clean temp files
 	@echo use \"make cleanmac\" to clean temp files
 	@echo use \"make cleanwin\" to clean temp files
+	@echo use \"make setupmac\" to fetch additional mac requirements for release
+	@echo use \"make setupwin\" to fetch additional windows requirements for release
 	@echo use \"make mac\" to make a mac release
-	@echo use \"make readme\" to create a new README.md
-	@echo use \"make bonjour\" to download bonjour
-	@echo use \"make pyinstaller\" to download already patched osx pyinstaller
 	@echo use \"make win\" to make a windows release
+	@echo use \"make readme\" to create a new README.md 
+	@echo use \"make pyinstaller\" to download already patched osx pyinstaller
 
 mac:	cleanlin buildmac cleanmac diskimage
 
@@ -22,8 +21,6 @@ installer:
 	@"C:\Program Files (x86)\NSIS\makensis.exe" distro\win\ibrew.nsi
 	@mkdir release
 	@move distro\win\iBrew.exe release
-
-
 
 buildwin:
 	@echo iBrew: Building Windows package    
@@ -61,15 +58,27 @@ cleanlin:
 	@rm -rf build
 	@rm -rf test
 
-setupwin:
+setuplin: setup bonjourwin
+
+setupwin: setup packwin pyinstaller bonjourwin 
+
+packwin:
 	@pip install win-inet-pton
 
-setupmac:
+setupmac: setup packmac bonjour pyinstaller
+
+packmac:
 	@pip install -q -r distro/mac/requirements.txt
 
 bonjour:
 	@curl https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/pybonjour/pybonjour-1.1.1.zip > pybonjour-1.1.1.zip
-	@explorer.exe https://dl.uxnr.de/build/curl/curl_winssl_msys2_mingw32_stc/curl-7.51.0/curl-7.51.0.zip
+	@pip install pybonjour-1.1.1.zip
+	@rm pybonjour-1.1.1.zip
+
+bonjourwin:
+	@powershell -command "& { iwr https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/pybonjour/pybonjour-1.1.1.zip -OutFile pybonjour-1.1.1.zip }"
+	@pip install pybonjour-1.1.1.zip
+	@del pybonjour-1.1.1.zip
 
 pyinstaller:
 	@git clone https://github.com/Tristan79/pyinstaller.git

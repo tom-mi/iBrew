@@ -1,4 +1,3 @@
-*.dmg
 
 *.zip
 
@@ -27,3 +26,5 @@ test/*
 distro/win/release.nsh
 
 distro/win/LICENSE
+
+*.dmg
