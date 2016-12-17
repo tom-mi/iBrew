@@ -5,10 +5,10 @@
   
 LangString app_AppName ${LANG_ENGLISH} "iBrew"
 LangString app_WelcomePageTitle ${LANG_ENGLISH} \
-		"iBrew: The conundrum struggle!"
+		"iBrew"
 LangString app_WelcomePageText ${LANG_ENGLISH} \
-        "The conundrum struggle!${RELEASE_STR}$\n$\r$\n$\r\
-          Take a sip! $\n$\r $\n$\r"
+        "The conundrum struggle!$\n$\r${RELEASE_STR}$\n$\r$\n$\r\
+        If tea is the drink of love then iBrew on!$\n$\r $\n$\r"
 LangString app_LicensePageTextTop ${LANG_ENGLISH} "iBrew License Agreement"
 LangString app_FinishPageTitle ${LANG_ENGLISH} \
 		"iBrew: The conundrum struggle!"
