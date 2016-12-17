@@ -51,7 +51,16 @@
 	;!define MUI_FINISHPAGE_SHOWREADME "release_notes.txt"
 	;!define MUI_FINISHPAGE_SHOWREADME_TEXT "Show Release Notes"
 	;!define MUI_FINISHPAGE_SHOWREADME_NOTCHECKED
-	
+
+    Function finishpageaction
+    CreateShortCut "$DESKTOP\iBrew.lnk" "$INSTDIR\ibrewui.exe" ""
+    FunctionEnd
+
+    !define MUI_FINISHPAGE_SHOWREADME ""
+    !define MUI_FINISHPAGE_SHOWREADME_NOTCHECKED
+    !define MUI_FINISHPAGE_SHOWREADME_TEXT "Create Desktop Shortcut"
+    !define MUI_FINISHPAGE_SHOWREADME_FUNCTION finishpageaction
+
 	!define MUI_FINISHPAGE_TITLE $(app_FinishPageTitle)
 	!define MUI_FINISHPAGE_TEXT $(app_FinishPageText)
 
@@ -63,6 +72,8 @@
 	!define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\iBrew"
 	!define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "Start Menu Folder"
 	!define MUI_STARTMENUPAGE_DEFAULTFOLDER "iBrew"
+
+
     
 	;--------------------------------
 ;Pages
@@ -128,7 +139,7 @@ Section "Install Section" SecInstall
 
 	!insertmacro MUI_STARTMENU_WRITE_END
 
-	CreateShortCut "$DESKTOP\iBrew.lnk" "$INSTDIR\ibrewui.exe" ""
+	;CreateShortCut "$DESKTOP\iBrew.lnk" "$INSTDIR\ibrewui.exe" ""
 
 	
 SectionEnd
