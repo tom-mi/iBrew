@@ -1104,7 +1104,7 @@ class iBrewWeb(tornado.web.Application):
             pass
         try:
             for ip in self.clients:
-                self.clients[ip].stop()
+                self.clients[ip].trash()
         except Exception:
             raise SmarterError(WebServerStopMonitor,"Web Server: Could not stop monitors")
             

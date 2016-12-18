@@ -75,10 +75,11 @@ It features!
 __For smarthome fans!__
  * Command Line
  * HomeKit support 
+ * Relay
+ * Simulator
 
 #### Usefull links
-Check out [ikettle-brute-forcer](https://github.com/C0smos/ikettle-brute-forcer) and the iKettle simulator [kettle-fake](https://github.com/jerrosenberg/kettle-fake)
-
+Check out [ikettle-brute-forcer](https://github.com/C0smos/ikettle-brute-forcer)
         
 ### iBrew in the Media
 [The iKettle, the Eleven-Hour Struggle to Make a Cup of Tea, and Why It Was All About Data, Analytics and Connecting Things Together](https://medium.com/mark-rittman/the-story-behind-the-ikettle-the-eleven-hour-struggle-to-make-a-cup-of-tea-and-why-it-was-all-769144d12d7#.h62foolse) 
@@ -496,6 +497,8 @@ Commands
       10  Keep water warm timer is set to 10 minutes
       20  Keep water warm timer is set to 20 minutes
   status  Kettle status
+   relay  Relay iKettle
+simulate  Simulate iKettle
 
     host  ip or host address of the iKettle
 

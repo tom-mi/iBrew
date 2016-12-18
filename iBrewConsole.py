@@ -682,10 +682,10 @@ class iBrewConsole:
                                                 else:
                                                     connection = str.split(arguments[0],':')
                                                     if self.is_valid_ipv4_address(connection[0]) or self.is_valid_ipv6_address(connection[0]):
-                                                        self.client.serverHost = connection[0]
+                                                        self.client.relayHost = connection[0]
                                                     try:
                                                         p = int(connection[1])
-                                                        self.client.serverPort = p
+                                                        self.client.relayPort = p
                                                     except ValueError:
                                                         pass
                                                     except IndexError:
@@ -1003,7 +1003,6 @@ class iBrewConsole:
         
         try:
             self.client = SmarterInterface(AppFolders.settings() + "/")
-            
             self.client.fast = True
             try:
                 self.execute(arguments)
@@ -1026,8 +1025,9 @@ class iBrewConsole:
                     logging.debug(str(e))
         except KeyboardInterrupt:
             pass
-        self.client.disconnect()
-        self.client.stop()
+        
+        #if self.client is not None:
+        self.client.trash()
                 
         
                      

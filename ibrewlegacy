@@ -109,9 +109,7 @@ client = SmarterInterfaceLegacy(ip)
 client.dump = True
 
 if action == "simulate":
-    client.simulation = True
-    client.connect()
-    client.relay_start()
+    client.simulate()
     monitor()
 else:
     try:
