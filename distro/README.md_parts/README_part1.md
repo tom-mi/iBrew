@@ -1,4 +1,4 @@
-# iBrew: The conundrum struggle!
+# iBrew: The Dream Tea!
 
 iKettle, [iKettle 2.0](http://smarter.am/ikettle) and [Smarter Coffee](http://smarter.am/coffee) Interface
 

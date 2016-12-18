@@ -25,14 +25,12 @@ installer:
 
 buildwin:
 	@echo iBrew: Building Windows package    
-	@pyinstaller -c --version-file distro\win\version.py -i resources\favicon.ico ibrewlegacy
 	@pyinstaller -c --version-file distro\win\version.py -i resources\favicon.ico ibrew
 	@pyinstaller -w --version-file distro\win\version.py -i resources\favicon.ico ibrewui
 	@mkdir dist\ibrew\resources
 	@mkdir dist\ibrew\web
 	@xcopy /S resources dist\ibrew\resources
 	@xcopy /S web dist\ibrew\web
-	@copy /Y dist\ibrewlegacy\*.* dist\ibrew
 	@copy /Y dist\ibrewui\*.* dist\ibrew
 	@copy LICENSE dist\ibrew
 
@@ -108,15 +106,12 @@ buildmac:
 	@echo Please install upx with: brew install upx
 	@pyinstaller ibrewui -s -w -n iBrew --noupx
 	@pyinstaller ibrew -s -w -n iBrewConsole --noupx
-	@pyinstaller ibrewlegacy -s -w -n iBrewLegacyConsole --noupx
 	@cp -a resources dist/iBrew.app/Contents/MacOS
 	@cp -a web dist/iBrew.app/Contents/MacOS
 	@cp distro/mac/Info.plist dist/iBrew.app/Contents/
 	@mv dist/iBrewConsole.app/Contents/MacOS/iBrewConsole dist/iBrew.app/Contents/MacOS
-	@mv dist/iBrewLegacyConsole.app/Contents/MacOS/iBrewLegacyConsole dist/iBrew.app/Contents/MacOS
 	@cp distro/mac/iBrew.icns dist/iBrew.app/Contents/Resources/icon-windowed.icns
 	@rm -rf dist/iBrewConsole.app
-	@rm -rf dist/iBrewConsoleLegacy.app
 	@mkdir -p test
 	@mv dist/iBrew.app test
 	# @rm -rf dist

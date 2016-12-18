@@ -26,13 +26,13 @@ import traceback
 #------------------------------------------------------
 # iBrew
 #
-# Console interface to iKettle 2.0 & Smarter Coffee Appliances
+# Console interface to Smarter Appliances
 #
 # https://github.com/Tristan79/iBrew
 #
 # Copyright © 2016-2017 Tristan (@monkeycat.nl). All Rights Reserved
 #
-# The conundrum struggle
+# The Dream Tea
 #------------------------------------------------------
 
 
@@ -42,9 +42,9 @@ import traceback
 #------------------------------------------------------
 
 
-iBrewApp          = "iBrew: iKettle 2.0 & Smarter Coffee Interface"
-iBrewInfo         = "iBrew: The conundrum struggle © 2016-2017 Tristan (@monkeycat.nl). All Rights Reserved"
-iBrewContribute   = "Please DONATE! Food, jokes, hugs and fun toys! To someone who deserves it!\n\nContribute any discoveries on https://github.com/Tristan79/iBrew/issues"
+iBrewApp          = "iBrew - Smarter Appliances Interface"
+iBrewInfo         = "The Dream Tea © 2017 Tristan Crispijn (tristan@monkeycat.nl). All Rights Reserved"
+iBrewContribute   = "Please DONATE! Food, jokes, hugs and fun toys! To your favaroite cat!\n\nContribute any discoveries on https://github.com/Tristan79/iBrew/issues"
 
 class iBrewConsole:
 
@@ -343,8 +343,73 @@ class iBrewConsole:
                     command = arguments[0].lower()
                     arguments = arguments[1:]
                     numarg -= 1
+        
+            self.haveHost = False
+            
+            if numarg > 0:
+                # FIX
+                if command == "legacy":
+                    self.client.port = SmarterLegacy.Port
+            
+                if arguments[numarg-1] == "simulation":
+                    self.client.setHost("simulation")
+                else:
+                    connection = str.split(arguments[numarg-1],':')
+                    if self.is_valid_ipv4_address(connection[0]) or self.is_valid_ipv6_address(connection[0]):
+                        self.client.setHost(connection[0])
+                        try:
+                            p = int(connection[1])
+                            self.client.port = p
+                        except ValueError:
+                            pass
+                        except IndexError:
+                            pass
+                        self.haveHost = True
+                        numarg -= 1
+                        arguments = arguments[0:numarg]
+                        self.client.disconnect()
+            
+            if command == "legacy":
+                if numarg == 0:
+                    self.legacy()
+                    self.legacy_commands()
+                    return
+                if numarg >= 1:
+                    if arguments[0] == "simulate":
+                        self.client.iKettle.simulate()
+                        self.monitor()
+                        return
+                        
+                    if arguments[0] == "relay":
+                        if numarg >= 2:
+                            if arguments[1] == "stop":
+                                self.client.iKettle.relay_stop()
+                                return
+                            connection = str.split(arguments[1],':')
+                            if self.is_valid_ipv4_address(connection[1]) or self.is_valid_ipv6_address(connection[0]):
+                                self.client.iKettle.relayHost = connection[1]
+                            try:
+                                p = int(connection[1])
+                                self.client.iKettle.relayPort = p
+                            except ValueError:
+                                pass
+                            except IndexError:
+                                pass
+                        self.client.iKettle.relay_start()
+                        self.monitor()
                     
-                    
+                    if self.client.isCoffee:
+                        logging.warning("iBrew: iKettle != Coffee Machine")
+                    self.client.iKettle.dump = self.client.dump
+                    self.client.iKettle.host = self.client.host
+                    self.client.iKettle.port = self.client.port
+                    self.client.iKettle.normal()
+                    r = self.client.iKettle.send(SmarterLegacy.string_to_command(arguments[0]))
+                    for i in r:
+                        print "iBrew Legacy: " + SmarterLegacy.string_response(i)
+                    return
+
+
             if command == "shout":
                 if self.console or numarg == 0:
                     print "iBrew: Can't hear you. Drinking tea at a dinner on the other side of the universe!"
@@ -361,7 +426,6 @@ class iBrewConsole:
                     print "iBrew: \'shout\' not available in the console"
 
 
-
             if command == "slow":
                 if self.console or numarg == 0:
                     print "iBrew: As you command, but it can take a while!"
@@ -374,7 +438,6 @@ class iBrewConsole:
                     self.client.fast   = False
                 else:
                     print "iBrew: \'kettle\' not available in the console"
-
 
 
             if command == "coffee":
@@ -466,28 +529,6 @@ class iBrewConsole:
                     numarg = 1
                     arguments = ["in:GOD,out:14,out:relay"]
 
-            self.haveHost = False
-            
-            if numarg > 0:
-                if arguments[numarg-1] == "simulation":
-                    self.client.setHost("simulation")
-                else:
-                    connection = str.split(arguments[numarg-1],':')
-                    if self.is_valid_ipv4_address(connection[0]) or self.is_valid_ipv6_address(connection[0]):
-                        self.client.setHost(connection[0])
-                        try:
-                            p = int(connection[1])
-                            self.client.port = p
-                        except ValueError:
-                            pass
-                        except IndexError:
-                            pass
-                        self.haveHost = True
-                        numarg -= 1
-                        arguments = arguments[0:numarg]
-                        self.client.disconnect()
-                        # still wong...
-              
             if command == "console" or command == "connect":
                 self.client.disconnect()
                 
@@ -495,7 +536,7 @@ class iBrewConsole:
                 self.client.disconnect()
                 return
 
-            if command == "connect" or command == "console" or ((command == "relay" or command == "sweep" or command == "events" or command == "monitor" or command == "web") and not self.console):
+            if command == "connect" or command == "console" or ((command == "relay" or command == "sweep" or command == "events" or command == "monitor" or command == "server") and not self.console):
                 self.app_info()
                 self.joke()
 
@@ -503,7 +544,7 @@ class iBrewConsole:
             if command == "monitor" or command == "events":
                 self.client.fast = False
 
-            if (command == "relay" and not self.console) or ((not self.client.connected or self.haveHost) and command != "help" and command != "?" and command != "list" and command != "message" and command != "usage" and command != "commands" and command != "web" and command != "joke" and command != "license" and command != "protocol" and command != "structure" and command != "notes" and command != "groups" and command != "group" and command != "examples" and command != "states" and command != "triggers" and command != "messages" and command != "rules" and command != "rule" and command != "trigger"):
+            if (command == "relay" and not self.console) or ((not self.client.connected or self.haveHost) and command != "help" and command != "?" and command != "list" and command != "message" and command != "usage" and command != "commands" and command != "server" and command != "joke" and command != "license" and command != "protocol" and command != "structure" and command != "notes" and command != "groups" and command != "group" and command != "examples" and command != "states" and command != "triggers" and command != "messages" and command != "rules" and command != "rule"  and command != "legacy"  and command != "trigger"):
 
 
                 if not self.haveHost and command != "relay":
@@ -737,7 +778,7 @@ class iBrewConsole:
                                             self.joke()
                                             print
             elif command == "stats":        self.client.print_stats()
-            elif command == "web":
+            elif command == "server":
                                             if not self.console:
                                                 if numarg == 0:
                                                     self.web()
@@ -1062,10 +1103,11 @@ class iBrewConsole:
 
     def usage(self):
         print
-        print "  iBrew Web Server"
+        print "  iBrew Server"
+        print "  ________________"
         print
-        print "  Usage: ibrew (dump) (events) (fahrenheid) web (port) (rules) (modifiers) (host(:port))"
-#        print "  Usage: ibrew (energy) (dump) (fahrenheid) web (port) (rules) (modifiers) (host(:port))"
+        print "  Usage: ibrew (dump) (events) (fahrenheid) server (host:(port)) (rules) (host(:port))"
+#        print "  Usage: ibrew (energy) (dump) (fahrenheid) server (host:(port)) (rules) (host(:port))"
         print
      #   print "    energy                 energy saver (stats not possible)"
         print "    dump                   dump message enabled"
@@ -1073,14 +1115,16 @@ class iBrewConsole:
         print "    fahrenheid             use fahrenheid"
         print "    web                    start web interface & rest api"
         print "    port                   optional port number, default 2082"
-        print "    rules                  blocking rules"
-        print "    modifiers              patches"
+        print "    rules                  blocking & patching rules"
         print "    host                   host address of the appliance (format: ip4, ip6, fqdn)"
+        print "    port                   port of appliance, optional, only use if alternative port"
         print
+        self.legacy()
         print
-        print "  iBrew Command Line"
+        print "  iBrew iKettle 2.0 & Smater Coffee Command Line"
+        print "  ______________________________________________"
         print
-        #print "  Usage: ibrew (energy) (dump) (shout|slow) (coffee|kettle) (fahrenheid) [command] (host(:port))"
+        #print "  Usage: ibrew (energy) (dump) (legacy [passthrough|emulate] (host:(port))) (shout|slow) (coffee|kettle) (fahrenheid) [command] (host(:port))"
         print "  Usage: ibrew (dump) (events) (shout|slow) (coffee|kettle) (fahrenheid) [command] (host(:port))"
         print
         print "    dump                   dump message enabled"
@@ -1092,14 +1136,49 @@ class iBrewConsole:
         print "    kettle                 assumes kettle"
         print "    fahrenheid             PARTLY WORKING use fahrenheid"
         print "    command                action to take!"
-        print "    host                   host address of the appliance (format: ip4, ip6, fqdn)"
+        print "    host                   host address of the appliance (format: ip4, ip6, fqdn), only use if detection fails"
+        print "    port                   port of appliance, optional, only use if detection fails"
         print
         print "  If you do not supply a host, it will try to connect to the first detected appliance"
         print "  Thus if you have more then one appliance supply a host (if its not in direct mode)"
         print
 
+    def legacy(self):
+        print
+        print "  iBrew iKettle Legacy Command Line"
+        print "  _________________________________"
+        print
+        print "  Usage: ibrew (dump) legacy command (host(:port))"
+        print
+        print "    command                iKettle command, action to take!"
+        print "    host                   host address of the appliance (format: ip4, ip6, fqdn)"
+        print "    port                   port of appliance, optional, only use if alternative port"
+        print
+
+    def legacy_commands(self):
+        print
+        print "  iKettle Commands"
+        print "    heat                   " + SmarterLegacy.textHeat.lower()
+        print "    stop                   " + SmarterLegacy.textStop.lower()
+        print "    65                     " + SmarterLegacy.textSelect65c.lower()
+        print "    80                     " + SmarterLegacy.textSelect80c.lower()
+        print "    95                     " + SmarterLegacy.textSelect95c.lower()
+        print "    100                    " + SmarterLegacy.textSelect100c.lower()
+        print "    warm                   " + SmarterLegacy.textStartWarm.lower()
+        print "    5                      " + SmarterLegacy.textSelectWarm5m.lower()
+        print "    10                     " + SmarterLegacy.textSelectWarm10m.lower()
+        print "    20                     " + SmarterLegacy.textSelectWarm20m.lower()
+        print "    status                 " + SmarterLegacy.textGetStatus
+        print
+        print "    simulate               start kettle simulation"
+        print "    relay ((ip:)port)      start relay"
+        print
+    
     def commands(self):
         print
+        print "  Commands"
+        print "  ________"
+        self.legacy_commands()
         print "  iKettle 2.0 & Smarter Coffee Commands"
         print "    default                set default settings"
         print "    info                   appliance info"
@@ -1124,7 +1203,7 @@ class iBrewConsole:
         print "    settings [temperature] [keepwarm] [formula] [formulatemperature] store kettle user settings"
         print "    tea [green,white,oelong,black] warms water for tea 65°C,80°C,90°C,100°C"
         print
-        print "  Smarter Coffee  Commands"
+        print "  Smarter Coffee Commands"
         print "    beans                  use beans for coffee"
         print "    brew (cups (hotplate (grind (strength)))) brew coffee"
         print "    brew default           brew coffee with stored user default settings"
@@ -1210,8 +1289,6 @@ class iBrewConsole:
         print "    simulate               start kettle (or coffee simulation)"
         print "    sweep (id)             [developer only] try (all or start with id) unknown command codes"
         print
-
-
         """
         print "    version       [00..FF]               override appliance firmware version"
         print "    heater        disable                coffee machine or kettle heater disabled"

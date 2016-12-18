@@ -13,13 +13,13 @@ from operator import itemgetter
 #------------------------------------------------------
 # SMARTER PROTOCOL INTERFACE
 #
-# Python protocol interface to iKettle 2.0 & Smarter Coffee Appliances
+# Python protocol interface to Smarter Appliances
 #
 # https://github.com/Tristan79/iBrew
 #
 # Copyright © 2016-2017 Tristan (@monkeycat.nl). All Rights Reserved
 #
-# The conundrum struggle
+# The Dream Tea
 #------------------------------------------------------
 
 # In the end I should have made classes of the types... split the simulator, firewall, etc,
@@ -53,19 +53,29 @@ class SmarterProtocolLegacy:
 
     # Command text
     textHeat            = "Start heating water"
+    textStartWarm         = "Start keep water warm"
     textStop            = "Stop heating water"
     textStatus          = "Status"
     textHandshake       = "Handshake"
 
     # Shared between status and command
-    text100c            = u"100°C selected"
-    text95c             = u"95°C selected"
-    text80c             = u"80°C selected"
-    text65c             = u"65°C selected"
+    text100c            = "100°C selected"
+    text95c             = "95°C selected"
+    text80c             = "80°C selected"
+    text65c             = "65°C selected"
     textWarm            = "Keep water warm" # for 30 minutes???
     textWarm5m          = "Keep water warm timer is set to 5 minutes"
     textWarm10m         = "Keep water warm timer is set to 10 minutes"
     textWarm20m         = "Keep water warm timer is set to 20 minutes"
+
+    textGetStatus          = "Get status"
+    textSelect100c      = "Select 100°C"
+    textSelect95c       = "Select 95°C"
+    textSelect80c       = "Select 80°C"
+    textSelect65c       = "Select 65°C"
+    textSelectWarm5m    = "Select keep water warm timer is set to 5 minutes"
+    textSelectWarm10m   = "Select keep water warm timer is set to 10 minutes"
+    textSelectWarm20m   = "Select keep water warm timer is set to 20 minutes"
 
     # Status text
     textHeating         = "Heating water"
@@ -198,16 +208,16 @@ class SmarterProtocolLegacy:
         action = string.lower()
         if action == "stop":                        return SmarterLegacy.textStop
         elif action == "heat" or action == "start": return SmarterLegacy.textHeat
-        elif action == "status":                    return SmarterLegacy.textStatus
-        elif action == "65":                        return SmarterLegacy.text65c
-        elif action == "80":                        return SmarterLegacy.text80c
-        elif action == "95":                        return SmarterLegacy.text95c
+        elif action == "status":                    return SmarterLegacy.textGetStatus
+        elif action == "65":                        return SmarterLegacy.textSelect65c
+        elif action == "80":                        return SmarterLegacy.textSelect80c
+        elif action == "95":                        return SmarterLegacy.textSelect95c
         elif action == "handshake":                 return SmarterLegacy.textHandshake
         elif action == "100":                       return SmarterLegacy.text100c
-        elif action == "warm":                      return SmarterLegacy.textWarm
-        elif action == "5":                         return SmarterLegacy.textWarm5m
-        elif action == "10":                        return SmarterLegacy.textWarm10m
-        elif action == "20":                        return SmarterLegacy.textWarm20m
+        elif action == "warm":                      return SmarterLegacy.textStartWarm
+        elif action == "5":                         return SmarterLegacy.textSelectWarm5m
+        elif action == "10":                        return SmarterLegacy.textSelectWarm10m
+        elif action == "20":                        return SmarterLegacy.textSelectWarm20m
         else:
             raise SmarterErrorOld("Unknown command: (%s)" % action)
 

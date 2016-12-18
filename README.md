@@ -1,4 +1,4 @@
-# iBrew: The conundrum struggle!
+# iBrew: The Dream Tea!
 
 iKettle, [iKettle 2.0](http://smarter.am/ikettle) and [Smarter Coffee](http://smarter.am/coffee) Interface
 
@@ -278,21 +278,33 @@ See the console section for the commands.
  
 ```
 
-  iBrew Web Server
+  iBrew Server
+  ________________
 
-  Usage: ibrew (dump) (events) (fahrenheid) web (port) (rules) (modifiers) (host(:port))
+  Usage: ibrew (dump) (events) (fahrenheid) server (host:(port)) (rules) (host(:port))
 
     dump                   dump message enabled
     events                 enable trigger events (monitor, relay, console)
     fahrenheid             use fahrenheid
     web                    start web interface & rest api
     port                   optional port number, default 2082
-    rules                  blocking rules
-    modifiers              patches
+    rules                  blocking & patching rules
     host                   host address of the appliance (format: ip4, ip6, fqdn)
+    port                   port of appliance, optional, only use if alternative port
 
 
-  iBrew Command Line
+  iBrew iKettle Legacy Command Line
+  _________________________________
+
+  Usage: ibrew (dump) legacy command (host(:port))
+
+    command                iKettle command, action to take!
+    host                   host address of the appliance (format: ip4, ip6, fqdn)
+    port                   port of appliance, optional, only use if alternative port
+
+
+  iBrew iKettle 2.0 & Smater Coffee Command Line
+  ______________________________________________
 
   Usage: ibrew (dump) (events) (shout|slow) (coffee|kettle) (fahrenheid) [command] (host(:port))
 
@@ -304,7 +316,8 @@ See the console section for the commands.
     kettle                 assumes kettle
     fahrenheid             PARTLY WORKING use fahrenheid
     command                action to take!
-    host                   host address of the appliance (format: ip4, ip6, fqdn)
+    host                   host address of the appliance (format: ip4, ip6, fqdn), only use if detection fails
+    port                   port of appliance, optional, only use if detection fails
 
   If you do not supply a host, it will try to connect to the first detected appliance
   Thus if you have more then one appliance supply a host (if its not in direct mode)
@@ -317,6 +330,25 @@ Start the console with the command `iBrew console`. The following commands are a
 you can also use them on the command line as arguments, note that [] are manditory arguments and () are optional arguments.
 
 ```
+
+  Commands
+  ________
+
+  iKettle Commands
+    heat                   start heating water
+    stop                   stop heating water
+    65                     select 65°c
+    80                     select 80°c
+    95                     select 95°c
+    100                    select 100°c
+    warm                   start keep water warm
+    5                      select keep water warm timer is set to 5 minutes
+    10                     select keep water warm timer is set to 10 minutes
+    20                     select keep water warm timer is set to 20 minutes
+    status                 Get status
+
+    simulate               start kettle simulation
+    relay ((ip:)port)      start relay
 
   iKettle 2.0 & Smarter Coffee Commands
     default                set default settings
@@ -342,7 +374,7 @@ you can also use them on the command line as arguments, note that [] are mandito
     settings [temperature] [keepwarm] [formula] [formulatemperature] store kettle user settings
     tea [green,white,oelong,black] warms water for tea 65°C,80°C,90°C,100°C
 
-  Smarter Coffee  Commands
+  Smarter Coffee Commands
     beans                  use beans for coffee
     brew (cups (hotplate (grind (strength)))) brew coffee
     brew default           brew coffee with stored user default settings
@@ -474,33 +506,6 @@ you can also use them on the command line as arguments, note that [] are mandito
     join MyWifi p@ssw0rd     Joins MyWifi wireless network using p@ssw0rd as credential
     settings 100 20 True 75  Set default user settings for the kettle to...
 
-
-```
-
-### iKettle legacy support
-
-It has no event trigger system no rest api, only a command line interface but its good enough for Homebrigde ;-)
-
-```
-
-Usage: ibrewlegacy command host
-
-Commands
-    heat  Start heating water
-    stop  Stop heating water
-      65  65ºC selected
-      80  80ºC selected
-      95  95ºC selected
-     100  100ºC selected
-    warm  Keep water warm
-       5  Keep water warm timer is set to 5 minutes
-      10  Keep water warm timer is set to 10 minutes
-      20  Keep water warm timer is set to 20 minutes
-  status  Kettle status
-   relay  Relay iKettle
-simulate  Simulate iKettle
-
-    host  ip or host address of the iKettle
 
 ```
 
