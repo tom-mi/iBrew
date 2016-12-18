@@ -320,11 +320,11 @@ Fill in your own device host (either IP address or hostname) and location to iBr
 		"platform": "cmdSwitch2",
 		"switches": [{
 			"name": "iKettle",
-			"on_cmd": "/Users/Tristan/Coding/iBrew/ibrewlegacy heat 10.0.0.3",
-			"off_cmd": "/Users/Tristan/Coding/iBrew/ibrewlegacy stop 10.0.0.3",
-			"state_cmd": "/Users/Tristan/Coding/iBrew/ibrewlegacy status 10.0.0.3 | grep 'Heating'"
+			"on_cmd": "/Users/Tristan/Coding/iBrew/ibrew legacy heat 10.0.0.3",
+			"off_cmd": "/Users/Tristan/Coding/iBrew/ibrew legacy stop 10.0.0.3",
+			"state_cmd": "/Users/Tristan/Coding/iBrew/ibrew legacy status 10.0.0.3 | grep 'Heating'"
             "manufacturer": "iBrew",
-            "model": "iKettle Intermezzo",
+            "model": "iBrew iKettle",
             "serial": "44DE1AD79BC",
             "polling": true,
             "interval": 1,
@@ -343,7 +343,7 @@ Fill in your own device host (either IP address or hostname) and location to iBr
 			"off_cmd": "/Users/Tristan/Coding/iBrew/ibrew stop 10.0.0.99",
 			"state_cmd": "/Users/Tristan/Coding/iBrew/ibrew shortstatus 10.0.0.99 | grep 'busy'",
             "manufacturer": "iBrew",
-            "model": "iKettle 2.0 Intermezzo",
+            "model": "iBrew iKettle 2.0",
             "serial": "44DE2AD79BC",
             "polling": true,
             "interval": 1
@@ -361,7 +361,7 @@ Fill in your own device host (either IP address or hostname) and location to iBr
 			"off_cmd": "/Users/Tristan/Coding/iBrew/ibrew stop 10.0.0.89",
 			"state_cmd": "/Users/Tristan/Coding/iBrew/ibrew shortstatus 10.0.0.89 | grep 'busy'",
             "manufacturer": "iBrew",
-            "model": "Smarter Coffee Intermezzo",
+            "model": "iBrew Smarter Coffee",
             "serial": "44DE3AD79BC",
             "polling": true,
             "interval": 1
