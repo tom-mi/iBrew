@@ -348,18 +348,25 @@ class iBrewConsole:
             
             if numarg > 0:
                 # FIX
-                if command == "legacy":
-                    self.client.port = SmarterLegacy.Port
+                #if command == "legacy":
+                #    self.client.port = SmarterLegacy.Port
             
-                if arguments[numarg-1] == "simulation":
+                if arguments[numarg-1] == "simulate":
                     self.client.setHost("simulation")
                 else:
                     connection = str.split(arguments[numarg-1],':')
                     if self.is_valid_ipv4_address(connection[0]) or self.is_valid_ipv6_address(connection[0]):
-                        self.client.setHost(connection[0])
+                        if command == "legacy":
+                            self.client.iKettle.host = connection[0]
+                        
+                        else:
+                            self.client.setHost(connection[0])
                         try:
                             p = int(connection[1])
-                            self.client.port = p
+                            if command == "legacy":
+                                self.client.iKettle.port = p
+                            else:
+                                self.client.port = p
                         except ValueError:
                             pass
                         except IndexError:
@@ -386,6 +393,7 @@ class iBrewConsole:
                                 self.client.iKettle.relay_stop()
                                 return
                             connection = str.split(arguments[1],':')
+                            print connection
                             if self.is_valid_ipv4_address(connection[1]) or self.is_valid_ipv6_address(connection[0]):
                                 self.client.iKettle.relayHost = connection[1]
                             try:

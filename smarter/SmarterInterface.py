@@ -3,6 +3,10 @@
 import socket
 import os
 import sys
+
+reload(sys)  
+sys.setdefaultencoding('utf8')
+
 import random
 import time
 import datetime
@@ -182,6 +186,8 @@ class SmarterInterfaceLegacy():
         self.simulation = True
         self.relay_stop()
         self.disconnect()
+        self.host = "simulation"
+        self.port = SmarterLegacy.Port
         self.relay_start(host,port)
 
 
