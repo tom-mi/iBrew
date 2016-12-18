@@ -113,7 +113,53 @@ class SmarterInterfaceLegacy():
         self.relay_stop()
         self.disconnect()
     
+     #------------------------------------------------------
+    # CLIENT CONNECTION
+    #------------------------------------------------------
+
+
     
+    def __monitor_device(self):
+        if self.dump:
+            logging.info("[" + self.host + "] Monitor Running")
+        
+        monitorCount = 0
+   
+        timeout = 60
+        self.monitor_run = True
+        while self.monitor_run:
+            try:
+                self.__read()
+                monitorCount += 1
+            except Exception, e:
+                print str(e)
+            try:
+                    if monitorCount % timeout == timeout - 9:
+                        self.status()
+ 
+                    if monitorCount % timeout == timeout - 19:
+                        self.status()
+                    
+                    if monitorCount % timeout == timeout - 29:
+                        self.status()
+                    
+                    if monitorCount % timeout == timeout - 39:
+                        self.status()
+                    
+                    if monitorCount % timeout == timeout - 49:
+                        self.status()
+                    
+                    if monitorCount % timeout == timeout - 50:
+                        self.status()
+                
+            except Exception, e:
+                print str(e)
+
+        if self.dump:
+            logging.info("[" + self.host + "] Monitor Stopped")
+ 
+
+ 
     def connect(self,monitor=False):
         self.disconnect()
         if self.simulation and self.dump:
@@ -124,14 +170,26 @@ class SmarterInterfaceLegacy():
             logging.debug("[" + self.host + ":" + str(self.port) + "] Connecting")
         if self.simulation:
             return
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        
         try:
-            self.socket.settimeout(2)
+            self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.socket.settimeout(1)
             self.socket.connect((self.host,self.port))
         except socket.timeout:
             raise SmarterErrorOld("Could not connect to " + self.host + ":" +  str(self.port))
-        self.socket.send(SmarterLegacy.commandHandshake+"\n")
-        data = self.socket.recv(self.__bufferSize)
+        except socket.error:
+            raise SmarterErrorOld("Could not connect to " + self.host + ":" +  str(self.port))
+        
+        try:
+            self.socket.send(SmarterLegacy.commandHandshake+"\n")
+            data = self.socket.recv(self.__bufferSize)
+        except socket.timeout:
+            raise SmarterErrorOld("No kettle found at " + self.host + ":" +  str(self.port))
+            self.disconnect()
+        except socket.error:
+            raise SmarterErrorOld("No kettle found at " + self.host + ":" +  str(self.port))
+            self.disconnect()
+        
         if len(data) < 8:
             self.disconnect()
             raise SmarterErrorOld("No kettle found at " + self.host + ":" +  str(self.port))
@@ -144,10 +202,18 @@ class SmarterInterfaceLegacy():
     def disconnect(self):
         if self.connected and self.dump:
             logging.debug("[" + self.host + ":" + str(self.port) + "] Disconnecting")
-        if self.socket:
-            self.socket.close()
         self.__init()
         self.connected = False
+        if self.socket:
+            self.socket.close()
+
+
+    def __read(self):
+        try:
+            data = self.socket.recv(self.__bufferSize)[:-1]
+        except socket.timeout:
+            data = None
+        return data
 
 
     def send(self,command):
@@ -166,14 +232,17 @@ class SmarterInterfaceLegacy():
             response = []
             try:
                 for i in range(0,3):
-                    data = self.socket.recv(self.__bufferSize)[:-1]
+                    data = self.__read()
+                    if data is None:
+                        break;
                     response += [data]
                     if self.dump:
                         s = SmarterLegacy.string_response(data)
                         logging.debug("[" + self.host + ":" + str(self.port) + "] Received: " + s + " [" + data + "]")
                         self.__decode_response(data)
-            except socket.timeout:
-                pass
+            except Exception, e:
+                print str(e)
+
         return response
     
 
