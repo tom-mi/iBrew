@@ -49,6 +49,25 @@ def usage():
         print "    host  ip or host address of the iKettle"
         print
 
+
+#------------------------------------------------------
+# iBrew MONITOR
+#------------------------------------------------------
+
+def monitor():
+    print "iBrew: Press ctrl-c to stop"
+    while True:
+        try:
+            import time
+            time.sleep(1)
+        except KeyboardInterrupt:
+            break
+        except Exception, e:
+            logging.debug(str(e))
+            break
+    print
+
+
 try:
     action = str(sys.argv[1])
     ip = str(sys.argv[2])
@@ -57,12 +76,42 @@ except IndexError:
     usage()
     sys.exit(2);
 else:
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.DEBUG)
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    
+    log_file = os.path.join(AppFolders.logs(), "ibrewlegacy.log")
+    
+    fh = logging.handlers.RotatingFileHandler(log_file, maxBytes=1048576, backupCount=4, encoding="UTF8")
+    fh.setLevel(logging.DEBUG)
+    fh.setFormatter(formatter)
+    logger.addHandler(fh)
+    
+    # By default only do info level to console
+    sh = logging.StreamHandler(sys.stdout)
+    sh.setLevel(logging.INFO)
+    sh.setFormatter(formatter)
+    logger.addHandler(sh)
+
+    sh.setLevel(logging.DEBUG)
+
     client = SmarterClientLegacy(ip)
+
     client.dump = True
-    try:
-        r = client.send(SmarterLegacy.string_to_command(action))
-        for i in r:
-            print "iBrew Legacy: " + SmarterLegacy.string_status(i)
-    except Exception, e:
-        print "iBrew Legacy: Failed with " + str(e)
-        sys.exit(3);
+
+    if action == "monitor":
+        client.simulation = True
+        client.connect()
+        client.relay_start()
+        monitor()
+    else:
+        try:
+            r = client.send(SmarterLegacy.string_to_command(action))
+            for i in r:
+                print "iBrew Legacy: " + SmarterLegacy.string_response(i)
+        except Exception, e:
+            print "iBrew Legacy: Failed with " + str(e)
+            sys.exit(3);
+
+    client.disconnect()
