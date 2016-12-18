@@ -21,6 +21,8 @@ Commands
       10  Keep water warm timer is set to 10 minutes
       20  Keep water warm timer is set to 20 minutes
   status  Kettle status
+   relay  Relay iKettle
+simulate  Simulate iKettle
 
     host  ip or host address of the iKettle
 
