@@ -27,13 +27,13 @@ from SmarterProtocol import *
 #------------------------------------------------------
 # SMARTER CLIENT INTERFACE
 #
-# Python interface to iKettle 2.0 & Smarter Coffee Appliances
+# Python interface to Smarter Appliances
 #
 # https://github.com/Tristan79/iBrew
 #
 # Copyright © 2016-2017 Tristan (@monkeycat.nl). All Rights Reserved
 #
-# The conundrum struggle
+# The Dream Tea
 #------------------------------------------------------
 
 
@@ -191,10 +191,7 @@ class SmarterInterfaceLegacy():
         self.emulation = True
         self.simulation = False
         self.iKettle2 = iKettle2
-        
-        print "HERE"
-        print iKettle2.version
-        #self.emuOnBase = iKettle2.onBase
+        self.emuOnBase = iKettle2.onBase
         self.emuHeaterOn = iKettle2.heaterOn
         self.emuKeepwarmOn = iKettle2.keepWarmOn
         self.relay_start(host,port)
@@ -1009,16 +1006,16 @@ class SmarterInterface:
         self.__init()
 
         self.iKettle                      = SmarterInterfaceLegacy()
+        """
         self.iKettle.dump                 = True
-        #self.iKettle.bridge(self)
-        #self.iKettle.emu_trigger_heating(self.heaterOn)
-        #self.iKettle.emu_trigger_temperature(False)
-        #self.iKettle.emu_trigger_onbase(self.onBase)
-        #self.emulate                      = True
+        self.iKettle.bridge(self)
+        self.iKettle.emu_trigger_heating(self.heaterOn)
+        self.iKettle.emu_trigger_temperature(False)
+        self.iKettle.emu_trigger_onbase(self.onBase)
+        self.emulate                      = True
+        """
         self.emulate                      = False
 
-        #self.virtual                      = False
-        
         try:
             self.simulator = threading.Thread(target=self.__simulate_device)
             self.simulator.start()
@@ -3747,7 +3744,6 @@ class SmarterInterface:
             if self.heaterOn == True:
                 self.heaterOn = False
                 if self.emulate:
-                    print "HERE"
                     self.iKettle.emu_trigger_heating(False)
                 self.__trigger(Smarter.triggerHeaterKettle,True,False)
                 self.countHeater+= 1

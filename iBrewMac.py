@@ -16,7 +16,7 @@ import webbrowser
 #
 # Copyright © 2016-2017 Tristan (@monkeycat.nl). All Rights Reserved
 #
-# The conundrum struggle
+# The Dream Tea
 #------------------------------------------------------
 
 rumps.debug_mode(False)  # turn on command line logging information for development - default is off

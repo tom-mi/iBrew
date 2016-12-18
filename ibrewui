@@ -23,7 +23,7 @@ from iBrewWeb import *
 #
 # Copyright © 2016 Tristan (@monkeycat.nl)
 #
-# The conundrum struggle
+# The Dream Tea
 #------------------------------------------------------
 
 class Launcher():    
@@ -69,10 +69,6 @@ class Launcher():
                     if os.path.islink("/usr/local/bin/ibrew"):
                         os.remove("/usr/local/bin/ibrew")
                         os.symlink(AppFolders.appBase()+"/iBrewConsole","/usr/local/bin/ibrew")
-                    if os.path.islink("/usr/local/bin/ibrewlegacy"):
-                        os.remove("/usr/local/bin/ibrewlegacy")
-                        os.symlink(AppFolders.appBase()+"/iBrewLegacyConsole","/usr/local/bin/ibrewlegacy")
-
                 except Exception:
                     pass
    
