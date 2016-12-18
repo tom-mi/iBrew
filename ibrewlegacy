@@ -31,7 +31,7 @@ def app_info():
 
 def usage():
         print
-        print "Usage: ibrewlegacy command host"
+        print "Usage: ibrewlegacy command (host)"
         print
         print "Commands"
         print "    heat  " + SmarterLegacy.textHeat
@@ -45,6 +45,10 @@ def usage():
         print "      10  " + SmarterLegacy.textWarm10m
         print "      20  " + SmarterLegacy.textWarm20m
         print "  status  " + SmarterLegacy.textStatus
+
+        print "   relay  Relay iKettle"
+        print "simulate  Simulate iKettle"
+
         print 
         print "    host  ip or host address of the iKettle"
         print
@@ -70,48 +74,52 @@ def monitor():
 
 try:
     action = str(sys.argv[1])
-    ip = str(sys.argv[2])
 except IndexError:
     app_info()
     usage()
-    sys.exit(2);
+    sys.exit(2)
+
+ip = SmarterLegacy.DirectHost
+try:
+    ip = str(sys.argv[2])
+except IndexError:
+    pass
+
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+
+log_file = os.path.join(AppFolders.logs(), "ibrewlegacy.log")
+
+fh = logging.handlers.RotatingFileHandler(log_file, maxBytes=1048576, backupCount=4, encoding="UTF8")
+fh.setLevel(logging.DEBUG)
+fh.setFormatter(formatter)
+logger.addHandler(fh)
+
+# By default only do info level to console
+sh = logging.StreamHandler(sys.stdout)
+sh.setLevel(logging.INFO)
+sh.setFormatter(formatter)
+logger.addHandler(sh)
+
+sh.setLevel(logging.DEBUG)
+
+client = SmarterInterfaceLegacy(ip)
+
+client.dump = True
+
+if action == "simulate":
+    client.simulation = True
+    client.connect()
+    client.relay_start()
+    monitor()
 else:
+    try:
+        r = client.send(SmarterLegacy.string_to_command(action))
+        for i in r:
+            print "iBrew Legacy: " + SmarterLegacy.string_response(i)
+    except Exception, e:
+        print "iBrew Legacy: Failed with " + str(e)
+        sys.exit(3);
 
-    logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)
-    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-    
-    log_file = os.path.join(AppFolders.logs(), "ibrewlegacy.log")
-    
-    fh = logging.handlers.RotatingFileHandler(log_file, maxBytes=1048576, backupCount=4, encoding="UTF8")
-    fh.setLevel(logging.DEBUG)
-    fh.setFormatter(formatter)
-    logger.addHandler(fh)
-    
-    # By default only do info level to console
-    sh = logging.StreamHandler(sys.stdout)
-    sh.setLevel(logging.INFO)
-    sh.setFormatter(formatter)
-    logger.addHandler(sh)
-
-    sh.setLevel(logging.DEBUG)
-
-    client = SmarterClientLegacy(ip)
-
-    client.dump = True
-
-    if action == "monitor":
-        client.simulation = True
-        client.connect()
-        client.relay_start()
-        monitor()
-    else:
-        try:
-            r = client.send(SmarterLegacy.string_to_command(action))
-            for i in r:
-                print "iBrew Legacy: " + SmarterLegacy.string_response(i)
-        except Exception, e:
-            print "iBrew Legacy: Failed with " + str(e)
-            sys.exit(3);
-
-    client.disconnect()
+client.trash()

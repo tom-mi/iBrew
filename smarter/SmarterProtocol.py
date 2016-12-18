@@ -250,8 +250,8 @@ WebServerStopMonitor           = 102
 WebServerStopMonitorWeb        = 103
 WebServerStopWeb               = 104
 
-SmarterClientFailedStop        = 105
-SmarterClientFailedStopThread  = 106
+SmarterInterfaceFailedStop        = 105
+SmarterInterfaceFailedStopThread  = 106
 
 class SmarterError(Exception):
 
