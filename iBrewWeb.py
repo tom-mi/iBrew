@@ -1077,9 +1077,9 @@ class iBrewWeb(tornado.web.Application):
                     client.disconnect()
                     pass # raise SmarterError(WebServerListen,"Web Server: Couldn't open socket on port" + str(self.port))
 
-
-        self.threadAutoConnect = threading.Timer(15, self.autoconnect)
-        self.threadAutoConnect.start()
+        if self.isRunning:
+            self.threadAutoConnect = threading.Timer(15, self.autoconnect)
+            self.threadAutoConnect.start()
 
 
     def __init__(self,webroot=""):
@@ -1243,3 +1243,4 @@ class iBrewWeb(tornado.web.Application):
 
 
         self.isRunning = True
+        self.autoconnect()
