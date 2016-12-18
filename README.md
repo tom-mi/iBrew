@@ -325,9 +325,7 @@ See the console section for the commands.
 
 ```
 
-### Console
-Start the console with the command `iBrew console`. The following commands are available within the console,
-you can also use them on the command line as arguments, note that [] are manditory arguments and () are optional arguments.
+The following commands are available, note that [] are manditory arguments and () are optional arguments.
 
 ```
 
@@ -479,6 +477,10 @@ you can also use them on the command line as arguments, note that [] are mandito
 
 
 ```
+
+Alternativly you can run a console to test out the commands. start the console with the command 
+
+`ibrew console 10.0.0.99`. 
 
 #### Examples
 
