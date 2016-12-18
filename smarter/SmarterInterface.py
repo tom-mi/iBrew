@@ -61,10 +61,471 @@ def _threadsafe_function(fn):
 
 
 #------------------------------------------------------
-# CLIENT INTERFACE CLASS
+# iKettle LEGACY CLIENT INTERFACE CLASS
 #------------------------------------------------------
 
-class SmarterClient:
+
+class SmarterInterfaceLegacy():
+
+    def __init(self):
+        self.temperature        = SmarterLegacy.status100c
+        self.temperatureSelect  = False
+        self.keepwarm           = SmarterLegacy.statusWarm10m
+        self.keepwarmSelect     = False
+        self.heaterOn           = False
+        self.keepwarmOn         = False
+        self.onBase             = False
+        self.keepwarmFinished   = False
+        self.heatingFinished    = False
+        self.overheated         = False
+    
+    def __init__(self,host=SmarterLegacy.DirectHost,port=SmarterLegacy.Port):
+        self.port = port
+        self.host = host
+        self.dump = False
+        self.connected = False
+        self.__bufferSize = 40
+    
+        self.__init()
+        self.relay                        = False
+   
+        self.simTemperature     = SmarterLegacy.status100c
+        self.simTemperatureSelect = False
+        self.simKeepwarm        = SmarterLegacy.statusWarm10m
+        self.simKeepwarmSelect  = False
+        self.simHeaterOn        = False
+        self.simKeepwarmOn      = False
+        self.simOnBase          = False
+        self.simKeepwarmFinished= False
+        self.simHeatingFinished = False
+        self.simOverheated      = False
+    
+        self.simulation         = False
+    
+        self.socket             = None
+    
+        self.serverHost         = ''
+        self.serverPort         = SmarterLegacy.Port
+        self.__clients          = dict()
+    
+
+    def trash(self):
+        self.relay_stop()
+        self.disconnect()
+    
+    
+    def connect(self,monitor=False):
+        self.disconnect()
+        if self.simulation and self.dump:
+            logging.debug("[" + self.host + ":" + str(self.port) + "] Connecting simulation")
+            return
+            
+        if self.dump:
+            logging.debug("[" + self.host + ":" + str(self.port) + "] Connecting")
+        if self.simulation:
+            return
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        try:
+            self.socket.settimeout(2)
+            self.socket.connect((self.host,self.port))
+        except socket.timeout:
+            raise SmarterErrorOld("Could not connect to " + self.host + ":" +  str(self.port))
+        self.socket.send(SmarterLegacy.commandHandshake+"\n")
+        data = self.socket.recv(self.__bufferSize)
+        if len(data) < 8:
+            self.disconnect()
+            raise SmarterErrorOld("No kettle found at " + self.host + ":" +  str(self.port))
+        if data[0:8] != SmarterLegacy.responseHandshake[0:8]:
+            self.disconnect()
+            raise SmarterErrorOld("No kettle found at " + self.host + ":" +  str(self.port))
+        self.connected = True
+
+
+    def disconnect(self):
+        if self.connected and self.dump:
+            logging.debug("[" + self.host + ":" + str(self.port) + "] Disconnecting")
+        if self.socket:
+            self.socket.close()
+        self.__init()
+        self.connected = False
+
+
+    def send(self,command):
+        if self.simulation:
+            response = self.sim_response(command)
+        else:
+            if not self.connected:
+                self.connect()
+            if self.dump:
+                logging.debug("[" + self.host + ":" + str(self.port) + "] Sending: " + SmarterLegacy.command_to_commandText(command) + " [" + command + "]")
+            try:
+                self.socket.send(command+"\n")
+            except socket.error:
+                self.disconnect()
+                raise SmarterErrorOld("[" + self.host + ":" + str(self.port) + "] Connection timed out")
+            response = []
+            try:
+                for i in range(0,3):
+                    data = self.socket.recv(self.__bufferSize)[:-1]
+                    response += [data]
+                    if self.dump:
+                        s = SmarterLegacy.string_response(data)
+                        logging.debug("[" + self.host + ":" + str(self.port) + "] Received: " + s + " [" + data + "]")
+                        self.__decode_response(data)
+            except socket.timeout:
+                pass
+        return response
+    
+
+    def __decode_responseStatus(self,status):
+
+        def is_set(x, n):
+            return x & 2**n != 0
+
+        if len(SmarterLegacy.responseStatus) == len(status):
+            self.temperatureSelect = False
+            self.keepwarmSelect = False
+            self.keepwarmFinished = False
+            self.heatingFinished = False
+            self.onBase = True
+            self.keepwarmOn = False
+            self.heaterOn = False
+            self.overheated = False
+            return
+
+        statusdata = Smarter.raw_to_number(status[len(SmarterLegacy.responseStatus)])
+
+        if is_set(statusdata,0):
+            self.heatingFinished = False
+            self.keepwarmFinished = False
+            self.onBase = True
+            self.keepwarmOn = False
+            self.heaterOn = True
+            self.overheated = False
+        if is_set(statusdata,1):
+            self.keepwarmFinished = False
+            self.onBase = True
+            self.heaterOn = False
+            self.keepwarmOn = True
+            self.overheated = False
+            self.heatingFinished = False
+        if is_set(statusdata,2):
+            self.temperatureSelect = True
+            self.temperature = SmarterLegacy.status65c
+        if is_set(statusdata,3):
+            self.temperatureSelect = True
+            self.temperature = SmarterLegacy.status80c
+        if is_set(statusdata,4):
+            self.temperatureSelect = True
+            self.temperature = SmarterLegacy.status95c
+        if is_set(statusdata,5):
+            self.temperatureSelect = True
+            self.temperature = SmarterLegacy.status100c
+        #if is_set(statusdata,6):
+        #    pass
+        #if is_set(statusdata,7):
+        #    pass
+
+
+    def __decode_response(self,status):
+        if status[0:len(SmarterLegacy.responseStatus)] == SmarterLegacy.responseStatus:
+            self.__decode_responseStatus(status)
+        elif status == SmarterLegacy.status100c:
+            self.temperatureSelect = True
+            self.temperature = SmarterLegacy.status100c
+        elif status == SmarterLegacy.status95c:
+            self.temperatureSelect = True
+            self.temperature = SmarterLegacy.status95c
+        elif status == SmarterLegacy.status80c:
+            self.temperatureSelect = True
+            self.temperature = SmarterLegacy.status80c
+        elif status == SmarterLegacy.status65c:
+            self.temperatureSelect = True
+            self.temperature = SmarterLegacy.status65c
+        elif status == SmarterLegacy.statusWarm:
+            self.keepwarmFinished = False
+            self.onBase = True
+            self.heaterOn = False
+            self.keepwarmOn = True
+            self.overheated = False
+            self.heatingFinished = False
+        elif status == SmarterLegacy.statusWarmFinished:
+            self.onBase = True
+            self.keepwarmOn = False
+            self.heaterOn = False
+            self.keepwarmFinished = True
+            self.overheated = False
+            self.heatingFinished = False
+        elif status == SmarterLegacy.statusHeating:
+            self.heatingFinished = False
+            self.keepwarmFinished = False
+            self.onBase = True
+            self.keepwarmOn = False
+            self.heaterOn = True
+            self.overheated = False
+        elif status == SmarterLegacy.statusReady:
+            self.keepwarmFinished = False
+            self.heatingFinished = False
+            self.onBase = True
+            self.keepwarmOn = False
+            self.heaterOn = False
+            self.overheated = False
+        elif status == SmarterLegacy.statusWarm5m:
+            self.keepwarmSelect = True
+            self.keepwarm = SmarterLegacy.statusWarm5m
+        elif status == SmarterLegacy.statusWarm10m:
+            self.keepwarmSelect = True
+            self.keepwarm = SmarterLegacy.statusWarm10m
+        elif status == SmarterLegacy.statusWarm20m:
+            self.keepwarmSelect = True
+            self.keepwarm = SmarterLegacy.statusWarm20m
+        elif status == SmarterLegacy.statusHeated:
+            self.keepwarmFinished = False
+            self.onBase = True
+            self.keepwarmOn = False
+            self.heaterOn = True
+            self.overheated = False
+            self.heatingFinished = True
+        elif status == SmarterLegacy.statusOverheat:
+            self.keepwarmFinished = False
+            self.keepwarmOn = False
+            self.onBase = True
+            self.heaterOn = False
+            self.overheated = True
+            self.heatingFinished = False
+        elif status == SmarterLegacy.statusKettleRemoved:
+            self.keepwarmFinished = False
+            self.overheated = False
+            self.heaterOn = False
+            self.keepwarmOn = False
+            self.onBase = False
+            self.heatingFinished = False
+        elif status == SmarterLegacy.responseHandshake:
+            pass
+        else:
+            raise SmarterErrorOld("Unknown status! Help! Please post an issues on GitHub" + str([status]))
+
+    #------------------------------------------------------
+    # SIMULATION: iKettle
+    #------------------------------------------------------
+
+
+    def sim_response(self,command):
+        if self.dump:
+            logging.debug("[" + self.host + ":" + str(self.port) + "] Simulating command: " + SmarterLegacy.command_to_string(command))
+
+        if command == SmarterLegacy.commandStop:    response = self.__sim_stop()
+        elif command == SmarterLegacy.commandHeat:  response = self.__sim_heat()
+        elif command == SmarterLegacy.commandHandshake:  response = self.__sim_handshake()
+        elif command == SmarterLegacy.commandStatus:response = self.__sim_status()
+        elif command == SmarterLegacy.command65c or command == SmarterLegacy.command80c or command == SmarterLegacy.command95c or command == SmarterLegacy.command100c:
+                                                response = self.__sim_temperature(command)
+                                                self.simTemperatureSelect = True
+        elif command == SmarterLegacy.commandWarm:  response = self.__sim_warm()
+        elif command == SmarterLegacy.commandWarm5m or command == SmarterLegacy.commandWarm10m or command == SmarterLegacy.commandWarm20m:
+                                                response = self.__sim_keepwarm_minutes(command)
+                                                self.simKeepwarmSelect = True
+        else:
+            raise SmarterErrorOld("Legacy simulation of command " + command + " not implemented")
+        return response
+
+
+    def __sim_heat(self):
+        self.simHeaterOn = True
+        return [SmarterLegacy.statusHeating] + [self.simTemperature]
+
+
+    def __sim_status(self):
+        if not self.simHeaterOn and not self.simKeepwarmOn and not self.simTemperatureSelect: # and not self.simKeepwarmSelect:
+            return [SmarterLegacy.responseStatus]
+        status = 0
+        if self.simHeaterOn:                                    status += 1
+        if self.simKeepwarmOn:                                  status += 2
+        if self.simTemperature == SmarterLegacy.status65c:      status += 4
+        if self.simTemperature == SmarterLegacy.status80c:      status += 8
+        if self.simTemperature == SmarterLegacy.status95c:      status += 16
+        if self.simTemperature == SmarterLegacy.status100c:     status += 32
+        return [SmarterLegacy.responseStatus + Smarter.number_to_raw(status)]
+
+
+    def __sim_handshake(self):
+        return [SmarterLegacy.responseHandshake]
+
+
+    def __sim_stop(self):
+        self.simHeaterOn = False
+        self.simKeepwarmOn = False
+        return [SmarterLegacy.statusReady]
+
+
+    def __sim_temperature(self,command):
+        if command == SmarterLegacy.command65c:
+            self.simTemperature = SmarterLegacy.status65c
+        elif command == SmarterLegacy.command80c:
+            self.simTemperature = SmarterLegacy.status80c
+        elif command == SmarterLegacy.command95c:
+            self.simTemperature = SmarterLegacy.status95c
+        elif command == SmarterLegacy.command100c:
+            self.simTemperature = SmarterLegacy.status100c
+        return [self.simTemperature]
+
+
+    def __sim_keepwarm_minutes(self,command):
+        if command == SmarterLegacy.commandWarm5m:
+            self.simKeepwarm = SmarterLegacy.statusWarm5m
+        elif command == SmarterLegacy.commandWarm10m:
+            self.simKeepwarm = SmarterLegacy.statusWarm10m
+        elif command == SmarterLegacy.commandWarm20m:
+            self.simKeepwarm = SmarterLegacy.statusWarm20m
+        return [self.simKeepwarm]
+
+
+    def __sim_warm(self):
+        self.simKeepwarmOn = True
+        return [SmarterLegacy.statusKeepwarm]
+
+
+    #------------------------------------------------------
+    # SERVER CONNECTION
+    #------------------------------------------------------
+
+    def __relayHandler(self,clientsock,addr):
+        logging.info("[" + self.serverHost + ":" + str(self.serverPort) + "] [" + addr[0] + ":" + str(addr[1]) + "] Legacy client connected")
+        clientsock.setblocking(1)
+        while self.relay:
+            command = clientsock.recv(100)
+            if not command:
+                break
+            command = command[:-1]
+            self.__clients[(clientsock, addr)].acquire()
+            logging.debug("[" + self.serverHost + ":" + str(self.serverPort) + "] [" + addr[0] + ":" + str(addr[1]) + "] Legacy command relay [" + command + "] " + SmarterLegacy.command_to_string(command))
+
+            if self.simulation:
+                responses = self.sim_response(command)
+            else:
+                responses = self.send(command)
+
+            for r in responses:
+                clientsock.send(r+"\r")
+                
+                logging.debug("[" + self.serverHost + ":" + str(self.serverPort) + "] [" + addr[0] + ":" + str(addr[1]) + "] Legacy response relay [" + r + "] " + SmarterLegacy.string_response(r))
+
+            self.__clients[(clientsock, addr)].release()
+        logging.info("[" + self.serverHost + ":" + str(self.serverPort) + "] [" + addr[0] + ":" + str(addr[1]) + "] Legacy client disconnected")
+        clientsock.close()
+
+
+
+    def __relay(self):
+        self.serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.serversocket.settimeout(2)
+        try:
+            self.serversocket.bind((self.serverHost,self.serverPort))
+            self.serversocket.listen(20)
+        except socket.error, e:
+            self.relay = False
+            logging.debug("[" + self.host + ":" + str(self.port)  + "] " + str(e))
+            logging.warning("[" + self.host + ":" + str(self.port)  + "] Relay Server Failed (" + self.serverHost + ":" + str(self.serverPort) + ")")
+            return
+        except Exception:
+            logging.warning("[" + self.host + ":" + str(self.port)  + "] Relay Server Failed (" + self.serverHost + ":" + str(self.serverPort) + ")")
+            self.relay = False
+            return
+
+        logging.info("[" + self.host + ":" + str(self.port)  + "] Relay Server (" + self.serverHost + ":" + str(self.serverPort) + ")")
+        
+        while self.relay:
+            try:
+                clientsock, addr = self.serversocket.accept()
+                self.__clients[(clientsock, addr)] = threading.Lock()
+                try:
+                    r = threading.Thread(target=self.__relayHandler,args=(clientsock,addr))
+                    r.start()
+                except Exception, e:
+                    print str(e)
+            except socket.error:
+                continue
+
+
+    def relay_start(self):
+        self.relay = True
+        self.relayServer = threading.Thread(target=self.__relay)
+        self.relayServer.start()
+
+
+    def relay_stop(self):
+        if self.relay and self.dump:
+            logging.info("[" + self.host + ":" + str(self.port) +"] Stopping Relay (" + self.serverHost + ":" + str(self.serverPort) + ")")
+        self.relay = False
+
+
+    #------------------------------------------------------
+    # COMMANDS: iKettle
+    #------------------------------------------------------
+
+    def status(self):
+        return self.send(SmarterLegacy.commandStatus)
+
+
+    def keepwarm(self):
+        return self.send(SmarterLegacy.commandWarm)
+
+
+    def stop(self):
+        return self.send(SmarterLegacy.commandStop)
+
+
+    def selectKeepwamr20min(self):
+        return self.send(SmarterLegacy.commandWarm20m)
+
+
+    def selectKeepwamr10min(self):
+        return self.send(SmarterLegacy.commandWarm10m)
+
+
+    def selectKeepwamr5min(self):
+        return self.send(SmarterLegacy.commandWarm5m)
+
+
+    def selectTemperature65(self):
+        return self.send(SmarterLegacy.command65c)
+
+
+    def selectTemperature80(self):
+        return self.send(SmarterLegacy.command80c)
+
+
+    def selectTemperature95(self):
+        return self.send(SmarterLegacy.command95c)
+
+
+    def selectTemperature100(self):
+        return self.send(SmarterLegacy.command100c)
+
+
+    def boil(self):
+        return self.send(SmarterLegacy.command100c) + self.send(SmarterLegacy.commandHeat)
+
+
+    def heat(self):
+        return self.send(SmarterLegacy.commandHeat)
+
+
+    def heat_temp(self,temperature=100):
+        #Smarter.check_temperature(temperature)
+        if temperature < 73:
+            response = self.send(SmarterLegacy.command65c)
+        elif temperature < 88:
+            response = self.send(SmarterLegacy.command80c)
+        elif temperature < 97:
+            response = self.send(SmarterLegacy.command95c)
+        else:
+            response = self.send(SmarterLegacy.command100c)
+        return response + self.send(SmarterLegacy.commandHeat)
+
+
+class SmarterInterface:
     """
     
     Class variables:
@@ -206,7 +667,7 @@ class SmarterClient:
     
     def __init__(self,setting_path=""):
         """
-        Initializing SmarterClient
+        Initializing SmarterInterface
         """
         self.settingsPath                 = setting_path
         self.events                     = False
@@ -499,7 +960,7 @@ class SmarterClient:
 
 
 
-    def __serverMonitor(self,clientsock,addr):
+    def __relayMonitor(self,clientsock,addr):
         while self.relay:
             time.sleep(1)
             if  not self.__clients[(clientsock, addr)].locked():
@@ -524,7 +985,7 @@ class SmarterClient:
 
 
 
-    def __handler(self,clientsock,addr):
+    def __relayHandler(self,clientsock,addr):
         logging.info(addr[0] + ":" + str(addr[1]) + " Client connected")
         clientsock.setblocking(1)
         while self.relay:
@@ -562,8 +1023,7 @@ class SmarterClient:
                     response = self.__encode_RelayModifiersInfo(self.string_block())
                 else:
                     response = self.__send(data)
-            self.mode = not self.mode
-
+         
             if command == Smarter.CommandWifiJoin or command == Smarter.CommandWifiLeave:
                 break
  
@@ -576,7 +1036,7 @@ class SmarterClient:
 
 
 
-    def __server(self):
+    def __relay(self):
         self.serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.serversocket.settimeout(1)
@@ -597,8 +1057,8 @@ class SmarterClient:
                 clientsock, addr = self.serversocket.accept()
                 self.__clients[(clientsock, addr)] = threading.Lock()
                 try:
-                    r = threading.Thread(target=self.__handler,args=(clientsock,addr))
-                    s = threading.Thread(target=self.__serverMonitor,args=(clientsock,addr))
+                    r = threading.Thread(target=self.__relayHandler,args=(clientsock,addr))
+                    s = threading.Thread(target=self.__relayMonitor,args=(clientsock,addr))
                     r.start()
                     s.start()
                 except Exception, e:
@@ -610,8 +1070,8 @@ class SmarterClient:
 
     def relay_start(self):
         self.relay = True
-        self.server = threading.Thread(target=self.__server)
-        self.server.start()
+        self.relayServer = threading.Thread(target=self.__relay)
+        self.relayServer.start()
 
 
 
@@ -1096,7 +1556,7 @@ class SmarterClient:
                     if self.__readLock.locked():
                         self.__readLock.release()
             except threading.ThreadError:
-                raise SmarterError(SmarterClientFailedStopThread,"Could not disconnect from " + self.host)
+                raise SmarterError(SmarterInterfaceFailedStopThread,"Could not disconnect from " + self.host)
 
             self.monitor = None
 
@@ -1107,7 +1567,7 @@ class SmarterClient:
             # FIX: Also except thread exceptions..
             except socket.error, msg:
                 self.__socket = None
-                raise SmarterError(SmarterClientFailedStop,"Could not disconnect from " + self.host + " (" + msg[1] + ")")
+                raise SmarterError(SmarterInterfaceFailedStop,"Could not disconnect from " + self.host + " (" + msg[1] + ")")
             self.__socket = None
 
 

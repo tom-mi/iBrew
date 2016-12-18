@@ -1002,7 +1002,7 @@ class iBrewConsole:
         self.quit = True
         
         try:
-            self.client = SmarterClient(AppFolders.settings() + "/")
+            self.client = SmarterInterface(AppFolders.settings() + "/")
             
             self.client.fast = True
             try:

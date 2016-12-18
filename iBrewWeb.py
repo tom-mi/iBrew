@@ -1031,7 +1031,7 @@ class iBrewWeb(tornado.web.Application):
                 try:
                     if self.dump:
                         logging.info("[" + device[0] + "] Adding Web Device")
-                    client = SmarterClient(AppFolders.settings() + "/")
+                    client = SmarterInterface(AppFolders.settings() + "/")
                     client.events = self.events
                     client.deviceId = device[1]
                     client.device = Smarter.device_to_string(device[1])
@@ -1062,7 +1062,7 @@ class iBrewWeb(tornado.web.Application):
                 try:
                     if self.dump:
                         logging.info("[" + ip + "] Adding Web Device")
-                    client = SmarterClient(AppFolders.settings() + "/")
+                    client = SmarterInterface(AppFolders.settings() + "/")
                     client.events = self.events
                     client.setHost(self.host)
                     client.dump = self.dump
@@ -1077,9 +1077,9 @@ class iBrewWeb(tornado.web.Application):
                     client.disconnect()
                     pass # raise SmarterError(WebServerListen,"Web Server: Couldn't open socket on port" + str(self.port))
 
-
-        self.threadAutoConnect = threading.Timer(15, self.autoconnect)
-        self.threadAutoConnect.start()
+        if self.isRunning:
+            self.threadAutoConnect = threading.Timer(15, self.autoconnect)
+            self.threadAutoConnect.start()
 
 
     def __init__(self,webroot=""):
@@ -1243,3 +1243,4 @@ class iBrewWeb(tornado.web.Application):
 
 
         self.isRunning = True
+        self.autoconnect()
