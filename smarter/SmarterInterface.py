@@ -656,7 +656,7 @@ class SmarterInterfaceLegacy():
                 break
             command = command[:-1]
             self.__clients[(clientsock, addr)].acquire()
-            logging.debug("[" + self.relayHost + ":" + str(self.relayPort) + "] [" + addr[0] + ":" + str(addr[1]) + "] Legacy command relay [" + command + "] " + SmarterLegacy.command_to_string(command))
+            logging.debug("[" + self.host + ":" + str(self.port)  + "] [" + self.relayHost + ":" + str(self.relayPort) + "] [" + addr[0] + ":" + str(addr[1]) + "] Legacy command relay [" + command + "] " + SmarterLegacy.command_to_string(command))
 
             if self.simulation:
                 responses = self.sim_response(command)
@@ -668,7 +668,7 @@ class SmarterInterfaceLegacy():
             for r in responses:
                 clientsock.send(r+"\r")
                 
-                logging.debug("[" + self.relayHost + ":" + str(self.relayPort) + "] [" + addr[0] + ":" + str(addr[1]) + "] Legacy response relay [" + r + "] " + SmarterLegacy.string_response(r))
+                logging.debug("[" + self.host + ":" + str(self.port)  + "] [" + self.relayHost + ":" + str(self.relayPort) + "] [" + addr[0] + ":" + str(addr[1]) + "] Legacy response relay [" + r + "] " + SmarterLegacy.string_response(r))
 
             self.__clients[(clientsock, addr)].release()
         logging.info("[" + self.relayHost + ":" + str(self.relayPort) + "] [" + addr[0] + ":" + str(addr[1]) + "] Legacy client disconnected")
@@ -679,7 +679,7 @@ class SmarterInterfaceLegacy():
     def __relay(self):
         self.serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.serversocket.settimeout(2)
+        self.serversocket.settimeout(3)
         try:
             self.serversocket.bind((self.relayHost,self.relayPort))
             self.serversocket.listen(20)
