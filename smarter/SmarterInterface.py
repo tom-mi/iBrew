@@ -235,7 +235,8 @@ class SmarterInterfaceLegacy():
 
         try:
             self.socket.send(SmarterLegacy.commandHandshake+"\n")
-            data = self.socket.recv(len(SmarterLegacy.commandHandshake)+1)
+            #data = self.send(SmarterLegacy.commandHandshake)
+            data =  self.__read() #self.socket.recv(len(SmarterLegacy.commandHandshake)+1)
         except socket.timeout:
             raise SmarterErrorOld("No kettle found at " + self.host + ":" +  str(self.port))
             self.disconnect()
@@ -270,6 +271,7 @@ class SmarterInterfaceLegacy():
                 data += d
         except socket.timeout:
             data = None
+        #print "READ: " + data
         return data[:-1]
 
     def send(self,command):
@@ -278,11 +280,11 @@ class SmarterInterfaceLegacy():
         elif self.simulation:
             response = self.sim_response(command)
         else:
-            print "HERE@#$%"
+
             if not self.connected:
                 print self.connected
                 self.connect()
-            print "HERE@#$%1"
+
             if self.dump:
                 logging.debug("[" + self.host + ":" + str(self.port) + "] Sending: " + SmarterLegacy.command_to_commandText(command) + " [" + command + "]")
             try:
@@ -292,9 +294,9 @@ class SmarterInterfaceLegacy():
                 raise SmarterErrorOld("[" + self.host + ":" + str(self.port) + "] Connection timed out")
             response = []
             try:
-                m = 1
+                m = 2
                 if command == SmarterLegacy.commandHandshake:
-                    m = 3
+                    m = 1
                 for i in range(0,m):
                     data = self.__read()
                     if data is None:
@@ -305,9 +307,7 @@ class SmarterInterfaceLegacy():
                         logging.debug("[" + self.host + ":" + str(self.port) + "] Received: " + s + " [" + data + "]")
                         self.__decode_response(data)
             except Exception, e:
-                raise SmarterErrorOld("[" + self.host + ":" + str(self.port) + "] Connection timed out")
-        print "GGGG"
-        print response
+                pass #raise SmarterErrorOld("[" + self.host + ":" + str(self.port) + "] Connection timed out")
         return response
     
 
@@ -684,8 +684,6 @@ class SmarterInterfaceLegacy():
             else:
                 try:
                     responses = self.send(command)
-                    print "HERETTTT"
-                    print responses
                 except Exception, e:
                     self.disconnect()
                     print str(e)
@@ -695,9 +693,8 @@ class SmarterInterfaceLegacy():
             
             for r in responses:
                 logging.debug("[" + self.host + ":" + str(self.port)  + "] [" + self.relayHost + ":" + str(self.relayPort) + "] [" + addr[0] + ":" + str(addr[1]) + "] Legacy response relay [" + r + "] " + SmarterLegacy.string_response(r))
-                print "SENDING " + r
                 clientsock.send(r+"\r")
-                print "HERE!"
+
                 
 
             self.__clients[(clientsock, addr)].release()
