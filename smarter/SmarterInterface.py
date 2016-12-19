@@ -88,7 +88,6 @@ class SmarterInterfaceLegacy():
         self.host = host
         self.dump = False
         self.connected = False
-        self.__bufferSize = 40
     
         self.__init()
    
@@ -4473,6 +4472,13 @@ class SmarterInterface:
             self.__send_command(Smarter.CommandHeat,Smarter.temperature_to_raw(t)+Smarter.keepwarm_to_raw(kw))
         else:
             raise SmarterError(KettleNoMachineHeat,"You need a kettle to heat it")
+
+
+    def kettle_heat_milk(self):
+        """
+        Heat water to temperature right for warming milk
+        """
+        self.kettle_heat(65)
 
 
 

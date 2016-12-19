@@ -32,6 +32,55 @@ class SmarterProtocolLegacy:
     # LEGACY
     #------------------------------------------------------
 
+
+    def protocol(self):
+        rj = 27
+        print
+        print "Commands".rjust(rj-1)
+        print "".rjust(rj-1,"_")
+        print ("[" + self.commandHandshake + "\\n] ").rjust(rj) + self.textGetHandshake
+        print ("[" + self.commandStatus + "\\n] ").rjust(rj) + self.textGetStatus
+        print ("[" + self.commandWarm5m + "\\n] ").rjust(rj) + self.textSelectWarm5m
+        print ("[" + self.commandWarm10m + "\\n] ").rjust(rj) + self.textSelectWarm10m
+        print ("[" + self.commandWarm20m + "\\n] ").rjust(rj) + self.textSelectWarm20m
+        print ("[" + self.commandWarm + "\\n] ").rjust(rj) + self.textWarm
+        print ("[" + self.command65c + "\\n] ").rjust(rj) + self.textSelect65c
+        print ("[" + self.command80c + "\\n] ").rjust(rj) + self.textSelect80c
+        print ("[" + self.command95c + "\\n] ").rjust(rj) + self.textSelect95c
+        print ("[" + self.command100c + "\\n] ").rjust(rj) + self.textSelect100c
+        print ("[" + self.commandHeat + "\\n] ").rjust(rj) + self.textHeat
+        print ("[" + self.commandStop + "\\n] ").rjust(rj) + self.textStop
+        print
+        print
+        print "Responses".rjust(rj-1)
+        print "".rjust(rj-1,"_")
+        print ("[" + self.responseHandshake + "\\r] ").rjust(rj) + self.textHandshake
+        print ("[" + self.responseStatus + "\\r] ").rjust(rj) + self.textStatus
+        print ("[" + self.status65c + "\\r] ").rjust(rj) + self.text65c
+        print ("[" + self.status80c + "\\r] ").rjust(rj) + self.text80c
+        print ("[" + self.status95c + "\\r] ").rjust(rj) + self.text95c
+        print ("[" + self.status100c + "\\r] ").rjust(rj) + self.text100c
+        print ("[" + self.statusWarm5m + "\\r] ").rjust(rj) + self.textWarm5m
+        print ("[" + self.statusWarm10m + "\\r] ").rjust(rj) + self.textWarm10m
+        print ("[" + self.statusWarm20m + "\\r] ").rjust(rj) + self.textWarm20m
+        print ("[" + self.statusReady + "\\r] ").rjust(rj) + self.textReady
+        print ("[" + self.statusHeating + "\\r] ").rjust(rj) + self.textHeating
+        print ("[" + self.statusHeated + "\\r] ").rjust(rj) + self.textHeated
+        print ("[" + self.statusOverheat + "\\r] ").rjust(rj) + self.textOverheat
+        print ("[" + self.statusWarmFinished + "\\r] ").rjust(rj) + self.textWarmFinished
+        print ("[" + self.statusWarm + "\\r] ").rjust(rj) + self.textWarm
+        print ("[" + self.statusKettleRemoved + "\\r] ").rjust(rj) + self.textKettleRemoved
+        print
+        print "Default 192.168.4.1:2000"
+        print
+        print "The protocol build up a connection by sending an offer hand command, and receiving the handshake response"
+        print "After that you can send commands and you will receive asynchronious status updates if the kettle changes state"
+        print
+        print "Send HELLOKETTLE\\n receive HELLOAPP\\r"
+        print
+        print
+        print "You might receive other HELLOAPP commands at later points as other apps on the network connect to the kettle."
+    
     Port       = 2000
     DirectHost = "192.168.4.1"
 
@@ -57,6 +106,7 @@ class SmarterProtocolLegacy:
     textStop            = "Stop heating water"
     textStatus          = "Status"
     textHandshake       = "Handshake"
+    textGetHandshake    = "Offer hand"
 
     # Shared between status and command
     text100c            = "100°C selected"
@@ -212,7 +262,7 @@ class SmarterProtocolLegacy:
         elif action == "65":                        return SmarterLegacy.textSelect65c
         elif action == "80":                        return SmarterLegacy.textSelect80c
         elif action == "95":                        return SmarterLegacy.textSelect95c
-        elif action == "handshake":                 return SmarterLegacy.textHandshake
+        elif action == "handshake":                 return SmarterLegacy.textGetHandshake
         elif action == "100":                       return SmarterLegacy.text100c
         elif action == "warm":                      return SmarterLegacy.textStartWarm
         elif action == "5":                         return SmarterLegacy.textSelectWarm5m

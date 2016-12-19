@@ -88,27 +88,27 @@ class iBrewConsole:
 
     # assume we're connected to a client
     # you can stop the web server by pressing ctrl-c
-    def web(self,port=Smarter.Port-1):
+    def web(self):
         
         webs = None
         try:
             if self.haveHost:
                 self.web = iBrewWeb()
                 self.web.events = self.client.events
-                self.web.run(port,self.client.dump,self.client.host)
+                self.web.run(self.serverBind,self.serverPort,self.client.dump,self.client.host,self.client.port)
             else:
                 self.web = iBrewWeb()
                 self.web.events = self.client.events
-                self.web.run(port,self.client.dump)
+                self.web.run(self.serverBind,self.serverPort,self.client.dump)
         
         except Exception, e:
             logging.debug(e)
-            logging.info("iBrew: Failed to run Web Interface & REST API on port " + str(port))
+            logging.info("iBrew: Failed to run Web Interface & REST API on port [" + self.serverBind + ":" + str(self.serverPort) + "]")
             return
-        logging.info("iBrew: Starting Web Interface & REST API on port " + str(port) + ". Press ctrl-c to stop")
+        logging.info("iBrew: Starting Web Interface & REST API [" + self.serverBind + ":" + str(self.serverPort) + "]. Press ctrl-c to stop")
         self.monitor()
         self.web.kill()
-        logging.info("iBrew: Stopped Web Interface & REST API on port " + str(port))
+        logging.info("iBrew: Stopped Web Interface & REST API [" + self.serverBind + ":" + str(self.serverPort) + "]")
  
 
     #------------------------------------------------------
@@ -345,37 +345,89 @@ class iBrewConsole:
                     numarg -= 1
         
             self.haveHost = False
+            self.serverBind = ""
+            self.serverPort = Smarter.Port - 1
             
             if numarg > 0:
-                # FIX
-                #if command == "legacy":
-                #    self.client.port = SmarterLegacy.Port
-            
                 if arguments[numarg-1] == "simulate":
                     self.client.setHost("simulation")
                 else:
                     connection = str.split(arguments[numarg-1],':')
-                    if self.is_valid_ipv4_address(connection[0]) or self.is_valid_ipv6_address(connection[0]):
+                    if self.is_valid_ipv4_address(connection[0]) or self.is_valid_ipv6_address(connection[0]) or (("server" in arguments or command == "server") and connection[0] == ""):
                         if command == "legacy":
                             self.client.iKettle.host = connection[0]
                         
                         else:
-                            self.client.setHost(connection[0])
+                            if "server" in arguments or command == "server" or "web" in arguments or command == "web":
+                                self.serverBind = connection[0]
+                            else:
+                                self.client.setHost(connection[0])
                         try:
+                            self.portfound = False
                             p = int(connection[1])
                             if command == "legacy":
                                 self.client.iKettle.port = p
                             else:
-                                self.client.port = p
+                                
+                                if "server" in arguments or command == "server" or "web" in arguments or command == "web":
+                                    self.serverPort = connection[1]
+                                    self.portfound = True
+                                else:
+                                    self.client.port = p
                         except ValueError:
                             pass
                         except IndexError:
                             pass
-                        self.haveHost = True
+                        if "server" not in arguments and command != "server" and "web" not in arguments and command != "web":
+                            self.haveHost = True
                         numarg -= 1
                         arguments = arguments[0:numarg]
-                        self.client.disconnect()
-            
+
+                        if numarg > 0 and ("server" in arguments or command == "server" or "web" in arguments or command == "web"):
+                            connection = str.split(arguments[numarg-1],':')
+  
+                            
+                            noport = False
+                            try:
+                                p = int(connection[1])
+                            
+                            except ValueError:
+                                noport = True
+                            except IndexError:
+                                noport = True
+
+                            isvalid = self.is_valid_ipv4_address(connection[0]) or self.is_valid_ipv6_address(connection[0])
+                            if not noport and (connection[0] == "" or isvalid):
+                                if self.serverBind == "":
+                                    self.client.setHost(Smarter.DirectHost)
+                                else:
+                                    self.client.setHost(self.serverBind)
+                                if self.portfound:
+                                    self.client.port = self.serverPort
+                                else:
+                                    self.client.port = Smarter.Port
+                                
+                                self.haveHost = True
+                                self.serverPort = connection[1]
+                                self.serverBind = connection[0]
+                                numarg -= 1
+                                arguments = arguments[0:numarg]
+                            elif noport and isvalid:
+                                if self.serverBind == "":
+                                    self.client.setHost(Smarter.DirectHost)
+                                else:
+                                    self.client.setHost(self.serverBind)
+                                if self.portfound:
+                                    self.client.port = self.serverPort
+                                else:
+                                    self.client.port = Smarter.Port
+                                self.haveHost = True
+                                self.serverPort = Smarter.Port - 1
+                                self.serverBind = connection[0]
+                                numarg -= 1
+                                arguments = arguments[0:numarg]
+
+
             if command == "legacy":
                 if numarg == 0:
                     self.legacy()
@@ -386,6 +438,9 @@ class iBrewConsole:
                         print "iBrew: iKettle != Coffee Machine"
                         #logging.warning("iBrew: iKettle != Coffee Machine")
               
+                    if arguments[0] == "protocol":
+                        SmarterLegacy.protocol()
+                        
                     if arguments[0] == "simulate":
                         self.client.iKettle.simulate()
                         self.monitor()
@@ -795,10 +850,7 @@ class iBrewConsole:
             # web is legacy ibrew command
             elif command == "server" or command == "web":
                                             if not self.console:
-                                                if numarg == 0:
                                                     self.web()
-                                                else:
-                                                    self.web(int(arguments[0]))
                                             else:
                                                 print "iBrew: Not in console"
 
@@ -812,6 +864,7 @@ class iBrewConsole:
                                             else:
                                                 self.client.kettle_heat_default()
                                     
+            elif command == "milk":         self.client.kettle_milk()
             elif command == "tea":
                                             if numarg == 1:
                                                 if arguments[0] == "white":
@@ -982,27 +1035,9 @@ class iBrewConsole:
                                                 self.client.device_store_settings(arguments[0],arguments[1],arguments[2],arguments[3])
                                                 if not self.client.dump: self.client.print_settings()
             elif command == "stop" or command == "off":
-                                            #if numarg == 0:
                                             self.client.device_stop()
-                                            #else:
-                                            #    if arguments[0].lower() == "kettle":
-                                            #        self.client.kettle_stop()
-                                            #    elif arguments[0].lower() == "coffee":
-                                            #        self.client.coffee_stop()
-                                            #    else:
-                                            #        self.client.device_stop()
-                                        
             elif command == "on" or command == "start":
-                                            #if numarg == 0:
                                             self.client.device_start()
-                                            #else:
-                                            #    if arguments[0].lower() == "kettle":
-                                            #        self.client.kettle_heat()
-                                            #    elif arguments[0].lower() == "coffee":
-                                            #        self.client.coffee_brew_settings()
-                                            #    else:
-                                            #        self.client.device_start()
-                                                    
 
             elif command == "reset":        self.client.device_reset()
             elif command == "info":
@@ -1014,8 +1049,8 @@ class iBrewConsole:
             elif command == "time":
                                             print "not yet implemented"
                                             self.client.device_time()
-            # status full
-            elif command == "status":       self.client.print_status()
+
+            elif command == "status":       self.client.print_status() # status full, on check on keyword
             else:
                                             try:
                                                 self.client.device_raw(command+''.join(arguments))
@@ -1121,8 +1156,8 @@ class iBrewConsole:
         print "  iBrew Server"
         print "  ________________"
         print
-        print "  Usage: ibrew (dump) (events) (fahrenheid) server (host:(port)) (rules) (host(:port))"
-#        print "  Usage: ibrew (energy) (dump) (fahrenheid) server (host:(port)) (rules) (host(:port))"
+        print "  Usage: ibrew (dump) (events) (fahrenheid) server (host:(port) (host:(port))"
+#        print "  Usage: ibrew (energy) (dump) (fahrenheid) server (host:(port))"
         print
      #   print "    energy                 energy saver (stats not possible)"
         print "    dump                   dump message enabled"
@@ -1187,8 +1222,10 @@ class iBrewConsole:
         print "    20                     " + SmarterLegacy.textSelectWarm20m.lower()
         print "    status                 " + SmarterLegacy.textGetStatus
         print
+        print "    protocol               protocol information"
         print "    simulate               start kettle simulation"
         print "    relay ((ip:)port)      start relay"
+
         print
     
     def commands(self):
@@ -1210,12 +1247,13 @@ class iBrewConsole:
         print "    base                   show watersensor base value"
         print "    base [base]            store watersensor base value"
         print "    boil                   heat till 100°C"
-        print "    kettlecoffee           warms water for coffee 95°C"
         print "    calibrate              calibrates watersensor"
         print "    celsius                use celsius °C [console only]"
         print "    fahrenheid             use fahrenheid °F [console only]"
         print "    formula (temperature (keepwarm))] heat kettle in formula mode"
         print "    heat (temperature)(keepwarm))    heat kettle"
+        print "    kettlecoffee           warms water for coffee 95°C"
+        print "    milk                   warm  65°C"
         print "    settings [temperature] [keepwarm] [formula] [formulatemperature] store kettle user settings"
         print "    tea [green,white,oelong,black] warms water for tea 65°C,80°C,90°C,100°C"
         print

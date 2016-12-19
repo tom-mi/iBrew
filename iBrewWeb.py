@@ -341,6 +341,9 @@ class BeverageHandler(GenericAPIHandler):
                 elif beverage == "white":
                     client.kettle_heat_white_tea()
                     response = { 'command status'  : Smarter.status_command(client.commandStatus) }
+                elif beverage == "milk":
+                    client.kettle_heat_milk()
+                    response = { 'command status'  : Smarter.status_command(client.commandStatus) }
                 elif beverage == "black":
                     client.kettle_heat_black_tea()
                     response = { 'command status'  : Smarter.status_command(client.commandStatus) }
@@ -1065,6 +1068,7 @@ class iBrewWeb(tornado.web.Application):
                     client = SmarterInterface(AppFolders.settings() + "/")
                     client.events = self.events
                     client.setHost(self.host)
+                    client.port = self.sport
                     client.dump = self.dump
                     client.dump_status = self.dump
                     client.connect()
@@ -1131,27 +1135,30 @@ class iBrewWeb(tornado.web.Application):
             raise SmarterError(WebServerStopWeb,"Web Server: Could not stop webserver")
 
 
-    def run(self,port,dump=False,host=""):
+    def run(self,bind="",port=Smarter.Port-1,dump=False,host="",sport=Smarter.Port):
         self.port = port
         self.isRunning = False
         self.dump = dump
         self.host = host
+        self.sport = port
+        self.bind = bind
         
         try:
-            self.listen(self.port, no_keep_alive = True)
+        
+            self.listen(self.port, no_keep_alive = True, address=self.bind)
         except Exception:
-            logging.error("Web Server: Couldn't open socket on port " + str(self.port))
-            raise SmarterError(WebServerListen,"Web Server: Couldn't open socket on port " + str(self.port))
+            logging.error("Web Server: Couldn't open socket on port " + self.bind + ":" +str(self.port))
+            raise SmarterError(WebServerListen,"Web Server: Couldn't open socket on port " + self.bind + ":" + str(self.port))
 
         try:
             self.autoconnect()
         except KeyboardInterrupt:
             self.kill()
-            raise SmarterError(WebServerStartFailed,"Web Server: Couldn't start on port " + str(self.port))
+            raise SmarterError(WebServerStartFailed,"Web Server: Couldn't start on port "+ self.bind + ":" + str(self.port))
             
         try:
             settings = {
-                "debug"         : True,
+                "debug"         : self.dump,
                 "template_path" : os.path.join(AppFolders.appBase(), 'web'),
                 "static_path"   : os.path.join(AppFolders.appBase(), 'resources'),
                 "static_url_prefix" : self.webroot + "/resources/", }
@@ -1178,7 +1185,7 @@ class iBrewWeb(tornado.web.Application):
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/hotplate/off/?",HotPlateOffHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/cups/([0-9]+)/?",CupsHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/(weak|normal|strong)/?",StrengthHandler),
-                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/(boil|coffee|white|green|black|oelong)/?",BeverageHandler),
+                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/(boil|coffee|white|green|black|oelong|milk)/?",BeverageHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/scan/?",WifiScanHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/join/(.+)/(.*)/?",WifiJoinHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/direct/?",WifiDirectHandler),
@@ -1229,7 +1236,7 @@ class iBrewWeb(tornado.web.Application):
         except Exception:
             print(traceback.format_exc())
             self.kill()
-            raise SmarterError(WebServerStartFailed,"Web Server: Couldn't start on port " + str(self.port))
+            raise SmarterError(WebServerStartFailed,"Web Server: Couldn't start on port " + self.bind + ":" + str(self.port))
 
         bonjour = iBrewBonjourThread(self.port)
         bonjour.start()
@@ -1239,7 +1246,7 @@ class iBrewWeb(tornado.web.Application):
             self.thread.start()
         except Exception:
             self.kill()
-            raise SmarterError(WebServerStartFailed,"Web Server: Couldn't start on port " + str(self.port))
+            raise SmarterError(WebServerStartFailed,"Web Server: Couldn't start on port " + self.bind + ":" + str(self.port))
 
 
         self.isRunning = True

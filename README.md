@@ -295,7 +295,7 @@ See the console section for the commands.
   iBrew Server
   ________________
 
-  Usage: ibrew (dump) (events) (fahrenheid) server (host:(port)) (rules) (host(:port))
+  Usage: ibrew (dump) (events) (fahrenheid) server (host:(port) (host:(port))
 
     dump                   dump message enabled
     events                 enable trigger events (monitor, relay, console)
@@ -361,6 +361,7 @@ The following commands are available, note that [] are manditory arguments and (
     20                     select keep water warm timer is set to 20 minutes
     status                 Get status
 
+    protocol               protocol information
     simulate               start kettle simulation
     relay ((ip:)port)      start relay
 
@@ -378,12 +379,13 @@ The following commands are available, note that [] are manditory arguments and (
     base                   show watersensor base value
     base [base]            store watersensor base value
     boil                   heat till 100°C
-    kettlecoffee           warms water for coffee 95°C
     calibrate              calibrates watersensor
     celsius                use celsius °C [console only]
     fahrenheid             use fahrenheid °F [console only]
     formula (temperature (keepwarm))] heat kettle in formula mode
     heat (temperature)(keepwarm))    heat kettle
+    kettlecoffee           warms water for coffee 95°C
+    milk                   warm  65°C
     settings [temperature] [keepwarm] [formula] [formulatemperature] store kettle user settings
     tea [green,white,oelong,black] warms water for tea 65°C,80°C,90°C,100°C
 
