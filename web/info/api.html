@@ -282,12 +282,17 @@
     
     <div class="tRow">
         <div class="CellApiDesc">Trigger add</div>
-        <div class="CellApi"><a href="/api/{{ escape(ip) }}/triggers/Domoticz/TEMPERATURE/http://www.test.com/§N">/triggers/(rules)</a></div>
+        <div class="CellApi"><a href="/api/{{ escape(ip) }}/triggers/Domoticz/add/TEMPERATURE/http://www.test.com/§N">/triggers/(group)/add/(trigger)/(url)</a></div>
     </div>
 
     <div class="tRow">
         <div class="CellApiDesc">Trigger remove</div>
-        <div class="CellApi"><a href="/api/{{ escape(ip) }}/triggers/Domoticz/TEMPERATURE">/block/(rules)</a></div>
+        <div class="CellApi"><a href="/api/{{ escape(ip) }}/triggers/Domoticz/TEMPERATURE">/triggers/(group)/delete/(trigger)</a></div>
+    </div>
+
+    <div class="tRow">
+        <div class="CellApiDesc">Trigger remove group</div>
+        <div class="CellApi"><a href="/api/{{ escape(ip) }}/triggers/Domoticz/delete">/triggers/(group)/delete</a></div>
     </div>
  </div>
 <br>

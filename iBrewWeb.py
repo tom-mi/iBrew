@@ -988,17 +988,23 @@ class TriggerHandler(GenericAPIHandler):
 
     def get(self, ip, group, trigger, http, url):
         if ip in self.application.clients:
-            print group
-            print trigger
-            print http + url
             client = self.application.clients[ip]
-            response = { 'method' : "subscribe"}
+            try:
+                print group
+                print trigger
+                print http+url
+                print "$$$$$$$"
+                print "$$$$$$$"
+                print "$$$$$$$"
+                
+                client.triggerAdd(group,trigger,http+url)
+                response = { 'command' : 'success' }
+            except Exception, e:
+                response = { 'error' : str(e) }
             self.setContentType()
             self.write(response)
         else:
             response = { 'error': 'no device' }
-        self.setContentType()
-        self.write(response)
 
 
 class UnTriggerHandler(GenericAPIHandler):
@@ -1006,36 +1012,42 @@ class UnTriggerHandler(GenericAPIHandler):
     def get(self, ip, group, trigger):
         if ip in self.application.clients:
             client = self.application.clients[ip]
-            print group
-            print trigger
-            response = { 'command ' : "unsubscribe"}
             try:
                 client.triggerDelete(group,trigger)
+                response = { 'command' : 'success' }
             except Exception, e:
                 response = { 'error' : str(e) }
-            
-            response = { 'method' : "unsubscribe"}
             self.setContentType()
             self.write(response)
         
         else:
             response = { 'error': 'no device' }
-        self.setContentType()
-        self.write(response)
 
-
-class TriggersHandler(GenericAPIHandler):
+class GroupUnTriggerHandler(GenericAPIHandler):
 
     def get(self, ip, group):
         if ip in self.application.clients:
             client = self.application.clients[ip]
-            
-            print group
+            try:
+                client.triggerGroupDelete(group)
+                response = { 'command' : 'success' }
+            except Exception, e:
+                response = { 'error' : str(e) }
+            self.setContentType()
+            self.write(response)
+        
+        else:
+            response = { 'error': 'no device' }
+
+
+class TriggersHandler(GenericAPIHandler):
+
+    def get(self, ip):
+        if ip in self.application.clients:
+            client = self.application.clients[ip]
             response = {}
-            for j in client.triggerGroups:
+            for j in client.triggersGroups:
                 tk = {}
-                print j[0]
-                print "HERE"
                 one = False
                 two = False
                 for i in Smarter.triggersKettle:
@@ -1056,15 +1068,51 @@ class TriggersHandler(GenericAPIHandler):
                 elif two:
                     response[j[0]] = { 'SmarterCoffee' : tc }
 
-            print response
-            print "DONE"
             self.setContentType()
             self.write(response)
         
         else:
             response = { 'error': 'no device' }
-        self.setContentType()
-        self.write(response)
+
+
+class TriggersGroupHandler(GenericAPIHandler):
+
+    def get(self, ip, group):
+        if ip in self.application.clients:
+            if group[-1] == '/':
+                group = group[:-1]
+
+            client = self.application.clients[ip]
+            if client.isTriggersGroup(group):
+                response = {}
+                j = client.getGroup(group)
+                tk = {}
+                one = False
+                two = False
+                for i in Smarter.triggersKettle:
+                    action = client.triggerGet(j[0],Smarter.triggersKettle[i][0].upper())
+                    if action != "":
+                        tk[Smarter.triggersKettle[i][0].upper()] = action
+                        one = True
+                tc = {}
+                for i in Smarter.triggersCoffee:
+                    action = client.triggerGet(j[0],Smarter.triggersCoffee[i][0].upper())
+                    if action != "":
+                        two = True
+                        tc[Smarter.triggersCoffee[i][0].upper()] = action
+                if one and two:
+                    response = { 'iKettle2.0' : tk, 'SmarterCoffee' : tc }
+                elif one:
+                    response = { 'iKettle2.0' : tk }
+                elif two:
+                    response = { 'SmarterCoffee' : tc }
+            else:
+                response = { 'error': 'trigger group not found' }
+            self.setContentType()
+            self.write(response)
+        
+        else:
+            response = { 'error': 'no device' }
 
 
 #------------------------------------------------------
@@ -1074,7 +1122,7 @@ class TriggersHandler(GenericAPIHandler):
 
 class iBrewWeb(tornado.web.Application):
 
-    version = '0.82'
+    version = '0.5.1.84'
     
     def start(self):
         tornado.ioloop.IOLoop.instance().start()
@@ -1288,9 +1336,11 @@ class iBrewWeb(tornado.web.Application):
 #                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/rules/patches/?",PatchesHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/rules/patch/(.+)/?",PatchHandler),
                 
-                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/triggers/([0-9,A-F,a-f]+)/([0-9,A-F,a-f]+)/(http|https)://(.+)?",TriggerHandler),
-                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/triggers/([0-9,A-F,a-f]+)/([0-9,A-F,a-f]+)?",UnTriggerHandler),
-                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/triggers/([0-9,A-F,a-f]*)?",TriggersHandler),
+                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/triggers/(.+)/add/(.+)/(http://|https://)(.+)?",TriggerHandler),
+                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/triggers/(.+)/delete/?",GroupUnTriggerHandler),
+                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/triggers/(.+)/delete/(.+)?",UnTriggerHandler),
+                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/triggers/(.+)/?",TriggersGroupHandler),
+                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/triggers/?",TriggersHandler),
                 
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/?",SettingsHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/default/?",SettingsDefaultHandler),

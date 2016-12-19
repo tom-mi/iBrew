@@ -3369,20 +3369,25 @@ class SmarterInterface:
                             self.triggersCoffee[j] = [(i,s)]
                     except Exception:
                         pass
+                print self.triggersCoffee
+                print self.triggersKettle
+                print self.triggersGroups
         except Exception:
             pass
 
 
     def triggerAdd(self,group,trigger,action):
-        if not self.__isGroup(group):
+        if not self.isTriggersGroup(group):
             self.triggersGroups += [(group,True,"1")]
         self.triggerSet(group,trigger.upper(),action)
         if self.dump:
-            logging.debug("Added: " + group + ":" + trigger.upper() + ":" + action )
+            logging.debug("Trigger " + trigger.upper() + " added to group " + group + " with action " + action )
         self.__write_triggers()
 
 
     def triggerGroupDelete(self,group):
+        if self.dump:
+            logging.debug("Deleting trigger group: " + group )
         for k in Smarter.triggersKettle:
             self.__triggerDelete(group,Smarter.triggersKettle[k][0])
         for c in Smarter.triggersCoffee:
@@ -3392,13 +3397,14 @@ class SmarterInterface:
             if group == self.triggersGroups[i][0]:
                 del self.triggersGroups[i]
                 break
-        
         self.__write_triggers()
     
 
     def __triggerDelete(self,group,trigger):
+        if self.dump:
+            logging.debug("Deleting trigger " + trigger.upper() + " from group: " + group )
         id = Smarter.triggerID(trigger.upper())
-        if self.__isGroup(group):
+        if self.isTriggersGroup(group):
             if id in self.triggersKettle:
                 if len(self.triggersKettle[id]) != 0:
                     for i in range(0,len(self.triggersKettle[id])):
@@ -3411,8 +3417,11 @@ class SmarterInterface:
                             del self.triggersCoffee[id][i]
         else:
             raise SmarterErrorOld("Trigger group not found")
-            
+
+
     def triggerDelete(self,group,trigger):
+        if self.dump:
+            logging.debug("Deleting trigger: " + trigger.upper() + " from group " + group )
         self.__triggerDelete(group,trigger)
         self.__write_triggers()
 
@@ -3501,12 +3510,14 @@ class SmarterInterface:
         self.__write_triggers()
 
 
-    def __isGroup(self,group):
+    def isTriggersGroup(self,group):
         for i in self.triggersGroups:
             if i[0] == group:
                 return True
         return False
 
+    def getGroup(self,group):
+        return self.triggersGroups[self.__findGroup(group)]
 
     def __findGroup(self,group):
         for i in range(0,len(self.triggersGroups)):
@@ -3516,18 +3527,18 @@ class SmarterInterface:
         
 
     def enableGroup(self,group):
-        if self.__isGroup(group):
+        if self.isTriggersGroup(group):
             print "Trigger group enabled " + group
-            self.triggersGroups[self.__findGroup(group)][1] = True
+            self.getGroup(group)[1] = True
             self.__write_triggers()
             return
         raise SmarterErrorOld("Trigger group not found")
 
 
     def disableGroup(self,group):
-        if self.__isGroup(group):
+        if self.isTriggersGroup(group):
             print "Trigger group disabled " + group
-            self.triggersGroups[self.__findGroup(group)][1] = False
+            self.getGroup(group)[1] = False
             self.__write_triggers()
             return
         raise SmarterErrorOld("Trigger group not found")
@@ -3535,9 +3546,9 @@ class SmarterInterface:
      
     
     def boolsGroup(self,group,bools):
-        if self.__isGroup(group):
+        if self.isTriggersGroup(group):
             print "Trigger group " + group + " setting state type " + "/".join(Smarter.triggerCheckBooleans(bools))
-            self.triggersGroups[self.__findGroup(group)][2] = Smarter.triggerCheckBooleans(bools)
+            self.getGroup(group)[2] = Smarter.triggerCheckBooleans(bools)
             self.__write_triggers()
             return
         raise SmarterErrorOld("Trigger group not found")
