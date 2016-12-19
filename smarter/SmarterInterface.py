@@ -204,6 +204,7 @@ class SmarterInterfaceLegacy():
     
     
     def connect(self,monitor=False):
+        
         self.disconnect()
 
         if self.emulation and self.dump:
@@ -217,29 +218,31 @@ class SmarterInterfaceLegacy():
 
         if self.dump:
             logging.debug("[" + self.host + ":" + str(self.port) + "] Connecting")
+        
         if self.simulation:
             return
         
         try:
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             # settimeout at least 2
-            self.socket.settimeout(2)
+            self.socket.settimeout(10)
             self.socket.connect((self.host,self.port))
         except socket.timeout:
             raise SmarterErrorOld("Could not connect to " + self.host + ":" +  str(self.port))
         except socket.error:
             raise SmarterErrorOld("Could not connect to " + self.host + ":" +  str(self.port))
         
+
         try:
             self.socket.send(SmarterLegacy.commandHandshake+"\n")
-            data = self.socket.recv(self.__bufferSize)
+            data = self.socket.recv(len(SmarterLegacy.commandHandshake)+1)
         except socket.timeout:
             raise SmarterErrorOld("No kettle found at " + self.host + ":" +  str(self.port))
             self.disconnect()
         except socket.error:
             raise SmarterErrorOld("No kettle found at " + self.host + ":" +  str(self.port))
             self.disconnect()
-        
+
         if len(data) < 8:
             self.disconnect()
             raise SmarterErrorOld("No kettle found at " + self.host + ":" +  str(self.port))
@@ -260,11 +263,14 @@ class SmarterInterfaceLegacy():
 
     def __read(self):
         try:
-            data = self.socket.recv(self.__bufferSize)[:-1]
+            d = self.socket.recv(1)
+            data = d
+            while d != '\r':
+                d = self.socket.recv(1)
+                data += d
         except socket.timeout:
             data = None
-        return data
-
+        return data[:-1]
 
     def send(self,command):
         if self.emulation:
@@ -272,8 +278,11 @@ class SmarterInterfaceLegacy():
         elif self.simulation:
             response = self.sim_response(command)
         else:
+            print "HERE@#$%"
             if not self.connected:
+                print self.connected
                 self.connect()
+            print "HERE@#$%1"
             if self.dump:
                 logging.debug("[" + self.host + ":" + str(self.port) + "] Sending: " + SmarterLegacy.command_to_commandText(command) + " [" + command + "]")
             try:
@@ -283,7 +292,10 @@ class SmarterInterfaceLegacy():
                 raise SmarterErrorOld("[" + self.host + ":" + str(self.port) + "] Connection timed out")
             response = []
             try:
-                for i in range(0,3):
+                m = 1
+                if command == SmarterLegacy.commandHandshake:
+                    m = 3
+                for i in range(0,m):
                     data = self.__read()
                     if data is None:
                         break;
@@ -293,8 +305,9 @@ class SmarterInterfaceLegacy():
                         logging.debug("[" + self.host + ":" + str(self.port) + "] Received: " + s + " [" + data + "]")
                         self.__decode_response(data)
             except Exception, e:
-                print str(e)
-
+                raise SmarterErrorOld("[" + self.host + ":" + str(self.port) + "] Connection timed out")
+        print "GGGG"
+        print response
         return response
     
 
@@ -650,26 +663,42 @@ class SmarterInterfaceLegacy():
 
     def __relayHandler(self,clientsock,addr):
         logging.info("[" + self.relayHost + ":" + str(self.relayPort) + "] [" + addr[0] + ":" + str(addr[1]) + "] Legacy client connected")
-        clientsock.setblocking(1)
+
         while self.relay:
-            command = clientsock.recv(100)
+            #try:
+            command = clientsock.recv(40)
             if not command:
                 break
+            #except:
+            #    continue
             command = command[:-1]
-            self.__clients[(clientsock, addr)].acquire()
+            print command
             logging.debug("[" + self.host + ":" + str(self.port)  + "] [" + self.relayHost + ":" + str(self.relayPort) + "] [" + addr[0] + ":" + str(addr[1]) + "] Legacy command relay [" + command + "] " + SmarterLegacy.command_to_string(command))
+
+            self.__clients[(clientsock, addr)].acquire()
 
             if self.simulation:
                 responses = self.sim_response(command)
             if self.emulation:
                 responses = self.emu_passthrough(command)
             else:
-                responses = self.send(command)
-
+                try:
+                    responses = self.send(command)
+                    print "HERETTTT"
+                    print responses
+                except Exception, e:
+                    self.disconnect()
+                    print str(e)
+                    raise SmarterErrorOld("Could not send command to device")
+            
+            print responses
+            
             for r in responses:
-                clientsock.send(r+"\r")
-                
                 logging.debug("[" + self.host + ":" + str(self.port)  + "] [" + self.relayHost + ":" + str(self.relayPort) + "] [" + addr[0] + ":" + str(addr[1]) + "] Legacy response relay [" + r + "] " + SmarterLegacy.string_response(r))
+                print "SENDING " + r
+                clientsock.send(r+"\r")
+                print "HERE!"
+                
 
             self.__clients[(clientsock, addr)].release()
         logging.info("[" + self.relayHost + ":" + str(self.relayPort) + "] [" + addr[0] + ":" + str(addr[1]) + "] Legacy client disconnected")
@@ -678,13 +707,13 @@ class SmarterInterfaceLegacy():
 
 
     def __relay(self):
-        self.serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.relay_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.relay_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         # settimeout at least 2
-        self.serversocket.settimeout(2)
+        self.relay_socket.settimeout(5)
         try:
-            self.serversocket.bind((self.relayHost,self.relayPort))
-            self.serversocket.listen(20)
+            self.relay_socket.bind((self.relayHost,self.relayPort))
+            self.relay_socket.listen(20)
         except socket.error, e:
             self.relay = False
             logging.debug("[" + self.host + ":" + str(self.port)  + "] " + str(e))
@@ -699,7 +728,9 @@ class SmarterInterfaceLegacy():
         
         while self.relay:
             try:
-                clientsock, addr = self.serversocket.accept()
+                clientsock, addr = self.relay_socket.accept()
+                # setblocking for OSX NEEDED!
+                clientsock.setblocking(1)
                 self.__clients[(clientsock, addr)] = threading.Lock()
                 try:
                     r = threading.Thread(target=self.__relayHandler,args=(clientsock,addr))
@@ -711,6 +742,7 @@ class SmarterInterfaceLegacy():
 
 
     def relay_start(self,host="",port=SmarterLegacy.Port):
+        self.connect()
         self.relayHost = host
         self.relayPort = port
         self.relay = True
@@ -1014,14 +1046,6 @@ class SmarterInterface:
         self.__init()
 
         self.iKettle                      = SmarterInterfaceLegacy()
-        """
-        self.iKettle.dump                 = True
-        self.iKettle.bridge(self)
-        self.iKettle.emu_trigger_heating(self.heaterOn)
-        self.iKettle.emu_trigger_temperature(False)
-        self.iKettle.emu_trigger_onbase(self.onBase)
-        self.emulate                      = True
-        """
         self.emulate                      = False
 
         try:
@@ -1049,6 +1073,19 @@ class SmarterInterface:
         self.__read_triggers()
         self.__write_stats()
 
+    def emulate(self):
+        self.simulate = True
+        self.iKettle.dump = True
+        self.iKettle.bridge(self)
+        self.iKettle.emu_trigger_heating(self.heaterOn)
+        self.iKettle.emu_trigger_temperature(False)
+        self.iKettle.emu_trigger_onbase(self.onBase)
+        self.emulate = True
+
+    def simulate(self):
+        self.client.simulate = True
+        self.client.setHost("simulation")
+                
     #------------------------------------------------------
     # STATS
     #------------------------------------------------------
@@ -1263,9 +1300,8 @@ class SmarterInterface:
 
     def __relayHandler(self,clientsock,addr):
         logging.info(addr[0] + ":" + str(addr[1]) + " Client connected")
-        clientsock.setblocking(1)
         while self.relay:
-            data = clientsock.recv(100)
+            data = clientsock.recv(1024)
             if not data:
                 break
 
@@ -1313,13 +1349,13 @@ class SmarterInterface:
 
 
     def __relay(self):
-        self.serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.relay_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.relay_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         # settimeout at least 2
-        self.serversocket.settimeout(2)
+        self.relay_socket.settimeout(2)
         try:
-            self.serversocket.bind((self.relayHost,self.relayPort))
-            self.serversocket.listen(20)
+            self.relay_socket.bind((self.relayHost,self.relayPort))
+            self.relay_socket.listen(20)
         except socket.error:
             return
         except Exception:
@@ -1331,7 +1367,8 @@ class SmarterInterface:
         
         while self.relay:
             try:
-                clientsock, addr = self.serversocket.accept()
+                clientsock, addr = self.relay_socket.accept()
+                clientsock.setblocking(1)
                 self.__clients[(clientsock, addr)] = threading.Lock()
                 try:
                     r = threading.Thread(target=self.__relayHandler,args=(clientsock,addr))
