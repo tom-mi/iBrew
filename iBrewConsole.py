@@ -450,7 +450,7 @@ class iBrewConsole:
                     arguments = arguments[1:]
                     numarg -= 1
                 if not self.console:
-                    self.client.fast   = False
+                    self.client.fast = False
                 else:
                     print "iBrew: \'kettle\' not available in the console"
 
@@ -603,7 +603,7 @@ class iBrewConsole:
                     if self.client.dump:
                         self.client.print_rules_short()
                 
-            if command == "status":
+            if command == "status" and numarg > 0:
                 self.client.fast = False
                 try:
                     self.client.device_all_settings()
@@ -636,7 +636,8 @@ class iBrewConsole:
                                             self.app_info()
                                             self.usage()
                                             self.commands()
-            elif command == "shortstatus":  self.client.print_short_status()
+            # shortstatus is legacy ibrew command
+            elif command == "shortstatus" or (numarg == 0 and command == "status"):  self.client.print_short_status()
             elif command == "usage":        self.usage()
             elif command == "rules":
                                             if numarg >= 1:
@@ -791,6 +792,7 @@ class iBrewConsole:
                                             self.joke()
                                             print
             elif command == "stats":        self.client.print_stats()
+            # web is legacy ibrew command
             elif command == "server" or command == "web":
                                             if not self.console:
                                                 if numarg == 0:
@@ -1012,7 +1014,7 @@ class iBrewConsole:
             elif command == "time":
                                             print "not yet implemented"
                                             self.client.device_time()
-            
+            # status full
             elif command == "status":       self.client.print_status()
             else:
                                             try:
@@ -1199,9 +1201,8 @@ class iBrewConsole:
         print "    info                   appliance info"
         print "    list                   list detected appliances"
         print "    reset                  reset appliance to default"
-        print "    shortstatus            show status"
         print "    start                  start the appliance"
-        print "    status                 show full status"
+        print "    status (full)          show status"
         print "    settings               show user settings"
         print "    stop                   stop the appliance"
         print
@@ -1243,22 +1244,6 @@ class iBrewConsole:
         print "    rejoin                 rejoins current wireless network [not in direct mode]"
         print "    scan                   scan wireless networks"
         print
-        print "  Triggers"
-        print "    trigger add [group] [trigger] [action] add trigger to a group"
-        print "    trigger delete [group] (trigger) delete trigger or group triggers"
-        print "    trigger groups         show list of groups"
-        print "    trigger [group]        show triggers of group"
-        print "    trigger                show all triggers"
-        print "    trigger [group] [bool] enabled/disable trigger group"
-        print "    trigger [group] state [bool] set group state output"
-        print
-        print "  Actions can either be a path to a command or url"
-        print
-        print "  Trigger actions examples:"
-        print "    C:\SCRIPTS\SENSOR.BAT §O §N"
-        print "    /home/pi/iBrew/scripts/smarthome.sh Temperature §O §N"
-        print "    http://smarthome.local/?idx=34&value=§N"
-        print
         print "  Smarter Network Commands"
         print "    connect (host) (rules&modifiers) connect to appliance"
         print "    block [rules]          block messages with groups or ids"
@@ -1293,6 +1278,22 @@ class iBrewConsole:
         print "    VAR                VALUE"
         print "    temperaturelimit   STATE or [0..100]  kettle can not heat above VALUE degrees"
         print "    childprotection    STATE              kettle can not heat above 45 degrees"
+        print
+        print "  Triggers"
+        print "    trigger add [group] [trigger] [action] add trigger to a group"
+        print "    trigger delete [group] (trigger) delete trigger or group triggers"
+        print "    trigger groups         show list of groups"
+        print "    trigger [group]        show triggers of group"
+        print "    trigger                show all triggers"
+        print "    trigger [group] [bool] enabled/disable trigger group"
+        print "    trigger [group] state [bool] set group state output"
+        print
+        print "  Actions can either be a path to a command or url"
+        print
+        print "  Trigger actions examples:"
+        print "    C:\SCRIPTS\SENSOR.BAT §O §N"
+        print "    /home/pi/iBrew/scripts/smarthome.sh Temperature §O §N"
+        print "    http://smarthome.local/?idx=34&value=§N"
         print
         print "  Debug Commands"
         print "    time [time]            set the appliance time"
@@ -1347,7 +1348,7 @@ class iBrewConsole:
         print "    console (rules) (modifiers) start console [command line only]"
         print "    joke                   show joke"
         print "    license                show license"
-        print "    license disagree       stop using license [command line only]"
+        #print "    license disagree       stop using license [command line only]"
         print "    quit                   quit console [console only]"
         print
 
@@ -1374,6 +1375,6 @@ class iBrewConsole:
         print "    block in:wifi,in:02          Block wifi and [" + Smarter.message_description(02) + "] command to appliance"
         print "    brew 4 10 beans strong   Brew 4 cups of strong coffee using the beans keeping the hotplate on for 10 minutes"
         print "    join MyWifi p@ssw0rd     Joins MyWifi wireless network using p@ssw0rd as credential"
-        print "    settings 100 20 True 75  Set default user settings for the kettle to..."
+        print "    settings 100 20 On 75    Set default user settings for the kettle to..."
         print
 

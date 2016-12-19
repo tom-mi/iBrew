@@ -1328,12 +1328,12 @@ class SmarterProtocol:
 
 
     def string_to_bool(self,boolean):
-        if boolean.lower() == "on" or boolean.lower() == "true" or boolean.lower() == "1" or boolean.lower() == "enabled":
+        if boolean.lower() == "on" or boolean.lower() == "true" or boolean.lower() == "1" or boolean.lower() == "enabled" or boolean.lower() == "active" or boolean.lower() == "yes":
             return True
-        if boolean.lower() == "off" or boolean.lower() == "false" or boolean.lower() == "0" or boolean.lower() == "disabled":
+        if boolean.lower() == "off" or boolean.lower() == "false" or boolean.lower() == "0" or boolean.lower() == "disabled" or boolean.lower() == "not" or boolean.lower() == "no":
             return False
         else:
-            raise SmarterErrorOld("Unknown boolean [true,false 1,0 on,off enabled,disabled]: " + str(boolean))
+            raise SmarterErrorOld("Unknown boolean [true,false 1,0 on,off enabled,disabled yes,no]: " + str(boolean))
 
     #------------------------------------------------------
     # CUPS ARGUMENT WRAPPER

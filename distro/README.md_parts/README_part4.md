@@ -341,7 +341,7 @@ Fill in your own device host (either IP address or hostname) and location to iBr
 			"name": "iKettle 2.0",
 			"on_cmd": "/Users/Tristan/Coding/iBrew/ibrew start 10.0.0.99",
 			"off_cmd": "/Users/Tristan/Coding/iBrew/ibrew stop 10.0.0.99",
-			"state_cmd": "/Users/Tristan/Coding/iBrew/ibrew shortstatus 10.0.0.99 | grep 'busy'",
+			"state_cmd": "/Users/Tristan/Coding/iBrew/ibrew status 10.0.0.99 | grep 'busy'",
             "manufacturer": "iBrew",
             "model": "iBrew iKettle 2.0",
             "serial": "44DE2AD79BC",
@@ -359,7 +359,7 @@ Fill in your own device host (either IP address or hostname) and location to iBr
 			"name": "Smarter Coffee",
 			"on_cmd": "/Users/Tristan/Coding/iBrew/ibrew start 10.0.0.89",
 			"off_cmd": "/Users/Tristan/Coding/iBrew/ibrew stop 10.0.0.89",
-			"state_cmd": "/Users/Tristan/Coding/iBrew/ibrew shortstatus 10.0.0.89 | grep 'busy'",
+			"state_cmd": "/Users/Tristan/Coding/iBrew/ibrew status 10.0.0.89 | grep 'busy'",
             "manufacturer": "iBrew",
             "model": "iBrew Smarter Coffee",
             "serial": "44DE3AD79BC",
@@ -393,7 +393,7 @@ example config file for iKettle 2.0.
 			"name": "iKettle 2.0",
 			"on_cmd": "/Users/Tristan/Coding/iBrew/ibrew start 10.0.0.99",
 			"off_cmd": "/Users/Tristan/Coding/iBrew/ibrew stop 10.0.0.99",
-			"state_cmd": "/Users/Tristan/Coding/iBrew/ibrew shortstatus 10.0.0.99 | grep 'busy'",
+			"state_cmd": "/Users/Tristan/Coding/iBrew/ibrew status 10.0.0.99 | grep 'busy'",
             "manufacturer": "iBrew",
             "model": "iKettle 2.0 Intermezzo",
             "serial": "44DE2AD79BC",
@@ -432,7 +432,7 @@ ibrewstatus.sh
 
 ```
 #!/bin/bash
-CMD=`ibrew shortstatus <your kettle IP> |grep busy`
+CMD=`ibrew status <your kettle IP> |grep busy`
 if [ -z "$CMD" ];then
         exit 1
 else
