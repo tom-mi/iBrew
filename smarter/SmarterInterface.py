@@ -222,7 +222,8 @@ class SmarterInterfaceLegacy():
         
         try:
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.socket.settimeout(1)
+            # settimeout at least 2
+            self.socket.settimeout(2)
             self.socket.connect((self.host,self.port))
         except socket.timeout:
             raise SmarterErrorOld("Could not connect to " + self.host + ":" +  str(self.port))
@@ -679,7 +680,8 @@ class SmarterInterfaceLegacy():
     def __relay(self):
         self.serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.serversocket.settimeout(3)
+        # settimeout at least 2
+        self.serversocket.settimeout(2)
         try:
             self.serversocket.bind((self.relayHost,self.relayPort))
             self.serversocket.listen(20)
@@ -1313,7 +1315,8 @@ class SmarterInterface:
     def __relay(self):
         self.serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.serversocket.settimeout(1)
+        # settimeout at least 2
+        self.serversocket.settimeout(2)
         try:
             self.serversocket.bind((self.relayHost,self.relayPort))
             self.serversocket.listen(20)
