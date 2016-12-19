@@ -990,13 +990,11 @@ class TriggerHandler(GenericAPIHandler):
         if ip in self.application.clients:
             client = self.application.clients[ip]
             try:
-                print group
-                print trigger
+                print "$$$$$$$"
+                print "$$$$$$$"
                 print http+url
                 print "$$$$$$$"
                 print "$$$$$$$"
-                print "$$$$$$$"
-                
                 client.triggerAdd(group,trigger,http+url)
                 response = { 'command' : 'success' }
             except Exception, e:

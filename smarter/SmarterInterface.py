@@ -3270,8 +3270,6 @@ class SmarterInterface:
             #if self.isKettle:
             for j in Smarter.triggersKettle:
                 try:
-                    #print Smarter.triggerName(j)
-                    #print self.triggerGet(i,Smarter.triggerName(j))
                     config.set(section+"."+i, Smarter.triggerName(j),self.triggerGet(i,Smarter.triggerName(j)))
                 except Exception, e:
                     pass # logging.warning("Error reading triggers " + str(e))
@@ -3373,8 +3371,7 @@ class SmarterInterface:
 
         try:
             g = config.get(section, "groups").split(",")
-            #print g
-            #print self.host
+
             for i in g:
                 print i
         
@@ -3387,13 +3384,11 @@ class SmarterInterface:
                 if not self.isTriggersGroup(i):
                     self.triggersGroups += [[i,Smarter.string_to_bool(a),Smarter.triggerCheckBooleans(s)]]
              
-                #print section+"."+i
                 for j in Smarter.triggersKettle:
                     try:
                         s = config.get(section+"."+i, Smarter.triggerName(j))
                         
                         if s != "":
-                            #print s
                             self.triggersKettle[j] = [(i,s)]
                     except Exception:
                         pass # logging.warning("Error reading triggers " + str(e))
@@ -3409,9 +3404,6 @@ class SmarterInterface:
         except Exception, e:
             pass # logging.warning("Error reading triggers " + str(e))
 
-        #print self.triggersCoffee
-        #print self.triggersKettle
-        #print self.triggersGroups
 
     def triggerAdd(self,group,trigger,action):
         if not self.isTriggersGroup(group):
@@ -3528,14 +3520,10 @@ class SmarterInterface:
     def triggerSet(self,group,trigger,action):
         id = Smarter.triggerID(trigger.upper())
         if id in Smarter.triggersKettle:
-            print "DDSDSDS"
-            print self.triggersKettle
             if len(self.triggersKettle[id]) != 0:
                 for i in range(0,len(self.triggersKettle[id])):
                     if self.triggersKettle[id][i][0] == group:
                         del self.triggersKettle[id][i]
-            print group
-            print action
             self.triggersKettle[id] += [(group,action)]
             # it should be the trigger of the group only.. FU!
             self.__triggerHeartBeat(id)
@@ -3549,7 +3537,6 @@ class SmarterInterface:
             self.triggersCoffee[id] += [(group,action)]
             # it should be the trigger of the group only.. FU!
             self.__triggerHeartBeat(id)
-        print "HERE"
         self.__write_triggers()
 
 
