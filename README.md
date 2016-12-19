@@ -369,9 +369,8 @@ The following commands are available, note that [] are manditory arguments and (
     info                   appliance info
     list                   list detected appliances
     reset                  reset appliance to default
-    shortstatus            show status
     start                  start the appliance
-    status                 show full status
+    status (full)          show status
     settings               show user settings
     stop                   stop the appliance
 
@@ -411,22 +410,6 @@ The following commands are available, note that [] are manditory arguments and (
     rejoin                 rejoins current wireless network [not in direct mode]
     scan                   scan wireless networks
 
-  Triggers
-    trigger add [group] [trigger] [action] add trigger to a group
-    trigger delete [group] (trigger) delete trigger or group triggers
-    trigger groups         show list of groups
-    trigger [group]        show triggers of group
-    trigger                show all triggers
-    trigger [group] [bool] enabled/disable trigger group
-    trigger [group] state [bool] set group state output
-
-  Actions can either be a path to a command or url
-
-  Trigger actions examples:
-    C:\SCRIPTS\SENSOR.BAT §O §N
-    /home/pi/iBrew/scripts/smarthome.sh Temperature §O §N
-    http://smarthome.local/?idx=34&value=§N
-
   Smarter Network Commands
     connect (host) (rules&modifiers) connect to appliance
     block [rules]          block messages with groups or ids
@@ -462,6 +445,22 @@ The following commands are available, note that [] are manditory arguments and (
     temperaturelimit   STATE or [0..100]  kettle can not heat above VALUE degrees
     childprotection    STATE              kettle can not heat above 45 degrees
 
+  Triggers
+    trigger add [group] [trigger] [action] add trigger to a group
+    trigger delete [group] (trigger) delete trigger or group triggers
+    trigger groups         show list of groups
+    trigger [group]        show triggers of group
+    trigger                show all triggers
+    trigger [group] [bool] enabled/disable trigger group
+    trigger [group] state [bool] set group state output
+
+  Actions can either be a path to a command or url
+
+  Trigger actions examples:
+    C:\SCRIPTS\SENSOR.BAT §O §N
+    /home/pi/iBrew/scripts/smarthome.sh Temperature §O §N
+    http://smarthome.local/?idx=34&value=§N
+
   Debug Commands
     time [time]            set the appliance time
     firmware               show firmware Wifi
@@ -488,7 +487,6 @@ The following commands are available, note that [] are manditory arguments and (
     console (rules) (modifiers) start console [command line only]
     joke                   show joke
     license                show license
-    license disagree       stop using license [command line only]
     quit                   quit console [console only]
 
 
@@ -522,7 +520,7 @@ Alternativly you can run a console to test out the commands. start the console w
     block in:wifi,in:02          Block wifi and [Set appliance time] command to appliance
     brew 4 10 beans strong   Brew 4 cups of strong coffee using the beans keeping the hotplate on for 10 minutes
     join MyWifi p@ssw0rd     Joins MyWifi wireless network using p@ssw0rd as credential
-    settings 100 20 True 75  Set default user settings for the kettle to...
+    settings 100 20 On 75    Set default user settings for the kettle to...
 
 
 ```
@@ -867,7 +865,7 @@ Fill in your own device host (either IP address or hostname) and location to iBr
 			"name": "iKettle 2.0",
 			"on_cmd": "/Users/Tristan/Coding/iBrew/ibrew start 10.0.0.99",
 			"off_cmd": "/Users/Tristan/Coding/iBrew/ibrew stop 10.0.0.99",
-			"state_cmd": "/Users/Tristan/Coding/iBrew/ibrew shortstatus 10.0.0.99 | grep 'busy'",
+			"state_cmd": "/Users/Tristan/Coding/iBrew/ibrew status 10.0.0.99 | grep 'busy'",
             "manufacturer": "iBrew",
             "model": "iBrew iKettle 2.0",
             "serial": "44DE2AD79BC",
@@ -885,7 +883,7 @@ Fill in your own device host (either IP address or hostname) and location to iBr
 			"name": "Smarter Coffee",
 			"on_cmd": "/Users/Tristan/Coding/iBrew/ibrew start 10.0.0.89",
 			"off_cmd": "/Users/Tristan/Coding/iBrew/ibrew stop 10.0.0.89",
-			"state_cmd": "/Users/Tristan/Coding/iBrew/ibrew shortstatus 10.0.0.89 | grep 'busy'",
+			"state_cmd": "/Users/Tristan/Coding/iBrew/ibrew status 10.0.0.89 | grep 'busy'",
             "manufacturer": "iBrew",
             "model": "iBrew Smarter Coffee",
             "serial": "44DE3AD79BC",
@@ -919,7 +917,7 @@ example config file for iKettle 2.0.
 			"name": "iKettle 2.0",
 			"on_cmd": "/Users/Tristan/Coding/iBrew/ibrew start 10.0.0.99",
 			"off_cmd": "/Users/Tristan/Coding/iBrew/ibrew stop 10.0.0.99",
-			"state_cmd": "/Users/Tristan/Coding/iBrew/ibrew shortstatus 10.0.0.99 | grep 'busy'",
+			"state_cmd": "/Users/Tristan/Coding/iBrew/ibrew status 10.0.0.99 | grep 'busy'",
             "manufacturer": "iBrew",
             "model": "iKettle 2.0 Intermezzo",
             "serial": "44DE2AD79BC",
@@ -958,7 +956,7 @@ ibrewstatus.sh
 
 ```
 #!/bin/bash
-CMD=`ibrew shortstatus <your kettle IP> |grep busy`
+CMD=`ibrew status <your kettle IP> |grep busy`
 if [ -z "$CMD" ];then
         exit 1
 else
