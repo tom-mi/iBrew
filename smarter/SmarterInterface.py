@@ -35,7 +35,7 @@ from SmarterProtocol import *
 #
 # https://github.com/Tristan79/iBrew
 #
-# Copyright © 2016-2017 Tristan (@monkeycat.nl). All Rights Reserved
+# Copyright © 2017 Tristan (@monkeycat.nl). All Rights Reserved
 #
 # The Dream Tea
 #------------------------------------------------------
@@ -3204,7 +3204,7 @@ class SmarterInterface:
 
 
     # format Name,Active,Bool format
-    triggerGroups = []
+    triggersGroups = []
     
     # format {(group,sensorid,command),...(group,sensorid,command)}
     triggersKettle = {
@@ -3282,7 +3282,7 @@ class SmarterInterface:
 
         try:
             g = []
-            for i in self.triggerGroups:
+            for i in self.triggersGroups:
                 g += [i[0]]
             
             config.set(section, "groups", ','.join(g))
@@ -3295,8 +3295,8 @@ class SmarterInterface:
             except DuplicateSectionError:
                 pass
             try:
-                config.set(section+"."+i, "Active", str(self.triggerGroups[self.__findGroup(i)][1]))
-                config.set(section+"."+i, "State", str(self.triggerGroups[self.__findGroup(i)][2][0]))
+                config.set(section+"."+i, "Active", str(self.triggersGroups[self.__findGroup(i)][1]))
+                config.set(section+"."+i, "State", str(self.triggersGroups[self.__findGroup(i)][2][0]))
             except Exception:
                 pass
 
@@ -3321,7 +3321,6 @@ class SmarterInterface:
 
     @_threadsafe_function
     def __read_triggers(self):
-
         section = self.host + "." + str(self.port) + ".triggers"
         #if self.isKettle:
         #    section += ".kettle"
@@ -3330,6 +3329,10 @@ class SmarterInterface:
         #else:
         #    return
 
+        self.triggersGroups = []
+        self.triggersKettle = dict()
+        self.triggersCoffee = dict()
+        
         config = SafeConfigParser()
 
         if not os.path.exists(self.settingsPath):
@@ -3345,23 +3348,25 @@ class SmarterInterface:
 
         try:
             g = config.get(section, "groups").split(",")
-            self.triggerGroups = []
+
             for i in g:
                 a = config.get(section+"."+i, "Active")
                 s = config.get(section+"."+i, "State")
-                self.triggerGroups += [[i,Smarter.string_to_bool(a),Smarter.triggerCheckBooleans(s)]]
+                self.triggersGroups += [[i,Smarter.string_to_bool(a),Smarter.triggerCheckBooleans(s)]]
                 
                 for j in Smarter.triggersKettle:
                     try:
                         s = config.get(section+"."+i, Smarter.triggerName(j))
-                        if s != "": self.triggersKettle[j] += [(i,s)]
+                        if s != "":
+                            self.triggersKettle[j] = [(i,s)]
                     except Exception:
                         pass
                 
                 for j in Smarter.triggersCoffee:
                     try:
                         s = config.get(section+"."+i, Smarter.triggerName(j))
-                        if s != "": self.triggersCoffee[j] += [(i,s)]
+                        if s != "":
+                            self.triggersCoffee[j] = [(i,s)]
                     except Exception:
                         pass
         except Exception:
@@ -3370,7 +3375,7 @@ class SmarterInterface:
 
     def triggerAdd(self,group,trigger,action):
         if not self.__isGroup(group):
-            self.triggerGroups += [(group,True,"1")]
+            self.triggersGroups += [(group,True,"1")]
         self.triggerSet(group,trigger.upper(),action)
         if self.dump:
             logging.debug("Added: " + group + ":" + trigger.upper() + ":" + action )
@@ -3383,9 +3388,9 @@ class SmarterInterface:
         for c in Smarter.triggersCoffee:
              self.__triggerDelete(group,Smarter.triggersCoffee[c][0])
         
-        for i in range(0,len(self.triggerGroups)):
-            if group == self.triggerGroups[i][0]:
-                del self.triggerGroups[i]
+        for i in range(0,len(self.triggersGroups)):
+            if group == self.triggersGroups[i][0]:
+                del self.triggersGroups[i]
                 break
         
         self.__write_triggers()
@@ -3497,15 +3502,15 @@ class SmarterInterface:
 
 
     def __isGroup(self,group):
-        for i in self.triggerGroups:
+        for i in self.triggersGroups:
             if i[0] == group:
                 return True
         return False
 
 
     def __findGroup(self,group):
-        for i in range(0,len(self.triggerGroups)):
-            if self.triggerGroups[i][0] == group:
+        for i in range(0,len(self.triggersGroups)):
+            if self.triggersGroups[i][0] == group:
                 return i
         raise SmarterErrorOld("Trigger group not found")
         
@@ -3513,7 +3518,7 @@ class SmarterInterface:
     def enableGroup(self,group):
         if self.__isGroup(group):
             print "Trigger group enabled " + group
-            self.triggerGroups[self.__findGroup(group)][1] = True
+            self.triggersGroups[self.__findGroup(group)][1] = True
             self.__write_triggers()
             return
         raise SmarterErrorOld("Trigger group not found")
@@ -3522,7 +3527,7 @@ class SmarterInterface:
     def disableGroup(self,group):
         if self.__isGroup(group):
             print "Trigger group disabled " + group
-            self.triggerGroups[self.__findGroup(group)][1] = False
+            self.triggersGroups[self.__findGroup(group)][1] = False
             self.__write_triggers()
             return
         raise SmarterErrorOld("Trigger group not found")
@@ -3532,7 +3537,7 @@ class SmarterInterface:
     def boolsGroup(self,group,bools):
         if self.__isGroup(group):
             print "Trigger group " + group + " setting state type " + "/".join(Smarter.triggerCheckBooleans(bools))
-            self.triggerGroups[self.__findGroup(group)][2] = Smarter.triggerCheckBooleans(bools)
+            self.triggersGroups[self.__findGroup(group)][2] = Smarter.triggerCheckBooleans(bools)
             self.__write_triggers()
             return
         raise SmarterErrorOld("Trigger group not found")
@@ -3544,7 +3549,7 @@ class SmarterInterface:
         print
         print "Name".rjust(18,' ') + "        Boolean State"
         print "".rjust(18,'_') + "_____________________"
-        for i in self.triggerGroups:
+        for i in self.triggersGroups:
             s = ""
             if i[1]: s = "Active "
             else: s = "       "
@@ -3557,7 +3562,7 @@ class SmarterInterface:
         print
         print "Name".rjust(18,' ') + "        Boolean State"
         print "".rjust(18,'_') + "_____________________"
-        for i in self.triggerGroups:
+        for i in self.triggersGroups:
             if i[0] == group:
                 s = ""
                 if i[1]: s = "Active "
@@ -3571,7 +3576,7 @@ class SmarterInterface:
     def print_triggers(self):
         print
         
-        for j in self.triggerGroups:
+        for j in self.triggersGroups:
             print "Triggers " + j[0]
             print "_".rjust(25, "_")
             for i in Smarter.triggersKettle:
@@ -3597,7 +3602,7 @@ class SmarterInterface:
         #        logging.debug("Trigger: " + Smarter.triggersCoffee[trigger][0] + " - old:" + str(old) + " new:" + str(new))
 
 
-        for i in self.triggerGroups:
+        for i in self.triggersGroups:
             if i[1]:
                 s = self.triggerGet(i[0],Smarter.triggerName(triggerID))
                 if s != "":

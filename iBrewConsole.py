@@ -30,7 +30,7 @@ import traceback
 #
 # https://github.com/Tristan79/iBrew
 #
-# Copyright © 2016-2017 Tristan (@monkeycat.nl). All Rights Reserved
+# Copyright © 2017 Tristan (@monkeycat.nl). All Rights Reserved
 #
 # The Dream Tea
 #------------------------------------------------------
@@ -813,7 +813,10 @@ class iBrewConsole:
             elif command == "notes":        print Smarter.notes()
             elif command == "license":
                                             if self.console and numarg == 1 and arguments[0] == "disagree":
-                                                os.remove(AppFolders.settings() + '/.ibrew')
+                                                try:
+                                                    os.remove(AppFolders.settings() + '/.ibrew')
+                                                except:
+                                                    pass 
                                             else:
                                                 print Smarter.license()
             elif command == "examples":     self.examples()

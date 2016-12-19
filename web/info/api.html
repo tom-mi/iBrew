@@ -262,24 +262,33 @@
     
     <div class="tRow">
         <div class="CellApiDesc">Block</div>
-        <div class="CellApi"><a href="/api/{{ escape(ip) }}/block/out:DEBUG">/block/(rules)</a></div>
+        <div class="CellApi"><a href="/api/{{ escape(ip) }}/rules/block/out:DEBUG">/block/(rules)</a></div>
     </div>
     
     <div class="tRow">
         <div class="CellApiDesc">Unblock</div>
-        <div class="CellApi"><a href="/api/{{ escape(ip) }}/unblock/out:DEBUG">/unblock/(rules)</a></div>
+        <div class="CellApi"><a href="/api/{{ escape(ip) }}/rules/unblock/out:DEBUG">/unblock/(rules)</a></div>
     </div>
 
     <div class="tRow">
         <div class="CellApiDesc">Patch</div>
-        <div class="CellApi"><a href="/api/{{ escape(ip) }}/patch/mod:KettleTemperature=45">/block/(rules)</a></div>
+        <div class="CellApi"><a href="/api/{{ escape(ip) }}/rules/patch/mod:KettleTemperature=45">/block/(rules)</a></div>
+    </div>
+
+    <div class="tRow">
+        <div class="CellApiDesc">Triggers</div>
+        <div class="CellApi"><a href="/api/{{ escape(ip) }}/triggers/">/triggers/(group)</a></div>
     </div>
     
     <div class="tRow">
-        <div class="CellApiDesc">Unpatch</div>
-        <div class="CellApi"><a href="/api/{{ escape(ip) }}/unpatch/mod:KettleTemperature">/unpatch/(rules)</a></div>
+        <div class="CellApiDesc">Trigger add</div>
+        <div class="CellApi"><a href="/api/{{ escape(ip) }}/triggers/Domoticz/TEMPERATURE/http://www.test.com/§N">/triggers/(rules)</a></div>
     </div>
 
+    <div class="tRow">
+        <div class="CellApiDesc">Trigger remove</div>
+        <div class="CellApi"><a href="/api/{{ escape(ip) }}/triggers/Domoticz/TEMPERATURE">/block/(rules)</a></div>
+    </div>
  </div>
 <br>
 {% end %}
