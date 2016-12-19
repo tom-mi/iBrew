@@ -306,18 +306,20 @@ See the console section for the commands.
   iBrew iKettle 2.0 & Smater Coffee Command Line
   ______________________________________________
 
-  Usage: ibrew (dump) (events) (shout|slow) (coffee|kettle) (fahrenheid) [command] (host(:port))
+  Usage: ibrew (dump) (events) (legacy [bridge|emulate] (host:(port))) (shout|slow) (coffee|kettle) (fahrenheid) [command] (host(:port))
 
+    bridge                 emulate iKettle 2.0 using legacy iKettle (NOT IMPlEMENTED)
+    emulate (host:(port)   emulates legacy iKettle
+    coffee                 assumes coffee machine
+    command                action to take!
     dump                   dump message enabled
     events                 enable trigger events (monitor, relay, console)
+    fahrenheid             PARTLY WORKING use fahrenheid
+    host                   host address of the appliance (format: ip4, ip6, fqdn), only use if detection fails
+    kettle                 assumes kettle
+    port                   port of appliance, optional, only use if detection fails
     shout                  sends commands and quits not waiting for a reply
     slow                   fully inits everything before action
-    coffee                 assumes coffee machine
-    kettle                 assumes kettle
-    fahrenheid             PARTLY WORKING use fahrenheid
-    command                action to take!
-    host                   host address of the appliance (format: ip4, ip6, fqdn), only use if detection fails
-    port                   port of appliance, optional, only use if detection fails
 
   If you do not supply a host, it will try to connect to the first detected appliance
   Thus if you have more then one appliance supply a host (if its not in direct mode)

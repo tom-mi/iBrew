@@ -549,7 +549,7 @@ class iBrewConsole:
                 self.client.disconnect()
                 return
 
-            if command == "connect" or command == "console" or ((command == "relay" or command == "sweep" or command == "events" or command == "monitor" or command == "server") and not self.console):
+            if command == "connect" or command == "console" or ((command == "relay" or command == "sweep" or command == "events" or command == "monitor" or command == "server" or command == "web") and not self.console):
                 self.app_info()
                 self.joke()
 
@@ -557,7 +557,7 @@ class iBrewConsole:
             if command == "monitor" or command == "events":
                 self.client.fast = False
 
-            if (command == "relay" and not self.console) or ((not self.client.connected or self.haveHost) and command != "help" and command != "?" and command != "list" and command != "message" and command != "usage" and command != "commands" and command != "server" and command != "joke" and command != "license" and command != "protocol" and command != "structure" and command != "notes" and command != "groups" and command != "group" and command != "examples" and command != "states" and command != "triggers" and command != "messages" and command != "rules" and command != "rule"  and command != "legacy"  and command != "trigger"):
+            if (command == "relay" and not self.console) or ((not self.client.connected or self.haveHost) and command != "help" and command != "?" and command != "list" and command != "message" and command != "usage" and command != "commands" and command != "server" and command != "joke" and command != "license" and command != "protocol" and command != "structure" and command != "notes" and command != "groups" and command != "group" and command != "examples" and command != "states" and command != "triggers" and command != "messages" and command != "rules" and command != "rule" and command != "web" and command != "legacy"  and command != "trigger"):
 
 
                 if not self.haveHost and command != "relay":
@@ -791,7 +791,7 @@ class iBrewConsole:
                                             self.joke()
                                             print
             elif command == "stats":        self.client.print_stats()
-            elif command == "server":
+            elif command == "server" or command == "web":
                                             if not self.console:
                                                 if numarg == 0:
                                                     self.web()
