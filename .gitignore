@@ -32,3 +32,5 @@ release/
 dmg/
 
 *.dmg
+
+*.exe
