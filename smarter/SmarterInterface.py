@@ -3,6 +3,7 @@
 import socket
 import os
 import sys
+import codecs
 
 reload(sys)  
 sys.setdefaultencoding('utf8')
@@ -961,6 +962,14 @@ class SmarterInterface:
         """
         Initializing SmarterInterface
         """
+
+        # format Name,Active,Bool format
+        self.triggersGroups = []
+        
+        # format {(group,sensorid,command),...(group,sensorid,command)}
+        self.triggersKettle = self.__initTriggers()
+        self.triggersCoffee = self.__initTriggers()
+ 
         self.settingsPath                 = setting_path
         self.events                     = False
         self.relayHost                 = ''
@@ -1043,6 +1052,7 @@ class SmarterInterface:
 
         self.iKettle                      = SmarterInterfaceLegacy()
         self.emulate                      = False
+
 
         try:
             self.simulator = threading.Thread(target=self.__simulate_device)
@@ -1203,9 +1213,10 @@ class SmarterInterface:
             config.set(section, 'sessions', str(self.sessionCount))
 
         
-        with open(self.settingsPath+'ibrew.conf', 'w') as f:
+      #  with open(self.settingsPath+'ibrew.conf', 'w') as f:
+        with codecs.open(self.settingsPath+'ibrew.conf','wb+','utf-8') as f:
             config.write(f)
-
+            f.close()
         
         #if self.dump:
         #    self.print_stats()
@@ -1923,9 +1934,12 @@ class SmarterInterface:
             config.set(section, "blocks", self.string_block())
         except Exception:
             pass
-                
-        with open(self.settingsPath+'ibrew.conf', 'w') as f:
+        
+        with codecs.open(self.settingsPath+'ibrew.conf','wb+','utf-8') as f:
             config.write(f)
+            f.close()
+        #with open(self.settingsPath+'ibrew.conf', 'w') as f:
+        #    config.write(f)
 
 
     @_threadsafe_function
@@ -3203,61 +3217,14 @@ class SmarterInterface:
     #------------------------------------------------------
 
 
-    # format Name,Active,Bool format
-    triggersGroups = []
-    
-    # format {(group,sensorid,command),...(group,sensorid,command)}
-    triggersKettle = {
-    
-        # Operational sensors (boolean)
-        Smarter.triggerBusyKettle                   : [],
-        Smarter.triggerKeepWarm                     : [],
-        Smarter.triggerHeaterKettle                 : [],
-        Smarter.triggerFormulaCooling               : [],
-        Smarter.triggerOnBase                       : [],
-        
-        # Data sensors
-        Smarter.triggerWaterSensorBase              : [],
-        Smarter.triggerDefaultKeepWarmTime          : [],
-        Smarter.triggerDefaultTemperature           : [],
-        Smarter.triggerDefaultFormulaTemperature    : [],
-        Smarter.triggerTemperature                  : [],
-        Smarter.triggerTemperatureStable            : [],
-        Smarter.triggerWaterSensor                  : [],
-        Smarter.triggerWaterSensorStable            : [],
-        Smarter.triggerUnknownKettle                : []
-    }
-
-    triggersCoffee = {
-        # Operational sensors (boolean)
-        Smarter.triggerGrinder                      : [],
-        Smarter.triggerTimerEvent                   : [],
-        Smarter.triggerBusyCoffee                   : [],
-        Smarter.triggerReady                        : [],
-        Smarter.triggerWorking                      : [],
-        Smarter.triggerHotPlate                     : [],
-        Smarter.triggerHeaterCoffee                 : [],
-
-        # Data sensors
-        Smarter.triggerCarafeRequired               : [],
-        Smarter.triggerMode                         : [],
-        Smarter.triggerGrind                        : [],
-        Smarter.triggerWaterEnough                  : [],
-        Smarter.triggerCarafe                       : [],
-        Smarter.triggerWaterLevel                   : [],
-        Smarter.triggerStrength                     : [],
-        Smarter.triggerCups                         : [],
-        Smarter.triggerCupsBrew                     : [],
-        Smarter.triggerUnknownCoffee                : [],
-        Smarter.triggerDefaultStrength              : [],
-        Smarter.triggerDefaultCups                  : [],
-        Smarter.triggerDefaultGrind                 : [],
-        Smarter.triggerDefaultHotplate              : []
-    }
-
     @_threadsafe_function
     def __write_triggers(self):
-
+    
+        self.print_groups()
+        self.print_triggers()
+        
+        if self.dump:
+            logging.debug("Write Triggers: [" + self.host + ":" + str(self.port) + "]" )
         section = self.host + "." + str(self.port) + ".triggers"
 
         #if self.isKettle:
@@ -3298,14 +3265,16 @@ class SmarterInterface:
                 config.set(section+"."+i, "Active", str(self.triggersGroups[self.__findGroup(i)][1]))
                 config.set(section+"."+i, "State", str(self.triggersGroups[self.__findGroup(i)][2][0]))
             except Exception:
-                pass
+                pass # logging.warning("Error reading triggers " + str(e))
 
             #if self.isKettle:
             for j in Smarter.triggersKettle:
                 try:
+                    #print Smarter.triggerName(j)
+                    #print self.triggerGet(i,Smarter.triggerName(j))
                     config.set(section+"."+i, Smarter.triggerName(j),self.triggerGet(i,Smarter.triggerName(j)))
                 except Exception, e:
-                    pass
+                    pass # logging.warning("Error reading triggers " + str(e))
 
 
             #if self.isCoffee:
@@ -3313,14 +3282,71 @@ class SmarterInterface:
                 try:
                     config.set(section+"."+i, Smarter.triggerName(j),self.triggerGet(i,Smarter.triggerName(j)))
                 except Exception:
-                    pass
+                    pass # logging.warning("Error reading triggers " + str(e))
     
-        with open(self.settingsPath+'ibrew.conf', 'w') as f:
+        with codecs.open(self.settingsPath+'ibrew.conf','wb+','utf-8') as f:
             config.write(f)
+            f.close()
+        #with open(self.settingsPath+'ibrew.conf', 'w') as f:
+        #    config.write(f)
 
 
+    def __initTriggers(self):
+        self.triggersKettle = {
+    
+            # Operational sensors (boolean)
+            Smarter.triggerBusyKettle                   : [],
+            Smarter.triggerKeepWarm                     : [],
+            Smarter.triggerHeaterKettle                 : [],
+            Smarter.triggerFormulaCooling               : [],
+            Smarter.triggerOnBase                       : [],
+            
+            # Data sensors
+            Smarter.triggerWaterSensorBase              : [],
+            Smarter.triggerDefaultKeepWarmTime          : [],
+            Smarter.triggerDefaultTemperature           : [],
+            Smarter.triggerDefaultFormulaTemperature    : [],
+            Smarter.triggerTemperature                  : [],
+            Smarter.triggerTemperatureStable            : [],
+            Smarter.triggerWaterSensor                  : [],
+            Smarter.triggerWaterSensorStable            : [],
+            Smarter.triggerUnknownKettle                : []
+        }
+
+        self.triggersCoffee = {
+            # Operational sensors (boolean)
+            Smarter.triggerGrinder                      : [],
+            Smarter.triggerTimerEvent                   : [],
+            Smarter.triggerBusyCoffee                   : [],
+            Smarter.triggerReady                        : [],
+            Smarter.triggerWorking                      : [],
+            Smarter.triggerHotPlate                     : [],
+            Smarter.triggerHeaterCoffee                 : [],
+
+            # Data sensors
+            Smarter.triggerCarafeRequired               : [],
+            Smarter.triggerMode                         : [],
+            Smarter.triggerGrind                        : [],
+            Smarter.triggerWaterEnough                  : [],
+            Smarter.triggerCarafe                       : [],
+            Smarter.triggerWaterLevel                   : [],
+            Smarter.triggerStrength                     : [],
+            Smarter.triggerCups                         : [],
+            Smarter.triggerCupsBrew                     : [],
+            Smarter.triggerUnknownCoffee                : [],
+            Smarter.triggerDefaultStrength              : [],
+            Smarter.triggerDefaultCups                  : [],
+            Smarter.triggerDefaultGrind                 : [],
+            Smarter.triggerDefaultHotplate              : []
+        }
+
+        self.triggersGroups = []
+
+    
     @_threadsafe_function
     def __read_triggers(self):
+        if self.dump:
+            logging.debug("Read Triggers: [" + self.host + ":" + str(self.port) + "]" )
         section = self.host + "." + str(self.port) + ".triggers"
         #if self.isKettle:
         #    section += ".kettle"
@@ -3329,9 +3355,8 @@ class SmarterInterface:
         #else:
         #    return
 
-        self.triggersGroups = []
-        self.triggersKettle = dict()
-        self.triggersCoffee = dict()
+
+        self.__initTriggers()
         
         config = SafeConfigParser()
 
@@ -3348,19 +3373,30 @@ class SmarterInterface:
 
         try:
             g = config.get(section, "groups").split(",")
-
+            #print g
+            #print self.host
             for i in g:
-                a = config.get(section+"."+i, "Active")
-                s = config.get(section+"."+i, "State")
-                self.triggersGroups += [[i,Smarter.string_to_bool(a),Smarter.triggerCheckBooleans(s)]]
+                print i
+        
+                try:
+                    a = config.get(section+"."+i, "Active")
+                    s = config.get(section+"."+i, "State")
+                except:
+                    pass # logging.warning("Error reading triggers " + str(e))
                 
+                if not self.isTriggersGroup(i):
+                    self.triggersGroups += [[i,Smarter.string_to_bool(a),Smarter.triggerCheckBooleans(s)]]
+             
+                #print section+"."+i
                 for j in Smarter.triggersKettle:
                     try:
                         s = config.get(section+"."+i, Smarter.triggerName(j))
+                        
                         if s != "":
+                            #print s
                             self.triggersKettle[j] = [(i,s)]
                     except Exception:
-                        pass
+                        pass # logging.warning("Error reading triggers " + str(e))
                 
                 for j in Smarter.triggersCoffee:
                     try:
@@ -3368,13 +3404,14 @@ class SmarterInterface:
                         if s != "":
                             self.triggersCoffee[j] = [(i,s)]
                     except Exception:
-                        pass
-                print self.triggersCoffee
-                print self.triggersKettle
-                print self.triggersGroups
-        except Exception:
-            pass
+                        pass # logging.warning("Error reading triggers " + str(e))
 
+        except Exception, e:
+            pass # logging.warning("Error reading triggers " + str(e))
+
+        #print self.triggersCoffee
+        #print self.triggersKettle
+        #print self.triggersGroups
 
     def triggerAdd(self,group,trigger,action):
         if not self.isTriggersGroup(group):
@@ -3490,23 +3527,29 @@ class SmarterInterface:
     
     def triggerSet(self,group,trigger,action):
         id = Smarter.triggerID(trigger.upper())
-        if id in self.triggersKettle:
+        if id in Smarter.triggersKettle:
+            print "DDSDSDS"
+            print self.triggersKettle
             if len(self.triggersKettle[id]) != 0:
                 for i in range(0,len(self.triggersKettle[id])):
                     if self.triggersKettle[id][i][0] == group:
                         del self.triggersKettle[id][i]
+            print group
+            print action
             self.triggersKettle[id] += [(group,action)]
             # it should be the trigger of the group only.. FU!
             self.__triggerHeartBeat(id)
     
-        if id in self.triggersCoffee:
+        if id in Smarter.triggersCoffee:
             if len(self.triggersCoffee[id]) != 0:
                 for i in range(0,len(self.triggersCoffee[id])):
                     if self.triggersCoffee[id][i][0] == group:
                         del self.triggersCoffee[id][i]
+
             self.triggersCoffee[id] += [(group,action)]
             # it should be the trigger of the group only.. FU!
             self.__triggerHeartBeat(id)
+        print "HERE"
         self.__write_triggers()
 
 
@@ -4133,7 +4176,7 @@ class SmarterInterface:
             self.isKettle = True
             self.isCoffee = False
             self.__write_stats()
-            self.__read_triggers()
+            # self.__read_triggers()
             self.__read_block()
             self.deviceId = Smarter.DeviceKettle
             self.device = Smarter.device_to_string(Smarter.DeviceKettle)
@@ -4147,7 +4190,7 @@ class SmarterInterface:
             self.isKettle = False
             self.isCoffee = True
             self.__write_stats()
-            self.__read_triggers()
+            # self.__read_triggers()
             self.__read_block()
             self.deviceId = Smarter.DeviceCoffee
             self.device = Smarter.device_to_string(Smarter.DeviceCoffee)

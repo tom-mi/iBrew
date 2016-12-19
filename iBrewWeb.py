@@ -1336,7 +1336,7 @@ class iBrewWeb(tornado.web.Application):
 #                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/rules/patches/?",PatchesHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/rules/patch/(.+)/?",PatchHandler),
                 
-                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/triggers/(.+)/add/(.+)/(http://|https://)(.+)?",TriggerHandler),
+                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/triggers/(.+)/add/(.+)/(http://|https://)(.*)",TriggerHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/triggers/(.+)/delete/?",GroupUnTriggerHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/triggers/(.+)/delete/(.+)?",UnTriggerHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/triggers/(.+)/?",TriggersGroupHandler),
