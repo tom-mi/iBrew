@@ -383,7 +383,8 @@ class iBrewConsole:
                     return
                 if numarg >= 1:
                     if self.client.isCoffee:
-                        logging.warning("iBrew: iKettle != Coffee Machine")
+                        print "iBrew: iKettle != Coffee Machine"
+                        #logging.warning("iBrew: iKettle != Coffee Machine")
               
                     if arguments[0] == "simulate":
                         self.client.iKettle.simulate()
@@ -410,14 +411,18 @@ class iBrewConsole:
                         self.monitor()
                         return
                     
-                    self.client.iKettle.dump = self.client.dump
-                    #self.client.iKettle.host = self.client.host
-                    #self.client.iKettle.port = self.client.port
-                    self.client.iKettle.normal()
-                    r = self.client.iKettle.send(SmarterLegacy.string_to_command(arguments[0]))
-                    for i in r:
-                        print "iBrew Legacy: " + SmarterLegacy.string_response(i)
-                    return
+                    if numarg == 1:
+                        self.client.iKettle.dump = self.client.dump
+                        self.client.iKettle.normal()
+                        try:
+                            r = self.client.iKettle.send(SmarterLegacy.string_to_command(arguments[0]))
+                            for i in r:
+                                print "iBrew Legacy: " + SmarterLegacy.string_response(i)
+                        except Exception:
+                            print "iBrew: Unknown legacy command"
+                        return
+                    else:
+                        print "iBrew: Unknown legacy command"
 
 
             if command == "shout":
@@ -525,9 +530,7 @@ class iBrewConsole:
                         return
 
             if command == "simulate":
-                self.client.simulate = True
-                
-                self.client.setHost("simulation")
+                self.client.simulate()
                 
                 command = "relay"
                 if self.client.isCoffee:
@@ -1134,20 +1137,22 @@ class iBrewConsole:
         print "  iBrew iKettle 2.0 & Smater Coffee Command Line"
         print "  ______________________________________________"
         print
-        #print "  Usage: ibrew (energy) (dump) (legacy [passthrough|emulate] (host:(port))) (shout|slow) (coffee|kettle) (fahrenheid) [command] (host(:port))"
-        print "  Usage: ibrew (dump) (events) (shout|slow) (coffee|kettle) (fahrenheid) [command] (host(:port))"
+        #print "  Usage: ibrew (energy) (dump) (bridge|emulate (host:(port)) (shout|slow) (coffee|kettle) (fahrenheid) [command] (host(:port))"
+        print "  Usage: ibrew (dump) (events) (legacy [bridge|emulate] (host:(port))) (shout|slow) (coffee|kettle) (fahrenheid) [command] (host(:port))"
         print
+        print "    bridge                 emulate iKettle 2.0 using legacy iKettle (NOT IMPlEMENTED)"
+        print "    emulate (host:(port)   emulates legacy iKettle"
+        print "    coffee                 assumes coffee machine"
+        print "    command                action to take!"
         print "    dump                   dump message enabled"
         print "    events                 enable trigger events (monitor, relay, console)"
+        print "    fahrenheid             PARTLY WORKING use fahrenheid"
+        print "    host                   host address of the appliance (format: ip4, ip6, fqdn), only use if detection fails"
         #print "    energy                 NOT IMPLEMENTED energy saver (stats not possible)"
+        print "    kettle                 assumes kettle"
+        print "    port                   port of appliance, optional, only use if detection fails"
         print "    shout                  sends commands and quits not waiting for a reply"
         print "    slow                   fully inits everything before action"
-        print "    coffee                 assumes coffee machine"
-        print "    kettle                 assumes kettle"
-        print "    fahrenheid             PARTLY WORKING use fahrenheid"
-        print "    command                action to take!"
-        print "    host                   host address of the appliance (format: ip4, ip6, fqdn), only use if detection fails"
-        print "    port                   port of appliance, optional, only use if detection fails"
         print
         print "  If you do not supply a host, it will try to connect to the first detected appliance"
         print "  Thus if you have more then one appliance supply a host (if its not in direct mode)"
