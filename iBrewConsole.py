@@ -348,18 +348,25 @@ class iBrewConsole:
             
             if numarg > 0:
                 # FIX
-                if command == "legacy":
-                    self.client.port = SmarterLegacy.Port
+                #if command == "legacy":
+                #    self.client.port = SmarterLegacy.Port
             
-                if arguments[numarg-1] == "simulation":
+                if arguments[numarg-1] == "simulate":
                     self.client.setHost("simulation")
                 else:
                     connection = str.split(arguments[numarg-1],':')
                     if self.is_valid_ipv4_address(connection[0]) or self.is_valid_ipv6_address(connection[0]):
-                        self.client.setHost(connection[0])
+                        if command == "legacy":
+                            self.client.iKettle.host = connection[0]
+                        
+                        else:
+                            self.client.setHost(connection[0])
                         try:
                             p = int(connection[1])
-                            self.client.port = p
+                            if command == "legacy":
+                                self.client.iKettle.port = p
+                            else:
+                                self.client.port = p
                         except ValueError:
                             pass
                         except IndexError:
@@ -375,6 +382,9 @@ class iBrewConsole:
                     self.legacy_commands()
                     return
                 if numarg >= 1:
+                    if self.client.isCoffee:
+                        logging.warning("iBrew: iKettle != Coffee Machine")
+              
                     if arguments[0] == "simulate":
                         self.client.iKettle.simulate()
                         self.monitor()
@@ -395,14 +405,14 @@ class iBrewConsole:
                                 pass
                             except IndexError:
                                 pass
+                        self.client.iKettle.connect()
                         self.client.iKettle.relay_start()
                         self.monitor()
+                        return
                     
-                    if self.client.isCoffee:
-                        logging.warning("iBrew: iKettle != Coffee Machine")
                     self.client.iKettle.dump = self.client.dump
-                    self.client.iKettle.host = self.client.host
-                    self.client.iKettle.port = self.client.port
+                    #self.client.iKettle.host = self.client.host
+                    #self.client.iKettle.port = self.client.port
                     self.client.iKettle.normal()
                     r = self.client.iKettle.send(SmarterLegacy.string_to_command(arguments[0]))
                     for i in r:
