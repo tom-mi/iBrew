@@ -47,7 +47,7 @@ class Launcher():
     def run(self):
         
         try:
-            self.web.run(2080,True)
+            self.web.run("",2080,True)
         except Exception, e:
             logging.debug(e)
             logging.info("iBrew: Failed to run Web Interface & REST API on port 2080")
