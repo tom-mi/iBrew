@@ -6,10 +6,10 @@ iKettle, [iKettle 2.0](http://smarter.am/ikettle) and [Smarter Coffee](http://sm
 
 To test and finish: 
   * iKettle Emulation (emulates an iKettle with an iKettle 2.0)
-  * iKettle Brigde (connect to an iKettle and use it if it was an iKettle 2)
+  * iKettle Brigde (connect to an iKettle and use it if it was an iKettle 2.0)
   * Figure out to correct responses
   
-Such that all features of iBrew are available (if supported)for the original iKettle!
+Such that all features of iBrew are available (if supported) for the original iKettle!
 
 So if you have an original iKettle filled up with water! And some time to spare!
 
