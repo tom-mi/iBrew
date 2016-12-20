@@ -1,6 +1,6 @@
 all:
 	@echo "iBrew setup (windows, linux & mac)"
-	@echo use \"make setup\" to fetch requirements (source only no bonjour)
+	@echo use \"make setup\" "to fetch requirements (source only no bonjour)"
 	@echo use \"make cleanlin\" to clean temp files
 	@echo use \"make cleanmac\" to clean temp files
 	@echo use \"make cleanwin\" to clean temp files
