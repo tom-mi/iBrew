@@ -15,6 +15,9 @@ import logging
 import logging.handlers
 import platform
 import urllib
+import urllib2
+import json
+
 from operator import itemgetter
 
 try:
@@ -3650,26 +3653,45 @@ class SmarterInterface:
 
 
         for i in self.triggersGroups:
-            if i[1]:
-                s = self.triggerGet(i[0],Smarter.triggerName(triggerID))
-                if s != "":
-                    s = s.replace("§O",str(old)).replace("§N",str(new))
-                    
-                    # replace False, True with boolean.. FIX
-                    
-                    if s[0:4] == "http":
+           
+            if i[0] == "SmartThings":
+                 print str(i[1])
+                 if i[1]:
+                    logging.debug("SmartThings Handler")
+                    s = self.triggerGet(i[0],Smarter.triggerName(triggerID))
+                    if s != "":
+                        print str(s)
+                        values = {'Temperature' : '100'}
+                        json_data = json.dumps(values)
+                        req = urllib2.Request(s)
+                        req.add_header('Content-Type', 'application/json')
+                        req.add_header('Content-Length', str(len(json_data)))
                         try:
-                            response = urllib.urlopen(s)
-            
+                            response = urllib2.urlopen(req, data = json_data)
+                            print "$$$$$$$$$$$$$$$"
                         except Exception, e:
                             print str(e)
-                    else:
-                        r = os.popen(s).read()
-                        if self.dump:
-                            print r
+            else:
+                if i[1]:
+                    s = self.triggerGet(i[0],Smarter.triggerName(triggerID))
+                    if s != "":
+                        s = s.replace("§O",str(old)).replace("§N",str(new))
+                    
+                        # replace False, True with boolean.. FIX
+                    
+                        if s[0:4] == "http":
+                            try:
+                                response = urllib.urlopen(s)
+            
+                            except Exception, e:
+                                print str(e)
+                        else:
+                            r = os.popen(s).read()
+                            if self.dump:
+                                print r
                 
-                    if self.dump and self.dump_status:
-                        logging.debug("Trigger: " + Smarter.triggersKettle[triggerID][0] + " - old:" + str(old) + " new:" + str(new) + " " + i[0] + " " + s)
+                        if self.dump and self.dump_status:
+                            logging.debug("Trigger: " + Smarter.triggersKettle[triggerID][0] + " - old:" + str(old) + " new:" + str(new) + " " + i[0] + " " + s)
 
 
 

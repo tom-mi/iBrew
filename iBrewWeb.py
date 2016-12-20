@@ -53,6 +53,7 @@ class BaseHandler(tornado.web.RequestHandler):
 
 
 class GenericAPIHandler(BaseHandler):
+    SUPPORTED_METHODS = ("GET", "POST", "SUBSCRIBE")
     def setContentType(self):
         self.add_header("Content-type","application/json; charset=UTF-8")
 
@@ -1128,6 +1129,34 @@ class TriggersGroupHandler(GenericAPIHandler):
         self.setContentType()
         self.write(response)
 
+#-----------------------------------------------------
+#SmartThings
+#----------------------------------------------------
+class SmartThingsHandler(GenericAPIHandler):
+
+    def subscribe(self, ip):
+        cb_url = self.request.headers.get("Callback")[1:-1]
+        print cb_url
+        if ip in self.application.clients:
+            client = self.application.clients[ip]
+            try:
+                print "$$$$$$$"
+                print "$$$$$$$"
+                print cb_url
+                print "$$$$$$$"
+                print "$$$$$$$"
+                client.triggerAdd("SmartThings","TEMPERATURE", cb_url )
+                client.triggerAdd("SmartThings","KETTLEBUSY", cb_url )
+                response = { 'command' : 'success' }
+            except Exception, e:
+                response = { 'error' : str(e) }
+        else:
+            response = { 'error': 'no device' }
+        self.setContentType()
+        self.write(response)
+
+
+
 #------------------------------------------------------
 # Legacy
 #------------------------------------------------------
@@ -1433,6 +1462,8 @@ class iBrewWeb(tornado.web.Application):
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/triggers/(.+)/delete/(.+)/?",UnTriggerHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/triggers/(.+)/?",TriggersGroupHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/triggers/?",TriggersHandler),
+                
+                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/smartthings/?",SmartThingsHandler),
                 
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/?",SettingsHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/default/?",SettingsDefaultHandler),
