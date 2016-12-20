@@ -1,16 +1,16 @@
 all:
-	@echo "iBrew setup (windows, linux & mac)"
+	@echo "iBrew setup (Windows, Linux & macOS)"
 	@echo use \"make setup\" "to fetch requirements (source only no bonjour)"
 	@echo use \"make cleanlin\" to clean temp files
 	@echo use \"make cleanmac\" to clean temp files
 	@echo use \"make cleanwin\" to clean temp files
-	@echo use \"make setuplin\" to fetch additional linux requirements
-	@echo use \"make setupmac\" to fetch additional mac requirements
-	@echo use \"make setupwin\" to fetch additional windows requirementse
-	@echo use \"make bonjour\" to install bonjour package for OSX and Linux 
+	@echo use \"make setuplin\" to fetch additional Linux requirements
+	@echo use \"make setupmac\" to fetch additional macOS requirements
+	@echo use \"make setupwin\" to fetch additional Windows requirementse
+	@echo use \"make bonjour\" to install bonjour package for macOS and Linux 
 	@echo use \"make bonjourwin\" to install bonjour package for Windows
-	@echo use \"make mac\" to make a mac release
-	@echo use \"make win\" to make a windows release
+	@echo use \"make mac\" to make a macOS release
+	@echo use \"make win\" to make a Windows release
 	@echo use \"make readme\" to create a new README.md 
 
 
@@ -78,13 +78,13 @@ bonjourmac: bonjour
 bonjourlin: bonjour
 
 bonjour:
-	
+	@echo  MAKE SURE you have bonjour installed before running this	
 	@curl https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/pybonjour/pybonjour-1.1.1.zip > pybonjour-1.1.1.zip
 	@pip install pybonjour-1.1.1.zip
 	@rm pybonjour-1.1.1.zip
 
 bonjourwin:
-	@echo MAKE SURE you have iTUNES or Bonjour 3.0 sdk installed
+	@echo MAKE SURE you have iTUNES or Bonjour 3.0 sdk installed before running this
 	@powershell -command "& { iwr https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/pybonjour/pybonjour-1.1.1.zip -OutFile pybonjour-1.1.1.zip }"
 	@pip install pybonjour-1.1.1.zip
 	@del pybonjour-1.1.1.zip

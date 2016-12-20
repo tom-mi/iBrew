@@ -70,6 +70,7 @@ def _threadsafe_function(fn):
 #------------------------------------------------------
 
 
+
 class SmarterInterfaceLegacy():
 
     def __init(self):
@@ -269,6 +270,7 @@ class SmarterInterfaceLegacy():
             while d != '\r':
                 d = self.socket.recv(1)
                 data += d
+            self.__decode_response(data)
         except socket.timeout:
             data = None
         #print "READ: " + data
@@ -277,8 +279,12 @@ class SmarterInterfaceLegacy():
     def send(self,command):
         if self.emulation:
             response = self.emu_response(command)
+            for data in response:
+                self.__decode_response(data)
         elif self.simulation:
             response = self.sim_response(command)
+            for data in response:
+                self.__decode_response(data)
         else:
 
             if not self.connected:
@@ -305,7 +311,7 @@ class SmarterInterfaceLegacy():
                     if self.dump:
                         s = SmarterLegacy.string_response(data)
                         logging.debug("[" + self.host + ":" + str(self.port) + "] Received: " + s + " [" + data + "]")
-                        self.__decode_response(data)
+
             except Exception, e:
                 pass #raise SmarterErrorOld("[" + self.host + ":" + str(self.port) + "] Connection timed out")
         return response
@@ -672,7 +678,7 @@ class SmarterInterfaceLegacy():
             #except:
             #    continue
             command = command[:-1]
-            print command
+
             logging.debug("[" + self.host + ":" + str(self.port)  + "] [" + self.relayHost + ":" + str(self.relayPort) + "] [" + addr[0] + ":" + str(addr[1]) + "] Legacy command relay [" + command + "] " + SmarterLegacy.command_to_string(command))
 
             self.__clients[(clientsock, addr)].acquire()
@@ -688,8 +694,6 @@ class SmarterInterfaceLegacy():
                     self.disconnect()
                     print str(e)
                     raise SmarterErrorOld("Could not send command to device")
-            
-            print responses
             
             for r in responses:
                 logging.debug("[" + self.host + ":" + str(self.port)  + "] [" + self.relayHost + ":" + str(self.relayPort) + "] [" + addr[0] + ":" + str(addr[1]) + "] Legacy response relay [" + r + "] " + SmarterLegacy.string_response(r))
@@ -3209,7 +3213,6 @@ class SmarterInterface:
         Encode wifi access point response message (FIX should take a list of networks))
         """
         return [Smarter.number_to_raw(Smarter.ResponseWirelessNetworks) + Smarter.text_to_raw(list) + Smarter.number_to_raw(Smarter.MessageTail)]
-
 
 
     #------------------------------------------------------
