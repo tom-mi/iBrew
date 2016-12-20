@@ -156,6 +156,11 @@ See Pi section.
 
 You can run iBrew on systems that run python 2.7. Download and unpack the [source](https://github.com/Tristan79/iBrew/archive/master.zip), download it from github using [Github Desktop](https://desktop.github.com) or manually `git clone https://github.com/Tristan79/iBrew.git`. Finish the setup with running `make setup` in the iBrew folder to configure the python packages for bare bones operation. Update to the latest version of iBrew with `git pull`
 
+#### Bonjour
+
+Bonjour is not enabled by default, to install it use `make bonjour` or for windows `make bonjourwin`. But you have to have bonjour installed on your system, macOS its out of the box, on most linux system you can install it with (or try equivalent packages for your *nix distro) `apt-get install avahi-daemon avahi-discover libnss-mdns` and on Windows you either install iTunes or download it from [apple](http://developer.apple.com/networking/bonjour/download/)
+Also check out [pybonjour](https://code.google.com/archive/p/pybonjour/)
+
 ### Raspberry Pi Jessy (light)
 
 Tested on a clean Jessy light image (september 2016). 

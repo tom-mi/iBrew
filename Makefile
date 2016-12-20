@@ -7,9 +7,12 @@ all:
 	@echo use \"make setuplin\" to fetch additional linux requirements
 	@echo use \"make setupmac\" to fetch additional mac requirements
 	@echo use \"make setupwin\" to fetch additional windows requirementse
+	@echo use \"make bonjour\" to install bonjour package for OSX and Linux 
+	@echo use \"make bonjourwin\" to install bonjour package for Windows
 	@echo use \"make mac\" to make a mac release
 	@echo use \"make win\" to make a windows release
 	@echo use \"make readme\" to create a new README.md 
+
 
 mac:	cleanmac buildmac diskimage
 
@@ -58,7 +61,7 @@ cleanlin:
 	@rm -rf test
 	@rm -rf release
 
-setuplin: setup bonjour
+setuplin: setup 
 
 setupwin: setup packwin bonjourwin 
 
@@ -70,7 +73,12 @@ setupmac: setup packmac bonjour pyinstaller
 packmac:
 	@pip install -q -r distro/mac/requirements.txt
 
+bonjourmac: bonjour
+
+bonjourlin: bonjour
+
 bonjour:
+	
 	@curl https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/pybonjour/pybonjour-1.1.1.zip > pybonjour-1.1.1.zip
 	@pip install pybonjour-1.1.1.zip
 	@rm pybonjour-1.1.1.zip
