@@ -63,7 +63,7 @@ cleanlin:
 
 setuplin: setup 
 
-setupwin: setup packwin bonjourwin 
+setupwin: setup packwin 
 
 packwin:
 	@pip install win-inet-pton
