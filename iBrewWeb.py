@@ -201,20 +201,32 @@ def encodeRelay(enabled,version,host):
         return False
 
 def encodeDevice(client):
-    cc = client.connected
+    mode = 'normal'
     if client.simulate:
+        mode = 'simulation'
+    elif client.emulate:
+        mode = 'emulation'
+    elif client.bridge:
+        mode = 'bridge'
+
+    cc = client.connected
+    if client.simulate or client.bridge:
         cc = True
-    return { 'model'      : Smarter.device_to_string(client.deviceId),
-             'connection' : {   'directmode'  : client.isDirect,
-                                'host'        : client.host,
-                                'port'        : client.port,
-                                'connected'   : client.connected,
-                                'relay'       : encodeRelay(client.remoteRelay,client.remoteRelayVersion,client.remoteRelayHost),
-                            },
-             # server/triggers?
-             'simulation'  : client.simulate,
-             'firmware'    : encodeFirmware(client.deviceId,client.version),
-             
+
+    return { 'model'       : Smarter.device_to_string(client.deviceId),
+             'mode'        : mode,
+             'network'     : { 'connection'  : { 'directmode'  : client.isDirect,
+                                                 'host'        : client.host,
+                                                 'port'        : client.port,
+                                                 'connected'   : cc,
+                                                 'relay'       : encodeRelay(client.remoteRelay,client.remoteRelayVersion,client.remoteRelayHost)
+                                               },
+                               'relay'       : { 'bind'   : client.relayHost,
+                                                 'port'   : client.relayPort,
+                                                 'active' : client.relay
+                                               },
+                              },
+             'firmware'    : encodeFirmware(client.deviceId,client.version)
             }
 
 class DeviceHandler(GenericAPIHandler):
@@ -976,7 +988,7 @@ class MessagesHandler(GenericAPIHandler):
 
 class VersionHandler(GenericAPIHandler):
     def get(self):
-        response = { 'description': 'iBrew Smarter REST API',
+        response = { 'description': 'iBrew REST API',
                      'version'    : self.application.version,
                      'copyright'  : { 'year'   : '2017',
                                       'holder' : 'Tristan Crispijn'
@@ -1120,71 +1132,79 @@ class TriggersGroupHandler(GenericAPIHandler):
 # Legacy
 #------------------------------------------------------
 
-
-def encodeFirmware(device,version):
-    return { 'version'   : version, 'certified' : Smarter.firmware_verified(device,version) }
-
-
-def encodeRelay(enabled,version,host):
-    if enabled:
-        return { 'version' : version,
-                 'host'    : host }
-    else:
-        return False
-
 def encodeLegacy(client):
     cc = client.connected
-    if client.simulate:
+    if client.simulation or client.bridge:
         cc = True
     
     t = "Off"
-    if client.iKettle.temperatureSelect:
-        t = SmarterLegacy.string_response(client.iKettle.temperature)
+    if client.temperatureSelect:
+        t = SmarterLegacy.string_response(client.temperature)
     w = "Off"
-    if client.iKettle.keepwarmSelect:
-        t = SmarterLegacy.string_response(client.iKettle.keepwarm)
-            
+    if client.keepwarmSelect:
+        t = SmarterLegacy.string_response(client.keepwarm)
+
+    mode = 'normal'
+    if client.simulation:
+        mode = 'simulation'
+    elif client.emulation:
+        mode = 'emulation'
+    elif client.bridge:
+        mode = 'bridge'
     return { 'appliance' : { 'model'       : 'iKettle',
-                             'connection'  : { 'host'        : client.iKettle.host,
-                                               'port'        : client.iKettle.port,
-                                               'connected'   : cc,
+                             'mode'        : mode,
+                             'firmware'    : { 'version'   : 1,
+                                               'certified' : 'iBrew certified firmware'
+                                             },
+                             'network'     : { 'connection'  : { 'host'        : client.host,
+                                                                 'port'        : client.port,
+                                                                 'active'      : cc
+                                                               },
+                                               'relay'       : { 'bind'   : client.relayHost,
+                                                                 'port'   : client.relayPort,
+                                                                 'active' : client.relay
+                                             },
                                                 #  'relay'       : encodeRelay(client.remoteRelay,client.remoteRelayVersion,client.remoteRelayHost),
-                             'firmware'    : { 'version'   : 1, 'certified' : 'iBrew certified firmware' },
-                             'simulation'  : client.iKettle.simulate}
+                                             }
+  
+                           },
+             'sensors'   : { 'heater'  : client.heaterOn,
+                             'warming' : client.keepwarmOn,
+                             'onbase'  : client.onBase
+                           },
+             'status'    : { 'overheated'       : client.overheated,
+                             'keepwarmfinished' : client.keepwarmFinished,
+                             'heatingfinished'  : client.heatingFinished
                            },
              'settings'  : { 'temperature' : t,
                              'keepwarm'    : w
                            },
-             'sensors'   : { 'heater'  : client.iKettle.heaterOn,
-                             'warming' : client.iKettle.keepwarmOn,
-                             'onbase'  : client.iKettle.onBase
-                           },
-             'status'    : { 'overheated'       : client.iKettle.overheated,
-                             'keepwarmfinished' : client.iKettle.keepwarmFinished,
-                             'heatingfinished'  : client.iKettle.heatingFinished
-                           }
-                 
-            }
+
+           }
+
 
 class LegacyHandler(GenericAPIHandler):
 
     def get(self, ip, command):
         if ip in self.application.clients:
-            
             client = self.application.clients[ip]
             if client.isKettle:
                 try:
-                    client.iKettle.send(command)
-                    response = encodeLegacy()
+                    print command
+                    if command != "":
+                        client.iKettle.send(command)
+                    response = encodeLegacy(client.iKettle)
+                # FIX for right exception
                 except Exception, e:
-                    response = { 'error' : str(e) }
-            
+                    print str(e)
+                    response = { 'error' : 'failed to send command' }
             else:
                 response = { 'error': 'need kettle' }
         else:
             response = { 'error': 'no device' }
         self.setContentType()
         self.write(response)
+
 
 #------------------------------------------------------
 # REST INTERFACE
@@ -1372,7 +1392,7 @@ class iBrewWeb(tornado.web.Application):
             handlers = [
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/status/?",DeviceHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/calibrate/?",CalibrateHandler),
-                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/legacy/(status|5|10|20|warm|65|80|95|100|heat|stop)?",LegacyHandler),
+                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/legacy/(|status|5|10|20|warm|65|80|95|100|heat|stop)/?",LegacyHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/calibrate/base/?",CalibrateBaseHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/calibrate/base/([0-9]+)/?",CalibrateStoreBaseHandler),
 
@@ -1410,7 +1430,7 @@ class iBrewWeb(tornado.web.Application):
                 
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/triggers/(.+)/add/(.+)/(http://|https://)(.*)",TriggerHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/triggers/(.+)/delete/?",GroupUnTriggerHandler),
-                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/triggers/(.+)/delete/(.+)?",UnTriggerHandler),
+                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/triggers/(.+)/delete/(.+)/?",UnTriggerHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/triggers/(.+)/?",TriggersGroupHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/triggers/?",TriggersHandler),
                 

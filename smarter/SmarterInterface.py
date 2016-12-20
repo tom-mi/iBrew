@@ -118,6 +118,8 @@ class SmarterInterfaceLegacy():
         
         self.simulation         = False
         self.emulation          = False
+        self.bridge             = False
+        
         self.relay              = False
         self.relayHost         = ''
         self.relayPort         = SmarterLegacy.Port
@@ -1035,6 +1037,7 @@ class SmarterInterface:
         self.relayVersion                 = 1
         
         self.simulate                   = False
+        self.bridge                     = False
 
         # firewall or message blocking rules
         self.rulesIn                 = Smarter.MessagesDebug + Smarter.MessagesRest
@@ -1093,8 +1096,8 @@ class SmarterInterface:
         self.emulate = True
 
     def simulate(self):
-        self.client.simulate = True
-        self.client.setHost("simulation")
+        self.simulate = True
+        self.setHost("simulation")
                 
     #------------------------------------------------------
     # STATS
