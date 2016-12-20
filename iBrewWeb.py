@@ -201,14 +201,20 @@ def encodeRelay(enabled,version,host):
         return False
 
 def encodeDevice(client):
-    return { 'type'        : { 'description' : Smarter.device_to_string(client.deviceId),
-                               'id'          : client.deviceId
+    cc = client.connected
+    if client.simulate:
+        cc = True
+    return { 'model'      : Smarter.device_to_string(client.deviceId),
+             'connection' : {   'directmode'  : client.isDirect,
+                                'host'        : client.host,
+                                'port'        : client.port,
+                                'connected'   : client.connected,
+                                'relay'       : encodeRelay(client.remoteRelay,client.remoteRelayVersion,client.remoteRelayHost),
                             },
-             'directmode'  : client.isDirect,
-             'host'        : client.host,
-             'connected'   : client.connected,
-             'relay'       : encodeRelay(client.remoteRelay,client.remoteRelayVersion,client.remoteRelayHost),
-             'firmware'    : encodeFirmware(client.deviceId,client.version)
+             # server/triggers?
+             'simulation'  : client.simulate,
+             'firmware'    : encodeFirmware(client.deviceId,client.version),
+             
             }
 
 class DeviceHandler(GenericAPIHandler):
@@ -219,13 +225,12 @@ class DeviceHandler(GenericAPIHandler):
             client = self.application.clients[ip]
             
             if client.isKettle:
-                response = { 'device'      : encodeDevice(client),
+                response = { 'appliance'   : encodeDevice(client),
                              'sensors'     : { 'waterlevel'  : { 'raw'    : client.waterSensor,
                                                                  'stable' : client.waterSensorStable,
                                                                  'base'   : client.waterSensorBase
                                                                },
                                                'base'        : Smarter.string_base_on_off(client.onBase),
-                                               'status'      : Smarter.status_kettle_description(client.kettleStatus),
                                                'temperature' : { 'raw'    : { 'fahrenheid' : Smarter.celsius_to_fahrenheid(client.temperature),
                                                                               'celsius'    : client.temperature
                                                                             },
@@ -235,20 +240,21 @@ class DeviceHandler(GenericAPIHandler):
                                                                }
                                                                
                                              },
-                             
-                             'default'     : { 'temperature' : { 'fahrenheid' : Smarter.celsius_to_fahrenheid(client.defaultTemperature),
-                                                                 'celsius'    : client.defaultTemperature,
-                                                                 'prefered'   : Smarter.temperature_metric_to_string()
-                                                               },
-                                               'keepwarm'    : client.defaultKeepWarmTime,
-                                               'formula'     : { 'use'     : client.defaultFormula,
-                                                                 'temperature' : { 'fahrenheid' : Smarter.celsius_to_fahrenheid(client.defaultFormulaTemperature),
-                                                                                   'celsius' : client.defaultFormulaTemperature
-                                                                                 }
-
+                             'status'      : Smarter.status_kettle_description(client.kettleStatus),
+                             'settings'    : { 'default'     : { 'temperature' : { 'fahrenheid' : Smarter.celsius_to_fahrenheid(client.defaultTemperature),
+                                                                                   'celsius'    : client.defaultTemperature,
+                                                                                   'prefered'   : Smarter.temperature_metric_to_string()
+                                                                                 },
+                                                                 'keepwarm'    : client.defaultKeepWarmTime,
+                                                                 'formula'     : { 'use'     : client.defaultFormula,
+                                                                                   'temperature' : { 'fahrenheid' : Smarter.celsius_to_fahrenheid(client.defaultFormulaTemperature),
+                                                                                                     'celsius' : client.defaultFormulaTemperature
+                                                                                                   }
+                                                                                  }
                                                                }
                                              }
                             }
+                            
             elif client.isCoffee:
             
                 if client.mode == Smarter.CoffeeCupMode:
@@ -260,18 +266,18 @@ class DeviceHandler(GenericAPIHandler):
                     req = "required"
                 else:
                     req = "optional"
-                response = { 'device'      : encodeDevice(client),
+                response = { 'appliance'   : encodeDevice(client),
                              'sensors'     : { 'hotplate'   : client.hotPlateOn,
                                                'heater'     : client.heaterOn,
                                                'grinder'    : client.grinderOn,
-                                               'waterlevel'     : client.waterLevel,
-                                               'status'         : { 'working'     : client.working,
-                                                                    'ready'       : client.ready,
-                                                                    'cups'        : client.cupsBrew,
-                                                                    'carafe'      : client.carafe,
-                                                                    'enoughwater' : client.waterEnough,
-                                                                    'timerevent'  : client.timerEvent
-                                                                  },
+                                               'waterlevel' : client.waterLevel
+                                              },
+                             'status'      : { 'working'     : client.working,
+                                               'ready'       : client.ready,
+                                               'cups'        : client.cupsBrew,
+                                               'carafe'      : client.carafe,
+                                               'enoughwater' : client.waterEnough,
+                                               'timerevent'  : client.timerEvent
                                              },
                              'settings'    : { 'default'       : { 'cups'       : client.defaultCups,
                                                                    'strength'   : Smarter.strength_to_string(client.defaultStrength),
@@ -999,10 +1005,11 @@ class TriggerHandler(GenericAPIHandler):
                 response = { 'command' : 'success' }
             except Exception, e:
                 response = { 'error' : str(e) }
-            self.setContentType()
-            self.write(response)
         else:
             response = { 'error': 'no device' }
+        self.setContentType()
+        self.write(response)
+
 
 
 class UnTriggerHandler(GenericAPIHandler):
@@ -1015,11 +1022,11 @@ class UnTriggerHandler(GenericAPIHandler):
                 response = { 'command' : 'success' }
             except Exception, e:
                 response = { 'error' : str(e) }
-            self.setContentType()
-            self.write(response)
-        
         else:
             response = { 'error': 'no device' }
+        self.setContentType()
+        self.write(response)
+
 
 class GroupUnTriggerHandler(GenericAPIHandler):
 
@@ -1031,11 +1038,11 @@ class GroupUnTriggerHandler(GenericAPIHandler):
                 response = { 'command' : 'success' }
             except Exception, e:
                 response = { 'error' : str(e) }
-            self.setContentType()
-            self.write(response)
-        
         else:
             response = { 'error': 'no device' }
+        self.setContentType()
+        self.write(response)
+
 
 
 class TriggersHandler(GenericAPIHandler):
@@ -1065,12 +1072,10 @@ class TriggersHandler(GenericAPIHandler):
                     response[j[0]] = { 'iKettle2.0' : tk }
                 elif two:
                     response[j[0]] = { 'SmarterCoffee' : tc }
-
-            self.setContentType()
-            self.write(response)
-        
         else:
             response = { 'error': 'no device' }
+        self.setContentType()
+        self.write(response)
 
 
 class TriggersGroupHandler(GenericAPIHandler):
@@ -1106,12 +1111,80 @@ class TriggersGroupHandler(GenericAPIHandler):
                     response = { 'SmarterCoffee' : tc }
             else:
                 response = { 'error': 'trigger group not found' }
-            self.setContentType()
-            self.write(response)
-        
         else:
             response = { 'error': 'no device' }
+        self.setContentType()
+        self.write(response)
 
+#------------------------------------------------------
+# Legacy
+#------------------------------------------------------
+
+
+def encodeFirmware(device,version):
+    return { 'version'   : version, 'certified' : Smarter.firmware_verified(device,version) }
+
+
+def encodeRelay(enabled,version,host):
+    if enabled:
+        return { 'version' : version,
+                 'host'    : host }
+    else:
+        return False
+
+def encodeLegacy(client):
+    cc = client.connected
+    if client.simulate:
+        cc = True
+    
+    t = "Off"
+    if client.iKettle.temperatureSelect:
+        t = SmarterLegacy.string_response(client.iKettle.temperature)
+    w = "Off"
+    if client.iKettle.keepwarmSelect:
+        t = SmarterLegacy.string_response(client.iKettle.keepwarm)
+            
+    return { 'appliance' : { 'model'       : 'iKettle',
+                             'connection'  : { 'host'        : client.iKettle.host,
+                                               'port'        : client.iKettle.port,
+                                               'connected'   : cc,
+                                                #  'relay'       : encodeRelay(client.remoteRelay,client.remoteRelayVersion,client.remoteRelayHost),
+                             'firmware'    : { 'version'   : 1, 'certified' : 'iBrew certified firmware' },
+                             'simulation'  : client.iKettle.simulate}
+                           },
+             'settings'  : { 'temperature' : t,
+                             'keepwarm'    : w
+                           },
+             'sensors'   : { 'heater'  : client.iKettle.heaterOn,
+                             'warming' : client.iKettle.keepwarmOn,
+                             'onbase'  : client.iKettle.onBase
+                           },
+             'status'    : { 'overheated'       : client.iKettle.overheated,
+                             'keepwarmfinished' : client.iKettle.keepwarmFinished,
+                             'heatingfinished'  : client.iKettle.heatingFinished
+                           }
+                 
+            }
+
+class LegacyHandler(GenericAPIHandler):
+
+    def get(self, ip, command):
+        if ip in self.application.clients:
+            
+            client = self.application.clients[ip]
+            if client.isKettle:
+                try:
+                    client.iKettle.send(command)
+                    response = encodeLegacy()
+                except Exception, e:
+                    response = { 'error' : str(e) }
+            
+            else:
+                response = { 'error': 'need kettle' }
+        else:
+            response = { 'error': 'no device' }
+        self.setContentType()
+        self.write(response)
 
 #------------------------------------------------------
 # REST INTERFACE
@@ -1120,7 +1193,7 @@ class TriggersGroupHandler(GenericAPIHandler):
 
 class iBrewWeb(tornado.web.Application):
 
-    version = '0.5.1.84'
+    version = '0.90a'
     
     def start(self):
         tornado.ioloop.IOLoop.instance().start()
@@ -1299,6 +1372,7 @@ class iBrewWeb(tornado.web.Application):
             handlers = [
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/status/?",DeviceHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/calibrate/?",CalibrateHandler),
+                (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/legacy/(status|5|10|20|warm|65|80|95|100|heat|stop)?",LegacyHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/calibrate/base/?",CalibrateBaseHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/calibrate/base/([0-9]+)/?",CalibrateStoreBaseHandler),
 
@@ -1347,7 +1421,7 @@ class iBrewWeb(tornado.web.Application):
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/([0-9]+)/([0-9]+)/(false|true|on|off|beans|filter)/(weak|medium|strong)/?",StoreSettingsHandler),
                 (self.webroot + r"/api/([0-9]+.[0-9]+.[0-9]+.[0-9]+)/settings/([0-9]+)/([0-9]+)/(false|true|on|off|normal|formula)/([0-9]+)/?",StoreSettingsHandler),
                 (self.webroot + r"/api/version/?",VersionHandler),
-                (self.webroot + r"/api/devices/?",DevicesHandler),
+                (self.webroot + r"/api/appliances/?",DevicesHandler),
                 (self.webroot + r"/api/joke/?",JokeHandler),
                 (self.webroot + r"/api/messages/?",MessagesHandler),
                 (self.webroot + r"/api/?.*",UnknownHandler),
