@@ -3655,20 +3655,25 @@ class SmarterInterface:
         for i in self.triggersGroups:
            
             if i[0] == "SmartThings":
-                 print str(i[1])
                  if i[1]:
                     logging.debug("SmartThings Handler")
                     s = self.triggerGet(i[0],Smarter.triggerName(triggerID))
                     if s != "":
-                        print str(s)
-                        values = {'Temperature' : '100'}
+                        if Smarter.triggersKettle[triggerID][0] == "Temperature":
+                            values = {'temperature' : new}
+                        elif Smarter.triggersKettle[triggerID][0] == "Status":
+                            values = {'status' : new}
+                        else:     
+                            values = {'error' : "true"}
+
+                        print Smarter.triggersKettle[triggerID][0]
                         json_data = json.dumps(values)
                         req = urllib2.Request(s)
                         req.add_header('Content-Type', 'application/json')
                         req.add_header('Content-Length', str(len(json_data)))
                         try:
                             response = urllib2.urlopen(req, data = json_data)
-                            print "$$$$$$$$$$$$$$$"
+                            print "$$$$$$$$$ Sending Update $$$$$$$$$"
                         except Exception, e:
                             print str(e)
             else:
