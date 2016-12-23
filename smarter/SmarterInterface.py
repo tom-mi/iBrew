@@ -3661,11 +3661,13 @@ class SmarterInterface:
                     if s != "":
                         if Smarter.triggersKettle[triggerID][0] == "Temperature":
                             values = {'temperature' : new}
-                        elif Smarter.triggersKettle[triggerID][0] == "Status":
-                            values = {'status' : new}
+                        elif Smarter.triggersKettle[triggerID][0] == "KettleBusy":
+                            values = {'kettlebusy' : new}
+                        elif Smarter.triggersKettle[triggerID][0] == "KettleHeater":
+                            values = {'kettleheater' : new}
                         else:     
                             values = {'error' : "true"}
-
+                        print "########################"
                         print Smarter.triggersKettle[triggerID][0]
                         json_data = json.dumps(values)
                         req = urllib2.Request(s)

@@ -1147,6 +1147,8 @@ class SmartThingsHandler(GenericAPIHandler):
                 print "$$$$$$$"
                 client.triggerAdd("SmartThings","TEMPERATURE", cb_url )
                 client.triggerAdd("SmartThings","KETTLEBUSY", cb_url )
+                client.triggerAdd("SmartThings","KETTLEHEATER", cb_url )
+                client.triggerAdd("SmartThings","ONBASE", cb_url )
                 response = { 'command' : 'success' }
             except Exception, e:
                 response = { 'error' : str(e) }
