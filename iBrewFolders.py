@@ -42,7 +42,7 @@ class AppFolders():
     @staticmethod
     def userFolder():
         
-        filename_encoding = sys.getfilesystemencoding()
+        #filename_encoding = sys.getfilesystemencoding()
 
         if platform.system() == "Windows":
             folder = os.path.join( AppFolders.windowsAppDataFolder(), appname )
@@ -51,8 +51,8 @@ class AppFolders():
         else:
             folder = os.path.join( os.path.expanduser('~') , '.'+appname)
             
-        if folder is not None:
-            folder = folder.decode(filename_encoding)
+        # if folder is not None:
+        #     folder = folder.decode(filename_encoding)
         return folder
         
     @staticmethod

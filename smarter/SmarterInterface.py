@@ -7,7 +7,7 @@ import codecs
 import importlib
 
 importlib.reload(sys)  
-sys.setdefaultencoding('utf8')
+#sys.setdefaultencoding('utf8') # seems to be obsolete in Python3
 
 import random
 import time
