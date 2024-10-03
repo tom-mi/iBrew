@@ -34,3 +34,6 @@ dmg/
 *.dmg
 
 *.exe
+
+.venv/
+venv/
