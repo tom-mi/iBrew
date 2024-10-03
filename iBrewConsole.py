@@ -9,6 +9,7 @@ import locale
 import platform
 import codecs
 
+from configparser import ConfigParser
 import logging.handlers
 
 from smarter.SmarterInterface import *
@@ -253,7 +254,7 @@ class iBrewConsole:
             print("Thank you, "+ self.username +" for accepting!")
             print()
         
-            config = SafeConfigParser()
+            config = ConfigParser()
             config.read(AppFolders.settings() + '/.ibrew')
         
             try:
@@ -267,7 +268,7 @@ class iBrewConsole:
             with open(AppFolders.settings() + '/.ibrew', 'w') as f:
                 config.write(f)
         else:
-            config = SafeConfigParser()
+            config = ConfigParser()
             config.read(AppFolders.settings() + '/.ibrew')
             try:
                 self.username =  config.get('license','name')

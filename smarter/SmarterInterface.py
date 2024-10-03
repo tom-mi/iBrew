@@ -26,7 +26,7 @@ try:
 except Exception:
     pass
     
-from configparser import *
+from configparser import ConfigParser, DuplicateSectionError
 
 import traceback
 import threading
@@ -1119,7 +1119,7 @@ class SmarterInterface:
             section += ".coffee"
         else:
             return
-        config = SafeConfigParser()
+        config = ConfigParser()
         
         
         if not os.path.exists(self.settingsPath):
@@ -1933,7 +1933,7 @@ class SmarterInterface:
         else:
             return
 
-        config = SafeConfigParser()
+        config = ConfigParser()
 
         if not os.path.exists(self.settingsPath):
                 os.makedirs(self.settingsPath)
@@ -1971,7 +1971,7 @@ class SmarterInterface:
         else:
             return
 
-        config = SafeConfigParser()
+        config = ConfigParser()
 
         if not os.path.exists(self.settingsPath):
                 os.makedirs(self.settingsPath)
@@ -3248,7 +3248,7 @@ class SmarterInterface:
         #else:
         #    return
 
-        config = SafeConfigParser()
+        config = ConfigParser()
 
         if not os.path.exists(self.settingsPath):
                 os.makedirs(self.settingsPath)
@@ -3370,7 +3370,7 @@ class SmarterInterface:
 
         self.__initTriggers()
         
-        config = SafeConfigParser()
+        config = ConfigParser()
 
         if not os.path.exists(self.settingsPath):
             os.makedirs(self.settingsPath)
