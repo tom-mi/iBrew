@@ -2,6 +2,14 @@
 
 iKettle, [iKettle 2.0](http://smarter.am/ikettle) and [Smarter Coffee](http://smarter.am/coffee) Interface
 
+## Python3 Fork
+
+As development of the upstream repo seems to be pretty much dead, and other existing forks seem not to work for me,
+I forked the repo for personal use and applied some fixes to make it work with Python 3. I'm quite sure however that
+there are still many code paths I did not execute, which might not work.
+However, as I'm only using this to control my iKettle 2.0, I'll not put too much effort into this.
+Feel free to fork or create a PR though :)
+
 ## Needed remote access to iKettle 1, to test new code!
 
 To test and finish: 
