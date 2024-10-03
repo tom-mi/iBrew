@@ -1316,7 +1316,7 @@ class SmarterInterface:
 
 
 
-    def __relayHandler(self,clientsock,addr):
+    def __relayHandler(self,clientsock: socket.socket,addr):
         logging.info(addr[0] + ":" + str(addr[1]) + " Client connected")
         while self.relay:
             data = clientsock.recv(1024)
@@ -1558,13 +1558,12 @@ class SmarterInterface:
     # TRANSMISSION
     #------------------------------------------------------
 
-
     # MESSAGE READ
-    def __read_message(self):
+    def __read_message(self) -> bytes:
         if self.connected:
             try:
-                message = ""
-                raw = self.__socket.recv(1)
+                message: bytes = b""
+                raw: bytes = self.__socket.recv(1)
                 id = Smarter.raw_to_number(raw)
                 # debug
                 #print "[" + Smarter.number_to_code(id) + "]",
@@ -1687,6 +1686,11 @@ class SmarterInterface:
                 self.fast = False
         else:
             self.fast = False
+
+        # Workaround for python 2->3 changes regarding str / bytes, arguments should be bytes but are not always
+        # TODO cleanup signature / workaround
+        if isinstance(arguments, str):
+            arguments = Smarter.text_to_raw(arguments)
         self.__send(Smarter.number_to_raw(id) + arguments + Smarter.number_to_raw(Smarter.MessageTail))
 
 

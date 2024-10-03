@@ -929,14 +929,19 @@ class SmarterProtocol:
     # RAW <-> BASIC TYPE
     #------------------------------------------------------
 
-    def raw_to_number(self,raw):
+    def raw_to_number(self, raw: bytes):
+        # Workaround for python 2->3 changes regarding byte strings of length 1
+        # TODO fix signature & clean up workaround
+        if isinstance(raw, int):
+            raw = bytes([raw])
         try:
-            return struct.unpack('B',raw)[0]
+            return struct.unpack('B', raw)[0]
         except Exception:
             # DEBUG LEN RAW!!! (probably tornado)
-            raise SmarterError(ConvertRawNumber,"Could not convert raw data to number" + str(len(raw)))
+            raise SmarterError(ConvertRawNumber,"Could not convert raw data to number: " + str(raw))
 
-    def number_to_raw(self,number):
+    @staticmethod
+    def number_to_raw(number) -> bytes:
         try:
             i = int(number)
         except Exception:
@@ -974,21 +979,21 @@ class SmarterProtocol:
             return '0' + code
         return code
 
-
-    def text_to_raw(self,text):
-        return text
+    @staticmethod
+    def text_to_raw(text: str) -> bytes:
+        return text.encode()
     
-    def raw_to_text(self,raw):
+    def raw_to_text(self, raw: bytes) -> str:
         #TEXT ENDS WITH MessageTail 7E then 7E is removed
         # FIX ERROR CHECKING + CODE
         s = ""
-        for i in range(1,len(raw)-1):
+        for i in range(1, len(raw)-1):
             x = str(raw[i])
             if x in string.printable:
                 s += x
         if raw[-1] != Smarter.number_to_raw(self.MessageTail):
-            if raw[-1] in string.printable:
-                s += x
+            if chr(raw[-1]) in string.printable:
+                s += chr(x)
         return s
 
     #------------------------------------------------------
