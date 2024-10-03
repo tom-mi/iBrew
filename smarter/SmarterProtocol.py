@@ -1146,7 +1146,7 @@ class SmarterProtocol:
         elif self.CoffeeStrong == number:
             return self.CoffeeStringStrong
         else:
-            raise SmarterErrorOld("Invalid coffee strength ["+self.CoffeeStringWeak+", "+self.CoffeeStringMedium+", "+CoffeeStringStrong +"] " + self.number_to_code(strength))
+            raise SmarterErrorOld("Invalid coffee strength ["+self.CoffeeStringWeak+", "+self.CoffeeStringMedium+", "+self.CoffeeStringStrong +"] " + self.number_to_code(strength))
 
     def string_to_strength(self,strength):
         if strength.strip().lower() == self.CoffeeStringWeak:

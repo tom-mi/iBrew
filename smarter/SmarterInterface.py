@@ -1071,7 +1071,7 @@ class SmarterInterface:
         except threading.ThreadError as e:
             s = traceback.format_exc()
             logging.debug(s)
-            loggins.debug(e)
+            logging.debug(e)
             logging.error("[" + self.host + "] Could not start simulator")
             raise SmarterError(0,"Could not start simulator")
 
@@ -1278,7 +1278,7 @@ class SmarterInterface:
                 logging.info("Starting UDP (" + self.relayHost + ":" + str(self.relayPort) + ")")
             except socket.error as e:
                 print(str(e))
-            except threading.ThreadError:
+            except threading.ThreadError as e:
                 print(str(e))
         else:
             raise SmarterError(0,"UPD Response Appliance Info already started")
@@ -1856,7 +1856,7 @@ class SmarterInterface:
             except threading.ThreadError as e:
                 s = traceback.format_exc()
                 logging.debug(s)
-                loggins.debug(e)
+                logging.debug(e)
                 logging.error("[" + self.host + "] Could not start monitor")
                 raise SmarterError(0,"Could not start monitor")
 
@@ -4417,7 +4417,7 @@ class SmarterInterface:
         Set the time of the device to now
         """
         d = datetime.datetime.now()
-        sefl.device_time(self,d.second,d.minute,d.hour,0,d.day,d.month,d.year / 1000,d.year % 1000)
+        self.device_time(self,d.second,d.minute,d.hour,0,d.day,d.month,d.year / 1000,d.year % 1000)
 
 
 
