@@ -4,8 +4,9 @@ import socket
 import os
 import sys
 import codecs
+import importlib
 
-reload(sys)  
+importlib.reload(sys)  
 sys.setdefaultencoding('utf8')
 
 import random
@@ -14,8 +15,8 @@ import datetime
 import logging
 import logging.handlers
 import platform
-import urllib
-import urllib2
+import urllib.request, urllib.parse, urllib.error
+import urllib.request, urllib.error, urllib.parse
 import json
 
 from operator import itemgetter
@@ -25,12 +26,12 @@ try:
 except Exception:
     pass
     
-from ConfigParser import *
+from configparser import *
 
 import traceback
 import threading
 
-from SmarterProtocol import *
+from .SmarterProtocol import *
 
 #------------------------------------------------------
 # SMARTER CLIENT INTERFACE
@@ -154,8 +155,8 @@ class SmarterInterfaceLegacy():
             try:
                 self.__read()
                 monitorCount += 1
-            except Exception, e:
-                print str(e)
+            except Exception as e:
+                print(str(e))
             try:
                     if monitorCount % timeout == timeout - 9:
                         self.status()
@@ -175,8 +176,8 @@ class SmarterInterfaceLegacy():
                     if monitorCount % timeout == timeout - 50:
                         self.status()
                 
-            except Exception, e:
-                print str(e)
+            except Exception as e:
+                print(str(e))
 
         if self.dump:
             logging.info("[" + self.host + "] Monitor Stopped")
@@ -293,7 +294,7 @@ class SmarterInterfaceLegacy():
         else:
 
             if not self.connected:
-                print self.connected
+                print(self.connected)
                 self.connect()
 
             if self.dump:
@@ -317,7 +318,7 @@ class SmarterInterfaceLegacy():
                         s = SmarterLegacy.string_response(data)
                         logging.debug("[" + self.host + ":" + str(self.port) + "] Received: " + s + " [" + data + "]")
 
-            except Exception, e:
+            except Exception as e:
                 pass #raise SmarterErrorOld("[" + self.host + ":" + str(self.port) + "] Connection timed out")
         return response
     
@@ -695,9 +696,9 @@ class SmarterInterfaceLegacy():
             else:
                 try:
                     responses = self.send(command)
-                except Exception, e:
+                except Exception as e:
                     self.disconnect()
-                    print str(e)
+                    print(str(e))
                     raise SmarterErrorOld("Could not send command to device")
             
             for r in responses:
@@ -720,7 +721,7 @@ class SmarterInterfaceLegacy():
         try:
             self.relay_socket.bind((self.relayHost,self.relayPort))
             self.relay_socket.listen(20)
-        except socket.error, e:
+        except socket.error as e:
             self.relay = False
             logging.debug("[" + self.host + ":" + str(self.port)  + "] " + str(e))
             logging.warning("[" + self.host + ":" + str(self.port)  + "] Legacy relay server failed (" + self.relayHost + ":" + str(self.relayPort) + ")")
@@ -741,8 +742,8 @@ class SmarterInterfaceLegacy():
                 try:
                     r = threading.Thread(target=self.__relayHandler,args=(clientsock,addr))
                     r.start()
-                except Exception, e:
-                    print str(e)
+                except Exception as e:
+                    print(str(e))
             except socket.error:
                 continue
 
@@ -1067,7 +1068,7 @@ class SmarterInterface:
         try:
             self.simulator = threading.Thread(target=self.__simulate_device)
             self.simulator.start()
-        except threading.ThreadError, e:
+        except threading.ThreadError as e:
             s = traceback.format_exc()
             logging.debug(s)
             loggins.debug(e)
@@ -1275,10 +1276,10 @@ class SmarterInterface:
                 self.broadcast = threading.Thread(target=self.__broadcast_device)
                 self.broadcast.start()
                 logging.info("Starting UDP (" + self.relayHost + ":" + str(self.relayPort) + ")")
-            except socket.error, e:
-                print str(e)
+            except socket.error as e:
+                print(str(e))
             except threading.ThreadError:
-                print str(e)
+                print(str(e))
         else:
             raise SmarterError(0,"UPD Response Appliance Info already started")
 
@@ -1392,8 +1393,8 @@ class SmarterInterface:
                     s = threading.Thread(target=self.__relayMonitor,args=(clientsock,addr))
                     r.start()
                     s.start()
-                except Exception, e:
-                    print str(e)
+                except Exception as e:
+                    print(str(e))
             except socket.error:
                 continue
 
@@ -1442,7 +1443,7 @@ class SmarterInterface:
                 try:
                     self.__sendLock.acquire()
                     self.__monitorLock.acquire()
-                except threading.ThreadError, e:
+                except threading.ThreadError as e:
                     if not self.monitor_run:
                         break
                     s = traceback.format_exc()
@@ -1460,7 +1461,7 @@ class SmarterInterface:
                         # call monitor function
                         # ...else got one! yeah! print it!
   
-                except SmarterError, e:
+                except SmarterError as e:
                     if not self.monitor_run:
                         break
                     
@@ -1516,7 +1517,7 @@ class SmarterInterface:
                             pass #self.device_history()
                             self.__read_block()
                             
-                    except SmarterError, e:
+                    except SmarterError as e:
                         if not self.monitor_run:
                             break
                         s = traceback.format_exc()
@@ -1588,9 +1589,9 @@ class SmarterInterface:
                     self.responseCount[id] = 1
      
                 return message
-            except socket.error, msg:
+            except socket.error as msg:
                 raise SmarterError(0,"Could not read message") # (" + msg + ")")
-            except AttributeError, msg:
+            except AttributeError as msg:
                 raise SmarterError(0,"Disconnected")
         raise SmarterError(0,"Disconnected")
 
@@ -1627,7 +1628,7 @@ class SmarterInterface:
             
             try:
                 self.__decode(message)
-            except SmarterError, e:
+            except SmarterError as e:
                 #logging.debug(str(e))
                 #logging.debug(traceback.format_exc())
                 raise SmarterError(0,"Could not read message (convert failure)")
@@ -1655,7 +1656,7 @@ class SmarterInterface:
     
         try:
             self.__socket.send(message)
-        except socket.error, e:
+        except socket.error as e:
             logging.debug(str(e))
             logging.debug(traceback.format_exc())
             raise SmarterError(0,"Could not send message")
@@ -1707,7 +1708,7 @@ class SmarterInterface:
             raise SmarterError(0,"Could not write message not connected")
         try:
             self.__monitorLock.acquire()
-        except threading.ThreadError, e:
+        except threading.ThreadError as e:
             logging.debug(str(e))
             logging.debug(traceback.format_exc())
             raise SmarterError(0,"Could not write message")
@@ -1738,7 +1739,7 @@ class SmarterInterface:
                 try:
                     message_read = self.__read()
                     data = Smarter.raw_to_number(message_read[0])
-                except SmarterError, e:
+                except SmarterError as e:
                     self.disconnect()
                     logging.debug(str(e))
                     logging.debug(traceback.format_exc())
@@ -1752,7 +1753,7 @@ class SmarterInterface:
                         data = Smarter.raw_to_number(message_read[0])
                         if (data != Smarter.ResponseKettleStatus) and (data != Smarter.ResponseCoffeeStatus):
                             responses += [message_read]
-                    except SmarterError, e:
+                    except SmarterError as e:
                         logging.debug(str(e))
                         logging.debug(traceback.format_exc())
                         self.__monitorLock.release()
@@ -1768,7 +1769,7 @@ class SmarterInterface:
                     data = Smarter.raw_to_number(message_read[0])
 
 
-                except SmarterError,e:
+                except SmarterError as e:
                     logging.debug(str(e))
                     logging.debug(traceback.format_exc())
                     self.disconnect()
@@ -1784,7 +1785,7 @@ class SmarterInterface:
                         data = Smarter.raw_to_number(message_read[0])
                         if (data != Smarter.ResponseKettleStatus) and (data != Smarter.ResponseCoffeeStatus):
                             responses += [message_read]
-                    except SmarterError, e:
+                    except SmarterError as e:
                         logging.debug(str(e))
                         logging.debug(traceback.format_exc())
                         self.disconnect()
@@ -1804,7 +1805,7 @@ class SmarterInterface:
         Connect device
         """
         if self.dump:
-            print "[" + self.host +  ":" + '{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()) + "] Connecting appliance"
+            print("[" + self.host +  ":" + '{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()) + "] Connecting appliance")
         self.__init()
         self.__write_stats()
         
@@ -1840,7 +1841,7 @@ class SmarterInterface:
             self.__socket.connect((self.host, self.port))
             self.connected = True
             self.sessionCount = 1
-        except socket.error, msg:
+        except socket.error as msg:
             s = traceback.format_exc()
             logging.debug(s)
             logging.debug(msg)
@@ -1852,7 +1853,7 @@ class SmarterInterface:
             try:
                 self.monitor = threading.Thread(target=self.__monitor_device)
                 self.monitor.start()
-            except threading.ThreadError, e:
+            except threading.ThreadError as e:
                 s = traceback.format_exc()
                 logging.debug(s)
                 loggins.debug(e)
@@ -1876,7 +1877,7 @@ class SmarterInterface:
             if self.dump:
                 x = self.device
                 if x == "Unknown": x = "appliance"
-                print "[" + self.host +  ":" + '{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()) + "] Disconnecting " + x
+                print("[" + self.host +  ":" + '{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()) + "] Disconnecting " + x)
         
             self.connected = False
             
@@ -1896,7 +1897,7 @@ class SmarterInterface:
                     self.__socket.close()
                     self.__socket = None
             # FIX: Also except thread exceptions..
-            except socket.error, msg:
+            except socket.error as msg:
                 self.__socket = None
                 raise SmarterError(SmarterInterfaceFailedStop,"Could not disconnect from " + self.host + " (" + msg[1] + ")")
             self.__socket = None
@@ -2045,55 +2046,55 @@ class SmarterInterface:
     
     
     def print_rules_short(self):
-        print "Appliance blocks (in): " + self.string_rules(self.rulesIn)
-        print "Relay blocks (out): " + self.string_rules(self.rulesOut)
+        print("Appliance blocks (in): " + self.string_rules(self.rulesIn))
+        print("Relay blocks (out): " + self.string_rules(self.rulesOut))
  
 
     def print_remote_rules_short(self):
-        print "Remote appliance blocks (in): " + self.string_rules(self.remoteRulesIn)
-        print "Remote relay blocks (out): " + self.string_rules(self.remoteRulesOut)
+        print("Remote appliance blocks (in): " + self.string_rules(self.remoteRulesIn))
+        print("Remote relay blocks (out): " + self.string_rules(self.remoteRulesOut))
  
 
     def print_rules(self):
-        print
-        print "Appliance blocks (in): " + self.string_rules(self.rulesIn)
-        print
-        print "    ID Description"
-        print "    ___________________________________________"
-        print
+        print()
+        print("Appliance blocks (in): " + self.string_rules(self.rulesIn))
+        print()
+        print("    ID Description")
+        print("    ___________________________________________")
+        print()
         for id in sorted(self.rulesIn):
-            print "    " + Smarter.number_to_code(id) + " " + Smarter.message_description(id)
-        print
-        print
-        print "Relay blocks (out):  " + self.string_rules(self.rulesOut)
-        print
-        print "    ID Description"
-        print "    ___________________________________________"
-        print
+            print("    " + Smarter.number_to_code(id) + " " + Smarter.message_description(id))
+        print()
+        print()
+        print("Relay blocks (out):  " + self.string_rules(self.rulesOut))
+        print()
+        print("    ID Description")
+        print("    ___________________________________________")
+        print()
         for id in sorted(self.rulesOut):
-            print "    " + Smarter.number_to_code(id) + " " + Smarter.message_description(id)
-        print
+            print("    " + Smarter.number_to_code(id) + " " + Smarter.message_description(id))
+        print()
 
 
     def print_remote_rules(self):
-        print
-        print "Remote appliance blocks (in): " + self.string_rules(self.remoteRulesIn)
-        print
-        print "    ID Description"
-        print "    ___________________________________________"
-        print
+        print()
+        print("Remote appliance blocks (in): " + self.string_rules(self.remoteRulesIn))
+        print()
+        print("    ID Description")
+        print("    ___________________________________________")
+        print()
         for id in sorted(self.remoteRulesIn):
-            print "    " + Smarter.number_to_code(id) + " " + Smarter.message_description(id)
-        print
-        print
-        print "Remote relay blocks (out):  " + self.string_rules(self.remoteRulesOut)
-        print
-        print "    ID Description"
-        print "    ___________________________________________"
-        print
+            print("    " + Smarter.number_to_code(id) + " " + Smarter.message_description(id))
+        print()
+        print()
+        print("Remote relay blocks (out):  " + self.string_rules(self.remoteRulesOut))
+        print()
+        print("    ID Description")
+        print("    ___________________________________________")
+        print()
         for id in sorted(self.remoteRulesOut):
-            print "    " + Smarter.number_to_code(id) + " " + Smarter.message_description(id)
-        print
+            print("    " + Smarter.number_to_code(id) + " " + Smarter.message_description(id))
+        print()
 
     #------------------------------------------------------
     # Firewall Interface
@@ -3280,7 +3281,7 @@ class SmarterInterface:
             for j in Smarter.triggersKettle:
                 try:
                     config.set(section+"."+i, Smarter.triggerName(j),self.triggerGet(i,Smarter.triggerName(j)))
-                except Exception, e:
+                except Exception as e:
                     pass # logging.warning("Error reading triggers " + str(e))
 
 
@@ -3382,7 +3383,7 @@ class SmarterInterface:
             g = config.get(section, "groups").split(",")
 
             for i in g:
-                print i
+                print(i)
         
                 try:
                     a = config.get(section+"."+i, "Active")
@@ -3410,7 +3411,7 @@ class SmarterInterface:
                     except Exception:
                         pass # logging.warning("Error reading triggers " + str(e))
 
-        except Exception, e:
+        except Exception as e:
             pass # logging.warning("Error reading triggers " + str(e))
 
 
@@ -3567,7 +3568,7 @@ class SmarterInterface:
 
     def enableGroup(self,group):
         if self.isTriggersGroup(group):
-            print "Trigger group enabled " + group
+            print("Trigger group enabled " + group)
             self.getGroup(group)[1] = True
             self.__write_triggers()
             return
@@ -3576,7 +3577,7 @@ class SmarterInterface:
 
     def disableGroup(self,group):
         if self.isTriggersGroup(group):
-            print "Trigger group disabled " + group
+            print("Trigger group disabled " + group)
             self.getGroup(group)[1] = False
             self.__write_triggers()
             return
@@ -3586,7 +3587,7 @@ class SmarterInterface:
     
     def boolsGroup(self,group,bools):
         if self.isTriggersGroup(group):
-            print "Trigger group " + group + " setting state type " + "/".join(Smarter.triggerCheckBooleans(bools))
+            print("Trigger group " + group + " setting state type " + "/".join(Smarter.triggerCheckBooleans(bools)))
             self.getGroup(group)[2] = Smarter.triggerCheckBooleans(bools)
             self.__write_triggers()
             return
@@ -3595,50 +3596,50 @@ class SmarterInterface:
 
     
     def print_groups(self):
-        print "Trigger Groups"
-        print
-        print "Name".rjust(18,' ') + "        Boolean State"
-        print "".rjust(18,'_') + "_____________________"
+        print("Trigger Groups")
+        print()
+        print("Name".rjust(18,' ') + "        Boolean State")
+        print("".rjust(18,'_') + "_____________________")
         for i in self.triggersGroups:
             s = ""
             if i[1]: s = "Active "
             else: s = "       "
-            print i[0].rjust(18,' ') + " " + s + ":".join(i[2])
-        print
+            print(i[0].rjust(18,' ') + " " + s + ":".join(i[2]))
+        print()
 
 
     def print_group(self,group):
-        print "Trigger Group"
-        print
-        print "Name".rjust(18,' ') + "        Boolean State"
-        print "".rjust(18,'_') + "_____________________"
+        print("Trigger Group")
+        print()
+        print("Name".rjust(18,' ') + "        Boolean State")
+        print("".rjust(18,'_') + "_____________________")
         for i in self.triggersGroups:
             if i[0] == group:
                 s = ""
                 if i[1]: s = "Active "
                 else: s = "       "
-                print i[0].rjust(18,' ') + " " + s + ":".join(i[2])
-                print
+                print(i[0].rjust(18,' ') + " " + s + ":".join(i[2]))
+                print()
                 return
         raise SmarterErrorOld("Trigger action group not found")
 
 
     def print_triggers(self):
-        print
+        print()
         
         for j in self.triggersGroups:
-            print "Triggers " + j[0]
-            print "_".rjust(25, "_")
+            print("Triggers " + j[0])
+            print("_".rjust(25, "_"))
             for i in Smarter.triggersKettle:
                 s = self.triggerGet(j[0],Smarter.triggersKettle[i][0].upper())
                 if s != "":
-                    print Smarter.triggersKettle[i][0].rjust(25,' ') + " " + s
+                    print(Smarter.triggersKettle[i][0].rjust(25,' ') + " " + s)
             for i in Smarter.triggersCoffee:
                 s = self.triggerGet(j[0],Smarter.triggersCoffee[i][0].upper())
                 if s != "":
-                    print Smarter.triggersCoffee[i][0].rjust(25,' ') + " " + s
-            print
-            print
+                    print(Smarter.triggersCoffee[i][0].rjust(25,' ') + " " + s)
+            print()
+            print()
         
     @_threadsafe_function
     def __trigger(self,triggerID,old,new):
@@ -3667,17 +3668,17 @@ class SmarterInterface:
                             values = {'kettleheater' : new}
                         else:     
                             values = {'error' : "true"}
-                        print "########################"
-                        print Smarter.triggersKettle[triggerID][0]
+                        print("########################")
+                        print(Smarter.triggersKettle[triggerID][0])
                         json_data = json.dumps(values)
-                        req = urllib2.Request(s)
+                        req = urllib.request.Request(s)
                         req.add_header('Content-Type', 'application/json')
                         req.add_header('Content-Length', str(len(json_data)))
                         try:
-                            response = urllib2.urlopen(req, data = json_data)
-                            print "$$$$$$$$$ Sending Update $$$$$$$$$"
-                        except Exception, e:
-                            print str(e)
+                            response = urllib.request.urlopen(req, data = json_data)
+                            print("$$$$$$$$$ Sending Update $$$$$$$$$")
+                        except Exception as e:
+                            print(str(e))
             else:
                 if i[1]:
                     s = self.triggerGet(i[0],Smarter.triggerName(triggerID))
@@ -3688,14 +3689,14 @@ class SmarterInterface:
                     
                         if s[0:4] == "http":
                             try:
-                                response = urllib.urlopen(s)
+                                response = urllib.request.urlopen(s)
             
-                            except Exception, e:
-                                print str(e)
+                            except Exception as e:
+                                print(str(e))
                         else:
                             r = os.popen(s).read()
                             if self.dump:
-                                print r
+                                print(r)
                 
                         if self.dump and self.dump_status:
                             logging.debug("Trigger: " + Smarter.triggersKettle[triggerID][0] + " - old:" + str(old) + " new:" + str(new) + " " + i[0] + " " + s)
@@ -3738,7 +3739,7 @@ class SmarterInterface:
             elif id == Smarter.ResponseWifiFirmware:    self.__decode_WifiFirmware(message)
             elif id == Smarter.ResponseWirelessNetworks:self.__decode_WirelessNetworks(message)
         
-        except SmarterError, e:
+        except SmarterError as e:
             # FIX ERROR HANDLING
             logging.debug(str(e))
             logging.debug(traceback.format_exc())
@@ -4240,7 +4241,7 @@ class SmarterInterface:
             #self.wifi_firmware()
             self.relay_info()
             self.__triggerHeartBeats()
-        except SmarterError, e:
+        except SmarterError as e:
             raise e
         finally:
             self.__sendLock.release()
@@ -4326,13 +4327,13 @@ class SmarterInterface:
         if self.isKettle:
             try:
                 b = Smarter.string_to_mode(v3)
-            except SmarterErrorOld, e:
+            except SmarterErrorOld as e:
                 b = Smarter.string_to_bool(v3)
             self.kettle_store_settings(Smarter.string_to_temperature(v1),Smarter.string_to_keepwarm(v2),b,Smarter.string_to_temperature(v4))
         elif self.isCoffee:
             try:
                 b = Smarter.string_to_grind(v3)
-            except SmarterErrorOld, e:
+            except SmarterErrorOld as e:
                 b = Smarter.string_to_bool(v3)
             self.coffee_store_settings(Smarter.string_to_cups(v1),Smarter.string_to_hotplate(v2),b,Smarter.string_to_strength(v4))
 
@@ -5181,37 +5182,37 @@ class SmarterInterface:
 
 
     def print_info_device(self):
-        print Smarter.device_info(self.deviceId,self.version)
+        print(Smarter.device_info(self.deviceId,self.version))
 
 
     def print_info_relay(self):
         if self.remoteRelay:
-            print "Remote relay version " + str(self.remoteRelayVersion) + " (" + self.remoteRelayHost + ")"
+            print("Remote relay version " + str(self.remoteRelayVersion) + " (" + self.remoteRelayHost + ")")
         else:
-            print "No remote relay"
+            print("No remote relay")
 
 
     def print_mode(self):
         if self.mode:
-            print "Cup mode"
+            print("Cup mode")
         else:
-            print "Carafe mode"
+            print("Carafe mode")
 
 
     def print_carafe_required(self):
         if self.carafeRequired:
-            print "Can brew without carafe"
+            print("Can brew without carafe")
         else:
-            print "Carafe needed for brewing"
+            print("Carafe needed for brewing")
 
 
     def print_watersensor_base(self):
-        print "Watersensor calibration base value: " + str(self.waterSensorBase)
+        print("Watersensor calibration base value: " + str(self.waterSensorBase))
 
 
     def print_wireless_networks(self):
-        print
-        print "         Signal   Wireless Network"
+        print()
+        print("         Signal   Wireless Network")
         for i in range(0,len(self.Wifi)):
             
             quality = Smarter.dbm_to_quality(self.Wifi[i][1])
@@ -5222,14 +5223,14 @@ class SmarterInterface:
             for x in range(0,quality / 10):
                 s += "█"
 
-            print "     " + s + "   " + self.Wifi[i][0]
-        print
+            print("     " + s + "   " + self.Wifi[i][0])
+        print()
 
 
     def print_wifi_firmware(self):
-        print
-        print self.WifiFirmware
-        print
+        print()
+        print(self.WifiFirmware)
+        print()
     
     
     def print_settings(self):
@@ -5240,24 +5241,24 @@ class SmarterInterface:
             
             
     def print_coffee_settings(self):
-        print Smarter.string_coffee_settings(self.defaultCups, self.defaultStrength, self.defaultGrind, self.defaultHotPlate)
+        print(Smarter.string_coffee_settings(self.defaultCups, self.defaultStrength, self.defaultGrind, self.defaultHotPlate))
 
 
     def print_kettle_settings(self):
-        print Smarter.string_kettle_settings(self.defaultTemperature, self.defaultFormula, self.defaultFormulaTemperature, self.defaultKeepWarmTime)
+        print(Smarter.string_kettle_settings(self.defaultTemperature, self.defaultFormula, self.defaultFormulaTemperature, self.defaultKeepWarmTime))
 
 
     def print_timers(self):
         # fix this
-        print "Not yet implemented"
+        print("Not yet implemented")
 
 
     def print_coffee_history(self):
         # fix this THIS IS SO WRONG
         if not self.historySuccess:
-            print "No history available"
+            print("No history available")
             return
-        print "Not yet implemented"
+        print("Not yet implemented")
 
 
     def print_history(self):
@@ -5270,16 +5271,16 @@ class SmarterInterface:
     def print_kettle_history(self):
         # fix this
         if not self.historySuccess:
-            print "No history available"
+            print("No history available")
             return
-        print "Not yet implemented"
+        print("Not yet implemented")
 
 
 
     def print_short_kettle_status(self):
         if self.busy: s = "busy "
         else: s = ""
-        print s + Smarter.string_kettle_status(self.onBase,self.kettleStatus,self.temperature,self.waterSensor)
+        print(s + Smarter.string_kettle_status(self.onBase,self.kettleStatus,self.temperature,self.waterSensor))
 
 
     def print_short_status(self):
@@ -5294,39 +5295,39 @@ class SmarterInterface:
         if self.busy: s = "busy "
         else: s = ""
         if self.onBase:
-            print "Status           " + s + Smarter.status_kettle_description(self.kettleStatus)
-            print "Temperature      " + Smarter.temperature_to_string(self.temperature)
-            print "Water sensor     " + str(self.waterSensor) + " (calibration base " + str(self.waterSensorBase) + ")"
+            print("Status           " + s + Smarter.status_kettle_description(self.kettleStatus))
+            print("Temperature      " + Smarter.temperature_to_string(self.temperature))
+            print("Water sensor     " + str(self.waterSensor) + " (calibration base " + str(self.waterSensorBase) + ")")
         else:
-            print "Status           " + s + "off base"
-        print "Default heating  " + Smarter.string_kettle_settings(self.defaultTemperature,self.defaultFormula, self.defaultFormulaTemperature,self.defaultKeepWarmTime)
+            print("Status           " + s + "off base")
+        print("Default heating  " + Smarter.string_kettle_settings(self.defaultTemperature,self.defaultFormula, self.defaultFormulaTemperature,self.defaultKeepWarmTime))
 
 
 
     def print_short_coffee_status(self):
         if self.busy: s = "busy "
         else: s = ""
-        print s + Smarter.string_coffee_status(self.ready, self.cupsBrew, self.working, self.heaterOn, self.hotPlateOn, self.carafe, self.grinderOn) + ", water " + Smarter.waterlevel(self.waterLevel) + ", setting: " + Smarter.string_coffee_settings(self.cups, self.strength, self.grind, self.hotPlate) + Smarter.string_coffee_bits(self.carafeRequired,self.mode,self.waterEnough,self.timerEvent)
+        print(s + Smarter.string_coffee_status(self.ready, self.cupsBrew, self.working, self.heaterOn, self.hotPlateOn, self.carafe, self.grinderOn) + ", water " + Smarter.waterlevel(self.waterLevel) + ", setting: " + Smarter.string_coffee_settings(self.cups, self.strength, self.grind, self.hotPlate) + Smarter.string_coffee_bits(self.carafeRequired,self.mode,self.waterEnough,self.timerEvent))
 
 
 
     def print_coffee_status(self):
         if self.busy: s = "busy "
         else: s = ""
-        print "Status           " + s + Smarter.string_coffee_status(self.ready, self.cupsBrew, self.working, self.heaterOn, self.hotPlateOn, self.carafe, self.grinderOn) + Smarter.string_coffee_bits(self.carafeRequired,self.mode,self.waterEnough,self.timerEvent)
-        print "Water level      " + Smarter.waterlevel(self.waterLevel)
-        print "Setting          " + Smarter.string_coffee_settings(self.cups, self.strength, self.grind, self.hotPlate)
-        print "Default brewing  " + Smarter.string_coffee_settings(self.defaultCups, self.defaultStrength, self.defaultGrind, self.defaultHotPlate)
+        print("Status           " + s + Smarter.string_coffee_status(self.ready, self.cupsBrew, self.working, self.heaterOn, self.hotPlateOn, self.carafe, self.grinderOn) + Smarter.string_coffee_bits(self.carafeRequired,self.mode,self.waterEnough,self.timerEvent))
+        print("Water level      " + Smarter.waterlevel(self.waterLevel))
+        print("Setting          " + Smarter.string_coffee_settings(self.cups, self.strength, self.grind, self.hotPlate))
+        print("Default brewing  " + Smarter.string_coffee_settings(self.defaultCups, self.defaultStrength, self.defaultGrind, self.defaultHotPlate))
 
 
 
     def print_status(self):
-        print
+        print()
         if self.isKettle:
             self.print_kettle_status()
         elif self.isCoffee:
             self.print_coffee_status()
-        print
+        print()
 
 
 
@@ -5341,73 +5342,73 @@ class SmarterInterface:
 
 
     def print_connect_status(self):
-        print self.string_connect_status()
+        print(self.string_connect_status())
     
 
     def print_stats(self):
-        print
-        print "  Stats "+ self.host
-        print "  ______"+ "_"*len(self.host)
-        print
-        print
-        print "  " + str(self.totalSendCount).rjust(9, ' ')   + "  Commands ("  + Smarter.bytes_to_human(self.totalSendBytesCount) + ")"
-        print "  " + str(self.totalReadCount).rjust(9, ' ')   + "  Responses (" + Smarter.bytes_to_human(self.totalReadBytesCount) + ")"
+        print()
+        print("  Stats "+ self.host)
+        print("  ______"+ "_"*len(self.host))
+        print()
+        print()
+        print("  " + str(self.totalSendCount).rjust(9, ' ')   + "  Commands ("  + Smarter.bytes_to_human(self.totalSendBytesCount) + ")")
+        print("  " + str(self.totalReadCount).rjust(9, ' ')   + "  Responses (" + Smarter.bytes_to_human(self.totalReadBytesCount) + ")")
         if self.totalSessionCount != 0:
-            print "  " + str(self.totalSessionCount).rjust(9, ' ') + "  " + "Sessions"
-        print
-        print
+            print("  " + str(self.totalSessionCount).rjust(9, ' ') + "  " + "Sessions")
+        print()
+        print()
         if self.isCoffee:
-            print "  " + str(self.totalCountCarafeRemoved).rjust(9, ' ') + "  Carafe removed"
-            print "  " + str(self.totalCountCupsBrew).rjust(9, ' ') + "  Cups brew"
-            print "  " + str(self.totalCountHeater).rjust(9, ' ') + "  Heater on"
-            print "  " + str(self.totalCountHotPlateOn).rjust(9, ' ') + "  Hotplate on"
-            print "  " + str(self.totalCountGrinderOn).rjust(9, ' ') + "  Grinder on"
+            print("  " + str(self.totalCountCarafeRemoved).rjust(9, ' ') + "  Carafe removed")
+            print("  " + str(self.totalCountCupsBrew).rjust(9, ' ') + "  Cups brew")
+            print("  " + str(self.totalCountHeater).rjust(9, ' ') + "  Heater on")
+            print("  " + str(self.totalCountHotPlateOn).rjust(9, ' ') + "  Hotplate on")
+            print("  " + str(self.totalCountGrinderOn).rjust(9, ' ') + "  Grinder on")
         elif self.isKettle:
-            print "  " + str(self.totalCountKettleRemoved).rjust(9, ' ') + "  Kettle removed"
-            print "  " + str(self.totalCountHeater).rjust(9, ' ') + "  Water Heated"
-            print "  " + str(self.totalCountFormulaCooling).rjust(9, ' ') + "  Formula cooling"
-            print "  " + str(self.totalCountKeepWarm).rjust(9, ' ') + "  Kept warm"
-        print
-        print
+            print("  " + str(self.totalCountKettleRemoved).rjust(9, ' ') + "  Kettle removed")
+            print("  " + str(self.totalCountHeater).rjust(9, ' ') + "  Water Heated")
+            print("  " + str(self.totalCountFormulaCooling).rjust(9, ' ') + "  Formula cooling")
+            print("  " + str(self.totalCountKeepWarm).rjust(9, ' ') + "  Kept warm")
+        print()
+        print()
         if self.sendCount != 0 or self.readCount != 0:
-            print "  Current session"
-            print
+            print("  Current session")
+            print()
         #    print "  " + str(self.sessionCount).rjust(10, ' ') + "  Connected"
-            print "  " + str(self.sendCount).rjust(9, ' ')   + "  Commands ("  + Smarter.bytes_to_human(self.sendBytesCount) + ")"
-            print "  " + str(self.readCount).rjust(9, ' ')   + "  Responses (" + Smarter.bytes_to_human(self.readBytesCount) + ")"
-            print
+            print("  " + str(self.sendCount).rjust(9, ' ')   + "  Commands ("  + Smarter.bytes_to_human(self.sendBytesCount) + ")")
+            print("  " + str(self.readCount).rjust(9, ' ')   + "  Responses (" + Smarter.bytes_to_human(self.readBytesCount) + ")")
+            print()
             
             for id in sorted(self.commandCount):
-                print "  " + str(self.commandCount[id]).rjust(9, ' ') + "  [" + Smarter.number_to_code(id) + "] " + Smarter.message_description(id)
-            print
+                print("  " + str(self.commandCount[id]).rjust(9, ' ') + "  [" + Smarter.number_to_code(id) + "] " + Smarter.message_description(id))
+            print()
             
             for id in sorted(self.responseCount):
-                print "  " + str(self.responseCount[id]).rjust(9, ' ') + "  [" + Smarter.number_to_code(id) + "] "  + Smarter.message_description(id)
-            print
+                print("  " + str(self.responseCount[id]).rjust(9, ' ') + "  [" + Smarter.number_to_code(id) + "] "  + Smarter.message_description(id))
+            print()
             if self.isCoffee:
-                print "  " + str(self.countCarafeRemoved).rjust(9, ' ') + "  Carafe removed"
-                print "  " + str(self.countCupsBrew).rjust(9, ' ') + "  Cups brew"
-                print "  " + str(self.countHeater).rjust(9, ' ') + "  Heater on"
-                print "  " + str(self.countHotPlateOn).rjust(9, ' ') + "  Hotplate on"
-                print "  " + str(self.countGrinderOn).rjust(9, ' ') + "  Grinder on"
+                print("  " + str(self.countCarafeRemoved).rjust(9, ' ') + "  Carafe removed")
+                print("  " + str(self.countCupsBrew).rjust(9, ' ') + "  Cups brew")
+                print("  " + str(self.countHeater).rjust(9, ' ') + "  Heater on")
+                print("  " + str(self.countHotPlateOn).rjust(9, ' ') + "  Hotplate on")
+                print("  " + str(self.countGrinderOn).rjust(9, ' ') + "  Grinder on")
             elif self.isKettle:
-                print "  " + str(self.countKettleRemoved).rjust(9, ' ') + "  Kettle removed"
-                print "  " + str(self.countHeater).rjust(9, ' ') + "  Water Heated"
-                print "  " + str(self.countFormulaCooling).rjust(9, ' ') + "  Formula cooling"
-                print "  " + str(self.countKeepWarm).rjust(9, ' ') + "  Kept warm"
-            print
+                print("  " + str(self.countKettleRemoved).rjust(9, ' ') + "  Kettle removed")
+                print("  " + str(self.countHeater).rjust(9, ' ') + "  Water Heated")
+                print("  " + str(self.countFormulaCooling).rjust(9, ' ') + "  Formula cooling")
+                print("  " + str(self.countKeepWarm).rjust(9, ' ') + "  Kept warm")
+            print()
 
 
 
     def print_message_send(self,message):
-        print "[" + self.host +  ":" + '{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()) + "] Message Send     [" + Smarter.message_description(Smarter.raw_to_number(message[0])) + "] [" + Smarter.message_to_codes(message) + "]"
+        print("[" + self.host +  ":" + '{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()) + "] Message Send     [" + Smarter.message_description(Smarter.raw_to_number(message[0])) + "] [" + Smarter.message_to_codes(message) + "]")
 
 
 
     def print_message_read(self,message):
         id = Smarter.raw_to_number(message[0])
-        print "[" + self.host +  ":" + '{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()) + "] Message Received [" + Smarter.message_description(id) + "] [" + Smarter.message_to_codes(message) + "]"
-        if   id == Smarter.ResponseCommandStatus:   print "Command replied: " + Smarter.status_command(self.commandStatus)
+        print("[" + self.host +  ":" + '{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()) + "] Message Received [" + Smarter.message_description(id) + "] [" + Smarter.message_to_codes(message) + "]")
+        if   id == Smarter.ResponseCommandStatus:   print("Command replied: " + Smarter.status_command(self.commandStatus))
         elif id == Smarter.ResponseWirelessNetworks: self.print_wireless_networks()
         elif id == Smarter.ResponseWifiFirmware:    self.print_wifi_firmware()
         elif id == Smarter.ResponseKettleHistory:   self.print_kettle_history()
@@ -5423,5 +5424,5 @@ class SmarterInterface:
         elif id == Smarter.ResponseKettleStatus:    self.print_short_kettle_status()
         elif id == Smarter.ResponseCoffeeStatus:    self.print_short_coffee_status()
         elif id == Smarter.ResponseTimers:          self.print_timers()
-        else:                                       print "Unknown Reply Message"
+        else:                                       print("Unknown Reply Message")
 

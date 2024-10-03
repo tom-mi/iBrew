@@ -36,11 +36,11 @@ class iBrewBonjourThread(threading.Thread):
          
     def register_callback(self, sdRef, flags, errorCode, name, regtype, domain):
         if errorCode == pybonjour.kDNSServiceErr_NoError:
-            print "iBrew: Registered bonjour server: {0}:{1}:(port {2})".format(name,regtype,self.port)
+            print("iBrew: Registered bonjour server: {0}:{1}:(port {2})".format(name,regtype,self.port))
         
     def run(self):
         if not have_bonjour:
-            print "iBrew: Cannot run bonjour server! Maybe some packages need to be installed?"
+            print("iBrew: Cannot run bonjour server! Maybe some packages need to be installed?")
             return
         
         sdRef = pybonjour.DNSServiceRegister(name = self.name,

@@ -58,7 +58,7 @@ class iBrewConsole:
     # if there are any other messages we print them too!
     
     def monitor(self):
-        print "iBrew: Press ctrl-c to stop"
+        print("iBrew: Press ctrl-c to stop")
         
         dump = self.client.dump
         self.client.dump_status = True
@@ -71,14 +71,14 @@ class iBrewConsole:
             except KeyboardInterrupt:
                 self.quit = True
                 break
-            except Exception, e:
+            except Exception as e:
                 self.quit = True
                 logging.debug(traceback.format_exc())
                 logging.debug(str(e))
                 break
         self.client.dump = dump
         self.client.dump_status = False
-        print
+        print()
    
 
 
@@ -101,7 +101,7 @@ class iBrewConsole:
                 self.web.events = self.client.events
                 self.web.run(self.serverBind,self.serverPort,self.client.dump)
         
-        except Exception, e:
+        except Exception as e:
             logging.debug(e)
             logging.info("iBrew: Failed to run Web Interface & REST API on port [" + self.serverBind + ":" + str(self.serverPort) + "]")
             return
@@ -119,26 +119,26 @@ class iBrewConsole:
     # you can stop the sweep by pressing ctrl-c
     def sweep(self,start=1):
         if int(start) <= 0 or start > 256:
-            print 'iBrew: sweep start out of range [00..ff]'
+            print('iBrew: sweep start out of range [00..ff]')
             return
 
         dump = self.client.dump
         self.client.dump = True
         self.client.dump_status = False
         
-        print
-        print "DO NOT DO THIS IF YOU DO NOT KNOW WHAT YOU ARE DOING"
-        print
-        print "IT CAN RENDER THE " + Smarter.device_to_string(self.client.deviceId) + " COMPLETELY USELESS"
-        print
-        print "Are you really, really sure?"
+        print()
+        print("DO NOT DO THIS IF YOU DO NOT KNOW WHAT YOU ARE DOING")
+        print()
+        print("IT CAN RENDER THE " + Smarter.device_to_string(self.client.deviceId) + " COMPLETELY USELESS")
+        print()
+        print("Are you really, really sure?")
         try:
-            i = raw_input("Please enter YES if you are: ")
+            i = input("Please enter YES if you are: ")
             if i != "YES":
                 return
         except Exception:
             return
-        print "iBrew: Press ctrl-c to stop"
+        print("iBrew: Press ctrl-c to stop")
  
 
         for id in range(int(start),256):
@@ -153,14 +153,14 @@ class iBrewConsole:
                 if not known:
                 
                     # add zero here...
-                    print "iBrew: Probing command: " + Smarter.number_to_code(id)
+                    print("iBrew: Probing command: " + Smarter.number_to_code(id))
 
                     # button pressed quit...
                     self.client.device_raw(Smarter.number_to_code(id))
 
                     # check if got also a ???status message... FIX
                     if self.client.commandStatus != Smarter.StatusInvalid:
-                        print "iBrew: New command found: " + Smarter.number_to_code(id)
+                        print("iBrew: New command found: " + Smarter.number_to_code(id))
                     self.client.dump = False
                     self.client.device_stop()
                     self.client.dump = True
@@ -203,55 +203,55 @@ class iBrewConsole:
         if not os.path.isfile(AppFolders.settings() + '/.ibrew'):
             self.username = "NOT ACCEPTED"
             self.app_info()
-            print
-            print "PLEASE READ THE FOLLOWING VERY CAREFULLY"
-            print
-            print
-            print "LICENSE " + iBrewApp
-            print
-            print Smarter.license()
-            print
-            print
-            print "WARNING: YOU COULD BRICK YOUR APPLIANCE, USE AT YOUR OWN RISK"
-            print
-            print "NOTE: THIS IS OFFLINE! NO INFORMATION WILL BE SHARED WITH ANYONE!"
-            print
-            print
-            print "LICENSING AGREEMENT"
+            print()
+            print("PLEASE READ THE FOLLOWING VERY CAREFULLY")
+            print()
+            print()
+            print("LICENSE " + iBrewApp)
+            print()
+            print(Smarter.license())
+            print()
+            print()
+            print("WARNING: YOU COULD BRICK YOUR APPLIANCE, USE AT YOUR OWN RISK")
+            print()
+            print("NOTE: THIS IS OFFLINE! NO INFORMATION WILL BE SHARED WITH ANYONE!")
+            print()
+            print()
+            print("LICENSING AGREEMENT")
             try:
-                self.username = raw_input("Please enter your full name: ").strip()
+                self.username = input("Please enter your full name: ").strip()
                 c = 0
                 while not (' ' in self.username):
                     c += 1
                     if c > 2:
-                        print "Forgot your full name?"
+                        print("Forgot your full name?")
                         return False
-                    print "That is not your full name!"
-                    self.username = raw_input("Please enter your full name: ").strip()
+                    print("That is not your full name!")
+                    self.username = input("Please enter your full name: ").strip()
                 c = 0
-                email = raw_input(self.username + ", please enter your email address: ").strip()
+                email = input(self.username + ", please enter your email address: ").strip()
                 while (not re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)",email)):
                     c += 1
                     if c > 2:
-                        print "Forgot your email address?"
+                        print("Forgot your email address?")
                         return False
-                    print "Invalid email"
-                    email = raw_input(self.username + ", please enter your email: ").strip()
+                    print("Invalid email")
+                    email = input(self.username + ", please enter your email: ").strip()
                 c = 0
-                accept = raw_input("You accept the license? Please answer with YES or NO followed by pressing the ENTER key: ").strip()
+                accept = input("You accept the license? Please answer with YES or NO followed by pressing the ENTER key: ").strip()
                 while (accept.upper() != "YES"):
                     if accept.upper() == "NO":
                         return False
                     c += 1
                     if c > 2:
-                        print "You decided to not to agree!"
+                        print("You decided to not to agree!")
                         return False
-                    email = raw_input("Please answer with YES or NO followed by pressing the ENTER key: ").strip()
+                    email = input("Please answer with YES or NO followed by pressing the ENTER key: ").strip()
             except Exception:
-                print "You decided to not to agree!"
+                print("You decided to not to agree!")
                 return False
-            print "Thank you, "+ self.username +" for accepting!"
-            print
+            print("Thank you, "+ self.username +" for accepting!")
+            print()
         
             config = SafeConfigParser()
             config.read(AppFolders.settings() + '/.ibrew')
@@ -284,7 +284,7 @@ class iBrewConsole:
                 if self.console:
                     if self.client.connected:
                         self.client.print_short_status()
-                    else: print "iBrew: Not connected"
+                    else: print("iBrew: Not connected")
                     return
                 else:
                     argument = line
@@ -310,17 +310,17 @@ class iBrewConsole:
 
             if command == "dump":
                 if numarg == 0 and not self.console:
-                    print "iBrew: Do I look like a civet cat to you?"
+                    print("iBrew: Do I look like a civet cat to you?")
                     return
                 else:
                     if self.client.dump and numarg == 0:
                         self.client.dump = False
                         if self.console:
-                            print "iBrew: Dump raw messages disabled"
+                            print("iBrew: Dump raw messages disabled")
                     else:
                         self.client.dump = True
                         if self.console:
-                            print "iBrew: Dump raw messages enabled"
+                            print("iBrew: Dump raw messages enabled")
                     
                     if numarg > 0:
                         command = arguments[0].lower()
@@ -333,10 +333,10 @@ class iBrewConsole:
                 if self.console:
                     if self.client.events == False:
                         self.client.events = True
-                        print "iBrew: Trigger events enabled"
+                        print("iBrew: Trigger events enabled")
                     else:
                         self.client.events = False
-                        print "iBrew: Trigger events disabled"
+                        print("iBrew: Trigger events disabled")
                     return
                 elif numarg != 0:
                     self.client.events = True
@@ -435,7 +435,7 @@ class iBrewConsole:
                     return
                 if numarg >= 1:
                     if self.client.isCoffee:
-                        print "iBrew: iKettle != Coffee Machine"
+                        print("iBrew: iKettle != Coffee Machine")
                         #logging.warning("iBrew: iKettle != Coffee Machine")
               
                     if arguments[0] == "protocol":
@@ -472,17 +472,17 @@ class iBrewConsole:
                         try:
                             r = self.client.iKettle.send(SmarterLegacy.string_to_command(arguments[0]))
                             for i in r:
-                                print "iBrew Legacy: " + SmarterLegacy.string_response(i)
+                                print("iBrew Legacy: " + SmarterLegacy.string_response(i))
                         except Exception:
-                            print "iBrew: Unknown legacy command"
+                            print("iBrew: Unknown legacy command")
                         return
                     else:
-                        print "iBrew: Unknown legacy command"
+                        print("iBrew: Unknown legacy command")
 
 
             if command == "shout":
                 if self.console or numarg == 0:
-                    print "iBrew: Can't hear you. Drinking tea at a dinner on the other side of the universe!"
+                    print("iBrew: Can't hear you. Drinking tea at a dinner on the other side of the universe!")
                     return
                 if numarg > 0:
                     command = arguments[0].lower()
@@ -493,12 +493,12 @@ class iBrewConsole:
                     self.client.isKettle   = True
                     self.client.isCoffee   = True
                 else:
-                    print "iBrew: \'shout\' not available in the console"
+                    print("iBrew: \'shout\' not available in the console")
 
 
             if command == "slow":
                 if self.console or numarg == 0:
-                    print "iBrew: As you command, but it can take a while!"
+                    print("iBrew: As you command, but it can take a while!")
                     return
                 if numarg > 0:
                     command = arguments[0].lower()
@@ -507,12 +507,12 @@ class iBrewConsole:
                 if not self.console:
                     self.client.fast = False
                 else:
-                    print "iBrew: \'kettle\' not available in the console"
+                    print("iBrew: \'kettle\' not available in the console")
 
 
             if command == "coffee":
                 if numarg == 0:
-                    print "iBrew: Nah, I want hot chocolade!"
+                    print("iBrew: Nah, I want hot chocolade!")
                     return
                 if numarg > 0:
                     command = arguments[0].lower()
@@ -542,7 +542,7 @@ class iBrewConsole:
                                 sim += " ".rjust(random.randint(0,4)," ") + borreltext.upper()
                             else:
                                 sim += " ".rjust(random.randint(0,4)," ") + borreltext
-                    print "iBrew: Starting simulation of boiling water!\n\n" + sim
+                    print("iBrew: Starting simulation of boiling water!\n\n" + sim)
                     return
                 
                 if numarg > 0:
@@ -557,7 +557,7 @@ class iBrewConsole:
 
             if command == "fahrenheid":
                 if numarg == 0 and not self.console:
-                    print "iBrew: Kelvin, stop that!"
+                    print("iBrew: Kelvin, stop that!")
                     return
                 else:
                     Smarter.fahrenheid = True
@@ -566,13 +566,13 @@ class iBrewConsole:
                         arguments = arguments[1:]
                         numarg -= 1
                     if self.console:
-                        print "iBrew: Temperature in fahrenheid"
+                        print("iBrew: Temperature in fahrenheid")
                         return
 
 
             if command == "celsius":
                 if numarg == 0 and not self.console:
-                    print "iBrew: But i'm freezing and so confused. Please turn me on!"
+                    print("iBrew: But i'm freezing and so confused. Please turn me on!")
                     return
                 else:
                     Smarter.fahrenheid = False
@@ -581,7 +581,7 @@ class iBrewConsole:
                         arguments = arguments[1:]
                         numarg -= 1
                     if self.console:
-                        print "iBrew: Temperature in celsius"
+                        print("iBrew: Temperature in celsius")
                         return
 
             if command == "simulate":
@@ -631,14 +631,14 @@ class iBrewConsole:
 
                 try:
                     if not self.client.dump:
-                        print
-                        print "  Starting please wait..."
-                        print
+                        print()
+                        print("  Starting please wait...")
+                        print()
                     if not (self.console and command == "relay") and not self.client.simulate:
                         self.client.connect()
                     
                     
-                except Exception, e:
+                except Exception as e:
                     logging.debug(e)
                     logging.info("iBrew: Could not connect to [" + self.client.host + "]")
                     if command != "console" and command != "connect" and command != "relay":
@@ -662,20 +662,20 @@ class iBrewConsole:
                 self.client.fast = False
                 try:
                     self.client.device_all_settings()
-                except Exception, e:
+                except Exception as e:
                     #logging.debug(str(e))
                     #logging.debug(traceback.format_exc())
-                    print "iBrew: Could not init values"
+                    print("iBrew: Could not init values")
                     return
 
             if command == "connect" or command == "console" or ((command == "relay" or command == "sweep" or command == "monitor" or command == "events") and not self.console):
  
                 try:
                     self.client.device_all_settings()
-                except Exception, e:
+                except Exception as e:
                     logging.debug(str(e))
                     logging.debug(traceback.format_exc())
-                    print "iBrew: Could not init values"
+                    print("iBrew: Could not init values")
                     return
                 self.client.print_connect_status()
                 self.client.print_status()
@@ -736,7 +736,7 @@ class iBrewConsole:
                                                 if not self.client.dump: self.client.print_remote_rules_short()
                                                 
                                             else:
-                                                print "iBrew: Use additional command: info, block or unblock"
+                                                print("iBrew: Use additional command: info, block or unblock")
             elif command == "triggers":     Smarter.print_triggers()
             elif command == "states":     Smarter.print_states()
             elif command == "trigger":
@@ -747,42 +747,42 @@ class iBrewConsole:
                                                     self.client.print_groups()
                                                 elif arguments[0] == "add" and numarg == 4:
                                                     self.client.triggerAdd(arguments[1],arguments[2].upper(),arguments[3])
-                                                    print "iBrew: Added trigger " + arguments[2].upper() + " to group " + arguments[1] + " with action " + arguments[3]
+                                                    print("iBrew: Added trigger " + arguments[2].upper() + " to group " + arguments[1] + " with action " + arguments[3])
                                                 elif arguments[0] == "add" and numarg != 4:
-                                                    print "iBrew: Trigger add need a group name and a trigger action"
+                                                    print("iBrew: Trigger add need a group name and a trigger action")
                                                 elif arguments[0][0:3] == "del":
                                                     if numarg == 3 or numarg == 2:
                                                         if numarg == 2:
                                                             self.client.triggerGroupDelete(arguments[1])
-                                                            print "iBrew: Trigger group " + arguments[1] + " deleted"
+                                                            print("iBrew: Trigger group " + arguments[1] + " deleted")
                                                         else:
                                                             self.client.triggerDelete(arguments[1],arguments[2].upper())
-                                                            print "iBrew: Trigger " + arguments[2].upper() + " of group " + arguments[1] + " deleted"
+                                                            print("iBrew: Trigger " + arguments[2].upper() + " of group " + arguments[1] + " deleted")
                                                     else:
-                                                        print "iBrew: Trigger delete need a group name or a group name and a trigger action"
+                                                        print("iBrew: Trigger delete need a group name or a group name and a trigger action")
                                                 else:
                                                     if numarg == 1:
                                                         self.client.print_group(arguments[0])
                                                     elif numarg == 2:
                                                         if arguments[1] == "state":
-                                                            print "iBrew: Missing arguments, which duality?"
+                                                            print("iBrew: Missing arguments, which duality?")
                                                         else:
                                                             try:
                                                                 state = Smarter.string_to_bool(arguments[1])
                                                                 if state:
                                                                     self.client.enableGroup(arguments[0])
-                                                                    print "iBrew: Trigger group " + arguments[0] + " enabled"
+                                                                    print("iBrew: Trigger group " + arguments[0] + " enabled")
                                                                 else:
                                                                     self.client.disableGroup(arguments[0])
-                                                                    print "iBrew: Trigger group " + arguments[0] + " enabled"
-                                                            except Exception, e:
-                                                                print str(e)
-                                                                print "iBrew: failed to get state"
+                                                                    print("iBrew: Trigger group " + arguments[0] + " enabled")
+                                                            except Exception as e:
+                                                                print(str(e))
+                                                                print("iBrew: failed to get state")
                                                     elif arguments[1] == "state":
                                                         self.client.boolsGroup(arguments[0],arguments[2])
-                                                        print "iBrew: Trigger group " + arguments[0] + " boolean state " + arguments[2]
+                                                        print("iBrew: Trigger group " + arguments[0] + " boolean state " + arguments[2])
                                                     else:
-                                                        print "iBrew: missing arguments, about time for some peace and quite :-)"
+                                                        print("iBrew: missing arguments, about time for some peace and quite :-)")
                                                             
             elif command == "relay":
                                             if numarg >= 1:
@@ -808,9 +808,9 @@ class iBrewConsole:
                                                 self.monitor()
             
             elif command == "commands":     self.commands()
-            elif command == "protocol":     print Smarter.protocol()
-            elif command == "structure":    print Smarter.structure()
-            elif command == "notes":        print Smarter.notes()
+            elif command == "protocol":     print(Smarter.protocol())
+            elif command == "structure":    print(Smarter.structure())
+            elif command == "notes":        print(Smarter.notes())
             elif command == "license":
                                             if self.console and numarg == 1 and arguments[0] == "disagree":
                                                 try:
@@ -818,44 +818,44 @@ class iBrewConsole:
                                                 except:
                                                     pass 
                                             else:
-                                                print Smarter.license()
+                                                print(Smarter.license())
             elif command == "examples":     self.examples()
-            elif command == "groups":       print Smarter.groups()
+            elif command == "groups":       print(Smarter.groups())
             elif command == "messages":
                                             if numarg >= 1 or not self.console:
-                                                print Smarter.messages()
+                                                print(Smarter.messages())
                                             else:
-                                                print Smarter.messages(self.client.isCoffee,self.client.isKettle)
+                                                print(Smarter.messages(self.client.isCoffee,self.client.isKettle))
             elif command == "message":
                                             if numarg >= 1:
-                                                print Smarter.message(Smarter.code_to_number(arguments[0]))
+                                                print(Smarter.message(Smarter.code_to_number(arguments[0])))
                                             else:
-                                                print Smarter.message_all()
+                                                print(Smarter.message_all())
             elif command == "group":
                                             if numarg >= 1:
                                                 s = None
                                                 try:
                                                     s = Smarter.group(Smarter.string_to_group(arguments[0]))
                                                 except SmarterError:
-                                                    print "iBrew: Group not available"
+                                                    print("iBrew: Group not available")
                                                 else:
-                                                    print s
+                                                    print(s)
                                             else:
-                                                print Smarter.groups_all()
+                                                print(Smarter.groups_all())
             elif command == "list":
                                             devices, relay = Smarter.find_devices(self.client.port)
                                             Smarter.print_devices_found(devices, relay)
             elif command == "joke" or command == "quote":
-                                            print
+                                            print()
                                             self.joke()
-                                            print
+                                            print()
             elif command == "stats":        self.client.print_stats()
             # web is legacy ibrew command
             elif command == "server" or command == "web":
                                             if not self.console:
                                                     self.web()
                                             else:
-                                                print "iBrew: Not in console"
+                                                print("iBrew: Not in console")
 
             # Kettle
             elif not self.client.connected: return
@@ -894,7 +894,7 @@ class iBrewConsole:
             elif command == "default":      self.client.device_restore_default()
             elif command == "calibrate":
                                             if self.client.onBase:
-                                                print "Please remove kettle for accurate calibration"
+                                                print("Please remove kettle for accurate calibration")
                                             self.client.kettle_calibrate()
             elif command == "base":
                                             if numarg == 0:
@@ -920,10 +920,10 @@ class iBrewConsole:
                                                     password = arguments[1]
                                                 self.client.wifi_join(network,password)
                                             else:
-                                                print "iBrew: Need at least a wireless network name"
+                                                print("iBrew: Need at least a wireless network name")
             elif command == "rejoin":
                                             if self.client.isDirect:
-                                                print "iBrew: Can not rejoin if connected directly"
+                                                print("iBrew: Can not rejoin if connected directly")
                                             else:
                                                 self.client.wifi_rejoin()
 
@@ -938,9 +938,9 @@ class iBrewConsole:
                                                     else:
                                                         self.client.coffee_hotplate_on()
                                                 else:
-                                                    print "iBrew: hotplate missing [on/off] got " + arguments[0]
+                                                    print("iBrew: hotplate missing [on/off] got " + arguments[0])
                                             else:
-                                                print "iBrew: hotplate missing [on/off]"
+                                                print("iBrew: hotplate missing [on/off]")
             elif command == "carafe":
                                             if numarg >= 1:
                                                 if arguments[0].lower() == "False":
@@ -957,9 +957,9 @@ class iBrewConsole:
                                                 else:
                                                     self.client.coffee_timer_store(Smarter.string_to_number(arguments[1]))
  
-                                                print "iBrew: Not yet implemented"
+                                                print("iBrew: Not yet implemented")
                                             else:
-                                                print "iBrew: timer needs index (time or delete)"
+                                                print("iBrew: timer needs index (time or delete)")
             elif command == "mode":
                                             if numarg >= 1:
                                                 if arguments[0].lower() == "carafe":
@@ -970,22 +970,22 @@ class iBrewConsole:
                                                 self.client.coffee_mode()
             elif command == "beans":
                                             if self.client.grind:
-                                                print "iBrew: Beans already selected"
+                                                print("iBrew: Beans already selected")
                                             else:
                                                 self.client.coffee_beans()
-                                                print "iBrew: Beans used"
+                                                print("iBrew: Beans used")
             elif command == "filter" or command == "pregrind":
                                             if not self.client.grind:
-                                                print "iBrew: Filter already selected"
+                                                print("iBrew: Filter already selected")
                                             else:
                                                 self.client.coffee_filter()
-                                                print "iBrew: Filter used"
+                                                print("iBrew: Filter used")
             elif command == "descale":
                                             try:
                                                 self.client.coffee_descale()
                                             except Exception:
                                                 # no water...?
-                                                print "iBrew: Descaling failed"
+                                                print("iBrew: Descaling failed")
             elif command == "brew":
                                             if numarg == 0:
                                                 self.client.coffee_brew_settings()
@@ -1001,7 +1001,7 @@ class iBrewConsole:
                                                 self.client.coffee_brew(Smarter.string_to_cups(arguments[0]),Smarter.string_to_hotplate(arguments[1]),Smarter.string_to_grind(arguments[2]),Smarter.string_to_strength(arguments[3]))
             elif command == "strength":
                                             if numarg == 0:
-                                                print "iBrew: specify strength [weak,medium,strong]"
+                                                print("iBrew: specify strength [weak,medium,strong]")
                                             elif numarg >= 1:
                                                 self.client.coffee_strength(Smarter.string_to_strength(arguments[0]))
             elif command == "weak":         self.client.coffee_weak()
@@ -1009,7 +1009,7 @@ class iBrewConsole:
             elif command == "strong":       self.client.coffee_strong()
             elif command == "cups":
                                             if numarg == 0:
-                                                print "iBrew: specify cups [1..12]"
+                                                print("iBrew: specify cups [1..12]")
                                             elif numarg >= 1:
                                                 self.client.coffee_cups(Smarter.string_to_cups(arguments[0]))
 
@@ -1027,13 +1027,13 @@ class iBrewConsole:
                                             if numarg == 0:
                                                 self.client.device_settings()
                                                 if not self.client.dump: self.client.print_settings()
-                                            elif numarg == 0: print "iBrew: Could not store coffee settings, missing all arguments"
-                                            elif numarg == 1 and self.client.isCoffee: print "iBrew: Could not store coffee settings, missing cups"
-                                            elif numarg == 2 and self.client.isCoffee: print "iBrew: Could not store coffee settings, missing grinder"
-                                            elif numarg == 3 and self.client.isCoffee: print "iBrew: Could not store coffee settings, missing hotplate"
-                                            elif numarg == 1 and self.client.isKettle: print "iBrew: Could not store kettle settings, missing temperature"
-                                            elif numarg == 2 and self.client.isKettle: print "iBrew: Could not store kettle settings, missing formula mode"
-                                            elif numarg == 3 and self.client.isKettle: print "iBrew: Could not store kettle settings, missing formula temperature"
+                                            elif numarg == 0: print("iBrew: Could not store coffee settings, missing all arguments")
+                                            elif numarg == 1 and self.client.isCoffee: print("iBrew: Could not store coffee settings, missing cups")
+                                            elif numarg == 2 and self.client.isCoffee: print("iBrew: Could not store coffee settings, missing grinder")
+                                            elif numarg == 3 and self.client.isCoffee: print("iBrew: Could not store coffee settings, missing hotplate")
+                                            elif numarg == 1 and self.client.isKettle: print("iBrew: Could not store kettle settings, missing temperature")
+                                            elif numarg == 2 and self.client.isKettle: print("iBrew: Could not store kettle settings, missing formula mode")
+                                            elif numarg == 3 and self.client.isKettle: print("iBrew: Could not store kettle settings, missing formula temperature")
                                             elif numarg >= 4:
                                                 self.client.device_store_settings(arguments[0],arguments[1],arguments[2],arguments[3])
                                                 if not self.client.dump: self.client.print_settings()
@@ -1050,7 +1050,7 @@ class iBrewConsole:
                                             self.client.device_history()
                                             if not self.client.dump: self.client.print_history()
             elif command == "time":
-                                            print "not yet implemented"
+                                            print("not yet implemented")
                                             self.client.device_time()
 
             elif command == "status":       self.client.print_status() # status full, on check on keyword
@@ -1058,13 +1058,13 @@ class iBrewConsole:
                                             try:
                                                 self.client.device_raw(command+''.join(arguments))
                                             except Exception:
-                                                print "iBrew: Sending raw command message failed"
-        except Exception,e:
+                                                print("iBrew: Sending raw command message failed")
+        except Exception as e:
             if not self.console:
                 self.quit = True
-            print str(e)
-            print(traceback.format_exc())
-            print "iBrew: Command Failed"
+            print(str(e))
+            print((traceback.format_exc()))
+            print("iBrew: Command Failed")
             
        
     def run(self,arguments):
@@ -1100,7 +1100,7 @@ class iBrewConsole:
             self.client.fast = True
             try:
                 self.execute(arguments)
-            except Exception, e:
+            except Exception as e:
                 self.quit = True
                 self.console = False
         
@@ -1110,10 +1110,10 @@ class iBrewConsole:
             while not self.quit:
                 try:
                     cursor = self.client.host + ":" + self.client.device + "$"
-                    self.execute(raw_input(cursor).strip().split())
+                    self.execute(input(cursor).strip().split())
                 except KeyboardInterrupt:
                     self.quit = True
-                except Exception, e:
+                except Exception as e:
                     self.quit = True
                     logging.debug(traceback.format_exc())
                     logging.debug(str(e))
@@ -1130,19 +1130,19 @@ class iBrewConsole:
 #------------------------------------------------------
 
     def app_info(self):
-        print iBrewApp
-        print iBrewInfo
+        print(iBrewApp)
+        print(iBrewInfo)
         if self.username != "NOT ACCEPTED":
-            print "iBrew: LICENSING AGREEMENT accepted by LICENSEE " + self.username
-        print
-        print iBrewContribute
-        print
+            print("iBrew: LICENSING AGREEMENT accepted by LICENSEE " + self.username)
+        print()
+        print(iBrewContribute)
+        print()
 
     def intro(self):
-        print
-        print "For list of commands type: help and press enter"
-        print "Press enter for status update and press ctrl-c to quit"
-        print
+        print()
+        print("For list of commands type: help and press enter")
+        print("Press enter for status update and press ctrl-c to quit")
+        print()
 
     def joke(self):
         joke = iBrewJokes().joke()
@@ -1151,201 +1151,201 @@ class iBrewConsole:
                 joke = iBrewJokes().coffee()
             elif self.client.isKettle:
                 joke = iBrewJokes().kettle()
-        print "\n      \'" + joke[0] + "\'\n                  -- " + joke[1] + "\n"
+        print("\n      \'" + joke[0] + "\'\n                  -- " + joke[1] + "\n")
 
 
     def usage(self):
-        print
-        print "  iBrew Server"
-        print "  ________________"
-        print
-        print "  Usage: ibrew (dump) (events) (fahrenheid) server (host:(port) (host:(port))"
+        print()
+        print("  iBrew Server")
+        print("  ________________")
+        print()
+        print("  Usage: ibrew (dump) (events) (fahrenheid) server (host:(port) (host:(port))")
 #        print "  Usage: ibrew (energy) (dump) (fahrenheid) server (host:(port))"
-        print
+        print()
      #   print "    energy                 energy saver (stats not possible)"
-        print "    dump                   dump message enabled"
-        print "    events                 enable trigger events (monitor, relay, console)"
-        print "    fahrenheid             use fahrenheid"
-        print "    web                    start web interface & rest api"
-        print "    port                   optional port number, default 2082"
-        print "    rules                  blocking & patching rules"
-        print "    host                   host address of the appliance (format: ip4, ip6, fqdn)"
-        print "    port                   port of appliance, optional, only use if alternative port"
-        print
+        print("    dump                   dump message enabled")
+        print("    events                 enable trigger events (monitor, relay, console)")
+        print("    fahrenheid             use fahrenheid")
+        print("    web                    start web interface & rest api")
+        print("    port                   optional port number, default 2082")
+        print("    rules                  blocking & patching rules")
+        print("    host                   host address of the appliance (format: ip4, ip6, fqdn)")
+        print("    port                   port of appliance, optional, only use if alternative port")
+        print()
         self.legacy()
-        print
-        print "  iBrew iKettle 2.0 & Smater Coffee Command Line"
-        print "  ______________________________________________"
-        print
+        print()
+        print("  iBrew iKettle 2.0 & Smater Coffee Command Line")
+        print("  ______________________________________________")
+        print()
         #print "  Usage: ibrew (energy) (dump) (bridge|emulate (host:(port)) (shout|slow) (coffee|kettle) (fahrenheid) [command] (host(:port))"
-        print "  Usage: ibrew (dump) (events) (legacy [bridge|emulate] (host:(port))) (shout|slow) (coffee|kettle) (fahrenheid) [command] (host(:port))"
-        print
-        print "    bridge                 emulate iKettle 2.0 using legacy iKettle (NOT IMPlEMENTED)"
-        print "    emulate (host:(port)   emulates legacy iKettle"
-        print "    coffee                 assumes coffee machine"
-        print "    command                action to take!"
-        print "    dump                   dump message enabled"
-        print "    events                 enable trigger events (monitor, relay, console)"
-        print "    fahrenheid             PARTLY WORKING use fahrenheid"
-        print "    host                   host address of the appliance (format: ip4, ip6, fqdn), only use if detection fails"
+        print("  Usage: ibrew (dump) (events) (legacy [bridge|emulate] (host:(port))) (shout|slow) (coffee|kettle) (fahrenheid) [command] (host(:port))")
+        print()
+        print("    bridge                 emulate iKettle 2.0 using legacy iKettle (NOT IMPlEMENTED)")
+        print("    emulate (host:(port)   emulates legacy iKettle")
+        print("    coffee                 assumes coffee machine")
+        print("    command                action to take!")
+        print("    dump                   dump message enabled")
+        print("    events                 enable trigger events (monitor, relay, console)")
+        print("    fahrenheid             PARTLY WORKING use fahrenheid")
+        print("    host                   host address of the appliance (format: ip4, ip6, fqdn), only use if detection fails")
         #print "    energy                 NOT IMPLEMENTED energy saver (stats not possible)"
-        print "    kettle                 assumes kettle"
-        print "    port                   port of appliance, optional, only use if detection fails"
-        print "    shout                  sends commands and quits not waiting for a reply"
-        print "    slow                   fully inits everything before action"
-        print
-        print "  If you do not supply a host, it will try to connect to the first detected appliance"
-        print "  Thus if you have more then one appliance supply a host (if its not in direct mode)"
-        print
+        print("    kettle                 assumes kettle")
+        print("    port                   port of appliance, optional, only use if detection fails")
+        print("    shout                  sends commands and quits not waiting for a reply")
+        print("    slow                   fully inits everything before action")
+        print()
+        print("  If you do not supply a host, it will try to connect to the first detected appliance")
+        print("  Thus if you have more then one appliance supply a host (if its not in direct mode)")
+        print()
 
     def legacy(self):
-        print
-        print "  iBrew iKettle Legacy Command Line"
-        print "  _________________________________"
-        print
-        print "  Usage: ibrew (dump) legacy command (host(:port))"
-        print
-        print "    command                iKettle command, action to take!"
-        print "    host                   host address of the appliance (format: ip4, ip6, fqdn)"
-        print "    port                   port of appliance, optional, only use if alternative port"
-        print
+        print()
+        print("  iBrew iKettle Legacy Command Line")
+        print("  _________________________________")
+        print()
+        print("  Usage: ibrew (dump) legacy command (host(:port))")
+        print()
+        print("    command                iKettle command, action to take!")
+        print("    host                   host address of the appliance (format: ip4, ip6, fqdn)")
+        print("    port                   port of appliance, optional, only use if alternative port")
+        print()
 
     def legacy_commands(self):
-        print
-        print "  iKettle Commands"
-        print "    heat                   " + SmarterLegacy.textHeat.lower()
-        print "    stop                   " + SmarterLegacy.textStop.lower()
-        print "    65                     " + SmarterLegacy.textSelect65c.lower()
-        print "    80                     " + SmarterLegacy.textSelect80c.lower()
-        print "    95                     " + SmarterLegacy.textSelect95c.lower()
-        print "    100                    " + SmarterLegacy.textSelect100c.lower()
-        print "    warm                   " + SmarterLegacy.textStartWarm.lower()
-        print "    5                      " + SmarterLegacy.textSelectWarm5m.lower()
-        print "    10                     " + SmarterLegacy.textSelectWarm10m.lower()
-        print "    20                     " + SmarterLegacy.textSelectWarm20m.lower()
-        print "    status                 " + SmarterLegacy.textGetStatus
-        print
-        print "    protocol               protocol information"
-        print "    simulate               start kettle simulation"
-        print "    relay ((ip:)port)      start relay"
+        print()
+        print("  iKettle Commands")
+        print("    heat                   " + SmarterLegacy.textHeat.lower())
+        print("    stop                   " + SmarterLegacy.textStop.lower())
+        print("    65                     " + SmarterLegacy.textSelect65c.lower())
+        print("    80                     " + SmarterLegacy.textSelect80c.lower())
+        print("    95                     " + SmarterLegacy.textSelect95c.lower())
+        print("    100                    " + SmarterLegacy.textSelect100c.lower())
+        print("    warm                   " + SmarterLegacy.textStartWarm.lower())
+        print("    5                      " + SmarterLegacy.textSelectWarm5m.lower())
+        print("    10                     " + SmarterLegacy.textSelectWarm10m.lower())
+        print("    20                     " + SmarterLegacy.textSelectWarm20m.lower())
+        print("    status                 " + SmarterLegacy.textGetStatus)
+        print()
+        print("    protocol               protocol information")
+        print("    simulate               start kettle simulation")
+        print("    relay ((ip:)port)      start relay")
 
-        print
+        print()
     
     def commands(self):
-        print
-        print "  Commands"
-        print "  ________"
+        print()
+        print("  Commands")
+        print("  ________")
         self.legacy_commands()
-        print "  iKettle 2.0 & Smarter Coffee Commands"
-        print "    default                set default settings"
-        print "    info                   appliance info"
-        print "    list                   list detected appliances"
-        print "    reset                  reset appliance to default"
-        print "    start                  start the appliance"
-        print "    status (full)          show status"
-        print "    settings               show user settings"
-        print "    stop                   stop the appliance"
-        print
-        print "  iKettle 2.0 Commands"
-        print "    base                   show watersensor base value"
-        print "    base [base]            store watersensor base value"
-        print "    boil                   heat till 100°C"
-        print "    calibrate              calibrates watersensor"
-        print "    celsius                use celsius °C [console only]"
-        print "    fahrenheid             use fahrenheid °F [console only]"
-        print "    formula (temperature (keepwarm))] heat kettle in formula mode"
-        print "    heat (temperature)(keepwarm))    heat kettle"
-        print "    kettlecoffee           warms water for coffee 95°C"
-        print "    milk                   warm  65°C"
-        print "    settings [temperature] [keepwarm] [formula] [formulatemperature] store kettle user settings"
-        print "    tea [green,white,oelong,black] warms water for tea 65°C,80°C,90°C,100°C"
-        print
-        print "  Smarter Coffee Commands"
-        print "    beans                  use beans for coffee"
-        print "    brew (cups (hotplate (grind (strength)))) brew coffee"
-        print "    brew default           brew coffee with stored user default settings"
-        print "    carafe                 returns if carafe is required"
-        print "    carafe [state]         set carafe is required [true or false]"
-        print "    cups [number]          set number of cups [1..12]"
-        print "    descale                descale coffee machine"
-        print "    filter                 use pregrind beans in filter for coffee"
-        print "    hotplate off           turn hotplate off"
+        print("  iKettle 2.0 & Smarter Coffee Commands")
+        print("    default                set default settings")
+        print("    info                   appliance info")
+        print("    list                   list detected appliances")
+        print("    reset                  reset appliance to default")
+        print("    start                  start the appliance")
+        print("    status (full)          show status")
+        print("    settings               show user settings")
+        print("    stop                   stop the appliance")
+        print()
+        print("  iKettle 2.0 Commands")
+        print("    base                   show watersensor base value")
+        print("    base [base]            store watersensor base value")
+        print("    boil                   heat till 100°C")
+        print("    calibrate              calibrates watersensor")
+        print("    celsius                use celsius °C [console only]")
+        print("    fahrenheid             use fahrenheid °F [console only]")
+        print("    formula (temperature (keepwarm))] heat kettle in formula mode")
+        print("    heat (temperature)(keepwarm))    heat kettle")
+        print("    kettlecoffee           warms water for coffee 95°C")
+        print("    milk                   warm  65°C")
+        print("    settings [temperature] [keepwarm] [formula] [formulatemperature] store kettle user settings")
+        print("    tea [green,white,oelong,black] warms water for tea 65°C,80°C,90°C,100°C")
+        print()
+        print("  Smarter Coffee Commands")
+        print("    beans                  use beans for coffee")
+        print("    brew (cups (hotplate (grind (strength)))) brew coffee")
+        print("    brew default           brew coffee with stored user default settings")
+        print("    carafe                 returns if carafe is required")
+        print("    carafe [state]         set carafe is required [true or false]")
+        print("    cups [number]          set number of cups [1..12]")
+        print("    descale                descale coffee machine")
+        print("    filter                 use pregrind beans in filter for coffee")
+        print("    hotplate off           turn hotplate off")
         
         # VERAMDER DEZE FIX (ON MAG WEG)
-        print "    hotplate on (minutes)  turn hotplate on (time in minutes)"
-        print "    mode                   return which mode: cup or carafe mode"
-        print "    mode [mode]            set mode: [cup] or [carafe] mode"
-        print "    pregrind               use pregrind beans in filter for coffee"
-        print "    (strength) [strength]  set strength coffee [weak, medium or strong]"
-        print "    settings [cups] [hotplate] [grind] [strength] store user settings"
-        print
-        print "  Wireless Network Commands"
-        print "    direct                 enable direct mode access"
-        print "    join [net] (pass)      connect to wireless network"
-        print "    rejoin                 rejoins current wireless network [not in direct mode]"
-        print "    scan                   scan wireless networks"
-        print
-        print "  Smarter Network Commands"
-        print "    connect (host) (rules&modifiers) connect to appliance"
-        print "    block [rules]          block messages with groups or ids"
-        print "    disconnect             disconnect connected appliance"
-        print "    events                 start trigger events only"
-        print "    patch [rules]          patch messages"
-        print "    relay ((ip:)port)      start relay"
-        print "    relay stop             stop relay"
-        print "    remote info            info on remote relay"
-        print "    remote block [rules]   remote block messages with groups or ids"
-        print "    remote patch [rules]   remote patch"
-        print "    remote rules (full)    show remote blocking and patching rules"
-        print "    remote unblock [rules] remote unblock messages groups or ids"
-        print "    rules (full)           show blocking & patching rules"
-        print "    stats                  show traffic statistics"
-        print "    unblock [rules]        unblock messages groups or ids"
-        print
-        print "  Block Rules"
-        print "    Consists of rules, in: is for outgoing connection to the appliance, out: is for incomming connection from relay client."
-        print
-        print "    [in:|out:]rule(,[in:|out:]RULE)*"
-        print
-        print "    RULE"
-        print "      message id"
-        print "      group name"
-        print
-        print "  Patch Rules"
-        print "    Patches additional functionality"
-        print
-        print "    [mod:]VAR=VALUE(,[mod:]VAR=VALUE)*"
-        print
-        print "    VAR                VALUE"
-        print "    temperaturelimit   STATE or [0..100]  kettle can not heat above VALUE degrees"
-        print "    childprotection    STATE              kettle can not heat above 45 degrees"
-        print
-        print "  Triggers"
-        print "    trigger add [group] [trigger] [action] add trigger to a group"
-        print "    trigger delete [group] (trigger) delete trigger or group triggers"
-        print "    trigger groups         show list of groups"
-        print "    trigger [group]        show triggers of group"
-        print "    trigger                show all triggers"
-        print "    trigger [group] [bool] enabled/disable trigger group"
-        print "    trigger [group] state [bool] set group state output"
-        print
-        print "  Actions can either be a path to a command or url"
-        print
-        print "  Trigger actions examples:"
-        print "    C:\SCRIPTS\SENSOR.BAT §O §N"
-        print "    /home/pi/iBrew/scripts/smarthome.sh Temperature §O §N"
-        print "    http://smarthome.local/?idx=34&value=§N"
-        print
-        print "  Debug Commands"
-        print "    time [time]            set the appliance time"
-        print "    firmware               show firmware Wifi"
-        print "    history                action history"
-        print "    [hexdata]              send raw data to appliance (e.g. \'64 7e\')"
-        print "    dump                   toggle \'dump raw messages\'"
-        print "    monitor                monitor incomming traffic"
-        print "    simulate               start kettle (or coffee simulation)"
-        print "    sweep (id)             [developer only] try (all or start with id) unknown command codes"
-        print
+        print("    hotplate on (minutes)  turn hotplate on (time in minutes)")
+        print("    mode                   return which mode: cup or carafe mode")
+        print("    mode [mode]            set mode: [cup] or [carafe] mode")
+        print("    pregrind               use pregrind beans in filter for coffee")
+        print("    (strength) [strength]  set strength coffee [weak, medium or strong]")
+        print("    settings [cups] [hotplate] [grind] [strength] store user settings")
+        print()
+        print("  Wireless Network Commands")
+        print("    direct                 enable direct mode access")
+        print("    join [net] (pass)      connect to wireless network")
+        print("    rejoin                 rejoins current wireless network [not in direct mode]")
+        print("    scan                   scan wireless networks")
+        print()
+        print("  Smarter Network Commands")
+        print("    connect (host) (rules&modifiers) connect to appliance")
+        print("    block [rules]          block messages with groups or ids")
+        print("    disconnect             disconnect connected appliance")
+        print("    events                 start trigger events only")
+        print("    patch [rules]          patch messages")
+        print("    relay ((ip:)port)      start relay")
+        print("    relay stop             stop relay")
+        print("    remote info            info on remote relay")
+        print("    remote block [rules]   remote block messages with groups or ids")
+        print("    remote patch [rules]   remote patch")
+        print("    remote rules (full)    show remote blocking and patching rules")
+        print("    remote unblock [rules] remote unblock messages groups or ids")
+        print("    rules (full)           show blocking & patching rules")
+        print("    stats                  show traffic statistics")
+        print("    unblock [rules]        unblock messages groups or ids")
+        print()
+        print("  Block Rules")
+        print("    Consists of rules, in: is for outgoing connection to the appliance, out: is for incomming connection from relay client.")
+        print()
+        print("    [in:|out:]rule(,[in:|out:]RULE)*")
+        print()
+        print("    RULE")
+        print("      message id")
+        print("      group name")
+        print()
+        print("  Patch Rules")
+        print("    Patches additional functionality")
+        print()
+        print("    [mod:]VAR=VALUE(,[mod:]VAR=VALUE)*")
+        print()
+        print("    VAR                VALUE")
+        print("    temperaturelimit   STATE or [0..100]  kettle can not heat above VALUE degrees")
+        print("    childprotection    STATE              kettle can not heat above 45 degrees")
+        print()
+        print("  Triggers")
+        print("    trigger add [group] [trigger] [action] add trigger to a group")
+        print("    trigger delete [group] (trigger) delete trigger or group triggers")
+        print("    trigger groups         show list of groups")
+        print("    trigger [group]        show triggers of group")
+        print("    trigger                show all triggers")
+        print("    trigger [group] [bool] enabled/disable trigger group")
+        print("    trigger [group] state [bool] set group state output")
+        print()
+        print("  Actions can either be a path to a command or url")
+        print()
+        print("  Trigger actions examples:")
+        print("    C:\SCRIPTS\SENSOR.BAT §O §N")
+        print("    /home/pi/iBrew/scripts/smarthome.sh Temperature §O §N")
+        print("    http://smarthome.local/?idx=34&value=§N")
+        print()
+        print("  Debug Commands")
+        print("    time [time]            set the appliance time")
+        print("    firmware               show firmware Wifi")
+        print("    history                action history")
+        print("    [hexdata]              send raw data to appliance (e.g. \'64 7e\')")
+        print("    dump                   toggle \'dump raw messages\'")
+        print("    monitor                monitor incomming traffic")
+        print("    simulate               start kettle (or coffee simulation)")
+        print("    sweep (id)             [developer only] try (all or start with id) unknown command codes")
+        print()
         """
         print "    version       [00..FF]               override appliance firmware version"
         print "    heater        disable                coffee machine or kettle heater disabled"
@@ -1373,49 +1373,49 @@ class iBrewConsole:
         print
         """
         
-        print "  Help Commands"
-        print "    examples               show examples of commands"
-        print "    groups                 show all message groups"
-        print "    group                  show messages in group"
-        print "    messages               show all known protocol messages"
-        print "    message [id]           show protocol message detail of message [id]"
-        print "    notes                  show developer notes on the appliances"
-        print "    protocol               show all protocol information available"
-        print "    states                 show various forms of trigger states"
-        print "    structure              show protocol structure information"
-        print "    triggers               show triggers"
-        print
-        print "  iBrew Commands"
-        print "    console (rules) (modifiers) start console [command line only]"
-        print "    joke                   show joke"
-        print "    license                show license"
+        print("  Help Commands")
+        print("    examples               show examples of commands")
+        print("    groups                 show all message groups")
+        print("    group                  show messages in group")
+        print("    messages               show all known protocol messages")
+        print("    message [id]           show protocol message detail of message [id]")
+        print("    notes                  show developer notes on the appliances")
+        print("    protocol               show all protocol information available")
+        print("    states                 show various forms of trigger states")
+        print("    structure              show protocol structure information")
+        print("    triggers               show triggers")
+        print()
+        print("  iBrew Commands")
+        print("    console (rules) (modifiers) start console [command line only]")
+        print("    joke                   show joke")
+        print("    license                show license")
         #print "    license disagree       stop using license [command line only]"
-        print "    quit                   quit console [console only]"
-        print
+        print("    quit                   quit console [console only]")
+        print()
 
 
     def examples(self):
-        print
-        print "  Example command line:"
-        print "    ibrew shout 21 30 05 7e  Send kettle raw heat without waiting for reply"
-        print "    ibrew weak 10.0.0.1      Set coffee strength to weak"
-        print "    ibrew strength weak      Set coffee strength to weak but do not toggle filter/beans"
-        print "    ibrew dump coffee relay out:GOD,in:32 Simulates Smarter Coffee machine"
-        print "    ibrew dump kettle relay out:GOD,in:14 Simulates iKettle 2.0"
-        print
-        print "  Example console:"
-        print "    off                      Stop heating/brewing"
-        print "    messages                 Show all protocol messages"
-        print "    message 3e               Show protocol message 3a, turn hotplate on"
-        print "    167E                     Send kettle raw stop"
-        print "    21 30 05 7e              Send kettle raw heat"
-        print "    weak                     Set coffee strength to weak"
-        print "    strength weak            Set coffee strength to weak but do not toggle filter/beans"
-        print "    cups 3                   Set number of cups to brew"
-        print "    mode cup                 Set cup mode"
-        print "    block in:wifi,in:02          Block wifi and [" + Smarter.message_description(02) + "] command to appliance"
-        print "    brew 4 10 beans strong   Brew 4 cups of strong coffee using the beans keeping the hotplate on for 10 minutes"
-        print "    join MyWifi p@ssw0rd     Joins MyWifi wireless network using p@ssw0rd as credential"
-        print "    settings 100 20 On 75    Set default user settings for the kettle to..."
-        print
+        print()
+        print("  Example command line:")
+        print("    ibrew shout 21 30 05 7e  Send kettle raw heat without waiting for reply")
+        print("    ibrew weak 10.0.0.1      Set coffee strength to weak")
+        print("    ibrew strength weak      Set coffee strength to weak but do not toggle filter/beans")
+        print("    ibrew dump coffee relay out:GOD,in:32 Simulates Smarter Coffee machine")
+        print("    ibrew dump kettle relay out:GOD,in:14 Simulates iKettle 2.0")
+        print()
+        print("  Example console:")
+        print("    off                      Stop heating/brewing")
+        print("    messages                 Show all protocol messages")
+        print("    message 3e               Show protocol message 3a, turn hotplate on")
+        print("    167E                     Send kettle raw stop")
+        print("    21 30 05 7e              Send kettle raw heat")
+        print("    weak                     Set coffee strength to weak")
+        print("    strength weak            Set coffee strength to weak but do not toggle filter/beans")
+        print("    cups 3                   Set number of cups to brew")
+        print("    mode cup                 Set cup mode")
+        print("    block in:wifi,in:02          Block wifi and [" + Smarter.message_description(0o2) + "] command to appliance")
+        print("    brew 4 10 beans strong   Brew 4 cups of strong coffee using the beans keeping the hotplate on for 10 minutes")
+        print("    join MyWifi p@ssw0rd     Joins MyWifi wireless network using p@ssw0rd as credential")
+        print("    settings 100 20 On 75    Set default user settings for the kettle to...")
+        print()
 

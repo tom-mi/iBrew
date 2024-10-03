@@ -58,7 +58,7 @@ class GenericAPIHandler(BaseHandler):
         self.add_header("Content-type","application/json; charset=UTF-8")
 
     def validateAPIKey(self):
-        api_key = self.get_argument(u"apikey", default="")
+        api_key = self.get_argument("apikey", default="")
         if api_key == "APIKEY":
             return True
         else:
@@ -849,7 +849,7 @@ class BlockHandler(GenericAPIHandler):
             client = self.application.clients[ip]
             if block[-1] == '/':
                 block = block[0:-1]
-            print block
+            print(block)
             client.block(block)
             response = encodeRules(client.rulesIn,client.rulesOut)
         else:
@@ -864,7 +864,7 @@ class UnblockHandler(GenericAPIHandler):
             client = self.application.clients[ip]
             if unblock[-1] == '/':
                 unblock = unblock[0:-1]
-            print unblock
+            print(unblock)
             client.unblock(unblock)
             response = encodeRules(client.rulesIn,client.rulesOut)
         else:
@@ -1009,14 +1009,14 @@ class TriggerHandler(GenericAPIHandler):
         if ip in self.application.clients:
             client = self.application.clients[ip]
             try:
-                print "$$$$$$$"
-                print "$$$$$$$"
-                print http+url
-                print "$$$$$$$"
-                print "$$$$$$$"
+                print("$$$$$$$")
+                print("$$$$$$$")
+                print(http+url)
+                print("$$$$$$$")
+                print("$$$$$$$")
                 client.triggerAdd(group,trigger,http+url)
                 response = { 'command' : 'success' }
-            except Exception, e:
+            except Exception as e:
                 response = { 'error' : str(e) }
         else:
             response = { 'error': 'no device' }
@@ -1033,7 +1033,7 @@ class UnTriggerHandler(GenericAPIHandler):
             try:
                 client.triggerDelete(group,trigger)
                 response = { 'command' : 'success' }
-            except Exception, e:
+            except Exception as e:
                 response = { 'error' : str(e) }
         else:
             response = { 'error': 'no device' }
@@ -1049,7 +1049,7 @@ class GroupUnTriggerHandler(GenericAPIHandler):
             try:
                 client.triggerGroupDelete(group)
                 response = { 'command' : 'success' }
-            except Exception, e:
+            except Exception as e:
                 response = { 'error' : str(e) }
         else:
             response = { 'error': 'no device' }
@@ -1136,21 +1136,21 @@ class SmartThingsHandler(GenericAPIHandler):
 
     def subscribe(self, ip):
         cb_url = self.request.headers.get("Callback")[1:-1]
-        print cb_url
+        print(cb_url)
         if ip in self.application.clients:
             client = self.application.clients[ip]
             try:
-                print "$$$$$$$"
-                print "$$$$$$$"
-                print cb_url
-                print "$$$$$$$"
-                print "$$$$$$$"
+                print("$$$$$$$")
+                print("$$$$$$$")
+                print(cb_url)
+                print("$$$$$$$")
+                print("$$$$$$$")
                 client.triggerAdd("SmartThings","TEMPERATURE", cb_url )
                 client.triggerAdd("SmartThings","KETTLEBUSY", cb_url )
                 client.triggerAdd("SmartThings","KETTLEHEATER", cb_url )
                 client.triggerAdd("SmartThings","ONBASE", cb_url )
                 response = { 'command' : 'success' }
-            except Exception, e:
+            except Exception as e:
                 response = { 'error' : str(e) }
         else:
             response = { 'error': 'no device' }
@@ -1221,13 +1221,13 @@ class LegacyHandler(GenericAPIHandler):
             client = self.application.clients[ip]
             if client.isKettle:
                 try:
-                    print command
+                    print(command)
                     if command != "":
                         client.iKettle.send(command)
                     response = encodeLegacy(client.iKettle)
                 # FIX for right exception
-                except Exception, e:
-                    print str(e)
+                except Exception as e:
+                    print(str(e))
                     response = { 'error' : 'failed to send command' }
             else:
                 response = { 'error': 'need kettle' }
@@ -1259,7 +1259,7 @@ class iBrewWeb(tornado.web.Application):
         
         reconnect = 7
         
-        for ip in self.clients.keys():
+        for ip in list(self.clients.keys()):
             client = self.clients[ip]
             #print "Checking " + ip
             if not client.connected:
@@ -1272,7 +1272,7 @@ class iBrewWeb(tornado.web.Application):
                         client.connect()
                         try:
                             threading.Thread(target=client.device_all_settings)
-                        except Exception, e:
+                        except Exception as e:
                             logging.info(e)
                     except Exception:
                         client.disconnect()
@@ -1500,7 +1500,7 @@ class iBrewWeb(tornado.web.Application):
             ]
             tornado.web.Application.__init__(self, handlers, **settings)
         except Exception:
-            print(traceback.format_exc())
+            print((traceback.format_exc()))
             self.kill()
             raise SmarterError(WebServerStartFailed,"Web Server: Couldn't start on port " + self.bind + ":" + str(self.port))
 

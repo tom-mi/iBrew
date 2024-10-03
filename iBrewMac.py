@@ -51,8 +51,8 @@ class MacGui(rumps.App):
     
     @rumps.notifications
     def notifications(self, notification):  # function that reacts to incoming notification dicts
-        print notification
+        print(notification)
     
     def onebitcallback(self, sender):  # functions don't have to be decorated to serve as callbacks for buttons
-        print 4848484            # this function is specified as a callback when creating a MenuItem below
+        print(4848484)            # this function is specified as a callback when creating a MenuItem below
 

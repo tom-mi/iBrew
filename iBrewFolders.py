@@ -62,9 +62,9 @@ class AppFolders():
             if platform.system() == "Darwin":
                 return sys._MEIPASS
             else: # Windows
-                return os.path.dirname( os.path.abspath( unicode(sys.executable, encoding) ) )
+                return os.path.dirname( os.path.abspath( str(sys.executable, encoding) ) )
         else:
-            return os.path.dirname( os.path.abspath(unicode(__file__, encoding)) )
+            return os.path.dirname( os.path.abspath(str(__file__, encoding)) )
 
     @staticmethod
     def logs():

@@ -35,51 +35,51 @@ class SmarterProtocolLegacy:
 
     def protocol(self):
         rj = 27
-        print
-        print "Commands".rjust(rj-1)
-        print "".rjust(rj-1,"_")
-        print ("[" + self.commandHandshake + "\\n] ").rjust(rj) + self.textGetHandshake
-        print ("[" + self.commandStatus + "\\n] ").rjust(rj) + self.textGetStatus
-        print ("[" + self.commandWarm5m + "\\n] ").rjust(rj) + self.textSelectWarm5m
-        print ("[" + self.commandWarm10m + "\\n] ").rjust(rj) + self.textSelectWarm10m
-        print ("[" + self.commandWarm20m + "\\n] ").rjust(rj) + self.textSelectWarm20m
-        print ("[" + self.commandWarm + "\\n] ").rjust(rj) + self.textWarm
-        print ("[" + self.command65c + "\\n] ").rjust(rj) + self.textSelect65c
-        print ("[" + self.command80c + "\\n] ").rjust(rj) + self.textSelect80c
-        print ("[" + self.command95c + "\\n] ").rjust(rj) + self.textSelect95c
-        print ("[" + self.command100c + "\\n] ").rjust(rj) + self.textSelect100c
-        print ("[" + self.commandHeat + "\\n] ").rjust(rj) + self.textHeat
-        print ("[" + self.commandStop + "\\n] ").rjust(rj) + self.textStop
-        print
-        print
-        print "Responses".rjust(rj-1)
-        print "".rjust(rj-1,"_")
-        print ("[" + self.responseHandshake + "\\r] ").rjust(rj) + self.textHandshake
-        print ("[" + self.responseStatus + "\\r] ").rjust(rj) + self.textStatus
-        print ("[" + self.status65c + "\\r] ").rjust(rj) + self.text65c
-        print ("[" + self.status80c + "\\r] ").rjust(rj) + self.text80c
-        print ("[" + self.status95c + "\\r] ").rjust(rj) + self.text95c
-        print ("[" + self.status100c + "\\r] ").rjust(rj) + self.text100c
-        print ("[" + self.statusWarm5m + "\\r] ").rjust(rj) + self.textWarm5m
-        print ("[" + self.statusWarm10m + "\\r] ").rjust(rj) + self.textWarm10m
-        print ("[" + self.statusWarm20m + "\\r] ").rjust(rj) + self.textWarm20m
-        print ("[" + self.statusReady + "\\r] ").rjust(rj) + self.textReady
-        print ("[" + self.statusHeating + "\\r] ").rjust(rj) + self.textHeating
-        print ("[" + self.statusHeated + "\\r] ").rjust(rj) + self.textHeated
-        print ("[" + self.statusOverheat + "\\r] ").rjust(rj) + self.textOverheat
-        print ("[" + self.statusWarmFinished + "\\r] ").rjust(rj) + self.textWarmFinished
-        print ("[" + self.statusWarm + "\\r] ").rjust(rj) + self.textWarm
-        print ("[" + self.statusKettleRemoved + "\\r] ").rjust(rj) + self.textKettleRemoved
-        print
-        print "Default 192.168.4.1:2000"
-        print
-        print "The protocol build up a connection by sending an offer hand command, and receiving the handshake response"
-        print "After that you can send commands and you will receive asynchronious status updates if the kettle changes state"
-        print
-        print "Send HELLOKETTLE\\n receive HELLOAPP\\r"
-        print
-        print
-        print "You might receive other HELLOAPP commands at later points as other apps on the network connect to the kettle."
+        print()
+        print("Commands".rjust(rj-1))
+        print("".rjust(rj-1,"_"))
+        print(("[" + self.commandHandshake + "\\n] ").rjust(rj) + self.textGetHandshake)
+        print(("[" + self.commandStatus + "\\n] ").rjust(rj) + self.textGetStatus)
+        print(("[" + self.commandWarm5m + "\\n] ").rjust(rj) + self.textSelectWarm5m)
+        print(("[" + self.commandWarm10m + "\\n] ").rjust(rj) + self.textSelectWarm10m)
+        print(("[" + self.commandWarm20m + "\\n] ").rjust(rj) + self.textSelectWarm20m)
+        print(("[" + self.commandWarm + "\\n] ").rjust(rj) + self.textWarm)
+        print(("[" + self.command65c + "\\n] ").rjust(rj) + self.textSelect65c)
+        print(("[" + self.command80c + "\\n] ").rjust(rj) + self.textSelect80c)
+        print(("[" + self.command95c + "\\n] ").rjust(rj) + self.textSelect95c)
+        print(("[" + self.command100c + "\\n] ").rjust(rj) + self.textSelect100c)
+        print(("[" + self.commandHeat + "\\n] ").rjust(rj) + self.textHeat)
+        print(("[" + self.commandStop + "\\n] ").rjust(rj) + self.textStop)
+        print()
+        print()
+        print("Responses".rjust(rj-1))
+        print("".rjust(rj-1,"_"))
+        print(("[" + self.responseHandshake + "\\r] ").rjust(rj) + self.textHandshake)
+        print(("[" + self.responseStatus + "\\r] ").rjust(rj) + self.textStatus)
+        print(("[" + self.status65c + "\\r] ").rjust(rj) + self.text65c)
+        print(("[" + self.status80c + "\\r] ").rjust(rj) + self.text80c)
+        print(("[" + self.status95c + "\\r] ").rjust(rj) + self.text95c)
+        print(("[" + self.status100c + "\\r] ").rjust(rj) + self.text100c)
+        print(("[" + self.statusWarm5m + "\\r] ").rjust(rj) + self.textWarm5m)
+        print(("[" + self.statusWarm10m + "\\r] ").rjust(rj) + self.textWarm10m)
+        print(("[" + self.statusWarm20m + "\\r] ").rjust(rj) + self.textWarm20m)
+        print(("[" + self.statusReady + "\\r] ").rjust(rj) + self.textReady)
+        print(("[" + self.statusHeating + "\\r] ").rjust(rj) + self.textHeating)
+        print(("[" + self.statusHeated + "\\r] ").rjust(rj) + self.textHeated)
+        print(("[" + self.statusOverheat + "\\r] ").rjust(rj) + self.textOverheat)
+        print(("[" + self.statusWarmFinished + "\\r] ").rjust(rj) + self.textWarmFinished)
+        print(("[" + self.statusWarm + "\\r] ").rjust(rj) + self.textWarm)
+        print(("[" + self.statusKettleRemoved + "\\r] ").rjust(rj) + self.textKettleRemoved)
+        print()
+        print("Default 192.168.4.1:2000")
+        print()
+        print("The protocol build up a connection by sending an offer hand command, and receiving the handshake response")
+        print("After that you can send commands and you will receive asynchronious status updates if the kettle changes state")
+        print()
+        print("Send HELLOKETTLE\\n receive HELLOAPP\\r")
+        print()
+        print()
+        print("You might receive other HELLOAPP commands at later points as other apps on the network connect to the kettle.")
     
     Port       = 2000
     DirectHost = "192.168.4.1"
@@ -316,16 +316,16 @@ SmarterInterfaceFailedStopThread  = 106
 class SmarterError(Exception):
 
     def __init__(self, err, msg):
-        print(traceback.format_exc())
-        print str(msg)
+        print((traceback.format_exc()))
+        print(str(msg))
         self.msg = msg
         self.err = err
 
 
 class SmarterErrorOld(Exception):
     def __init__(self, msg):
-        print str(msg)
-        print(traceback.format_exc())
+        print(str(msg))
+        print((traceback.format_exc()))
         self.msg = msg
 
 #------------------------------------------------------
@@ -593,7 +593,7 @@ class SmarterProtocol:
 
     def message_is_response(self,id):
         if id != self.ResponseKettleStatus and id != self.ResponseCoffeeStatus:
-            return self.ResponseMessages.has_key(id)
+            return id in self.ResponseMessages
         return False
 
 
@@ -604,7 +604,7 @@ class SmarterProtocol:
 
 
     def message_is_command(self,id):
-        return self.CommandMessages.has_key(id)
+        return id in self.CommandMessages
 
 
     def message_is_type(self,id):
@@ -828,7 +828,7 @@ class SmarterProtocol:
         """
         Check if groupid actually exists
         """
-        return self.Groups.has_key(group)
+        return group in self.Groups
     
     
     def isGroup(self,string):
@@ -897,7 +897,7 @@ class SmarterProtocol:
         """
         ids = []
         for i in list:
-            if i in [j.lower() for j in self.groupsList(self.Groups.keys())]:
+            if i in [j.lower() for j in self.groupsList(list(self.Groups.keys()))]:
                 ids += self.Groups[self.string_to_group(i)][1]
             else:
                 try:
@@ -1250,7 +1250,7 @@ class SmarterProtocol:
             t = int(temperature)
             return self.check_temperature(t)
         # FIX THIS INTO TWO DIFFERENT EXCEPTION INT & TEMPCHECK
-        except Exception, e:
+        except Exception as e:
             raise SmarterErrorOld("Temperature is not a number: " + temperature)
 
 
@@ -1452,7 +1452,7 @@ class SmarterProtocol:
     }
 
     def waterlevel(self,level):
-        if self.WaterLevel.has_key(level):
+        if level in self.WaterLevel:
             return self.WaterLevel[level]
         else:
             return "unknown water level [0..3]: " + self.number_to_code(level)
@@ -1509,7 +1509,7 @@ class SmarterProtocol:
 
 
     def is_status_command(self,status):
-        return self.StatusCommand.has_key(status)
+        return status in self.StatusCommand
 
 
 
@@ -1541,7 +1541,7 @@ class SmarterProtocol:
 
 
     def status_kettle_description(self,status):
-        if self.StatusKettle.has_key(status):
+        if status in self.StatusKettle:
             return self.StatusKettle[status]
         else:
             return "Unknown Kettle Status " + self.number_to_code(status)
@@ -1760,7 +1760,7 @@ class SmarterProtocol:
                     devices.append((server[0],self.raw_to_number(message[1]),self.raw_to_number(message[2])))
                 if self.raw_to_number(message[0]) == self.ResponseRelayInfo:
                     relay.append((server[0],self.raw_to_number(message[1]),self.raw_to_text(message[1:])))
-        except socket.error, e:
+        except socket.error as e:
             # FIX
             pass #print 'iBrew:' + str(e)
         finally:
@@ -1773,9 +1773,9 @@ class SmarterProtocol:
             for j in range(0,len(relay)):
                 if devices[i][0] == relay[j][0]:
                     s = "Relay v" + str(relay[j][1]) + " (" + relay[j][2] + ") "
-            print "[" + devices[i][0] +  ":" + '{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()) + "] Found " + s + Smarter.device_info(devices[i][1],devices[i][2])
+            print("[" + devices[i][0] +  ":" + '{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()) + "] Found " + s + Smarter.device_info(devices[i][1],devices[i][2]))
         if len(devices) == 0:
-            print "No coffee machine or kettle found"
+            print("No coffee machine or kettle found")
 
 
     #------------------------------------------------------
@@ -1873,10 +1873,10 @@ class SmarterProtocol:
     }
 
     def triggerID(self,trigger):
-        for i in self.triggersCoffee.keys():
+        for i in list(self.triggersCoffee.keys()):
             if trigger.upper() == self.triggersCoffee[i][0].upper():
                 return i
-        for i in self.triggersKettle.keys():
+        for i in list(self.triggersKettle.keys()):
             if trigger.upper() == self.triggersKettle[i][0].upper():
                 return i
         raise SmarterErrorOld("Trigger does not exists")
@@ -1911,28 +1911,28 @@ class SmarterProtocol:
         
 
     def print_triggers(self):
-        print
-        print "Trigger actions"
-        print
-        print "Smarter Coffee Trigger".rjust(25, ' ') + " Sensor Description"
-        print "______________________".rjust(25, ' ') + "___________________"
+        print()
+        print("Trigger actions")
+        print()
+        print("Smarter Coffee Trigger".rjust(25, ' ') + " Sensor Description")
+        print("______________________".rjust(25, ' ') + "___________________")
         for i in self.triggersCoffee:
-            print self.triggersCoffee[i][0].upper().rjust(25, ' ') + " " + self.triggersCoffee[i][1]
-        print
-        print "iKettle 2.0 Trigger".rjust(25, ' ') + " Sensor Description"
-        print "___________________".rjust(25, ' ') + "___________________"
+            print(self.triggersCoffee[i][0].upper().rjust(25, ' ') + " " + self.triggersCoffee[i][1])
+        print()
+        print("iKettle 2.0 Trigger".rjust(25, ' ') + " Sensor Description")
+        print("___________________".rjust(25, ' ') + "___________________")
         for i in self.triggersKettle:
-            print self.triggersKettle[i][0].upper().rjust(25, ' ') + " " + self.triggersKettle[i][1]
-        print
+            print(self.triggersKettle[i][0].upper().rjust(25, ' ') + " " + self.triggersKettle[i][1])
+        print()
 
 
     def print_states(self):
-        print
-        print "State types for trigger actions"
-        print
+        print()
+        print("State types for trigger actions")
+        print()
         for i in self.triggerBooleans:
-            print i[0] + ": (" + i[0] + "," + i[1] + ")"
-        print
+            print(i[0] + ": (" + i[0] + "," + i[1] + ")")
+        print()
         
     #------------------------------------------------------
     #
@@ -2336,7 +2336,7 @@ class SmarterProtocol:
 
     
     def string_argument(self,argument,bit=False):
-        if self.ArgType.has_key(argument):
+        if argument in self.ArgType:
             s = ""
             a = self.ArgType[argument]
             if a[0] == 'PROTOCOL':
@@ -2360,7 +2360,7 @@ class SmarterProtocol:
             elif a[0] == 'RANGE':
                 s += self.string_range(a)
             else:
-                print "AAAAARRGGHHH"
+                print("AAAAARRGGHHH")
             
         else:
             s = "No information on: " + self.number_to_code(argument)
@@ -2374,7 +2374,7 @@ class SmarterProtocol:
         
  
         # i really hate python....
-        for g in sorted(self.Groups.items(),key=itemgetter(1)):
+        for g in sorted(list(self.Groups.items()),key=itemgetter(1)):
             s += "  " + g[1][0].upper() + "\n"
         s += "\n"
         return s
@@ -2393,7 +2393,7 @@ class SmarterProtocol:
         
     def groups_all(self):
         s = ""
-        for g in sorted(self.Groups.items(),key=itemgetter(1)):
+        for g in sorted(list(self.Groups.items()),key=itemgetter(1)):
             s += self.group(g[0])
         return s
         
